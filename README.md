@@ -1,4 +1,10 @@
-# Dynamic Plugin SDK
-Provides the plugin API, types and utilities used by dynamic plugins at runtime
+# OpenShift Dynamic Plugin SDK
 
-Testing CICD bot
+> Provides APIs, utilities and types to develop and run dynamic plugins in host web applications.
+
+## Developer Setup
+
+### Dependencies
+
+1. [Node.js](https://nodejs.org/) - [Active LTS](https://nodejs.org/en/about/releases/) release
+2. [Yarn](https://yarnpkg.com/getting-started/install) - latest version
