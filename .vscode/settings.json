@@ -1,0 +1,40 @@
+{
+  "typescript.tsdk": "./node_modules/typescript/lib",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  "search.exclude": {
+    "**/.git": true,
+    "**/.yarn": true,
+    "**/node_modules": true,
+    "**/dist": true
+  },
+  "files.watcherExclude": {
+    "**/.git": true,
+    "**/.yarn": true,
+    "**/node_modules": true,
+    "**/dist": true
+  },
+
+  // https://code.visualstudio.com/docs/languages/identifiers
+  "[javascript]": {
+    "editor.formatOnSave": true
+  },
+  "[javascriptreact]": {
+    "editor.formatOnSave": true
+  },
+  "[typescript]": {
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.formatOnSave": true
+  },
+  "[jsonc]": {
+    "editor.formatOnSave": true
+  },
+  "[yaml]": {
+    "editor.formatOnSave": true
+  }
+}
