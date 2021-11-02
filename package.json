@@ -1,6 +1,9 @@
 {
   "license": "Apache-2.0",
   "private": true,
+  "scripts": {
+    "test": "echo 'Write some tests!'"
+  },
   "workspaces": [
     "packages/*"
   ],
