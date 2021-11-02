@@ -1,0 +1,14 @@
+{
+  "name": "@openshift-org/dynamic-plugin-sdk-runtime",
+  "version": "0.0.0-alpha1",
+  "scripts": {
+    "prepack": "yarn build",
+    "prepublish": "yarn test",
+    "build": "rm -rf dist && tsc --outDir dist",
+    "test": "echo 'Write some tests!'"
+  },
+  "devDependencies": {
+    "@types/node": "12.x",
+    "typescript": "4.4.x"
+  }
+}

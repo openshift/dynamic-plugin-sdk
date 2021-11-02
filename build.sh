@@ -2,4 +2,4 @@
 set -euo pipefail
 
 yarn install
-# TODO build all packages
+yarn build
