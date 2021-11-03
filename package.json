@@ -5,6 +5,6 @@
     "packages/*"
   ],
   "scripts": {
-    "test": "yarn workspaces foreach run test"
+    "test": "yarn install && yarn workspaces foreach run install && yarn workspaces foreach run test"
   }
 }
