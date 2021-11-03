@@ -1,5 +1,3 @@
-node_modules
-
 # https://next.yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
 .pnp.*
 .yarn/*
@@ -8,3 +6,9 @@ node_modules
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# Using Yarn node_modules linker strategy
+**/node_modules
+
+# Generated project artifacts
+**/dist

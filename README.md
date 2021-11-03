@@ -7,4 +7,7 @@
 ### Dependencies
 
 1. [Node.js](https://nodejs.org/) - [Active LTS](https://nodejs.org/en/about/releases/) release
-2. [Yarn](https://yarnpkg.com/getting-started/install) - latest version
+2. [Yarn](https://yarnpkg.com/getting-started/install) - standard per-project install
+```
+npm install -g yarn
+```
