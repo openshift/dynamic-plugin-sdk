@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -exuo pipefail
 
 # TODO lint
 yarn test
