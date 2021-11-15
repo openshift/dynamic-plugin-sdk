@@ -25,6 +25,7 @@ const presetConfigs = {
       'plugin:openshift/typescript',
       'plugin:openshift/prettier',
     ],
+    rules: require('./rule-overrides/react-typescript-prettier'),
   },
 };
 

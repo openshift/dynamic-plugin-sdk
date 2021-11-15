@@ -1,6 +1,12 @@
 import { LoadedExtension } from './types/extension';
 import { PluginMetadata, LoadedPlugin } from './types/plugin';
 
+export enum PluginStoreEventType {
+  ExtensionsInUseChanged = 'ExtensionsInUseChanged',
+  PluginAdded = 'PluginAdded',
+  PluginEnabledOrDisabled = 'PluginEnabledOrDisabled',
+}
+
 /**
  * Provides access to runtime plugin information and extensions.
  */
@@ -77,11 +83,13 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
    */
   addPlugin(metadata: PluginMetadata, extensions: TLoadedExtension[]) {
     if (this.loadedPlugins.has(metadata.name)) {
+      // eslint-disable-next-line no-console
       console.warn(`Attempt to re-add plugin ${metadata.name}`);
       return;
     }
 
     if (!this.allowedPluginNames?.has(metadata.name)) {
+      // eslint-disable-next-line no-console
       console.warn(`Attempt to add unexpected plugin ${metadata.name}`);
       return;
     }
@@ -94,6 +102,7 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
 
     this.invokeListeners([PluginStoreEventType.PluginAdded]);
 
+    // eslint-disable-next-line no-console
     console.log(`Added plugin ${metadata.name} version ${metadata.version}`);
   }
 
@@ -104,6 +113,7 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
    */
   setPluginEnabled(pluginName: string, enabled: boolean) {
     if (!this.loadedPlugins.has(pluginName)) {
+      // eslint-disable-next-line no-console
       console.warn(
         `Attempt to ${enabled ? 'enable' : 'disable'} plugin ${pluginName} prior to its loading`,
       );
@@ -121,13 +131,8 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
         PluginStoreEventType.PluginEnabledOrDisabled,
       ]);
 
+      // eslint-disable-next-line no-console
       console.log(`Plugin ${pluginName} is now ${enabled ? 'enabled' : 'disabled'}`);
     }
   }
-}
-
-export enum PluginStoreEventType {
-  ExtensionsInUseChanged = 'ExtensionsInUseChanged',
-  PluginAdded = 'PluginAdded',
-  PluginEnabledOrDisabled = 'PluginEnabledOrDisabled',
 }
