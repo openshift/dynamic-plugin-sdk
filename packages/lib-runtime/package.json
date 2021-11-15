@@ -1,11 +1,12 @@
 {
-  "name": "@openshift-org/dynamic-plugin-sdk-runtime",
+  "name": "@openshift/dynamic-plugin-sdk-runtime",
   "version": "0.0.0-alpha1",
   "scripts": {
     "prepack": "yarn build",
     "prepublish": "yarn test",
     "build": "rm -rf dist && tsc --outDir dist",
-    "test": "echo 'Write some tests!'"
+    "test": "echo 'Write some tests!'",
+    "lint": "yarn lint:react src"
   },
   "devDependencies": {
     "@types/node": "12.x",
