@@ -1,8 +1,8 @@
 #!/bin/bash
 set -exuo pipefail
 
-# TODO remove once build script gets called before test script
-yarn install
+# TODO remove this once CI runs build script prior to test script
+./build.sh
 
-# TODO lint
+yarn lint
 yarn test

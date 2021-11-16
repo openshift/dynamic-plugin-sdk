@@ -10,20 +10,28 @@ const componentConfigs = {
   prettier: require('./configs/prettier'),
 };
 
+const commonPresetConfig = {
+  // Report unused eslint-disable comments as warnings
+  reportUnusedDisableDirectives: true,
+};
+
 const presetConfigs = {
   'node-typescript-prettier': {
+    ...commonPresetConfig,
     extends: [
-      'plugin:openshift/base-node',
-      'plugin:openshift/typescript',
-      'plugin:openshift/prettier',
+      'plugin:internal/base-node',
+      'plugin:internal/typescript',
+      'plugin:internal/prettier',
     ],
+    rules: require('./rule-overrides/node-typescript-prettier'),
   },
 
   'react-typescript-prettier': {
+    ...commonPresetConfig,
     extends: [
-      'plugin:openshift/base-react',
-      'plugin:openshift/typescript',
-      'plugin:openshift/prettier',
+      'plugin:internal/base-react',
+      'plugin:internal/typescript',
+      'plugin:internal/prettier',
     ],
     rules: require('./rule-overrides/react-typescript-prettier'),
   },

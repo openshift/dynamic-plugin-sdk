@@ -117,8 +117,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openshift/dynamic-plugin-sdk-runtime@workspace:packages/lib-runtime"
   dependencies:
-    "@types/node": 12.x
-    typescript: 4.4.x
+    "@types/node": ^12.20.36
+    eslint-plugin-internal: 0.0.0-fixed
+    react: ^17.0.2
+    typescript: ^4.4.4
   languageName: unknown
   linkType: soft
 
@@ -136,10 +138,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:12.x":
-  version: 12.20.36
-  resolution: "@types/node@npm:12.20.36"
-  checksum: 096748b23e70f6a60ea3f93e4abc7b52b93977270ae48bb793b73a6ab3d4ef2a03294f73e86213a957255f50ce29ebaf39ffdf30a2e068662a18416ba3942656
+"@types/node@npm:^12.20.36":
+  version: 12.20.37
+  resolution: "@types/node@npm:12.20.37"
+  checksum: 8c8b12f802678b3b87c5344b6c84082be08561dda81dc161d42be8cd327330d1a5227cef039c45a5e63a6d4a01ef5ef215dccc42d06100f59f6a8814b4f91cdd
   languageName: node
   linkType: hard
 
@@ -805,6 +807,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-plugin-internal@0.0.0-fixed, eslint-plugin-internal@workspace:packages/eslint-plugin-internal":
+  version: 0.0.0-use.local
+  resolution: "eslint-plugin-internal@workspace:packages/eslint-plugin-internal"
+  dependencies:
+    "@typescript-eslint/eslint-plugin": ^5.3.1
+    "@typescript-eslint/parser": ^5.3.1
+    eslint: ^7.32.0
+    eslint-config-airbnb: ^19.0.0
+    eslint-config-airbnb-base: ^15.0.0
+    eslint-config-prettier: ^8.3.0
+    eslint-import-resolver-typescript: ^2.5.0
+    eslint-plugin-import: ^2.25.3
+    eslint-plugin-jsx-a11y: ^6.5.1
+    eslint-plugin-node: ^11.1.0
+    eslint-plugin-prettier: ^4.0.0
+    eslint-plugin-promise: ^5.1.1
+    eslint-plugin-react: ^7.27.0
+    eslint-plugin-react-hooks: ^4.3.0
+    prettier: ^2.4.1
+  languageName: unknown
+  linkType: soft
+
 "eslint-plugin-jsx-a11y@npm:^6.5.1":
   version: 6.5.1
   resolution: "eslint-plugin-jsx-a11y@npm:6.5.1"
@@ -842,28 +866,6 @@ __metadata:
   checksum: 5804c4f8a6e721f183ef31d46fbe3b4e1265832f352810060e0502aeac7de034df83352fc88643b19641bb2163f2587f1bd4119aff0fd21e8d98c57c450e013b
   languageName: node
   linkType: hard
-
-"eslint-plugin-openshift@workspace:packages/eslint-plugin-openshift":
-  version: 0.0.0-use.local
-  resolution: "eslint-plugin-openshift@workspace:packages/eslint-plugin-openshift"
-  dependencies:
-    "@typescript-eslint/eslint-plugin": ^5.3.1
-    "@typescript-eslint/parser": ^5.3.1
-    eslint: ^7.32.0
-    eslint-config-airbnb: ^19.0.0
-    eslint-config-airbnb-base: ^15.0.0
-    eslint-config-prettier: ^8.3.0
-    eslint-import-resolver-typescript: ^2.5.0
-    eslint-plugin-import: ^2.25.3
-    eslint-plugin-jsx-a11y: ^6.5.1
-    eslint-plugin-node: ^11.1.0
-    eslint-plugin-prettier: ^4.0.0
-    eslint-plugin-promise: ^5.1.1
-    eslint-plugin-react: ^7.27.0
-    eslint-plugin-react-hooks: ^4.3.0
-    prettier: ^2.4.1
-  languageName: unknown
-  linkType: soft
 
 "eslint-plugin-prettier@npm:^4.0.0":
   version: 4.0.0
@@ -1622,7 +1624,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loose-envify@npm:^1.4.0":
+"loose-envify@npm:^1.1.0, loose-envify@npm:^1.4.0":
   version: 1.4.0
   resolution: "loose-envify@npm:1.4.0"
   dependencies:
@@ -1954,6 +1956,16 @@ __metadata:
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
   checksum: f7a19ac3496de32ca9ae12aa030f00f14a3d45374f1ceca0af707c831b2a6098ef0d6bdae51bd437b0a306d7f01d4677fcc8de7c0d331eb47ad0f46130e53c5f
+  languageName: node
+  linkType: hard
+
+"react@npm:^17.0.2":
+  version: 17.0.2
+  resolution: "react@npm:17.0.2"
+  dependencies:
+    loose-envify: ^1.1.0
+    object-assign: ^4.1.1
+  checksum: b254cc17ce3011788330f7bbf383ab653c6848902d7936a87b09d835d091e3f295f7e9dd1597c6daac5dc80f90e778c8230218ba8ad599f74adcc11e33b9d61b
   languageName: node
   linkType: hard
 
@@ -2297,7 +2309,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:4.4.x":
+"typescript@npm:^4.4.4":
   version: 4.4.4
   resolution: "typescript@npm:4.4.4"
   bin:
@@ -2307,7 +2319,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@4.4.x#~builtin<compat/typescript>":
+"typescript@patch:typescript@^4.4.4#~builtin<compat/typescript>":
   version: 4.4.4
   resolution: "typescript@patch:typescript@npm%3A4.4.4#~builtin<compat/typescript>::version=4.4.4&hash=ddd1e8"
   bin:

@@ -1,4 +1,4 @@
 module.exports = {
   root: true,
-  extends: ['plugin:openshift/react-typescript-prettier'],
+  extends: ['plugin:internal/react-typescript-prettier'],
 };

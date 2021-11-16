@@ -52,7 +52,7 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
    */
   subscribe(listener: VoidFunction, eventTypes: PluginStoreEventType[]): VoidFunction {
     eventTypes.forEach((t) => {
-      this.listeners.get(t)!.add(listener);
+      this.listeners.get(t)?.add(listener);
     });
 
     let isSubscribed = true;
@@ -62,7 +62,7 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
         isSubscribed = false;
 
         eventTypes.forEach((t) => {
-          this.listeners.get(t)!.delete(listener);
+          this.listeners.get(t)?.delete(listener);
         });
       }
     };
@@ -70,7 +70,7 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
 
   private invokeListeners(eventTypes: PluginStoreEventType[]) {
     eventTypes.forEach((t) => {
-      this.listeners.get(t)!.forEach((listener) => {
+      this.listeners.get(t)?.forEach((listener) => {
         listener();
       });
     });
@@ -120,6 +120,7 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
       return;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const plugin = this.loadedPlugins.get(pluginName)!;
 
     if (plugin.enabled !== enabled) {

@@ -1,11 +1,12 @@
 {
-  "name": "eslint-plugin-openshift",
+  "name": "eslint-plugin-internal",
   "version": "0.0.0-fixed",
+  "description": "Internal ESLint configs and scripts",
   "main": "index.js",
   "scripts": {
-    "lint:node": "cd $INIT_CWD && eslint --ext .js,.ts --color",
-    "lint:react": "cd $INIT_CWD && eslint --ext .js,.jsx,.ts,.tsx --color",
-    "lint:print-config": "cd $INIT_CWD && eslint --print-config"
+    "lint:run": "cd $INIT_CWD && eslint --ignore-path $PROJECT_CWD/.eslintignore --max-warnings 0 --color",
+    "lint:print-config": "cd $INIT_CWD && eslint --print-config",
+    "lint": "yarn lint:run --ext .js ."
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.3.1",
@@ -23,5 +24,8 @@
     "eslint-plugin-react": "^7.27.0",
     "eslint-plugin-react-hooks": "^4.3.0",
     "prettier": "^2.4.1"
+  },
+  "engines": {
+    "node": ">=14"
   }
 }
