@@ -1,4 +1,4 @@
-export type Extension<TProperties extends {} = {}> = {
+export type Extension<TProperties extends AnyObject = AnyObject> = {
   type: string;
   properties: TProperties;
 };

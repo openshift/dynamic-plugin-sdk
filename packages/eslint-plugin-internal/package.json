@@ -1,0 +1,31 @@
+{
+  "name": "eslint-plugin-internal",
+  "version": "0.0.0-fixed",
+  "description": "Internal ESLint configs and scripts",
+  "main": "index.js",
+  "scripts": {
+    "lint:run": "cd $INIT_CWD && eslint --ignore-path $PROJECT_CWD/.eslintignore --max-warnings 0 --color",
+    "lint:print-config": "cd $INIT_CWD && eslint --print-config",
+    "lint": "yarn lint:run --ext .js ."
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.3.1",
+    "@typescript-eslint/parser": "^5.3.1",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb": "^19.0.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-import-resolver-typescript": "^2.5.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-promise": "^5.1.1",
+    "eslint-plugin-react": "^7.27.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "prettier": "^2.4.1"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}
