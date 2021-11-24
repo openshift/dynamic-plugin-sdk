@@ -15,4 +15,6 @@ module.exports = {
   },
 
   plugins: ['promise', 'node'],
+
+  rules: require('../rule-overrides/base-overrides'),
 };

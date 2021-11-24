@@ -1,0 +1,17 @@
+import * as _ from 'lodash-es';
+
+// https://stackoverflow.com/a/38979205
+export const isAbsoluteURL = (url: string) => url.indexOf('://') > 0 || url.indexOf('//') === 0;
+
+/**
+ * Resolve URL to the given resource using a base URL.
+ *
+ * If `base` is not an absolute URL, it's considered to be relative to the document origin.
+ *
+ * If `to` is an absolute URL, `base` is ignored (as per standard `URL()` constructor semantics).
+ */
+export const resolveURL = (
+  base: string,
+  to: string,
+  getDocumentOrigin: () => string = _.constant(window.location.origin),
+) => new URL(to, isAbsoluteURL(base) ? base : new URL(base, getDocumentOrigin())).toString();
