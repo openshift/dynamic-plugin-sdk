@@ -21,10 +21,10 @@ export enum PluginStoreEventType {
   PluginLoaded = 'PluginLoaded',
   /** Plugin failed to load, or there was an error while processing it. */
   PluginFailedToLoad = 'PluginFailedToLoad',
-  /** Plugin was enabled or disabled. Triggers event `ExtensionsInUseChanged`. */
+  /** Plugin was enabled or disabled. Triggers event `ExtensionsChanged`. */
   PluginEnabledOrDisabled = 'PluginEnabledOrDisabled',
   /** The list of extensions which are currently in use has changed. */
-  ExtensionsInUseChanged = 'ExtensionsInUseChanged',
+  ExtensionsChanged = 'ExtensionsChanged',
 }
 
 type PluginStoreOptions = Partial<{
@@ -37,6 +37,7 @@ type PluginStoreOptions = Partial<{
 /**
  * Provides access to runtime plugin information and extensions.
  */
+// TODO implement interfaces: host-app-facing & plugin-facing
 export class PluginStore<TLoadedExtension extends LoadedExtension> {
   private readonly options: Required<PluginStoreOptions>;
 
@@ -47,10 +48,13 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
   private readonly failedPlugins = new Set<string>();
 
   /** Extensions which are currently in use. */
-  private extensionsInUse: TLoadedExtension[] = [];
+  private extensions: TLoadedExtension[] = [];
 
   /** Subscribed `PluginStore` event listeners. */
   private readonly listeners = new Map<PluginStoreEventType, Set<VoidFunction>>();
+
+  /** Set to `true` after initializing the `PluginStore`. */
+  private initialized = false;
 
   constructor(private readonly loader: PluginLoader, options: PluginStoreOptions = {}) {
     this.options = {
@@ -65,20 +69,28 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
 
   /**
    * Connect this `PluginStore` with the provided `PluginLoader`.
+   *
+   * This must be done before attempting to load any plugins.
+   *
+   * Returns a function for disconnecting from the `PluginLoader`.
    */
   init() {
+    if (this.initialized) {
+      throw new Error('PluginStore is already initialized');
+    }
+
     return this.loader.subscribe((pluginName, result) => {
       if (!result.success) {
         this.registerFailedPlugin(pluginName);
         return;
       }
 
-      this.addPlugin(
+      const pluginAdded = this.addPlugin(
         _.omit<PluginManifest, 'extensions'>(result.manifest, 'extensions'),
         this.processExtensions(pluginName, result.manifest.extensions) as TLoadedExtension[],
       );
 
-      if (this.options.autoEnableLoadedPlugins) {
+      if (pluginAdded && this.options.autoEnableLoadedPlugins) {
         this.setPluginEnabled(pluginName, true);
       }
     });
@@ -86,6 +98,8 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
 
   /**
    * Start loading a plugin from the specified URL.
+   *
+   * Use the `subscribe` method to respond to relevant `PluginStore` events.
    */
   async loadPlugin(baseURL: string) {
     let manifest: PluginManifest;
@@ -110,8 +124,8 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
    *
    * This method always returns a new array instance.
    */
-  getExtensionsInUse() {
-    return [...this.extensionsInUse];
+  getExtensions() {
+    return [...this.extensions];
   }
 
   /**
@@ -120,6 +134,10 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
    * Returns a function for unsubscribing the provided listener.
    */
   subscribe(listener: VoidFunction, eventTypes: PluginStoreEventType[]): VoidFunction {
+    if (eventTypes.length === 0) {
+      consoleLogger.warn('subscribe method called with no eventTypes');
+    }
+
     eventTypes.forEach((t) => {
       this.listeners.get(t)?.add(listener);
     });
@@ -149,6 +167,8 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
    * Add new plugin to the `PluginStore`.
    *
    * Once added, the plugin is disabled by default. Enable it to put its extensions into use.
+   *
+   * Returns `true` if the plugin was added successfully.
    */
   addPlugin(metadata: PluginMetadata, processedExtensions: TLoadedExtension[]) {
     const pluginName = metadata.name;
@@ -156,7 +176,7 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
 
     if (this.loadedPlugins.has(pluginName)) {
       consoleLogger.warn(`Attempt to re-add an already loaded plugin ${pluginName}`);
-      return;
+      return false;
     }
 
     this.loadedPlugins.set(pluginName, {
@@ -169,6 +189,8 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
     this.invokeListeners([PluginStoreEventType.PluginLoaded]);
 
     consoleLogger.info(`Added plugin ${pluginName} version ${pluginVersion}`);
+
+    return true;
   }
 
   /**
@@ -190,14 +212,14 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
     if (plugin.enabled !== enabled) {
       plugin.enabled = enabled;
 
-      this.extensionsInUse = Array.from(this.loadedPlugins.values()).reduce(
+      this.extensions = Array.from(this.loadedPlugins.values()).reduce(
         (acc, p) => (p.enabled ? [...acc, ...p.extensions] : acc),
         [] as TLoadedExtension[],
       );
 
       this.invokeListeners([
         PluginStoreEventType.PluginEnabledOrDisabled,
-        PluginStoreEventType.ExtensionsInUseChanged,
+        PluginStoreEventType.ExtensionsChanged,
       ]);
 
       consoleLogger.info(`Plugin ${pluginName} is now ${enabled ? 'enabled' : 'disabled'}`);
@@ -214,6 +236,9 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
     this.invokeListeners([PluginStoreEventType.PluginFailedToLoad]);
   }
 
+  /**
+   * Process extension objects as received from the plugin manifest.
+   */
   processExtensions(pluginName: string, extensions: Extension[]) {
     const processedExtensions: LoadedExtension[] = extensions.map((e, index) => ({
       ...e,
@@ -221,7 +246,7 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
       uid: `${pluginName}[${index}]`,
     }));
 
-    // TODO decode EncodedCodeRef properties
+    // TODO decode EncodedCodeRef values into CodeRef values
 
     return this.options.postProcessExtensions(processedExtensions);
   }

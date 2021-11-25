@@ -27,7 +27,7 @@ type PluginLoadListener = (pluginName: string, result: LoadResultSuccess | LoadR
 type PluginLoaderOptions = Partial<{
   /** Control which plugins can be loaded. */
   canLoadPlugin: (pluginName: string) => boolean;
-  /** Name of the global function with `PluginEntryCallback` signature. */
+  /** Name of the global function used by plugin entry scripts. */
   entryCallbackName: string;
   /** Custom resource fetch implementation. */
   fetchImpl: FetchResource;
@@ -48,6 +48,9 @@ export class PluginLoader {
 
   /** Subscribed plugin load event listeners. */
   private readonly listeners = new Set<PluginLoadListener>();
+
+  /** Reference to the global callback function. */
+  private entryCallback: PluginEntryCallback | undefined;
 
   constructor(options: PluginLoaderOptions = {}) {
     this.options = {
@@ -113,6 +116,10 @@ export class PluginLoader {
   ) {
     const pluginName = manifest.name;
     const scriptURL = resolveURL(baseURL, 'plugin-entry.js');
+
+    if (this.entryCallback === undefined) {
+      throw new Error(`Attempt to load plugin ${pluginName} before registering entry callback`);
+    }
 
     if (!this.options.canLoadPlugin(pluginName)) {
       throw new Error(`Loading plugin ${pluginName} is not allowed`);
@@ -195,15 +202,19 @@ export class PluginLoader {
    */
   registerPluginEntryCallback(getWindow: () => typeof window = _.constant(window)) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const anyWindow = getWindow() as any;
-    const callback = this.options.entryCallbackName;
+    const windowGlobal = getWindow() as any;
+    const callbackName = this.options.entryCallbackName;
 
-    if (anyWindow[callback] === 'function') {
-      consoleLogger.warn(`Global function ${callback} is already registered`);
-      return;
+    if (this.entryCallback !== undefined) {
+      throw new Error(`Global function ${callbackName} is already registered by this loader`);
     }
 
-    anyWindow[callback] = this.createPluginEntryCallback();
+    if (typeof windowGlobal[callbackName] === 'function') {
+      throw new Error(`Global function ${callbackName} is already registered by another loader`);
+    }
+
+    this.entryCallback = this.createPluginEntryCallback();
+    windowGlobal[callbackName] = this.entryCallback;
   }
 
   getPendingPluginNames() {
