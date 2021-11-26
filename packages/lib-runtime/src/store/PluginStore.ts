@@ -1,8 +1,17 @@
 import * as _ from 'lodash-es';
+import { Extension, LoadedExtension } from '../types/extension';
+import { PluginMetadata, PluginManifest, LoadedPlugin } from '../types/plugin';
+import { consoleLogger } from '../utils/logger';
 import { PluginLoader } from './PluginLoader';
-import { Extension, LoadedExtension } from './types/extension';
-import { PluginMetadata, PluginManifest, LoadedPlugin } from './types/plugin';
-import { consoleLogger } from './utils/logger';
+
+/**
+ * Client interface for `PluginStore` consumers.
+ */
+export interface PluginStoreClient<TLoadedExtension extends LoadedExtension> {
+  subscribe: (listener: VoidFunction, eventTypes: PluginStoreEventType[]) => VoidFunction;
+  getExtensions: () => TLoadedExtension[];
+  getPluginInfo: () => (LoadedPluginInfo | NotLoadedPluginInfo)[];
+}
 
 type LoadedPluginInfo = {
   pluginName: string;
@@ -27,7 +36,7 @@ export enum PluginStoreEventType {
   ExtensionsChanged = 'ExtensionsChanged',
 }
 
-type PluginStoreOptions = Partial<{
+export type PluginStoreOptions = Partial<{
   /** Automatically enable plugins after adding them to the `PluginStore`? */
   autoEnableLoadedPlugins: boolean;
   /** Post-process loaded extension objects before `PluginLoaded` event. */
@@ -37,9 +46,12 @@ type PluginStoreOptions = Partial<{
 /**
  * Provides access to runtime plugin information and extensions.
  */
-// TODO implement interfaces: host-app-facing & plugin-facing
-export class PluginStore<TLoadedExtension extends LoadedExtension> {
+export class PluginStore<TLoadedExtension extends LoadedExtension>
+  implements PluginStoreClient<TLoadedExtension>
+{
   private readonly options: Required<PluginStoreOptions>;
+
+  private loader: PluginLoader | undefined;
 
   /** Plugins that were successfully loaded and processed. */
   private readonly loadedPlugins = new Map<string, LoadedPlugin<TLoadedExtension>>();
@@ -53,10 +65,7 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
   /** Subscribed `PluginStore` event listeners. */
   private readonly listeners = new Map<PluginStoreEventType, Set<VoidFunction>>();
 
-  /** Set to `true` after initializing the `PluginStore`. */
-  private initialized = false;
-
-  constructor(private readonly loader: PluginLoader, options: PluginStoreOptions = {}) {
+  constructor(options: PluginStoreOptions = {}) {
     this.options = {
       autoEnableLoadedPlugins: options.autoEnableLoadedPlugins ?? true,
       postProcessExtensions: options.postProcessExtensions ?? ((extensions) => extensions),
@@ -68,18 +77,20 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
   }
 
   /**
-   * Connect this `PluginStore` with the provided `PluginLoader`.
+   * Connect this `PluginStore` to the provided `PluginLoader`.
    *
    * This must be done before attempting to load any plugins.
    *
    * Returns a function for disconnecting from the `PluginLoader`.
    */
-  init() {
-    if (this.initialized) {
-      throw new Error('PluginStore is already initialized');
+  setLoader(loader: PluginLoader): VoidFunction {
+    if (this.loader !== undefined) {
+      throw new Error('PluginLoader has already been set');
     }
 
-    return this.loader.subscribe((pluginName, result) => {
+    this.loader = loader;
+
+    const unsubscribe = loader.subscribe((pluginName, result) => {
       if (!result.success) {
         this.registerFailedPlugin(pluginName);
         return;
@@ -94,6 +105,11 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
         this.setPluginEnabled(pluginName, true);
       }
     });
+
+    return () => {
+      unsubscribe();
+      this.loader = undefined;
+    };
   }
 
   /**
@@ -102,6 +118,11 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
    * Use the `subscribe` method to respond to relevant `PluginStore` events.
    */
   async loadPlugin(baseURL: string) {
+    if (this.loader === undefined) {
+      consoleLogger.error(`PluginLoader must be set before loading any plugins`);
+      return;
+    }
+
     let manifest: PluginManifest;
 
     try {
@@ -136,6 +157,7 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
   subscribe(listener: VoidFunction, eventTypes: PluginStoreEventType[]): VoidFunction {
     if (eventTypes.length === 0) {
       consoleLogger.warn('subscribe method called with no eventTypes');
+      return _.noop;
     }
 
     eventTypes.forEach((t) => {
@@ -274,10 +296,13 @@ export class PluginStore<TLoadedExtension extends LoadedExtension> {
       return acc;
     }, [] as NotLoadedPluginInfo[]);
 
-    const pendingEntries = this.loader.getPendingPluginNames().reduce((acc, pluginName) => {
-      acc.push({ pluginName, status: 'pending' });
-      return acc;
-    }, [] as NotLoadedPluginInfo[]);
+    const pendingEntries = (this.loader?.getPendingPluginNames() ?? []).reduce(
+      (acc, pluginName) => {
+        acc.push({ pluginName, status: 'pending' });
+        return acc;
+      },
+      [] as NotLoadedPluginInfo[],
+    );
 
     return [...loadedEntries, ...failedEntries, ...pendingEntries];
   }

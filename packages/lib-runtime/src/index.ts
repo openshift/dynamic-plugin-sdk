@@ -1,2 +1,2 @@
-export * from './PluginLoader';
-export * from './PluginStore';
+export * from './store/PluginLoader';
+export * from './store/PluginStore';

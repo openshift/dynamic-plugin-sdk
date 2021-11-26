@@ -1,11 +1,11 @@
 import * as _ from 'lodash-es';
-import { pluginManifestSchema } from './schema';
-import { AnyObject } from './types/common';
-import { PluginManifest } from './types/plugin';
-import { PluginEntryCallback } from './types/runtime';
-import { FetchResource, basicFetch } from './utils/fetch';
-import { consoleLogger } from './utils/logger';
-import { resolveURL } from './utils/url';
+import { pluginManifestSchema } from '../schema/plugin-manifest';
+import { AnyObject } from '../types/common';
+import { PluginManifest } from '../types/plugin';
+import { PluginEntryCallback } from '../types/runtime';
+import { FetchResource, basicFetch } from '../utils/fetch';
+import { consoleLogger } from '../utils/logger';
+import { resolveURL } from '../utils/url';
 
 type PluginLoadData = {
   entryCallbackFired: boolean;
@@ -24,7 +24,7 @@ type LoadResultError = {
 
 type PluginLoadListener = (pluginName: string, result: LoadResultSuccess | LoadResultError) => void;
 
-type PluginLoaderOptions = Partial<{
+export type PluginLoaderOptions = Partial<{
   /** Control which plugins can be loaded. */
   canLoadPlugin: (pluginName: string) => boolean;
   /** Name of the global function used by plugin entry scripts. */
