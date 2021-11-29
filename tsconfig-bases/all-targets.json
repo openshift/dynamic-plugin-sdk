@@ -6,7 +6,6 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "noUnusedLocals": true,
-    "typeRoots": ["node_modules/@types", "../@types"]
+    "noUnusedLocals": true
   }
 }
