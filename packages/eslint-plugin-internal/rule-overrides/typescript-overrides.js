@@ -6,4 +6,13 @@ module.exports = {
   // Disallow variable declarations from shadowing variables declared in the outer scope
   'no-shadow': 'off',
   '@typescript-eslint/no-shadow': 'error',
+
+  // Restrict file extensions that may contain JSX
+  'react/jsx-filename-extension': [
+    'error',
+    {
+      allow: 'as-needed',
+      extensions: ['.tsx'],
+    },
+  ],
 };
