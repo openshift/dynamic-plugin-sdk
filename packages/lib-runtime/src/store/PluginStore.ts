@@ -7,10 +7,10 @@ import { PluginLoader } from './PluginLoader';
 /**
  * Client interface for `PluginStore` consumers.
  */
-export interface PluginStoreClient<TLoadedExtension extends LoadedExtension> {
+export interface PluginStoreClient<TLoadedExtension extends LoadedExtension = LoadedExtension> {
   subscribe: (listener: VoidFunction, eventTypes: PluginStoreEventType[]) => VoidFunction;
   getExtensions: () => TLoadedExtension[];
-  getPluginInfo: () => (LoadedPluginInfo | NotLoadedPluginInfo)[];
+  getPluginInfo: () => PluginInfo[];
 }
 
 type LoadedPluginInfo = {
@@ -24,6 +24,8 @@ type NotLoadedPluginInfo = {
   pluginName: string;
   status: 'pending' | 'failed';
 };
+
+export type PluginInfo = LoadedPluginInfo | NotLoadedPluginInfo;
 
 export enum PluginStoreEventType {
   /** Plugin was successfully loaded, processed and added to the `PluginStore`. */
@@ -46,7 +48,7 @@ export type PluginStoreOptions = Partial<{
 /**
  * Provides access to runtime plugin information and extensions.
  */
-export class PluginStore<TLoadedExtension extends LoadedExtension>
+export class PluginStore<TLoadedExtension extends LoadedExtension = LoadedExtension>
   implements PluginStoreClient<TLoadedExtension>
 {
   private readonly options: Required<PluginStoreOptions>;
@@ -110,6 +112,10 @@ export class PluginStore<TLoadedExtension extends LoadedExtension>
       unsubscribe();
       this.loader = undefined;
     };
+  }
+
+  hasLoader() {
+    return this.loader !== undefined;
   }
 
   /**

@@ -18,7 +18,6 @@ module.exports = {
 
       plugins: ['@typescript-eslint'],
 
-      // Override existing rules with TypeScript equivalents
       rules: require('../rule-overrides/typescript-overrides'),
     },
   ],

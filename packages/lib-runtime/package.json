@@ -17,6 +17,7 @@
   "devDependencies": {
     "@types/lodash-es": "^4.17.5",
     "@types/node": "^12.20.36",
+    "@types/react": "^17.0.37",
     "eslint-plugin-internal": "0.0.0-fixed",
     "typescript": "^4.4.4"
   }
