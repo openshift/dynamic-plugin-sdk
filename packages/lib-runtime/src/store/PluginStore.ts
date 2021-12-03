@@ -1,71 +1,37 @@
 import * as _ from 'lodash-es';
-import { Extension, LoadedExtension } from '../types/extension';
-import { PluginMetadata, PluginManifest, LoadedPlugin } from '../types/plugin';
+import type { Extension, LoadedExtension } from '../types/extension';
+import type { PluginMetadata, PluginManifest, LoadedPlugin } from '../types/plugin';
+import type { PluginInfoEntry, PluginConsumer, PluginManager } from '../types/store';
+import { PluginEventType } from '../types/store';
 import { consoleLogger } from '../utils/logger';
-import { PluginLoader } from './PluginLoader';
-
-/**
- * Client interface for `PluginStore` consumers.
- */
-export interface PluginStoreClient<TLoadedExtension extends LoadedExtension = LoadedExtension> {
-  subscribe: (listener: VoidFunction, eventTypes: PluginStoreEventType[]) => VoidFunction;
-  getExtensions: () => TLoadedExtension[];
-  getPluginInfo: () => PluginInfo[];
-}
-
-type LoadedPluginInfo = {
-  pluginName: string;
-  status: 'loaded';
-  metadata: LoadedPlugin['metadata'];
-  enabled: boolean;
-};
-
-type NotLoadedPluginInfo = {
-  pluginName: string;
-  status: 'pending' | 'failed';
-};
-
-export type PluginInfo = LoadedPluginInfo | NotLoadedPluginInfo;
-
-export enum PluginStoreEventType {
-  /** Plugin was successfully loaded, processed and added to the `PluginStore`. */
-  PluginLoaded = 'PluginLoaded',
-  /** Plugin failed to load, or there was an error while processing it. */
-  PluginFailedToLoad = 'PluginFailedToLoad',
-  /** Plugin was enabled or disabled. Triggers event `ExtensionsChanged`. */
-  PluginEnabledOrDisabled = 'PluginEnabledOrDisabled',
-  /** The list of extensions which are currently in use has changed. */
-  ExtensionsChanged = 'ExtensionsChanged',
-}
+import type { PluginLoader } from './PluginLoader';
 
 export type PluginStoreOptions = Partial<{
-  /** Automatically enable plugins after adding them to the `PluginStore`? */
+  /** Automatically enable plugins after adding them to the {@link PluginStore}? */
   autoEnableLoadedPlugins: boolean;
-  /** Post-process loaded extension objects before `PluginLoaded` event. */
+  /** Post-process loaded extension objects before adding associated plugin to the {@link PluginStore}. */
   postProcessExtensions: (extensions: LoadedExtension[]) => LoadedExtension[];
 }>;
 
 /**
- * Provides access to runtime plugin information and extensions.
+ * Manages plugins and their extensions.
  */
-export class PluginStore<TLoadedExtension extends LoadedExtension = LoadedExtension>
-  implements PluginStoreClient<TLoadedExtension>
-{
+export class PluginStore implements PluginConsumer, PluginManager {
   private readonly options: Required<PluginStoreOptions>;
 
   private loader: PluginLoader | undefined;
 
   /** Plugins that were successfully loaded and processed. */
-  private readonly loadedPlugins = new Map<string, LoadedPlugin<TLoadedExtension>>();
+  private readonly loadedPlugins = new Map<string, LoadedPlugin>();
 
   /** Plugins that failed to load or get processed properly. */
   private readonly failedPlugins = new Set<string>();
 
   /** Extensions which are currently in use. */
-  private extensions: TLoadedExtension[] = [];
+  private extensions: LoadedExtension[] = [];
 
-  /** Subscribed `PluginStore` event listeners. */
-  private readonly listeners = new Map<PluginStoreEventType, Set<VoidFunction>>();
+  /** Subscribed event listeners. */
+  private readonly listeners = new Map<PluginEventType, Set<VoidFunction>>();
 
   constructor(options: PluginStoreOptions = {}) {
     this.options = {
@@ -73,17 +39,17 @@ export class PluginStore<TLoadedExtension extends LoadedExtension = LoadedExtens
       postProcessExtensions: options.postProcessExtensions ?? ((extensions) => extensions),
     };
 
-    Object.values(PluginStoreEventType).forEach((t) => {
+    Object.values(PluginEventType).forEach((t) => {
       this.listeners.set(t, new Set());
     });
   }
 
   /**
-   * Connect this `PluginStore` to the provided `PluginLoader`.
+   * Connect this {@link PluginStore} to the provided {@link PluginLoader}.
    *
    * This must be done before attempting to load any plugins.
    *
-   * Returns a function for disconnecting from the `PluginLoader`.
+   * Returns a function for disconnecting from the {@link PluginLoader}.
    */
   setLoader(loader: PluginLoader): VoidFunction {
     if (this.loader !== undefined) {
@@ -100,7 +66,7 @@ export class PluginStore<TLoadedExtension extends LoadedExtension = LoadedExtens
 
       const pluginAdded = this.addPlugin(
         _.omit<PluginManifest, 'extensions'>(result.manifest, 'extensions'),
-        this.processExtensions(pluginName, result.manifest.extensions) as TLoadedExtension[],
+        this.processExtensions(pluginName, result.manifest.extensions),
       );
 
       if (pluginAdded && this.options.autoEnableLoadedPlugins) {
@@ -114,53 +80,14 @@ export class PluginStore<TLoadedExtension extends LoadedExtension = LoadedExtens
     };
   }
 
+  /**
+   * Returns `true` if this {@link PluginStore} is connected to a {@link PluginLoader}.
+   */
   hasLoader() {
     return this.loader !== undefined;
   }
 
-  /**
-   * Start loading a plugin from the specified URL.
-   *
-   * Use the `subscribe` method to respond to relevant `PluginStore` events.
-   */
-  async loadPlugin(baseURL: string) {
-    if (this.loader === undefined) {
-      consoleLogger.error(`PluginLoader must be set before loading any plugins`);
-      return;
-    }
-
-    let manifest: PluginManifest;
-
-    try {
-      manifest = await this.loader.getPluginManifest(baseURL);
-    } catch (e) {
-      consoleLogger.error(`Failed to get a valid plugin manifest from ${baseURL}`, e);
-      return;
-    }
-
-    try {
-      this.loader.loadPluginEntryScript(baseURL, manifest);
-    } catch (e) {
-      consoleLogger.error(`Failed to start loading a plugin entry script from ${baseURL}`, e);
-      this.registerFailedPlugin(manifest.name);
-    }
-  }
-
-  /**
-   * Get all extensions which are currently in use.
-   *
-   * This method always returns a new array instance.
-   */
-  getExtensions() {
-    return [...this.extensions];
-  }
-
-  /**
-   * Subscribe to events related to the `PluginStore` operation.
-   *
-   * Returns a function for unsubscribing the provided listener.
-   */
-  subscribe(listener: VoidFunction, eventTypes: PluginStoreEventType[]): VoidFunction {
+  subscribe(listener: VoidFunction, eventTypes: PluginEventType[]): VoidFunction {
     if (eventTypes.length === 0) {
       consoleLogger.warn('subscribe method called with no eventTypes');
       return _.noop;
@@ -183,7 +110,7 @@ export class PluginStore<TLoadedExtension extends LoadedExtension = LoadedExtens
     };
   }
 
-  private invokeListeners(eventTypes: PluginStoreEventType[]) {
+  private invokeListeners(eventTypes: PluginEventType[]) {
     eventTypes.forEach((t) => {
       this.listeners.get(t)?.forEach((listener) => {
         listener();
@@ -191,14 +118,97 @@ export class PluginStore<TLoadedExtension extends LoadedExtension = LoadedExtens
     });
   }
 
+  getExtensions() {
+    return [...this.extensions];
+  }
+
+  getPluginInfo() {
+    const loadedEntries = Array.from(this.loadedPlugins.keys()).reduce((acc, pluginName) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const plugin = this.loadedPlugins.get(pluginName)!;
+
+      acc.push({
+        pluginName,
+        status: 'loaded',
+        metadata: plugin.metadata,
+        enabled: plugin.enabled,
+      });
+
+      return acc;
+    }, [] as PluginInfoEntry[]);
+
+    const failedEntries = Array.from(this.failedPlugins.values()).reduce((acc, pluginName) => {
+      acc.push({ pluginName, status: 'failed' });
+      return acc;
+    }, [] as PluginInfoEntry[]);
+
+    const pendingEntries = (this.loader?.getPendingPluginNames() ?? []).reduce(
+      (acc, pluginName) => {
+        acc.push({ pluginName, status: 'pending' });
+        return acc;
+      },
+      [] as PluginInfoEntry[],
+    );
+
+    return [...loadedEntries, ...failedEntries, ...pendingEntries];
+  }
+
+  async loadPlugin(baseURL: string) {
+    if (this.loader === undefined) {
+      consoleLogger.error('PluginLoader must be set before loading any plugins');
+      return;
+    }
+
+    let manifest: PluginManifest;
+
+    try {
+      manifest = await this.loader.getPluginManifest(baseURL);
+    } catch (e) {
+      consoleLogger.error(`Failed to get a valid plugin manifest from ${baseURL}`, e);
+      return;
+    }
+
+    try {
+      this.loader.loadPluginEntryScript(baseURL, manifest);
+    } catch (e) {
+      consoleLogger.error(`Failed to start loading plugin entry script from ${baseURL}`, e);
+      this.registerFailedPlugin(manifest.name);
+    }
+  }
+
+  setPluginEnabled(pluginName: string, enabled: boolean) {
+    if (!this.loadedPlugins.has(pluginName)) {
+      consoleLogger.warn(
+        `Attempt to ${enabled ? 'enable' : 'disable'} plugin ${pluginName} which is not ready yet`,
+      );
+      return;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const plugin = this.loadedPlugins.get(pluginName)!;
+
+    if (plugin.enabled !== enabled) {
+      plugin.enabled = enabled;
+
+      this.extensions = Array.from(this.loadedPlugins.values()).reduce(
+        (acc, p) => (p.enabled ? [...acc, ...p.extensions] : acc),
+        [] as LoadedExtension[],
+      );
+
+      this.invokeListeners([PluginEventType.PluginInfoChanged, PluginEventType.ExtensionsChanged]);
+
+      consoleLogger.info(`Plugin ${pluginName} is now ${enabled ? 'enabled' : 'disabled'}`);
+    }
+  }
+
   /**
-   * Add new plugin to the `PluginStore`.
+   * Add new plugin to the {@link PluginStore}.
    *
    * Once added, the plugin is disabled by default. Enable it to put its extensions into use.
    *
    * Returns `true` if the plugin was added successfully.
    */
-  addPlugin(metadata: PluginMetadata, processedExtensions: TLoadedExtension[]) {
+  addPlugin(metadata: PluginMetadata, processedExtensions: LoadedExtension[]) {
     const pluginName = metadata.name;
     const pluginVersion = metadata.version;
 
@@ -214,44 +224,11 @@ export class PluginStore<TLoadedExtension extends LoadedExtension = LoadedExtens
     });
 
     this.failedPlugins.delete(pluginName);
-    this.invokeListeners([PluginStoreEventType.PluginLoaded]);
+    this.invokeListeners([PluginEventType.PluginInfoChanged]);
 
     consoleLogger.info(`Added plugin ${pluginName} version ${pluginVersion}`);
 
     return true;
-  }
-
-  /**
-   * Enable or disable the given plugin.
-   *
-   * Enabling the plugin puts all of its extensions into use. Disabling it does the opposite.
-   */
-  setPluginEnabled(pluginName: string, enabled: boolean) {
-    if (!this.loadedPlugins.has(pluginName)) {
-      consoleLogger.warn(
-        `Attempt to ${enabled ? 'enable' : 'disable'} plugin ${pluginName} which is not loaded yet`,
-      );
-      return;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const plugin = this.loadedPlugins.get(pluginName)!;
-
-    if (plugin.enabled !== enabled) {
-      plugin.enabled = enabled;
-
-      this.extensions = Array.from(this.loadedPlugins.values()).reduce(
-        (acc, p) => (p.enabled ? [...acc, ...p.extensions] : acc),
-        [] as TLoadedExtension[],
-      );
-
-      this.invokeListeners([
-        PluginStoreEventType.PluginEnabledOrDisabled,
-        PluginStoreEventType.ExtensionsChanged,
-      ]);
-
-      consoleLogger.info(`Plugin ${pluginName} is now ${enabled ? 'enabled' : 'disabled'}`);
-    }
   }
 
   registerFailedPlugin(pluginName: string) {
@@ -261,7 +238,7 @@ export class PluginStore<TLoadedExtension extends LoadedExtension = LoadedExtens
     }
 
     this.failedPlugins.add(pluginName);
-    this.invokeListeners([PluginStoreEventType.PluginFailedToLoad]);
+    this.invokeListeners([PluginEventType.PluginInfoChanged]);
   }
 
   /**
@@ -275,41 +252,6 @@ export class PluginStore<TLoadedExtension extends LoadedExtension = LoadedExtens
     }));
 
     // TODO decode EncodedCodeRef values into CodeRef values
-
     return this.options.postProcessExtensions(processedExtensions);
-  }
-
-  /**
-   * Get information about plugins managed by this `PluginStore`.
-   */
-  getPluginInfo() {
-    const loadedEntries = Array.from(this.loadedPlugins.keys()).reduce((acc, pluginName) => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const plugin = this.loadedPlugins.get(pluginName)!;
-
-      acc.push({
-        pluginName,
-        status: 'loaded',
-        metadata: plugin.metadata,
-        enabled: plugin.enabled,
-      });
-
-      return acc;
-    }, [] as LoadedPluginInfo[]);
-
-    const failedEntries = Array.from(this.failedPlugins.values()).reduce((acc, pluginName) => {
-      acc.push({ pluginName, status: 'failed' });
-      return acc;
-    }, [] as NotLoadedPluginInfo[]);
-
-    const pendingEntries = (this.loader?.getPendingPluginNames() ?? []).reduce(
-      (acc, pluginName) => {
-        acc.push({ pluginName, status: 'pending' });
-        return acc;
-      },
-      [] as NotLoadedPluginInfo[],
-    );
-
-    return [...loadedEntries, ...failedEntries, ...pendingEntries];
   }
 }

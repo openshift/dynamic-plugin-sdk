@@ -7,6 +7,9 @@ module.exports = {
   'no-shadow': 'off',
   '@typescript-eslint/no-shadow': 'error',
 
+  // Enforces consistent usage of type imports
+  '@typescript-eslint/consistent-type-imports': 'error',
+
   // Restrict file extensions that may contain JSX
   'react/jsx-filename-extension': [
     'error',

@@ -1,6 +1,10 @@
 import * as joi from 'joi';
 
-// https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+/**
+ * Schema for a valid SemVer string.
+ *
+ * @see https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+ */
 const semverString = joi
   .string()
   .pattern(
@@ -9,25 +13,28 @@ const semverString = joi
   );
 
 /**
+ * Schema for `PluginMetadata.name` property.
+ *
  * Examples of valid plugin names:
  *
  * ```
- * foo, foo-bar, foo.bar, foo.bar-test, foo-bar-abc123-test
+ * foo, foo-bar, foo.bar, foo.bar-test, foo-bar-abc.123-test
  * ```
  */
-const pluginName = joi.string().pattern(/^[a-z]+[a-z0-9-.]*[a-z]+$/);
+const pluginName = joi.string().pattern(/^[a-z]+[a-z0-9-.]*[a-z]+$/, 'plugin name');
 
 /**
+ * Schema for `Extension.type` property.
+ *
  * Examples of valid extension types:
  *
  * ```
- * foo, foo-bar, foo/bar, foo-bar/test/a-b
  * app.foo, my-app.foo-bar, app.foo/bar, my-app.foo-bar/test/a-b
  * ```
  */
 const extensionType = joi
   .string()
-  .pattern(/^[a-z]+[a-z-]*(?:\.[a-z]+[a-z-]*)?(?:\/[a-z]+[a-z-]*)*$/, 'plugin extension type');
+  .pattern(/^[a-z]+[a-z-]*\.[a-z]+[a-z-]*(?:\/[a-z]+[a-z-]*)*$/, 'extension type');
 
 /**
  * Schema for `Extension` type.

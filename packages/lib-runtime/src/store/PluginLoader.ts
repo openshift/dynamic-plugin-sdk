@@ -1,9 +1,10 @@
 import * as _ from 'lodash-es';
 import { pluginManifestSchema } from '../schema/plugin-manifest';
-import { AnyObject } from '../types/common';
-import { PluginManifest } from '../types/plugin';
-import { PluginEntryCallback } from '../types/runtime';
-import { FetchResource, basicFetch } from '../utils/fetch';
+import type { AnyObject } from '../types/common';
+import type { PluginManifest } from '../types/plugin';
+import type { PluginEntryCallback } from '../types/runtime';
+import type { FetchResource } from '../utils/fetch';
+import { basicFetch } from '../utils/fetch';
 import { consoleLogger } from '../utils/logger';
 import { resolveURL } from '../utils/url';
 
@@ -13,16 +14,16 @@ type PluginLoadData = {
   manifest: PluginManifest;
 };
 
-type LoadResultSuccess = {
-  success: true;
-  manifest: PluginManifest;
-};
+type PluginLoadResult =
+  | {
+      success: true;
+      manifest: PluginManifest;
+    }
+  | {
+      success: false;
+    };
 
-type LoadResultError = {
-  success: false;
-};
-
-type PluginLoadListener = (pluginName: string, result: LoadResultSuccess | LoadResultError) => void;
+type PluginLoadListener = (pluginName: string, result: PluginLoadResult) => void;
 
 export type PluginLoaderOptions = Partial<{
   /** Control which plugins can be loaded. */
@@ -31,9 +32,9 @@ export type PluginLoaderOptions = Partial<{
   entryCallbackName: string;
   /** Custom resource fetch implementation. */
   fetchImpl: FetchResource;
-  /** Get shared scope object used to initialize `PluginEntryModule` containers. */
+  /** Get shared scope object for initializing `PluginEntryModule` containers. */
   getSharedScope: () => AnyObject;
-  /** Post-process the plugin manifest. Can be used as custom validation hook. */
+  /** Post-process the plugin manifest. Can be used as a custom validation hook. */
   postProcessManifest: (manifest: PluginManifest) => Promise<PluginManifest>;
 }>;
 
@@ -46,7 +47,7 @@ export class PluginLoader {
   /** Plugins processed by this loader. */
   private readonly plugins = new Map<string, PluginLoadData>();
 
-  /** Subscribed plugin load event listeners. */
+  /** Subscribed event listeners. */
   private readonly listeners = new Set<PluginLoadListener>();
 
   /** Reference to the global callback function. */
@@ -55,7 +56,7 @@ export class PluginLoader {
   constructor(options: PluginLoaderOptions = {}) {
     this.options = {
       canLoadPlugin: options.canLoadPlugin ?? (() => true),
-      entryCallbackName: options.entryCallbackName ?? 'loadPluginEntry',
+      entryCallbackName: options.entryCallbackName ?? '__plugin_entry_callback__',
       fetchImpl: options.fetchImpl ?? basicFetch,
       getSharedScope: options.getSharedScope ?? _.constant({}),
       postProcessManifest: options.postProcessManifest ?? (async (manifest) => manifest),
@@ -107,7 +108,7 @@ export class PluginLoader {
   }
 
   /**
-   * Start loading the entry script from a plugin's `baseURL` within the application's document.
+   * Start loading the entry script from a plugin's `baseURL` in the application's document.
    */
   loadPluginEntryScript(
     baseURL: string,
