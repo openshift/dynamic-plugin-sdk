@@ -1,0 +1,23 @@
+{
+  "name": "@openshift/dynamic-plugin-sdk-shared",
+  "version": "0.0.0-alpha1",
+  "description": "Provides common React components and utilities",
+  "scripts": {
+    "prepack": "yarn build",
+    "prepublish": "yarn test",
+    "build": "rm -rf dist && tsc --outDir dist",
+    "test": "echo 'Write some tests!'",
+    "lint": "yarn lint:run --ext .ts,.tsx ."
+  },
+  "dependencies": {
+    "lodash-es": "^4.17.21",
+    "react": "^17.0.2"
+  },
+  "devDependencies": {
+    "@types/lodash-es": "^4.17.5",
+    "@types/node": "^12.20.36",
+    "@types/react": "^17.0.37",
+    "eslint-plugin-internal": "0.0.0-fixed",
+    "typescript": "^4.4.4"
+  }
+}
