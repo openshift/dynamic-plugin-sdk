@@ -123,17 +123,13 @@ export class PluginStore implements PluginConsumer, PluginManager {
   }
 
   getPluginInfo() {
-    const loadedEntries = Array.from(this.loadedPlugins.keys()).reduce((acc, pluginName) => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const plugin = this.loadedPlugins.get(pluginName)!;
-
+    const loadedEntries = Array.from(this.loadedPlugins.values()).reduce((acc, plugin) => {
       acc.push({
-        pluginName,
+        pluginName: plugin.metadata.name,
         status: 'loaded',
         metadata: plugin.metadata,
         enabled: plugin.enabled,
       });
-
       return acc;
     }, [] as PluginInfoEntry[]);
 

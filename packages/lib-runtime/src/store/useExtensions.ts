@@ -5,6 +5,10 @@ import type { PluginConsumer } from '../types/store';
 import { PluginEventType } from '../types/store';
 import { usePluginSubscription } from './usePluginSubscription';
 
+const getData = (pluginConsumer: PluginConsumer) => pluginConsumer.getExtensions();
+
+const eventTypes = [PluginEventType.ExtensionsChanged];
+
 /**
  * React hook for consuming extensions which are currently in use.
  *
@@ -17,16 +21,9 @@ import { usePluginSubscription } from './usePluginSubscription';
 export const useExtensions = <TExtension extends Extension>(
   predicate?: ExtensionPredicate<TExtension>,
 ): LoadedExtension<TExtension>[] => {
-  const getData = React.useCallback(
-    (pluginConsumer: PluginConsumer) => pluginConsumer.getExtensions(),
-    [],
-  );
-
-  const eventTypes = React.useMemo(() => [PluginEventType.ExtensionsChanged], []);
-
   const extensions = usePluginSubscription(getData, _.isEqual, eventTypes);
 
-  const filteredExtensions = React.useMemo(
+  return React.useMemo(
     () =>
       extensions.reduce(
         (acc, e) => ((predicate ?? (() => true))(e) ? [...acc, e] : acc),
@@ -34,6 +31,4 @@ export const useExtensions = <TExtension extends Extension>(
       ),
     [extensions, predicate],
   );
-
-  return filteredExtensions;
 };

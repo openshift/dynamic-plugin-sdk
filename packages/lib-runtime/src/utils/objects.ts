@@ -1,5 +1,5 @@
 import * as _ from 'lodash-es';
-import type { AnyObject, AnyFunction } from '../types/common';
+import type { AnyFunction } from '../types/common';
 
 type FunctionPropertyNames<T> = { [K in keyof T]: T[K] extends AnyFunction ? K : never }[keyof T];
 
@@ -15,13 +15,22 @@ export const createMethodDelegate = <
   /** Methods on the target object to expose on the delegate object. */
   methodNames: TObjectMethods[],
 ) => {
-  const methods = _.pick(target, methodNames);
-  const delegate: AnyObject = {};
+  const delegate = {} as Pick<TObject, TObjectMethods>;
 
-  Object.keys(methods).forEach((methodName) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    delegate[methodName] = (target as any)[methodName];
+  const validMethodNames = methodNames.filter((methodName) => _.isFunction(target[methodName]));
+
+  if (!_.isEqual(methodNames, validMethodNames)) {
+    throw new Error(
+      `Missing or invalid methods on target object: ${_.difference(
+        methodNames,
+        validMethodNames,
+      ).join(', ')}`,
+    );
+  }
+
+  validMethodNames.forEach((methodName) => {
+    delegate[methodName] = target[methodName];
   });
 
-  return delegate as Pick<TObject, TObjectMethods>;
+  return delegate;
 };
