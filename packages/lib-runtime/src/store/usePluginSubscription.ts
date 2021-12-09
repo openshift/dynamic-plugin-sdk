@@ -34,43 +34,26 @@ export const usePluginSubscription = <TPluginData>(
 ): TPluginData => {
   const pluginConsumer = usePluginConsumer();
 
-  const eventTypesRef = React.useRef<typeof eventTypes>(eventTypes);
   const getDataRef = React.useRef<typeof getData>(getData);
+  getDataRef.current = getData;
+
   const isSameDataRef = React.useRef<typeof isSameData>(isSameData);
+  isSameDataRef.current = isSameData;
 
   const [hookResult, setHookResult] = React.useState<TPluginData>(() => getData(pluginConsumer));
-  const unsubscribeRef = React.useRef<VoidFunction>();
 
-  const trySubscribe = React.useCallback(() => {
-    if (unsubscribeRef.current === undefined) {
-      unsubscribeRef.current = pluginConsumer.subscribe(eventTypesRef.current, () => {
-        const nextData = getDataRef.current(pluginConsumer);
+  const updateResult = React.useCallback(() => {
+    const nextData = getDataRef.current(pluginConsumer);
 
-        setHookResult((prevData) =>
-          isSameDataRef.current(prevData, nextData) ? prevData : nextData,
-        );
-      });
-    }
-  }, [pluginConsumer, setHookResult]);
+    setHookResult((prevData) => (isSameDataRef.current(prevData, nextData) ? prevData : nextData));
+  }, [pluginConsumer]);
 
-  const tryUnsubscribe = React.useCallback(() => {
-    if (unsubscribeRef.current !== undefined) {
-      unsubscribeRef.current();
-      unsubscribeRef.current = undefined;
-    }
-  }, []);
+  React.useEffect(() => updateResult(), [getData, isSameData, updateResult]);
 
-  React.useEffect(() => {
-    eventTypesRef.current = eventTypes;
-    getDataRef.current = getData;
-    isSameDataRef.current = isSameData;
-
-    trySubscribe();
-
-    return () => {
-      tryUnsubscribe();
-    };
-  }, [trySubscribe, tryUnsubscribe, eventTypes, getData, isSameData]);
+  React.useEffect(
+    () => pluginConsumer.subscribe(eventTypes, updateResult),
+    [pluginConsumer, eventTypes, updateResult],
+  );
 
   return hookResult;
 };
