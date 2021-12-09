@@ -18,7 +18,7 @@ module.exports = {
 
       plugins: ['@typescript-eslint'],
 
-      rules: require('../rule-overrides/typescript-overrides'),
+      rules: require('../rules/typescript'),
     },
   ],
 };

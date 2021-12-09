@@ -1,4 +1,4 @@
-import { AnyObject } from './common';
+import type { AnyObject } from './common';
 
 /**
  * Remote webpack container interface.

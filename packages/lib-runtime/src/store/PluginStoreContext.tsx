@@ -1,10 +1,12 @@
 import * as React from 'react';
-import { PluginStore, PluginStoreClient } from './PluginStore';
+import type { PluginConsumer, PluginManager } from '../types/store';
+import { createMethodDelegate } from '../utils/objects';
+import type { PluginStore } from './PluginStore';
 
 const PluginStoreContext = React.createContext<PluginStore | undefined>(undefined);
 
 /**
- * React Context provider for passing the `PluginStore` down the component tree.
+ * React Context provider for passing the {@link PluginStore} down the component tree.
  */
 export const PluginStoreProvider: React.FC<PluginStoreProviderProps> = ({ store, children }) => {
   if (!store.hasLoader()) {
@@ -14,19 +16,38 @@ export const PluginStoreProvider: React.FC<PluginStoreProviderProps> = ({ store,
   return <PluginStoreContext.Provider value={store}>{children}</PluginStoreContext.Provider>;
 };
 
-type PluginStoreProviderProps = React.PropsWithChildren<{
+export type PluginStoreProviderProps = React.PropsWithChildren<{
   store: PluginStore;
 }>;
 
 /**
- * React hook for consuming the `PluginStore` via its client interface.
+ * React hook for exposing the {@link PluginConsumer} interface.
  */
-export const usePluginStore = (): PluginStoreClient => {
+export const usePluginConsumer = (): PluginConsumer => {
   const store = React.useContext(PluginStoreContext);
 
   if (store === undefined) {
-    throw new Error('usePluginStore hook called outside a PluginStoreProvider');
+    throw new Error('usePluginConsumer hook called outside a PluginStoreProvider');
   }
 
-  return store;
+  return React.useMemo(
+    () => createMethodDelegate(store, ['subscribe', 'getExtensions', 'getPluginInfo']),
+    [store],
+  );
+};
+
+/**
+ * React hook for exposing the {@link PluginManager} interface.
+ */
+export const usePluginManager = (): PluginManager => {
+  const store = React.useContext(PluginStoreContext);
+
+  if (store === undefined) {
+    throw new Error('usePluginManager hook called outside a PluginStoreProvider');
+  }
+
+  return React.useMemo(
+    () => createMethodDelegate(store, ['loadPlugin', 'setPluginEnabled']),
+    [store],
+  );
 };

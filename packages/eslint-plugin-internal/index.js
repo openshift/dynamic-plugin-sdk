@@ -23,7 +23,7 @@ const presetConfigs = {
       'plugin:internal/typescript',
       'plugin:internal/prettier',
     ],
-    rules: require('./rule-overrides/node-typescript-prettier'),
+    rules: require('./rules/node-typescript-prettier'),
   },
 
   'react-typescript-prettier': {
@@ -33,7 +33,7 @@ const presetConfigs = {
       'plugin:internal/typescript',
       'plugin:internal/prettier',
     ],
-    rules: require('./rule-overrides/react-typescript-prettier'),
+    rules: require('./rules/react-typescript-prettier'),
   },
 };
 

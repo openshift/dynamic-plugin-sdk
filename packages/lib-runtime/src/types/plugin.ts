@@ -1,4 +1,4 @@
-import { Extension, LoadedExtension } from './extension';
+import type { Extension, LoadedExtension } from './extension';
 
 export type PluginMetadata = {
   name: string;
@@ -9,8 +9,8 @@ export type PluginManifest = PluginMetadata & {
   extensions: Extension[];
 };
 
-export type LoadedPlugin<TLoadedExtension extends LoadedExtension = LoadedExtension> = {
+export type LoadedPlugin = {
   metadata: Readonly<PluginMetadata>;
-  extensions: Readonly<TLoadedExtension[]>;
+  extensions: Readonly<LoadedExtension[]>;
   enabled: boolean;
 };

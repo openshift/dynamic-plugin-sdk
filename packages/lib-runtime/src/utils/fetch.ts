@@ -12,7 +12,7 @@ class HTTPError extends CustomError {
 }
 
 /**
- * Basic implementation of `FetchResource` that uses the `fetch` API.
+ * Basic implementation of {@link FetchResource} that uses the {@link fetch} API.
  */
 export const basicFetch: FetchResource = async (url, method) => {
   const response = await fetch(url, { method });

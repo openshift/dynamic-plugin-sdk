@@ -1,6 +1,10 @@
 import * as _ from 'lodash-es';
 
-// https://stackoverflow.com/a/38979205
+/**
+ * Return `true` if the given URL is absolute.
+ *
+ * @see https://stackoverflow.com/a/38979205
+ */
 export const isAbsoluteURL = (url: string) => url.indexOf('://') > 0 || url.indexOf('//') === 0;
 
 /**
@@ -8,7 +12,7 @@ export const isAbsoluteURL = (url: string) => url.indexOf('://') > 0 || url.inde
  *
  * If `base` is not an absolute URL, it's considered to be relative to the document origin.
  *
- * If `to` is an absolute URL, `base` is ignored (as per standard `URL()` constructor semantics).
+ * If `to` is an absolute URL, `base` is ignored (as per standard {@link URL} constructor semantics).
  */
 export const resolveURL = (
   base: string,
