@@ -1,6 +1,5 @@
 import * as React from 'react';
 import type { PluginEventType, PluginConsumer } from '../types/store';
-import { useForceRender } from '../utils/react/useForceRender';
 import { usePluginConsumer } from './PluginStoreContext';
 
 /**
@@ -31,51 +30,31 @@ export const usePluginSubscription = <TPluginData>(
   eventTypes: PluginEventType[],
 ): TPluginData => {
   const pluginConsumer = usePluginConsumer();
-  const forceRender = useForceRender();
 
   const getDataRef = React.useRef<typeof getData>(getData);
   const isSameDataRef = React.useRef<typeof isSameData>(isSameData);
   const eventTypesRef = React.useRef<typeof eventTypes>(eventTypes);
 
-  const hookResultRef = React.useRef<TPluginData>(getData(pluginConsumer));
+  const [hookResult, setHookResult] = React.useState<TPluginData>(() => getData(pluginConsumer));
   const unsubscribeRef = React.useRef<VoidFunction>();
-  const isMountedRef = React.useRef(true);
 
   const trySubscribe = React.useCallback(() => {
     if (unsubscribeRef.current === undefined) {
       unsubscribeRef.current = pluginConsumer.subscribe(() => {
-        const prevData = hookResultRef.current;
         const nextData = getDataRef.current(pluginConsumer);
-        const dataChanged = !isSameDataRef.current(prevData, nextData);
 
-        if (dataChanged) {
-          hookResultRef.current = nextData;
-        }
-
-        if (isMountedRef.current && dataChanged) {
-          forceRender();
-        }
+        setHookResult((prevData) =>
+          isSameDataRef.current(prevData, nextData) ? prevData : nextData,
+        );
       }, eventTypesRef.current);
     }
-  }, [pluginConsumer, forceRender]);
+  }, [pluginConsumer, setHookResult]);
 
   const tryUnsubscribe = React.useCallback(() => {
     if (unsubscribeRef.current !== undefined) {
       unsubscribeRef.current();
       unsubscribeRef.current = undefined;
     }
-  }, []);
-
-  // https://reactjs.org/docs/hooks-reference.html#useeffect
-  // If you want to run an effect and clean it up only once (on mount and unmount),
-  // you can pass an empty array ([]) as a second argument. This tells React that your
-  // effect doesn’t depend on any values from props or state, so it never needs to re-run.
-  React.useEffect(() => {
-    isMountedRef.current = true;
-
-    return () => {
-      isMountedRef.current = false;
-    };
   }, []);
 
   React.useEffect(() => {
@@ -90,5 +69,5 @@ export const usePluginSubscription = <TPluginData>(
     };
   }, [trySubscribe, tryUnsubscribe, getData, isSameData, eventTypes]);
 
-  return hookResultRef.current;
+  return hookResult;
 };
