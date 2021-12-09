@@ -45,7 +45,7 @@ export type PluginConsumer = {
    *
    * Returns a function for unsubscribing the provided listener.
    */
-  subscribe: (listener: VoidFunction, eventTypes: PluginEventType[]) => VoidFunction;
+  subscribe: (eventTypes: PluginEventType[], listener: VoidFunction) => VoidFunction;
 
   /**
    * Get extensions which are currently in use.

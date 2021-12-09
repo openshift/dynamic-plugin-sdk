@@ -3,9 +3,9 @@ import type { PluginInfoEntry, PluginConsumer } from '../types/store';
 import { PluginEventType } from '../types/store';
 import { usePluginSubscription } from './usePluginSubscription';
 
-const getData = (pluginConsumer: PluginConsumer) => pluginConsumer.getPluginInfo();
-
 const eventTypes = [PluginEventType.PluginInfoChanged];
+
+const getData = (pluginConsumer: PluginConsumer) => pluginConsumer.getPluginInfo();
 
 /**
  * React hook for consuming current information about plugins.
@@ -15,5 +15,5 @@ const eventTypes = [PluginEventType.PluginInfoChanged];
  * The hook's result is guaranteed to be referentially stable across re-renders.
  */
 export const usePluginInfo = (): PluginInfoEntry[] => {
-  return usePluginSubscription(getData, _.isEqual, eventTypes);
+  return usePluginSubscription(eventTypes, getData, _.isEqual);
 };

@@ -87,7 +87,7 @@ export class PluginStore implements PluginConsumer, PluginManager {
     return this.loader !== undefined;
   }
 
-  subscribe(listener: VoidFunction, eventTypes: PluginEventType[]): VoidFunction {
+  subscribe(eventTypes: PluginEventType[], listener: VoidFunction): VoidFunction {
     if (eventTypes.length === 0) {
       consoleLogger.warn('subscribe method called with no eventTypes');
       return _.noop;

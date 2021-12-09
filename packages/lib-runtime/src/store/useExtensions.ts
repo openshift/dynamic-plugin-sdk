@@ -1,13 +1,12 @@
-import * as _ from 'lodash-es';
 import * as React from 'react';
 import type { Extension, LoadedExtension, ExtensionPredicate } from '../types/extension';
 import type { PluginConsumer } from '../types/store';
 import { PluginEventType } from '../types/store';
 import { usePluginSubscription } from './usePluginSubscription';
 
-const getData = (pluginConsumer: PluginConsumer) => pluginConsumer.getExtensions();
-
 const eventTypes = [PluginEventType.ExtensionsChanged];
+
+const getData = (pluginConsumer: PluginConsumer) => pluginConsumer.getExtensions();
 
 /**
  * React hook for consuming extensions which are currently in use.
@@ -21,7 +20,7 @@ const eventTypes = [PluginEventType.ExtensionsChanged];
 export const useExtensions = <TExtension extends Extension>(
   predicate?: ExtensionPredicate<TExtension>,
 ): LoadedExtension<TExtension>[] => {
-  const extensions = usePluginSubscription(getData, _.isEqual, eventTypes);
+  const extensions = usePluginSubscription(eventTypes, getData);
 
   return React.useMemo(
     () =>
