@@ -1,4 +1,0 @@
-{
-  "extends": "../../tsconfig-bases/react-esm.json",
-  "files": ["src/index.ts"]
-}

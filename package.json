@@ -1,6 +1,6 @@
 {
-  "name": "monorepo",
-  "license": "Apache-2.0",
+  "name": "@monorepo/root",
+  "private": true,
   "workspaces": [
     "packages/*"
   ],

@@ -1,0 +1,11 @@
+{
+  "name": "@monorepo/common",
+  "version": "0.0.0-fixed",
+  "description": "Common code, types and configs used by monorepo packages",
+  "private": true,
+  "main": "src/index.ts",
+  "scripts": {
+    "lint": "yarn lint:run --ext .ts,.tsx src rollup-configs.js",
+    "test": "echo 'Write some tests!'"
+  }
+}

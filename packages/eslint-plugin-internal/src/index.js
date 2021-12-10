@@ -19,9 +19,9 @@ const presetConfigs = {
   'node-typescript-prettier': {
     ...commonPresetConfig,
     extends: [
-      'plugin:internal/base-node',
-      'plugin:internal/typescript',
-      'plugin:internal/prettier',
+      'plugin:@monorepo/eslint-plugin-internal/base-node',
+      'plugin:@monorepo/eslint-plugin-internal/typescript',
+      'plugin:@monorepo/eslint-plugin-internal/prettier',
     ],
     rules: require('./rules/node-typescript-prettier'),
   },
@@ -29,9 +29,9 @@ const presetConfigs = {
   'react-typescript-prettier': {
     ...commonPresetConfig,
     extends: [
-      'plugin:internal/base-react',
-      'plugin:internal/typescript',
-      'plugin:internal/prettier',
+      'plugin:@monorepo/eslint-plugin-internal/base-react',
+      'plugin:@monorepo/eslint-plugin-internal/typescript',
+      'plugin:@monorepo/eslint-plugin-internal/prettier',
     ],
     rules: require('./rules/react-typescript-prettier'),
   },

@@ -1,15 +1,16 @@
-import * as joi from 'joi';
+import * as yup from 'yup';
 
 /**
  * Schema for a valid SemVer string.
  *
  * @see https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
  */
-const semverString = joi
+const semverString = yup
   .string()
-  .pattern(
+  .required()
+  .matches(
     /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/,
-    'SemVer',
+    'SemVer string',
   );
 
 /**
@@ -21,7 +22,10 @@ const semverString = joi
  * foo, foo-bar, foo.bar, foo.bar-test, foo-bar-abc.123-test
  * ```
  */
-const pluginName = joi.string().pattern(/^[a-z]+[a-z0-9-.]*[a-z]+$/, 'plugin name');
+const pluginName = yup
+  .string()
+  .required()
+  .matches(/^[a-z]+[a-z0-9-.]*[a-z]+$/, 'plugin name');
 
 /**
  * Schema for `Extension.type` property.
@@ -32,23 +36,30 @@ const pluginName = joi.string().pattern(/^[a-z]+[a-z0-9-.]*[a-z]+$/, 'plugin nam
  * app.foo, my-app.foo-bar, app.foo/bar, my-app.foo-bar/test/a-b
  * ```
  */
-const extensionType = joi
+const extensionType = yup
   .string()
-  .pattern(/^[a-z]+[a-z-]*\.[a-z]+[a-z-]*(?:\/[a-z]+[a-z-]*)*$/, 'extension type');
+  .required()
+  .matches(/^[a-z]+[a-z-]*\.[a-z]+[a-z-]*(?:\/[a-z]+[a-z-]*)*$/, 'extension type');
 
 /**
- * Schema for `Extension` type.
+ * Schema for `Extension` objects.
  */
-const extensionSchema = joi.object({
-  type: extensionType,
-  properties: joi.object(),
-});
+const extension = yup
+  .object({
+    type: extensionType,
+    properties: yup.object().required(),
+  })
+  .required();
 
 /**
- * Schema for `PluginManifest` type.
+ * Schema for `PluginManifest` objects.
  */
-export const pluginManifestSchema = joi.object({
-  name: pluginName,
-  version: semverString,
-  extensions: joi.array().items(extensionSchema),
-});
+export const pluginManifest = yup
+  .object({
+    name: pluginName,
+    version: semverString,
+    extensions: yup.array().of(extension).required(),
+  })
+  .required();
+
+export { pluginManifest as pluginManifestSchema };

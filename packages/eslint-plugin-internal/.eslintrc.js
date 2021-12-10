@@ -1,4 +1,4 @@
 module.exports = {
   root: true,
-  extends: ['plugin:internal/node-typescript-prettier'],
+  extends: ['plugin:@monorepo/eslint-plugin-internal/node-typescript-prettier'],
 };
