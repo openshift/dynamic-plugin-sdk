@@ -22,10 +22,3 @@ export class CustomError extends Error {
     }
   }
 }
-
-export class ErrorWithCause extends CustomError {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constructor(message: string, readonly cause: any) {
-    super(message);
-  }
-}

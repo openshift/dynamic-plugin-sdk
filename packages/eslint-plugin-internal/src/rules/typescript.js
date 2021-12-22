@@ -7,6 +7,10 @@ module.exports = {
   'no-shadow': 'off',
   '@typescript-eslint/no-shadow': 'error',
 
+  // Enforce default parameters to be last
+  'default-param-last': 'off',
+  '@typescript-eslint/default-param-last': 'error',
+
   // Enforces consistent usage of type imports
   '@typescript-eslint/consistent-type-imports': 'error',
 

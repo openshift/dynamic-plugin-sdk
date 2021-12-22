@@ -7,5 +7,9 @@
   "scripts": {
     "lint": "yarn lint:run --ext .ts,.tsx src rollup-configs.js",
     "test": "echo 'Write some tests!'"
+  },
+  "devDependencies": {
+    "@types/lodash-es": "^4.17.5",
+    "lodash-es": "^4.17.21"
   }
 }

@@ -114,6 +114,9 @@ __metadata:
 "@monorepo/common@0.0.0-fixed, @monorepo/common@workspace:packages/common":
   version: 0.0.0-use.local
   resolution: "@monorepo/common@workspace:packages/common"
+  dependencies:
+    "@types/lodash-es": ^4.17.5
+    lodash-es: ^4.17.21
   languageName: unknown
   linkType: soft
 

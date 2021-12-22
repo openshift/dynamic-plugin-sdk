@@ -1,10 +1,9 @@
-import type { AnyObject } from '@monorepo/common';
+import type { AnyObject, ResourceFetch } from '@monorepo/common';
 import * as _ from 'lodash-es';
 import { pluginManifestSchema } from '../schema/plugin-manifest';
 import type { PluginManifest } from '../types/plugin';
 import type { PluginEntryCallback } from '../types/runtime';
-import type { FetchResource } from '../utils/fetch';
-import { basicFetch } from '../utils/fetch';
+import { basicFetch } from '../utils/basic-fetch';
 import { consoleLogger } from '../utils/logger';
 import { resolveURL } from '../utils/url';
 
@@ -31,7 +30,7 @@ export type PluginLoaderOptions = Partial<{
   /** Name of the global function used by plugin entry scripts. */
   entryCallbackName: string;
   /** Custom resource fetch implementation. */
-  fetchImpl: FetchResource;
+  fetchImpl: ResourceFetch;
   /** Get shared scope object for initializing `PluginEntryModule` containers. */
   getSharedScope: () => AnyObject;
   /** Post-process the plugin manifest. Can be used as a custom validation hook. */
@@ -96,11 +95,12 @@ export class PluginLoader {
 
     consoleLogger.info(`Loading plugin manifest from ${manifestURL}`);
 
-    const manifestText = await this.options.fetchImpl(manifestURL, 'GET');
+    const response = await this.options.fetchImpl(manifestURL);
+    const responseText = await response.text();
 
     let manifest: PluginManifest = await pluginManifestSchema
       .strict()
-      .validate(JSON.parse(manifestText));
+      .validate(JSON.parse(responseText));
 
     manifest = await this.options.postProcessManifest(manifest);
 
@@ -202,8 +202,7 @@ export class PluginLoader {
    * Register the global function used by plugin entry scripts.
    */
   registerPluginEntryCallback(getWindow: () => typeof window = _.constant(window)) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const windowGlobal = getWindow() as any;
+    const windowGlobal = getWindow() as unknown as AnyObject;
     const callbackName = this.options.entryCallbackName;
 
     if (this.entryCallback !== undefined) {
