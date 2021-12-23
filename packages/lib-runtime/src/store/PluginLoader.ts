@@ -1,6 +1,6 @@
+import type { AnyObject } from '@monorepo/common';
 import * as _ from 'lodash-es';
 import { pluginManifestSchema } from '../schema/plugin-manifest';
-import type { AnyObject } from '../types/common';
 import type { PluginManifest } from '../types/plugin';
 import type { PluginEntryCallback } from '../types/runtime';
 import type { FetchResource } from '../utils/fetch';
@@ -98,9 +98,9 @@ export class PluginLoader {
 
     const manifestText = await this.options.fetchImpl(manifestURL, 'GET');
 
-    let manifest: PluginManifest = await pluginManifestSchema.validateAsync(
-      JSON.parse(manifestText),
-    );
+    let manifest: PluginManifest = await pluginManifestSchema
+      .strict()
+      .validate(JSON.parse(manifestText));
 
     manifest = await this.options.postProcessManifest(manifest);
 

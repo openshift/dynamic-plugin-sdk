@@ -1,5 +1,5 @@
 const ecmaVersion =
-  require('../../../tsconfig-bases/react-esm.json').compilerOptions.target.substring(2);
+  require('@monorepo/common/tsconfig-bases/react-esm.json').compilerOptions.target.substring(2);
 
 module.exports = {
   // airbnb config covers rules for plugins: import, react, react-hooks, jsx-a11y

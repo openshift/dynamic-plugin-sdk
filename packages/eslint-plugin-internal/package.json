@@ -1,14 +1,17 @@
 {
-  "name": "eslint-plugin-internal",
+  "name": "@monorepo/eslint-plugin-internal",
   "version": "0.0.0-fixed",
-  "description": "Internal ESLint configs and scripts",
-  "main": "index.js",
+  "description": "Internal ESLint plugin for linting monorepo packages",
+  "private": true,
+  "main": "src/index.js",
   "scripts": {
     "lint:run": "cd $INIT_CWD && eslint --ignore-path $PROJECT_CWD/.eslintignore --max-warnings 0 --color",
     "lint:print-config": "cd $INIT_CWD && eslint --print-config",
-    "lint": "yarn lint:run --ext .js ."
+    "lint": "yarn lint:run --ext .js src"
   },
   "devDependencies": {
+    "@monorepo/common": "0.0.0-fixed",
+    "@types/node": "^16.11.12",
     "@typescript-eslint/eslint-plugin": "^5.3.1",
     "@typescript-eslint/parser": "^5.3.1",
     "eslint": "^7.32.0",
@@ -26,6 +29,6 @@
     "prettier": "^2.4.1"
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=16"
   }
 }

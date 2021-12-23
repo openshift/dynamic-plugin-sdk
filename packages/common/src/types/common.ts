@@ -1,6 +1,3 @@
-// TODO use https://www.typescriptlang.org/docs/handbook/project-references.html
-// with --build flag to extract common code and types into a separate package
-
 /**
  * The type `{}` doesn't mean "any empty object", it means "any non-nullish value".
  *

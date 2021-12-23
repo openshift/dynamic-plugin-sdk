@@ -18,4 +18,13 @@ module.exports = {
 
   // Enforce a maximum number of classes per file
   'max-classes-per-file': 'off',
+
+  // Forbid the use of extraneous packages
+  'import/no-extraneous-dependencies': [
+    'error',
+    {
+      devDependencies: ['**/packages/common/**', '**/packages/eslint-plugin-internal/**'],
+      optionalDependencies: false,
+    },
+  ],
 };

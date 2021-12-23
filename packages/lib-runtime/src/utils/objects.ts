@@ -1,5 +1,5 @@
+import type { AnyFunction } from '@monorepo/common';
 import * as _ from 'lodash-es';
-import type { AnyFunction } from '../types/common';
 
 type FunctionPropertyNames<T> = { [K in keyof T]: T[K] extends AnyFunction ? K : never }[keyof T];
 

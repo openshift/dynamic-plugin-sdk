@@ -1,4 +1,4 @@
-import type { AnyObject } from './common';
+import type { AnyObject } from '@monorepo/common';
 
 export type Extension<TProperties extends AnyObject = AnyObject> = {
   type: string;
