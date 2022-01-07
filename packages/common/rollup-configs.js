@@ -6,6 +6,7 @@ import analyzer from 'rollup-plugin-analyzer';
 import dts from 'rollup-plugin-dts';
 /* eslint-enable import/no-extraneous-dependencies */
 
+// https://yarnpkg.com/advanced/lifecycle-scripts#environment-variables
 const rootDir = process.env.PROJECT_CWD;
 
 const getExternalModules = (pkg) => [

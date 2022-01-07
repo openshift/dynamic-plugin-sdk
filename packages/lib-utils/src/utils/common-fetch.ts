@@ -8,7 +8,7 @@ class TimeoutError extends CustomError {
   }
 }
 
-const defaultTimeout = 60_000; // one minute
+const defaultTimeout = 60_000;
 
 export const commonFetch: CommonFetch = async (url, options = {}, timeout = defaultTimeout) => {
   const fetchPromise = getUtilsConfig().appFetch(url, applyDefaults(options, { method: 'GET' }));
