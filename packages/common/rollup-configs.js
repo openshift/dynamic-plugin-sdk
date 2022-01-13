@@ -1,10 +1,13 @@
 import { execSync } from 'child_process';
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import/no-extraneous-dependencies -- avoid pulling Rollup dependencies into common package.json */
 import nodeResolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
 import analyzer from 'rollup-plugin-analyzer';
 import dts from 'rollup-plugin-dts';
 /* eslint-enable import/no-extraneous-dependencies */
+
+// https://yarnpkg.com/advanced/lifecycle-scripts#environment-variables
+const rootDir = process.env.PROJECT_CWD;
 
 const getExternalModules = (pkg) => [
   ...Object.keys(pkg.dependencies ?? {}),
@@ -14,7 +17,7 @@ const getExternalModules = (pkg) => [
 const getExternalModuleTester = (pkg) => {
   const externalModules = getExternalModules(pkg);
   const externalModuleTests = externalModules.map((module) => new RegExp(`^${module}(\\/.+)*$`));
-  return (source) => externalModuleTests.some((regexp) => regexp.test(source));
+  return (moduleID) => externalModuleTests.some((regexp) => regexp.test(moduleID));
 };
 
 const getBanner = (pkg) => `/*
@@ -29,20 +32,21 @@ const getBanner = (pkg) => `/*
 /**
  * @returns {import('rollup').RollupOptions}
  */
-export const tsLibConfig = (pkg) => ({
-  input: 'src/index.ts',
+export const tsLibConfig = (pkg, inputFile) => ({
+  input: inputFile,
   output: {
     file: 'dist/index.js',
-    format: 'esm',
     banner: getBanner(pkg),
   },
   plugins: [
     nodeResolve(),
     typescript({
       tsconfig: './tsconfig.json',
+      include: ['src/**/*', '../common/src/**/*'],
     }),
     analyzer({
       summaryOnly: true,
+      root: rootDir,
     }),
   ],
   external: getExternalModuleTester(pkg),
@@ -51,11 +55,10 @@ export const tsLibConfig = (pkg) => ({
 /**
  * @returns {import('rollup').RollupOptions}
  */
-export const dtsLibConfig = (pkg) => ({
-  input: 'dist/types/index.d.ts',
+export const dtsLibConfig = (pkg, inputFile) => ({
+  input: inputFile,
   output: {
     file: 'dist/index.d.ts',
-    format: 'esm',
   },
   plugins: [
     dts({
@@ -63,6 +66,7 @@ export const dtsLibConfig = (pkg) => ({
     }),
     analyzer({
       summaryOnly: true,
+      root: rootDir,
     }),
   ],
   external: getExternalModuleTester(pkg),

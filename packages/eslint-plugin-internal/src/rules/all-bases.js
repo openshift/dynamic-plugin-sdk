@@ -23,8 +23,7 @@ module.exports = {
   'import/no-extraneous-dependencies': [
     'error',
     {
-      devDependencies: ['**/packages/common/**', '**/packages/eslint-plugin-internal/**'],
-      optionalDependencies: false,
+      devDependencies: true,
     },
   ],
 };

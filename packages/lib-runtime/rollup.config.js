@@ -5,4 +5,7 @@ import pkg from './package.json';
 // eslint-disable-next-line no-console
 console.log(`Rollup ${pkg.name}`);
 
-export default [tsLibConfig(pkg), dtsLibConfig(pkg)];
+export default [
+  tsLibConfig(pkg, 'src/index.ts'),
+  dtsLibConfig(pkg, 'dist/types/lib-runtime/src/index.d.ts'),
+];
