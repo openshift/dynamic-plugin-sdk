@@ -2,7 +2,7 @@ import type { AnyObject, ResourceFetch } from '@monorepo/common';
 import * as _ from 'lodash-es';
 import { pluginManifestSchema } from '../schema/plugin-manifest';
 import type { PluginManifest } from '../types/plugin';
-import type { PluginEntryCallback } from '../types/runtime';
+import type { PluginEntryModule, PluginEntryCallback } from '../types/runtime';
 import { basicFetch } from '../utils/basic-fetch';
 import { consoleLogger } from '../utils/logger';
 import { resolveURL } from '../utils/url';
@@ -17,6 +17,7 @@ type PluginLoadResult =
   | {
       success: true;
       manifest: PluginManifest;
+      entryModule: PluginEntryModule;
     }
   | {
       success: false;
@@ -188,7 +189,7 @@ export class PluginLoader {
         .then(() => {
           data.status = 'loaded';
           consoleLogger.info(`Entry script for plugin ${pluginName} loaded successfully`);
-          this.invokeListeners(pluginName, { success: true, manifest: data.manifest });
+          this.invokeListeners(pluginName, { success: true, manifest: data.manifest, entryModule });
         })
         .catch((e) => {
           data.status = 'failed';

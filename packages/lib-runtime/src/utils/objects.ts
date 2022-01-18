@@ -17,7 +17,9 @@ export const createMethodDelegate = <
 ) => {
   const delegate = {} as Pick<TObject, TObjectMethods>;
 
-  const validMethodNames = methodNames.filter((methodName) => _.isFunction(target[methodName]));
+  const validMethodNames = methodNames.filter(
+    (methodName) => typeof target[methodName] === 'function',
+  );
 
   if (!_.isEqual(methodNames, validMethodNames)) {
     throw new Error(
