@@ -44,22 +44,21 @@ const extensionType = yup
 /**
  * Schema for `Extension` objects.
  */
-const extension = yup
-  .object({
-    type: extensionType,
-    properties: yup.object().required(),
-  })
-  .required();
+const extension = yup.object().required().shape({
+  type: extensionType,
+  properties: yup.object().required(),
+});
 
 /**
  * Schema for `PluginManifest` objects.
  */
 export const pluginManifest = yup
-  .object({
+  .object()
+  .required()
+  .shape({
     name: pluginName,
     version: semverString,
     extensions: yup.array().of(extension).required(),
-  })
-  .required();
+  });
 
 export { pluginManifest as pluginManifestSchema };

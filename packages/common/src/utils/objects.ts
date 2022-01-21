@@ -18,19 +18,13 @@ export const applyOverrides = <TObject>(obj: TObject, overrides: TObject): TObje
   _.defaultsDeep({}, overrides, obj);
 
 /**
- * Return `true` if `obj` is a plain non-React object.
- */
-export const isPlainNonReactObject = (obj: unknown): obj is AnyObject =>
-  _.isPlainObject(obj) && !(obj as AnyObject).$$typeof;
-
-/**
  * Recursive equivalent of {@link _.forOwn} function that traverses plain objects and arrays.
  */
 export const visitDeep = <TValue>(
   obj: AnyObject,
   predicate: (value: unknown) => value is TValue,
   valueCallback: (value: TValue, key: string, container: AnyObject) => void,
-  isPlainObject = isPlainNonReactObject,
+  isPlainObject: (obj: unknown) => obj is AnyObject = (o): o is AnyObject => _.isPlainObject(o),
 ) => {
   const visitValue = (value: unknown, key: string, container: AnyObject) => {
     if (predicate(value)) {
