@@ -1,9 +1,11 @@
 import * as _ from 'lodash-es';
-import type { Extension, LoadedExtension } from '../types/extension';
+import type { Extension, LoadedExtension, CodeRef } from '../types/extension';
 import type { PluginMetadata, PluginManifest, LoadedPlugin } from '../types/plugin';
+import type { PluginEntryModule } from '../types/runtime';
 import type { PluginInfoEntry, PluginConsumer, PluginManager } from '../types/store';
 import { PluginEventType } from '../types/store';
 import { consoleLogger } from '../utils/logger';
+import { decodeCodeRefs } from './coderefs';
 import type { PluginLoader } from './PluginLoader';
 
 export type PluginStoreOptions = Partial<{
@@ -21,6 +23,8 @@ export class PluginStore implements PluginConsumer, PluginManager {
 
   private loader: PluginLoader | undefined;
 
+  private readonly codeRefCache = new Map<string, CodeRef>();
+
   /** Plugins that were successfully loaded and processed. */
   private readonly loadedPlugins = new Map<string, LoadedPlugin>();
 
@@ -36,7 +40,7 @@ export class PluginStore implements PluginConsumer, PluginManager {
   constructor(options: PluginStoreOptions = {}) {
     this.options = {
       autoEnableLoadedPlugins: options.autoEnableLoadedPlugins ?? true,
-      postProcessExtensions: options.postProcessExtensions ?? ((extensions) => extensions),
+      postProcessExtensions: options.postProcessExtensions ?? _.identity,
     };
 
     Object.values(PluginEventType).forEach((t) => {
@@ -66,7 +70,7 @@ export class PluginStore implements PluginConsumer, PluginManager {
 
       const pluginAdded = this.addPlugin(
         _.omit<PluginManifest, 'extensions'>(result.manifest, 'extensions'),
-        this.processExtensions(pluginName, result.manifest.extensions),
+        this.processExtensions(pluginName, result.manifest.extensions, result.entryModule),
       );
 
       if (pluginAdded && this.options.autoEnableLoadedPlugins) {
@@ -240,14 +244,19 @@ export class PluginStore implements PluginConsumer, PluginManager {
   /**
    * Process extension objects as received from the plugin manifest.
    */
-  processExtensions(pluginName: string, extensions: Extension[]) {
-    const processedExtensions: LoadedExtension[] = extensions.map((e, index) => ({
-      ...e,
-      pluginName,
-      uid: `${pluginName}[${index}]`,
-    }));
+  processExtensions(pluginName: string, extensions: Extension[], entryModule: PluginEntryModule) {
+    const processedExtensions: LoadedExtension[] = extensions.map((e, index) =>
+      decodeCodeRefs(
+        {
+          ...e,
+          pluginName,
+          uid: `${pluginName}[${index}]`,
+        },
+        entryModule,
+        this.codeRefCache,
+      ),
+    );
 
-    // TODO decode EncodedCodeRef values into CodeRef values
     return this.options.postProcessExtensions(processedExtensions);
   }
 }

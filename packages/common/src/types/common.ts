@@ -16,3 +16,10 @@ export type AnyObject = Record<string, unknown>;
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyFunction = (...args: any) => any;
+
+/**
+ * Replace existing direct properties of object `T` with ones declared in object `R`.
+ */
+export type ReplaceProperties<T extends AnyObject, R extends AnyObject> = {
+  [K in keyof T]: K extends keyof R ? R[K] : T[K];
+} & AnyObject;
