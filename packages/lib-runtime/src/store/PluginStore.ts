@@ -74,7 +74,7 @@ export class PluginStore implements PluginConsumer, PluginManager {
       );
 
       if (pluginAdded && this.options.autoEnableLoadedPlugins) {
-        this.setPluginEnabled(pluginName, true);
+        this.setPluginsEnabled([{ pluginName, enabled: true }]);
       }
     });
 
@@ -176,28 +176,36 @@ export class PluginStore implements PluginConsumer, PluginManager {
     }
   }
 
-  setPluginEnabled(pluginName: string, enabled: boolean) {
-    if (!this.loadedPlugins.has(pluginName)) {
-      consoleLogger.warn(
-        `Attempt to ${enabled ? 'enable' : 'disable'} plugin ${pluginName} which is not ready yet`,
-      );
-      return;
-    }
+  setPluginsEnabled(config: { pluginName: string; enabled: boolean }[]) {
+    let updateExtensions = false;
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const plugin = this.loadedPlugins.get(pluginName)!;
+    config.forEach(({ pluginName, enabled }) => {
+      if (!this.loadedPlugins.has(pluginName)) {
+        consoleLogger.warn(
+          `Attempt to ${
+            enabled ? 'enable' : 'disable'
+          } plugin ${pluginName} which is not ready yet`,
+        );
+        return;
+      }
 
-    if (plugin.enabled !== enabled) {
-      plugin.enabled = enabled;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const plugin = this.loadedPlugins.get(pluginName)!;
 
+      if (plugin.enabled !== enabled) {
+        plugin.enabled = enabled;
+        consoleLogger.info(`Plugin ${pluginName} will be ${enabled ? 'enabled' : 'disabled'}`);
+        updateExtensions = true;
+      }
+    });
+
+    if (updateExtensions) {
       this.extensions = Array.from(this.loadedPlugins.values()).reduce(
         (acc, p) => (p.enabled ? [...acc, ...p.extensions] : acc),
         [] as LoadedExtension[],
       );
 
       this.invokeListeners([PluginEventType.PluginInfoChanged, PluginEventType.ExtensionsChanged]);
-
-      consoleLogger.info(`Plugin ${pluginName} is now ${enabled ? 'enabled' : 'disabled'}`);
     }
   }
 

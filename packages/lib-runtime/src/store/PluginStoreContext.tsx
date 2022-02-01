@@ -47,7 +47,7 @@ export const usePluginManager = (): PluginManager => {
   }
 
   return React.useMemo(
-    () => createMethodDelegate(store, ['loadPlugin', 'setPluginEnabled']),
+    () => createMethodDelegate(store, ['loadPlugin', 'setPluginsEnabled']),
     [store],
   );
 };
