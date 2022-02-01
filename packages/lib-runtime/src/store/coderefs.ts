@@ -16,6 +16,20 @@ class CodeRefError extends CustomError {
   }
 }
 
+class ExtensionCodeRefsResolutionError extends CustomError {
+  constructor(
+    message: string,
+    readonly resolutionErrors: unknown[],
+    readonly extension: LoadedExtension,
+  ) {
+    super(message);
+  }
+}
+
+export const isExtensionCodeRefsResolutionError = (
+  e: unknown,
+): e is ExtensionCodeRefsResolutionError => e instanceof ExtensionCodeRefsResolutionError;
+
 /**
  * Indicates that the given function is a {@link CodeRef} function.
  */
@@ -93,7 +107,7 @@ const createCodeRef =
  * In the extension's `properties` object, replace all {@link EncodedCodeRef} values
  * with {@link CodeRef} functions that can be used to load the referenced objects.
  *
- * Returns the updated extension instance.
+ * Returns the extension that was passed in.
  */
 export const decodeCodeRefs = (
   extension: LoadedExtension,
@@ -140,13 +154,19 @@ export const decodeCodeRefs = (
  *
  * This is an asynchronous operation that completes when all of the associated
  * Promises are either resolved or rejected. If there were no resolution errors,
- * the resulting Promise resolves to the updated extension instance.
+ * the resulting Promise resolves with the updated extension.
+ *
+ * The updated extension is a new object; its `properties` are cloned in order
+ * to preserve the original structure of decoded extensions.
  */
-export const resolveCodeRefValues = async <TExtension extends Extension>(extension: TExtension) => {
+export const resolveCodeRefValues = async <TExtension extends Extension>(
+  extension: LoadedExtension<TExtension>,
+) => {
+  const clonedProperties = _.cloneDeep(extension.properties);
   const resolutions: Promise<void>[] = [];
   const resolutionErrors: unknown[] = [];
 
-  visitDeep<CodeRef>(extension.properties, isCodeRef, (codeRef, key, obj) => {
+  visitDeep<CodeRef>(clonedProperties, isCodeRef, (codeRef, key, obj) => {
     resolutions.push(
       codeRef()
         // eslint-disable-next-line promise/always-return -- resolutions element type is Promise<void>
@@ -165,8 +185,15 @@ export const resolveCodeRefValues = async <TExtension extends Extension>(extensi
   await Promise.allSettled(resolutions);
 
   if (resolutionErrors.length > 0) {
-    throw new CodeRefError('Failed to resolve code references', resolutionErrors);
+    throw new ExtensionCodeRefsResolutionError(
+      'Failed to resolve code references',
+      resolutionErrors,
+      extension,
+    );
   }
 
-  return extension as ResolvedExtension<TExtension>;
+  return {
+    ...extension,
+    properties: clonedProperties,
+  } as LoadedExtension<ResolvedExtension<TExtension>>;
 };

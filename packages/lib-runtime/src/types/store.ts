@@ -76,9 +76,9 @@ export type PluginManager = {
   loadPlugin: (baseURL: string) => void;
 
   /**
-   * Enable or disable the given plugin.
+   * Enable or disable the given plugins.
    *
-   * Enabling the plugin puts all of its extensions into use. Disabling it does the opposite.
+   * Enabling a plugin puts all of its extensions into use. Disabling it does the opposite.
    */
-  setPluginEnabled: (pluginName: string, enabled: boolean) => void;
+  setPluginsEnabled: (config: { pluginName: string; enabled: boolean }[]) => void;
 };
