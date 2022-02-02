@@ -35,7 +35,7 @@ export type PluginInfoEntry =
     };
 
 /**
- * Interface for consuming runtime plugin information and extensions.
+ * Interface for consuming plugin information and extensions.
  */
 export type PluginConsumer = {
   /**
