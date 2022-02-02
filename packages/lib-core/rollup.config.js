@@ -7,5 +7,5 @@ console.log(`Rollup ${pkg.name}`);
 
 export default [
   tsLibConfig(pkg, 'src/index.ts'),
-  dtsLibConfig(pkg, 'dist/types/lib-runtime/src/index.d.ts'),
+  dtsLibConfig(pkg, 'dist/types/lib-core/src/index.d.ts'),
 ];

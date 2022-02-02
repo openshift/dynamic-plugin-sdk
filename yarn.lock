@@ -197,30 +197,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openshift/dynamic-plugin-sdk-runtime@workspace:packages/lib-runtime":
-  version: 0.0.0-use.local
-  resolution: "@openshift/dynamic-plugin-sdk-runtime@workspace:packages/lib-runtime"
-  dependencies:
-    "@monorepo/common": 0.0.0-fixed
-    "@rollup/plugin-node-resolve": ^13.1.1
-    "@rollup/plugin-typescript": ^8.3.0
-    "@types/lodash-es": ^4.17.5
-    "@types/react": ^17.0.37
-    lodash-es: ^4.17.21
-    react: ^17.0.2
-    rollup: ^2.61.1
-    rollup-plugin-analyzer: ^4.0.0
-    rollup-plugin-dts: ^4.0.1
-    tslib: ^2.3.1
-    typescript: ~4.4.4
-    yup: ^0.32.11
-  peerDependencies:
-    lodash-es: ^4.17.21
-    react: ^17.0.2
-    yup: ^0.32.11
-  languageName: unknown
-  linkType: soft
-
 "@openshift/dynamic-plugin-sdk-utils@workspace:packages/lib-utils":
   version: 0.0.0-use.local
   resolution: "@openshift/dynamic-plugin-sdk-utils@workspace:packages/lib-utils"
@@ -240,6 +216,30 @@ __metadata:
   peerDependencies:
     lodash-es: ^4.17.21
     react: ^17.0.2
+  languageName: unknown
+  linkType: soft
+
+"@openshift/dynamic-plugin-sdk@workspace:packages/lib-core":
+  version: 0.0.0-use.local
+  resolution: "@openshift/dynamic-plugin-sdk@workspace:packages/lib-core"
+  dependencies:
+    "@monorepo/common": 0.0.0-fixed
+    "@rollup/plugin-node-resolve": ^13.1.1
+    "@rollup/plugin-typescript": ^8.3.0
+    "@types/lodash-es": ^4.17.5
+    "@types/react": ^17.0.37
+    lodash-es: ^4.17.21
+    react: ^17.0.2
+    rollup: ^2.61.1
+    rollup-plugin-analyzer: ^4.0.0
+    rollup-plugin-dts: ^4.0.1
+    tslib: ^2.3.1
+    typescript: ~4.4.4
+    yup: ^0.32.11
+  peerDependencies:
+    lodash-es: ^4.17.21
+    react: ^17.0.2
+    yup: ^0.32.11
   languageName: unknown
   linkType: soft
 
