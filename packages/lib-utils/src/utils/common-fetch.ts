@@ -1,6 +1,13 @@
 import { CustomError, applyDefaults, applyOverrides } from '@monorepo/common';
 import { getUtilsConfig } from '../config';
-import type { CommonFetch, CommonFetchText, CommonFetchJSON } from '../types/fetch';
+
+export type FetchOptionArgs = [requestOptions?: RequestInit, timeout?: number];
+
+type ResourceReadArgs = [url: string, ...args: FetchOptionArgs];
+
+type ResourceUpdateArgs = [url: string, data: unknown, ...args: FetchOptionArgs];
+
+type ResourceDeleteArgs = [url: string, data?: unknown, ...args: FetchOptionArgs];
 
 class TimeoutError extends CustomError {
   public constructor(url: string, ms: number) {
@@ -10,8 +17,13 @@ class TimeoutError extends CustomError {
 
 const defaultTimeout = 60_000;
 
-export const commonFetch: CommonFetch = async (url, options = {}, timeout = defaultTimeout) => {
-  const fetchPromise = getUtilsConfig().appFetch(url, applyDefaults(options, { method: 'GET' }));
+export const commonFetch = async (
+  ...[url, requestOptions = {}, timeout = defaultTimeout]: ResourceReadArgs
+): Promise<Response> => {
+  const fetchPromise = getUtilsConfig().appFetch(
+    url,
+    applyDefaults(requestOptions, { method: 'GET' }),
+  );
 
   if (timeout <= 0) {
     return fetchPromise;
@@ -24,14 +36,12 @@ export const commonFetch: CommonFetch = async (url, options = {}, timeout = defa
   return Promise.race([fetchPromise, timeoutPromise]);
 };
 
-export const commonFetchText: CommonFetchText = async (
-  url,
-  options = {},
-  timeout = defaultTimeout,
-) => {
+export const commonFetchText = async (
+  ...[url, requestOptions = {}, timeout = defaultTimeout]: ResourceReadArgs
+): Promise<string> => {
   const response = await commonFetch(
     url,
-    applyDefaults(options, { headers: { Accept: 'text/plain' } }),
+    applyDefaults(requestOptions, { headers: { Accept: 'text/plain' } }),
     timeout,
   );
 
@@ -40,14 +50,12 @@ export const commonFetchText: CommonFetchText = async (
   return responseText ?? '';
 };
 
-export const commonFetchJSON: CommonFetchJSON = async (
-  url,
-  options = {},
-  timeout = defaultTimeout,
-) => {
+export const commonFetchJSON = async <TResult>(
+  ...[url, requestOptions = {}, timeout = defaultTimeout]: ResourceReadArgs
+): Promise<TResult> => {
   const response = await commonFetch(
     url,
-    applyDefaults(options, { headers: { Accept: 'application/json' } }),
+    applyDefaults(requestOptions, { headers: { Accept: 'application/json' } }),
     timeout,
   );
 
@@ -56,35 +64,44 @@ export const commonFetchJSON: CommonFetchJSON = async (
   return response.ok ? JSON.parse(responseText) : null;
 };
 
-const commonFetchJSONWithBody = (
+const commonFetchJSONWithBody = <TResult>(
   url: string,
   data: unknown,
-  options: RequestInit,
+  requestOptions: RequestInit,
   timeout?: number,
-) =>
-  commonFetchJSON(
-    url,
-    applyOverrides(options, {
-      headers: {
-        'Content-Type': `application/${
-          options.method === 'PATCH' ? 'json-patch+json' : 'json'
-        };charset=UTF-8`,
-      },
-      body: JSON.stringify(data),
-    }),
-    timeout,
-  );
+) => {
+  const options = applyOverrides(requestOptions, {
+    headers: {
+      'Content-Type': `application/${
+        requestOptions.method === 'PATCH' ? 'json-patch+json' : 'json'
+      };charset=UTF-8`,
+    },
+    body: JSON.stringify(data),
+  });
 
-commonFetchJSON.put = async (url, data, options = {}, timeout = defaultTimeout) =>
-  commonFetchJSONWithBody(url, data, applyOverrides(options, { method: 'PUT' }), timeout);
+  return commonFetchJSON<TResult>(url, options, timeout);
+};
 
-commonFetchJSON.post = async (url, data, options = {}, timeout = defaultTimeout) =>
-  commonFetchJSONWithBody(url, data, applyOverrides(options, { method: 'POST' }), timeout);
+commonFetchJSON.put = async <TResult>(
+  ...[url, data, requestOptions = {}, timeout = defaultTimeout]: ResourceUpdateArgs
+): Promise<TResult> =>
+  commonFetchJSONWithBody(url, data, applyOverrides(requestOptions, { method: 'PUT' }), timeout);
 
-commonFetchJSON.patch = async (url, data, options = {}, timeout = defaultTimeout) =>
-  commonFetchJSONWithBody(url, data, applyOverrides(options, { method: 'PATCH' }), timeout);
+commonFetchJSON.post = async <TResult>(
+  ...[url, data, requestOptions = {}, timeout = defaultTimeout]: ResourceUpdateArgs
+): Promise<TResult> =>
+  commonFetchJSONWithBody(url, data, applyOverrides(requestOptions, { method: 'POST' }), timeout);
 
-commonFetchJSON.delete = async (url, data, options = {}, timeout = defaultTimeout) =>
-  data
-    ? commonFetchJSONWithBody(url, data, applyOverrides(options, { method: 'DELETE' }), timeout)
-    : commonFetchJSON(url, applyOverrides(options, { method: 'DELETE' }), timeout);
+commonFetchJSON.patch = async <TResult>(
+  ...[url, data, requestOptions = {}, timeout = defaultTimeout]: ResourceUpdateArgs
+): Promise<TResult> =>
+  commonFetchJSONWithBody(url, data, applyOverrides(requestOptions, { method: 'PATCH' }), timeout);
+
+commonFetchJSON.delete = async <TResult>(
+  ...[url, data, requestOptions = {}, timeout = defaultTimeout]: ResourceDeleteArgs
+): Promise<TResult> => {
+  const options = applyOverrides(requestOptions, { method: 'DELETE' });
+  return data
+    ? commonFetchJSONWithBody(url, data, options, timeout)
+    : commonFetchJSON(url, options, timeout);
+};

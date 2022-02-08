@@ -10,6 +10,11 @@ export type UtilsConfig = {
    * with an appropriate error.
    */
   appFetch: ResourceFetch;
+
+  /**
+   * Kubernetes API server base URL (without the trailing slash).
+   */
+  k8sBaseURL: string;
 };
 
 let config: Readonly<UtilsConfig> | undefined;

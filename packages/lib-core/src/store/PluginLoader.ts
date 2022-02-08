@@ -1,10 +1,10 @@
 import type { AnyObject, ResourceFetch } from '@monorepo/common';
+import { consoleLogger } from '@monorepo/common';
 import * as _ from 'lodash-es';
 import { pluginManifestSchema } from '../schema/plugin-manifest';
 import type { PluginManifest } from '../types/plugin';
 import type { PluginEntryModule, PluginEntryCallback } from '../types/runtime';
 import { basicFetch } from '../utils/basic-fetch';
-import { consoleLogger } from '../utils/logger';
 import { resolveURL } from '../utils/url';
 
 type PluginLoadData = {
