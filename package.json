@@ -16,6 +16,9 @@
     "eslint-print-config": "eslint --print-config"
   },
   "devDependencies": {
+    "@babel/core": "^7.17.2",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-typescript": "^7.16.7",
     "@patternfly/react-core": "^4.202.16",
     "@patternfly/react-table": "^4.71.16",
     "@rollup/plugin-commonjs": "^21.0.2",
