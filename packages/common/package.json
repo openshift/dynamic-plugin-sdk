@@ -6,6 +6,10 @@
   "main": "src/index.ts",
   "scripts": {
     "lint": "yarn run -T eslint $INIT_CWD",
-    "test": "echo 'Write some tests!'"
+    "test": "yarn run -T test $INIT_CWD"
+  },
+  "devDependencies": {
+    "@types/lodash-es": "^4.17.5",
+    "lodash-es": "^4.17.21"
   }
 }
