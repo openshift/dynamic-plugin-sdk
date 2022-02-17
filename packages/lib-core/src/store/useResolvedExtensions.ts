@@ -1,3 +1,4 @@
+import { consoleLogger } from '@monorepo/common';
 import * as _ from 'lodash-es';
 import * as React from 'react';
 import type {
@@ -6,7 +7,6 @@ import type {
   ResolvedExtension,
   ExtensionPredicate,
 } from '../types/extension';
-import { consoleLogger } from '../utils/logger';
 import { settleAllPromises } from '../utils/promise';
 import { isExtensionCodeRefsResolutionError, resolveCodeRefValues } from './coderefs';
 import { usePluginManager } from './PluginStoreContext';
