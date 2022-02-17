@@ -1,7 +1,11 @@
 import { CustomError, applyDefaults, applyOverrides } from '@monorepo/common';
 import { getUtilsConfig } from '../config';
 
-export type FetchOptionArgs = [requestOptions?: RequestInit, timeout?: number];
+export type FetchOptionArgs = [
+  requestInit?: RequestInit,
+  timeout?: number,
+  isK8sAPIRequest?: boolean,
+];
 
 type ResourceReadArgs = [url: string, ...args: FetchOptionArgs];
 
@@ -18,11 +22,12 @@ class TimeoutError extends CustomError {
 const defaultTimeout = 60_000;
 
 export const commonFetch = async (
-  ...[url, requestOptions = {}, timeout = defaultTimeout]: ResourceReadArgs
+  ...[url, requestInit = {}, timeout = defaultTimeout, isK8sAPIRequest = false]: ResourceReadArgs
 ): Promise<Response> => {
   const fetchPromise = getUtilsConfig().appFetch(
     url,
-    applyDefaults(requestOptions, { method: 'GET' }),
+    applyDefaults(requestInit, { method: 'GET' }),
+    isK8sAPIRequest,
   );
 
   if (timeout <= 0) {
@@ -37,12 +42,13 @@ export const commonFetch = async (
 };
 
 export const commonFetchText = async (
-  ...[url, requestOptions = {}, timeout = defaultTimeout]: ResourceReadArgs
+  ...[url, requestInit = {}, timeout = defaultTimeout, isK8sAPIRequest = false]: ResourceReadArgs
 ): Promise<string> => {
   const response = await commonFetch(
     url,
-    applyDefaults(requestOptions, { headers: { Accept: 'text/plain' } }),
+    applyDefaults(requestInit, { headers: { Accept: 'text/plain' } }),
     timeout,
+    isK8sAPIRequest,
   );
 
   const responseText = await response.text();
@@ -51,12 +57,13 @@ export const commonFetchText = async (
 };
 
 export const commonFetchJSON = async <TResult>(
-  ...[url, requestOptions = {}, timeout = defaultTimeout]: ResourceReadArgs
+  ...[url, requestInit = {}, timeout = defaultTimeout, isK8sAPIRequest = false]: ResourceReadArgs
 ): Promise<TResult> => {
   const response = await commonFetch(
     url,
-    applyDefaults(requestOptions, { headers: { Accept: 'application/json' } }),
+    applyDefaults(requestInit, { headers: { Accept: 'application/json' } }),
     timeout,
+    isK8sAPIRequest,
   );
 
   const responseText = await response.text();
@@ -67,41 +74,85 @@ export const commonFetchJSON = async <TResult>(
 const commonFetchJSONWithBody = <TResult>(
   url: string,
   data: unknown,
-  requestOptions: RequestInit,
-  timeout?: number,
-) => {
-  const options = applyOverrides(requestOptions, {
-    headers: {
-      'Content-Type': `application/${
-        requestOptions.method === 'PATCH' ? 'json-patch+json' : 'json'
-      };charset=UTF-8`,
-    },
-    body: JSON.stringify(data),
-  });
-
-  return commonFetchJSON<TResult>(url, options, timeout);
-};
+  ...[requestInit = {}, timeout = defaultTimeout, isK8sAPIRequest = false]: FetchOptionArgs
+) =>
+  commonFetchJSON<TResult>(
+    url,
+    applyOverrides(requestInit, {
+      headers: {
+        'Content-Type': `application/${
+          requestInit.method === 'PATCH' ? 'json-patch+json' : 'json'
+        };charset=UTF-8`,
+      },
+      body: JSON.stringify(data),
+    }),
+    timeout,
+    isK8sAPIRequest,
+  );
 
 commonFetchJSON.put = async <TResult>(
-  ...[url, data, requestOptions = {}, timeout = defaultTimeout]: ResourceUpdateArgs
+  ...[
+    url,
+    data,
+    requestInit = {},
+    timeout = defaultTimeout,
+    isK8sAPIRequest = false,
+  ]: ResourceUpdateArgs
 ): Promise<TResult> =>
-  commonFetchJSONWithBody(url, data, applyOverrides(requestOptions, { method: 'PUT' }), timeout);
+  commonFetchJSONWithBody(
+    url,
+    data,
+    applyOverrides(requestInit, { method: 'PUT' }),
+    timeout,
+    isK8sAPIRequest,
+  );
 
 commonFetchJSON.post = async <TResult>(
-  ...[url, data, requestOptions = {}, timeout = defaultTimeout]: ResourceUpdateArgs
+  ...[
+    url,
+    data,
+    requestInit = {},
+    timeout = defaultTimeout,
+    isK8sAPIRequest = false,
+  ]: ResourceUpdateArgs
 ): Promise<TResult> =>
-  commonFetchJSONWithBody(url, data, applyOverrides(requestOptions, { method: 'POST' }), timeout);
+  commonFetchJSONWithBody(
+    url,
+    data,
+    applyOverrides(requestInit, { method: 'POST' }),
+    timeout,
+    isK8sAPIRequest,
+  );
 
 commonFetchJSON.patch = async <TResult>(
-  ...[url, data, requestOptions = {}, timeout = defaultTimeout]: ResourceUpdateArgs
+  ...[
+    url,
+    data,
+    requestInit = {},
+    timeout = defaultTimeout,
+    isK8sAPIRequest = false,
+  ]: ResourceUpdateArgs
 ): Promise<TResult> =>
-  commonFetchJSONWithBody(url, data, applyOverrides(requestOptions, { method: 'PATCH' }), timeout);
+  commonFetchJSONWithBody(
+    url,
+    data,
+    applyOverrides(requestInit, { method: 'PATCH' }),
+    timeout,
+    isK8sAPIRequest,
+  );
 
 commonFetchJSON.delete = async <TResult>(
-  ...[url, data, requestOptions = {}, timeout = defaultTimeout]: ResourceDeleteArgs
+  ...[
+    url,
+    data,
+    requestInit = {},
+    timeout = defaultTimeout,
+    isK8sAPIRequest = false,
+  ]: ResourceDeleteArgs
 ): Promise<TResult> => {
-  const options = applyOverrides(requestOptions, { method: 'DELETE' });
+  const requestInitOverride = applyOverrides(requestInit, { method: 'DELETE' });
+
   return data
-    ? commonFetchJSONWithBody(url, data, options, timeout)
-    : commonFetchJSON(url, options, timeout);
+    ? commonFetchJSONWithBody(url, data, requestInitOverride, timeout, isK8sAPIRequest)
+    : commonFetchJSON(url, requestInitOverride, timeout, isK8sAPIRequest);
 };

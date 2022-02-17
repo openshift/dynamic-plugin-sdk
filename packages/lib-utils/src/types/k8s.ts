@@ -30,10 +30,10 @@ export type K8sResourceCommon = K8sResourceIdentifier & {
 };
 
 type OwnerReference = {
-  name: string;
-  kind: string;
-  uid: string;
   apiVersion: string;
+  kind: string;
+  name: string;
+  uid: string;
   controller?: boolean;
   blockOwnerDeletion?: boolean;
 };

@@ -1,5 +1,4 @@
 import * as _ from 'lodash-es';
-import { getUtilsConfig } from '../config';
 import type { K8sModelCommon, K8sResourceCommon, QueryOptions, QueryParams } from '../types/k8s';
 
 const getQueryString = (queryParams: QueryParams) =>
@@ -49,5 +48,5 @@ export const getK8sResourceURL = (
     resourcePath += `?${getQueryString(queryParams)}`;
   }
 
-  return `${getUtilsConfig().k8sBaseURL}/${resourcePath}`;
+  return `/${resourcePath}`;
 };
