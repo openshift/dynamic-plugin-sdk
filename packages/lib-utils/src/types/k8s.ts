@@ -58,3 +58,13 @@ export type Patch = {
   path: string;
   value?: unknown;
 };
+
+export type K8sVerb =
+  | 'create'
+  | 'get'
+  | 'list'
+  | 'update'
+  | 'patch'
+  | 'delete'
+  | 'deletecollection'
+  | 'watch';
