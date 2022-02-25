@@ -1,22 +1,22 @@
 import type { AnyObject, ResourceFetch } from '@monorepo/common';
 import { consoleLogger } from '@monorepo/common';
 import * as _ from 'lodash-es';
-import { pluginManifestSchema } from '../schema/plugin-manifest';
-import type { PluginManifest } from '../types/plugin';
+import type { PluginRuntimeManifest } from '../types/plugin';
 import type { PluginEntryModule, PluginEntryCallback } from '../types/runtime';
 import { basicFetch } from '../utils/basic-fetch';
 import { resolveURL } from '../utils/url';
+import { pluginRuntimeManifestSchema } from '../yup-schemas';
 
 type PluginLoadData = {
   entryCallbackFired: boolean;
   status: 'pending' | 'loaded' | 'failed';
-  manifest: PluginManifest;
+  manifest: PluginRuntimeManifest;
 };
 
 type PluginLoadResult =
   | {
       success: true;
-      manifest: PluginManifest;
+      manifest: PluginRuntimeManifest;
       entryModule: PluginEntryModule;
     }
   | {
@@ -25,17 +25,19 @@ type PluginLoadResult =
 
 type PluginLoadListener = (pluginName: string, result: PluginLoadResult) => void;
 
+export const pluginManifestFile = 'plugin-manifest.json';
+export const remoteEntryScript = 'plugin-entry.js';
+export const remoteEntryCallback = '__load_plugin_entry__';
+
 export type PluginLoaderOptions = Partial<{
   /** Control which plugins can be loaded. */
   canLoadPlugin: (pluginName: string) => boolean;
-  /** Name of the global function used by plugin entry scripts. */
-  entryCallbackName: string;
   /** Custom resource fetch implementation. */
   fetchImpl: ResourceFetch;
   /** Get shared scope object for initializing `PluginEntryModule` containers. */
   getSharedScope: () => AnyObject;
   /** Post-process the plugin manifest. Can be used as a custom validation hook. */
-  postProcessManifest: (manifest: PluginManifest) => Promise<PluginManifest>;
+  postProcessManifest: (manifest: PluginRuntimeManifest) => Promise<PluginRuntimeManifest>;
 }>;
 
 /**
@@ -56,7 +58,6 @@ export class PluginLoader {
   constructor(options: PluginLoaderOptions = {}) {
     this.options = {
       canLoadPlugin: options.canLoadPlugin ?? (() => true),
-      entryCallbackName: options.entryCallbackName ?? '__plugin_entry_callback__',
       fetchImpl: options.fetchImpl ?? basicFetch,
       getSharedScope: options.getSharedScope ?? _.constant({}),
       postProcessManifest: options.postProcessManifest ?? (async (manifest) => manifest),
@@ -92,15 +93,15 @@ export class PluginLoader {
    * Fetch the manifest from a plugin's `baseURL` and validate it.
    */
   async getPluginManifest(baseURL: string) {
-    const manifestURL = resolveURL(baseURL, 'plugin-manifest.json');
+    const manifestURL = resolveURL(baseURL, pluginManifestFile);
 
     consoleLogger.info(`Loading plugin manifest from ${manifestURL}`);
 
     const response = await this.options.fetchImpl(manifestURL);
     const responseText = await response.text();
 
-    let manifest: PluginManifest = await pluginManifestSchema
-      .strict()
+    let manifest: PluginRuntimeManifest = await pluginRuntimeManifestSchema
+      .strict(true)
       .validate(JSON.parse(responseText));
 
     manifest = await this.options.postProcessManifest(manifest);
@@ -113,11 +114,11 @@ export class PluginLoader {
    */
   loadPluginEntryScript(
     baseURL: string,
-    manifest: PluginManifest,
+    manifest: PluginRuntimeManifest,
     getDocument: () => typeof document = _.constant(document),
   ) {
     const pluginName = manifest.name;
-    const scriptURL = resolveURL(baseURL, 'plugin-entry.js');
+    const scriptURL = resolveURL(baseURL, remoteEntryScript);
 
     if (this.entryCallback === undefined) {
       throw new Error(`Attempt to load plugin ${pluginName} before registering entry callback`);
@@ -204,7 +205,7 @@ export class PluginLoader {
    */
   registerPluginEntryCallback(getWindow: () => typeof window = _.constant(window)) {
     const windowGlobal = getWindow() as unknown as AnyObject;
-    const callbackName = this.options.entryCallbackName;
+    const callbackName = remoteEntryCallback;
 
     if (this.entryCallback !== undefined) {
       throw new Error(`Global function ${callbackName} is already registered by this loader`);

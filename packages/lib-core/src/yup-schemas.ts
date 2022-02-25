@@ -5,7 +5,7 @@ import * as yup from 'yup';
  *
  * @see https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
  */
-const semverString = yup
+const semverStringSchema = yup
   .string()
   .required()
   .matches(
@@ -14,29 +14,29 @@ const semverString = yup
   );
 
 /**
- * Schema for `PluginMetadata.name` property.
+ * Schema for a valid plugin name.
  *
- * Examples of valid plugin names:
+ * Examples:
  *
  * ```
  * foo, foo-bar, foo.bar, foo.bar-test, foo-bar-abc.123-test
  * ```
  */
-const pluginName = yup
+const pluginNameSchema = yup
   .string()
   .required()
   .matches(/^[a-z]+[a-z0-9-.]*[a-z]+$/, 'plugin name');
 
 /**
- * Schema for `Extension.type` property.
+ * Schema for a valid extension type.
  *
- * Examples of valid extension types:
+ * Examples:
  *
  * ```
  * app.foo, my-app.foo-bar, app.foo/bar, my-app.foo-bar/test/a-b
  * ```
  */
-const extensionType = yup
+const extensionTypeSchema = yup
   .string()
   .required()
   .matches(/^[a-z]+[a-z-]*\.[a-z]+[a-z-]*(?:\/[a-z]+[a-z-]*)*$/, 'extension type');
@@ -44,21 +44,27 @@ const extensionType = yup
 /**
  * Schema for `Extension` objects.
  */
-const extension = yup.object().required().shape({
-  type: extensionType,
+export const extensionSchema = yup.object().required().shape({
+  type: extensionTypeSchema,
   properties: yup.object().required(),
 });
 
 /**
- * Schema for `PluginManifest` objects.
+ * Schema for an array of extensions.
  */
-export const pluginManifest = yup
-  .object()
-  .required()
-  .shape({
-    name: pluginName,
-    version: semverString,
-    extensions: yup.array().of(extension).required(),
-  });
+export const extensionArraySchema = yup.array().of(extensionSchema).required();
 
-export { pluginManifest as pluginManifestSchema };
+/**
+ * Schema for `PluginRuntimeMetadata` objects.
+ */
+export const pluginRuntimeMetadataSchema = yup.object().required().shape({
+  name: pluginNameSchema,
+  version: semverStringSchema,
+});
+
+/**
+ * Schema for `PluginRuntimeManifest` objects.
+ */
+export const pluginRuntimeManifestSchema = pluginRuntimeMetadataSchema.shape({
+  extensions: extensionArraySchema,
+});
