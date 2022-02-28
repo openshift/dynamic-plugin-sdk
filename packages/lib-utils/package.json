@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@monorepo/common": "0.0.0-fixed",
+    "@openshift/dynamic-plugin-sdk": "1.0.0-alpha1",
     "@rollup/plugin-node-resolve": "^13.1.1",
     "@rollup/plugin-typescript": "^8.3.0",
     "@types/lodash-es": "^4.17.5",

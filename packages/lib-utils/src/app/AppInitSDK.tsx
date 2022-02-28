@@ -7,12 +7,14 @@ import type { InitAPIDiscovery } from '../types/api-discovery';
 import { initAPIDiscovery } from './api-discovery';
 import { useReduxStore } from './redux';
 
-type AppInitSDKProps = React.PropsWithChildren<{
+type AppInitSDKProps = {
+  /** Only child is your Application */
+  children: React.ReactElement;
   configurations: {
     apiDiscovery?: InitAPIDiscovery;
     appFetch: UtilsConfig['appFetch'];
   };
-}>;
+};
 
 /**
  * Component for providing store access to the SDK.
@@ -25,8 +27,7 @@ type AppInitSDKProps = React.PropsWithChildren<{
  * return (
  *  <Provider store={store}>
  *   <AppInitSDK configurations={{ appFetch, apiDiscovery }}>
- *      <CustomApp />
- *      ...
+ *      <App />
  *   </AppInitSDK>
  *  </Provider>
  * )
@@ -34,18 +35,17 @@ type AppInitSDKProps = React.PropsWithChildren<{
  */
 const AppInitSDK: React.FC<AppInitSDKProps> = ({ children, configurations }) => {
   const { store, storeContextPresent } = useReduxStore();
+  const { appFetch, apiDiscovery = initAPIDiscovery } = configurations;
   React.useEffect(() => {
-    const { appFetch, apiDiscovery = initAPIDiscovery } = configurations;
     try {
       setUtilsConfig({ appFetch });
       apiDiscovery(store);
     } catch (e) {
       consoleLogger.warn(e);
     }
-  }, [configurations, store]);
+  }, [apiDiscovery, appFetch, store]);
 
-  // eslint-disable-next-line react/jsx-no-useless-fragment
-  return !storeContextPresent ? <Provider store={store}>{children}</Provider> : <>{children}</>;
+  return !storeContextPresent ? <Provider store={store}>{children}</Provider> : children;
 };
 
 export default AppInitSDK;
