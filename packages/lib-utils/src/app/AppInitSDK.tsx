@@ -17,13 +17,13 @@ type AppInitSDKProps = {
 };
 
 /**
- * Component for providing store access to the SDK.
+ * Initializes the host application to work with Kubernetes and related SDK utilities.
  * Add this at app-level to make use of app's redux store and pass configurations prop needed to initialize the app, preferred to have it under Provider.
  * It checks for store instance if present or not.
  * If the store is there then the reference is persisted to be used in SDK else it creates a new store and passes it to the children with the provider
  * @component AppInitSDK
  * @example
- * ```ts
+ * ```tsx
  * return (
  *  <Provider store={store}>
  *   <AppInitSDK configurations={{ appFetch, apiDiscovery }}>
@@ -41,7 +41,7 @@ const AppInitSDK: React.FC<AppInitSDKProps> = ({ children, configurations }) => 
       setUtilsConfig({ appFetch });
       apiDiscovery(store);
     } catch (e) {
-      consoleLogger.warn(e);
+      consoleLogger.warn('Error while initializing AppInitSDK', e);
     }
   }, [apiDiscovery, appFetch, store]);
 

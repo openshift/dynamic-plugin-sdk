@@ -8,6 +8,11 @@ import { setReduxStore, getReduxStore } from '../../config';
 import type { SDKStoreState } from '../../types/redux';
 import { SDKReducers } from './reducers';
 
+type UseReduxStoreResult = {
+  store: Store<unknown>;
+  storeContextPresent: boolean;
+};
+
 /**
  * `useReduxStore` will provide the store instance if present or else create one along with info if the context was present.
  *
@@ -19,7 +24,7 @@ import { SDKReducers } from './reducers';
  * }
  * ```
  */
-export const useReduxStore = (): { store: Store<unknown>; storeContextPresent: boolean } => {
+export const useReduxStore = (): UseReduxStoreResult => {
   const storeContext = useStore();
   const [storeContextPresent, setStoreContextPresent] = React.useState(false);
   const store = React.useMemo(() => {
