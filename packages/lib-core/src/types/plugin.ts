@@ -1,16 +1,16 @@
 import type { Extension, LoadedExtension } from './extension';
 
-export type PluginMetadata = {
+export type PluginRuntimeMetadata = {
   name: string;
   version: string;
 };
 
-export type PluginManifest = PluginMetadata & {
+export type PluginManifest = PluginRuntimeMetadata & {
   extensions: Extension[];
 };
 
 export type LoadedPlugin = {
-  metadata: Readonly<PluginMetadata>;
+  metadata: Readonly<PluginRuntimeMetadata>;
   extensions: Readonly<LoadedExtension[]>;
   enabled: boolean;
 };

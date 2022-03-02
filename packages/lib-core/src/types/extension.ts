@@ -18,7 +18,7 @@ export type EncodedCodeRef = { $codeRef: string };
 
 export type CodeRef<TValue = unknown> = () => Promise<TValue>;
 
-// TODO(vojtech) apply the recursive part only on object properties or array elements
+// TODO(vojtech): apply the recursive part only on object properties or array elements
 type ExtractCodeRefValues<T> = {
   [K in keyof T]: T[K] extends CodeRef<infer TValue> ? TValue : ExtractCodeRefValues<T[K]>;
 };

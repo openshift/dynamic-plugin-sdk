@@ -1,0 +1,8 @@
+{
+  "extends": "@monorepo/common/tsconfig-bases/node-cjs.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "declarationDir": "types"
+  },
+  "include": ["src", "../common/src"]
+}
