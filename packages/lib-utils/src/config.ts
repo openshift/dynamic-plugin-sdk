@@ -15,6 +15,13 @@ export type UtilsConfig = {
 let config: Readonly<UtilsConfig> | undefined;
 
 /**
+ * Checks if the {@link UtilsConfig} is set.
+ */
+export const isUtilsConfigSet = (): boolean => {
+  return config !== undefined;
+};
+
+/**
  * Set the {@link UtilsConfig} reference.
  *
  * This must be done before using any of the Kubernetes utilities.
@@ -32,7 +39,7 @@ export const setUtilsConfig = (c: UtilsConfig) => {
  *
  * Throws an error if the reference isn't already set.
  */
-export const getUtilsConfig = () => {
+export const getUtilsConfig = (): UtilsConfig => {
   if (config === undefined) {
     throw new Error('UtilsConfig reference has not been set');
   }
