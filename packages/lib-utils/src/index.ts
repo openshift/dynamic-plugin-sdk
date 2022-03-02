@@ -1,4 +1,4 @@
-export { UtilsConfig, setUtilsConfig, getUtilsConfig } from './config';
+export { UtilsConfig, isUtilsConfigSet, setUtilsConfig, getUtilsConfig } from './config';
 export { commonFetch, commonFetchText, commonFetchJSON } from './utils/common-fetch';
 export {
   k8sGetResource,

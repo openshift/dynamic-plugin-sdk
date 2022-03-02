@@ -1,7 +1,7 @@
 import { consoleLogger } from '@monorepo/common';
 import * as _ from 'lodash-es';
 import type { Extension, LoadedExtension, CodeRef } from '../types/extension';
-import type { PluginMetadata, PluginManifest, LoadedPlugin } from '../types/plugin';
+import type { PluginRuntimeMetadata, PluginManifest, LoadedPlugin } from '../types/plugin';
 import type { PluginEntryModule } from '../types/runtime';
 import type { PluginInfoEntry, PluginConsumer, PluginManager } from '../types/store';
 import { PluginEventType } from '../types/store';
@@ -216,7 +216,7 @@ export class PluginStore implements PluginConsumer, PluginManager {
    *
    * Returns `true` if the plugin was added successfully.
    */
-  addPlugin(metadata: PluginMetadata, processedExtensions: LoadedExtension[]) {
+  addPlugin(metadata: PluginRuntimeMetadata, processedExtensions: LoadedExtension[]) {
     const pluginName = metadata.name;
     const pluginVersion = metadata.version;
 

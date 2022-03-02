@@ -1,11 +1,12 @@
 import type { AnyObject, ResourceFetch } from '@monorepo/common';
 import { consoleLogger } from '@monorepo/common';
 import * as _ from 'lodash-es';
-import { pluginManifestSchema } from '../schema/plugin-manifest';
+import { PLUGIN_MANIFEST, REMOTE_ENTRY_SCRIPT, REMOTE_ENTRY_CALLBACK } from '../constants';
 import type { PluginManifest } from '../types/plugin';
 import type { PluginEntryModule, PluginEntryCallback } from '../types/runtime';
 import { basicFetch } from '../utils/basic-fetch';
 import { resolveURL } from '../utils/url';
+import { pluginManifestSchema } from '../yup-schemas';
 
 type PluginLoadData = {
   entryCallbackFired: boolean;
@@ -28,8 +29,6 @@ type PluginLoadListener = (pluginName: string, result: PluginLoadResult) => void
 export type PluginLoaderOptions = Partial<{
   /** Control which plugins can be loaded. */
   canLoadPlugin: (pluginName: string) => boolean;
-  /** Name of the global function used by plugin entry scripts. */
-  entryCallbackName: string;
   /** Custom resource fetch implementation. */
   fetchImpl: ResourceFetch;
   /** Get shared scope object for initializing `PluginEntryModule` containers. */
@@ -56,7 +55,6 @@ export class PluginLoader {
   constructor(options: PluginLoaderOptions = {}) {
     this.options = {
       canLoadPlugin: options.canLoadPlugin ?? (() => true),
-      entryCallbackName: options.entryCallbackName ?? '__plugin_entry_callback__',
       fetchImpl: options.fetchImpl ?? basicFetch,
       getSharedScope: options.getSharedScope ?? _.constant({}),
       postProcessManifest: options.postProcessManifest ?? (async (manifest) => manifest),
@@ -92,7 +90,7 @@ export class PluginLoader {
    * Fetch the manifest from a plugin's `baseURL` and validate it.
    */
   async getPluginManifest(baseURL: string) {
-    const manifestURL = resolveURL(baseURL, 'plugin-manifest.json');
+    const manifestURL = resolveURL(baseURL, PLUGIN_MANIFEST);
 
     consoleLogger.info(`Loading plugin manifest from ${manifestURL}`);
 
@@ -100,7 +98,7 @@ export class PluginLoader {
     const responseText = await response.text();
 
     let manifest: PluginManifest = await pluginManifestSchema
-      .strict()
+      .strict(true)
       .validate(JSON.parse(responseText));
 
     manifest = await this.options.postProcessManifest(manifest);
@@ -117,7 +115,7 @@ export class PluginLoader {
     getDocument: () => typeof document = _.constant(document),
   ) {
     const pluginName = manifest.name;
-    const scriptURL = resolveURL(baseURL, 'plugin-entry.js');
+    const scriptURL = resolveURL(baseURL, REMOTE_ENTRY_SCRIPT);
 
     if (this.entryCallback === undefined) {
       throw new Error(`Attempt to load plugin ${pluginName} before registering entry callback`);
@@ -204,7 +202,7 @@ export class PluginLoader {
    */
   registerPluginEntryCallback(getWindow: () => typeof window = _.constant(window)) {
     const windowGlobal = getWindow() as unknown as AnyObject;
-    const callbackName = this.options.entryCallbackName;
+    const callbackName = REMOTE_ENTRY_CALLBACK;
 
     if (this.entryCallback !== undefined) {
       throw new Error(`Global function ${callbackName} is already registered by this loader`);
