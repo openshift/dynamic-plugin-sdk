@@ -12,10 +12,10 @@ export { usePluginInfo } from './store/usePluginInfo';
 export { useResolvedExtensions } from './store/useResolvedExtensions';
 
 // Support APIs, to be consumed by other plugin SDK packages
-export { PluginRuntimeMetadata, PluginRuntimeManifest } from './types/plugin';
+export { PLUGIN_MANIFEST, REMOTE_ENTRY_SCRIPT, REMOTE_ENTRY_CALLBACK } from './constants';
+export { PluginRuntimeMetadata, PluginManifest } from './types/plugin';
 export {
   extensionArraySchema,
   pluginRuntimeMetadataSchema,
-  pluginRuntimeManifestSchema,
+  pluginManifestSchema,
 } from './yup-schemas';
-export { pluginManifestFile, remoteEntryScript, remoteEntryCallback } from './store/PluginLoader';

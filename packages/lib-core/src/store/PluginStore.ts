@@ -1,7 +1,7 @@
 import { consoleLogger } from '@monorepo/common';
 import * as _ from 'lodash-es';
 import type { Extension, LoadedExtension, CodeRef } from '../types/extension';
-import type { PluginRuntimeMetadata, PluginRuntimeManifest, LoadedPlugin } from '../types/plugin';
+import type { PluginRuntimeMetadata, PluginManifest, LoadedPlugin } from '../types/plugin';
 import type { PluginEntryModule } from '../types/runtime';
 import type { PluginInfoEntry, PluginConsumer, PluginManager } from '../types/store';
 import { PluginEventType } from '../types/store';
@@ -69,7 +69,7 @@ export class PluginStore implements PluginConsumer, PluginManager {
       }
 
       const pluginAdded = this.addPlugin(
-        _.omit<PluginRuntimeManifest, 'extensions'>(result.manifest, 'extensions'),
+        _.omit<PluginManifest, 'extensions'>(result.manifest, 'extensions'),
         this.processExtensions(pluginName, result.manifest.extensions, result.entryModule),
       );
 
@@ -159,7 +159,7 @@ export class PluginStore implements PluginConsumer, PluginManager {
       return;
     }
 
-    let manifest: PluginRuntimeManifest;
+    let manifest: PluginManifest;
 
     try {
       manifest = await this.loader.getPluginManifest(baseURL);

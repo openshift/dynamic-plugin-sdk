@@ -5,7 +5,7 @@ export type PluginRuntimeMetadata = {
   version: string;
 };
 
-export type PluginRuntimeManifest = PluginRuntimeMetadata & {
+export type PluginManifest = PluginRuntimeMetadata & {
   extensions: Extension[];
 };
 

@@ -1,4 +1,4 @@
-import { remoteEntryScript, remoteEntryCallback } from '@openshift/dynamic-plugin-sdk';
+import { REMOTE_ENTRY_SCRIPT, REMOTE_ENTRY_CALLBACK } from '@openshift/dynamic-plugin-sdk';
 import * as webpack from 'webpack';
 
 export class PatchContainerEntryPlugin implements webpack.WebpackPluginInstance {
@@ -12,20 +12,20 @@ export class PatchContainerEntryPlugin implements webpack.WebpackPluginInstance 
           stage: webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONS,
         },
         () => {
-          compilation.updateAsset(remoteEntryScript, (source) => {
+          compilation.updateAsset(REMOTE_ENTRY_SCRIPT, (source) => {
             const newSource = new webpack.sources.ReplaceSource(source);
-            const fromIndex = source.source().toString().indexOf(`${remoteEntryCallback}(`);
+            const fromIndex = source.source().toString().indexOf(`${REMOTE_ENTRY_CALLBACK}(`);
 
             if (fromIndex >= 0) {
               newSource.insert(
-                fromIndex + remoteEntryCallback.length + 1,
+                fromIndex + REMOTE_ENTRY_CALLBACK.length + 1,
                 `'${this.pluginName}', `,
               );
             } else {
               const error = new webpack.WebpackError(
-                `Missing call to ${remoteEntryCallback} in ${remoteEntryScript}`,
+                `Missing call to ${REMOTE_ENTRY_CALLBACK} in ${REMOTE_ENTRY_SCRIPT}`,
               );
-              error.file = remoteEntryScript;
+              error.file = REMOTE_ENTRY_SCRIPT;
               compilation.errors.push(error);
             }
 

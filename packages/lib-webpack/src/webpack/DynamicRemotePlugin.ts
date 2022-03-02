@@ -1,36 +1,28 @@
 import {
+  REMOTE_ENTRY_SCRIPT,
+  REMOTE_ENTRY_CALLBACK,
   extensionArraySchema,
-  remoteEntryScript,
-  remoteEntryCallback,
 } from '@openshift/dynamic-plugin-sdk';
 import type { Extension } from '@openshift/dynamic-plugin-sdk';
 import * as _ from 'lodash-es';
-import * as fs from 'fs';
 import * as glob from 'glob';
 import * as path from 'path';
 import * as webpack from 'webpack';
 import type { PluginBuildMetadata } from '../types/plugin';
+import { parseJSONFile } from '../utils/json';
 import { pluginBuildMetadataSchema } from '../yup-schemas';
 import { GenerateManifestPlugin } from './GenerateManifestPlugin';
 import { PatchContainerEntryPlugin } from './PatchContainerEntryPlugin';
 
-const parseJSONFile = (filePath: string) => JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-
-const loadPluginMetadata = (fileName: string, baseDir = process.cwd()) => {
+const parsePluginMetadata = (fileName: string, baseDir = process.cwd()) => {
   const filePath = path.resolve(baseDir, fileName);
-  return validatePluginMetadata(parseJSONFile(filePath));
+  return parseJSONFile<PluginBuildMetadata>(filePath);
 };
 
-const loadExtensions = (globPattern: string, baseDir = process.cwd()) => {
-  const filePaths = glob.sync(globPattern, { cwd: baseDir, absolute: true, nodir: true });
-  return _.flatMap(filePaths.map((filePath) => validateExtensions(parseJSONFile(filePath))));
+const parseExtensions = (globPattern: string, baseDir = process.cwd()) => {
+  const matchedFiles = glob.sync(globPattern, { cwd: baseDir, absolute: true, nodir: true });
+  return _.flatMap(matchedFiles.map((filePath) => parseJSONFile<Extension[]>(filePath)));
 };
-
-const validatePluginMetadata = (obj: unknown): PluginBuildMetadata =>
-  pluginBuildMetadataSchema.strict(true).validateSync(obj);
-
-const validateExtensions = (obj: unknown): Extension[] =>
-  extensionArraySchema.strict(true).validateSync(obj);
 
 const getSharedModulesWithStrictSingletonConfig = (modules: string[]) =>
   modules.reduce((acc, moduleRequest) => {
@@ -100,50 +92,51 @@ export class DynamicRemotePlugin implements webpack.WebpackPluginInstance {
       sharedModules: options.sharedModules ?? {},
     };
 
-    // Load and validate plugin metadata
-    if (typeof adaptedOptions.pluginMetadata === 'string') {
-      this.pluginMetadata = loadPluginMetadata(adaptedOptions.pluginMetadata);
-    } else {
-      this.pluginMetadata = validatePluginMetadata(adaptedOptions.pluginMetadata);
-    }
+    this.pluginMetadata =
+      typeof adaptedOptions.pluginMetadata === 'string'
+        ? parsePluginMetadata(adaptedOptions.pluginMetadata)
+        : adaptedOptions.pluginMetadata;
 
-    // Load and validate extensions contributed by the plugin
-    if (typeof adaptedOptions.extensions === 'string') {
-      this.extensions = loadExtensions(adaptedOptions.extensions);
-    } else {
-      this.extensions = validateExtensions(adaptedOptions.extensions);
-    }
+    this.extensions =
+      typeof adaptedOptions.extensions === 'string'
+        ? parseExtensions(adaptedOptions.extensions)
+        : adaptedOptions.extensions;
 
-    // Create plugin vs. host application shared module configuration
     this.sharedModules = {
       ...adaptedOptions.sharedModules,
       ...getSharedModulesWithStrictSingletonConfig(['react', 'redux']),
     };
+
+    // Validate plugin metadata and extensions
+    pluginBuildMetadataSchema.strict(true).validateSync(this.pluginMetadata);
+    extensionArraySchema.strict(true).validateSync(this.extensions);
   }
 
   apply(compiler: webpack.Compiler) {
-    const logger = compiler.getInfrastructureLogger(DynamicRemotePlugin.name);
     const containerName = this.pluginMetadata.name;
 
     if (!compiler.options.output.publicPath) {
-      logger.warn(
-        'output.publicPath is not defined, which may cause plugin assets to not load properly in the browser',
+      throw new Error(
+        'output.publicPath option must be set to ensure plugin assets are loaded properly in the browser',
       );
     }
 
-    if (!compiler.options.output.uniqueName) {
-      logger.info(`output.uniqueName will be set to ${containerName}`);
-      compiler.options.output.uniqueName = containerName;
+    if (compiler.options.output.uniqueName) {
+      throw new Error(
+        'output.uniqueName option will be set automatically, do not set it in your webpack configuration',
+      );
     }
+
+    compiler.options.output.uniqueName = containerName;
 
     // Generate webpack federated module container assets
     new webpack.container.ModuleFederationPlugin({
       name: containerName,
       library: {
         type: 'jsonp',
-        name: remoteEntryCallback,
+        name: REMOTE_ENTRY_CALLBACK,
       },
-      filename: remoteEntryScript,
+      filename: REMOTE_ENTRY_SCRIPT,
       exposes: _.mapValues(
         this.pluginMetadata.exposedModules || {},
         (moduleRequest, moduleName) => ({

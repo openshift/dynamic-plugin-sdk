@@ -63,8 +63,8 @@ export const pluginRuntimeMetadataSchema = yup.object().required().shape({
 });
 
 /**
- * Schema for `PluginRuntimeManifest` objects.
+ * Schema for `PluginManifest` objects.
  */
-export const pluginRuntimeManifestSchema = pluginRuntimeMetadataSchema.shape({
+export const pluginManifestSchema = pluginRuntimeMetadataSchema.shape({
   extensions: extensionArraySchema,
 });
