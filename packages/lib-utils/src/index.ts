@@ -9,3 +9,14 @@ export {
   k8sListResource,
   k8sListResourceItems,
 } from './k8s/k8s-resource';
+export {
+  BulkMessageHandler,
+  CloseHandler,
+  DestroyHandler,
+  ErrorHandler,
+  MessageHandler,
+  OpenHandler,
+  WSFactory,
+  WSOptions,
+  WSState,
+} from './ws';
