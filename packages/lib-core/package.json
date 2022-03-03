@@ -16,7 +16,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "prepack": "yarn build",
-    "prepublish": "yarn test",
+    "prepublishOnly": "yarn test",
     "build": "rm -rf dist && rollup -c",
     "lint": "yarn lint:run --ext .ts,.tsx src rollup.config.js",
     "test": "echo 'Write some tests!'"
