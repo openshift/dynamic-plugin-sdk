@@ -16,7 +16,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "prepack": "yarn build",
-    "prepublish": "yarn test",
+    "prepublishOnly": "yarn test",
     "build": "rm -rf dist && rollup -c",
     "lint": "echo 'Run the linter!'",
     "test": "echo 'Write some tests!'"
