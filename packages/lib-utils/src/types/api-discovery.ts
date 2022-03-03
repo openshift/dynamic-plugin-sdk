@@ -17,3 +17,19 @@ export type APIResourceList = K8sModelCommon & {
     shortNames?: string[];
   }[];
 };
+
+export type DiscoveryResources = {
+  adminResources: string[];
+  allResources: string[];
+  configResources: K8sModelCommon[];
+  clusterOperatorConfigResources: K8sModelCommon[];
+  models: K8sModelCommon[];
+  namespacedSet: Set<string>;
+  safeResources: string[];
+  groupVersionMap: {
+    [key: string]: {
+      versions: string[];
+      preferredVersion: string;
+    };
+  };
+};

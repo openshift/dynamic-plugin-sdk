@@ -33,6 +33,7 @@ type K8sResourceListResult<TResource extends K8sResourceCommon> = {
   items: TResource[];
   metadata: {
     resourceVersion: string;
+    continue: string;
   };
 };
 
