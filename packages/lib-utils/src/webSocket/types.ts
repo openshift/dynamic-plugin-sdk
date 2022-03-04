@@ -11,7 +11,7 @@ export type WebSocketConfigs = {
 /**
  * The web socket configuration options.
  */
-export type WSOptions = {
+export type WebSocketOptions = {
   /**
    * The path to the resource you wish to watch.
    */
@@ -69,7 +69,7 @@ export type WSOptions = {
  * The WebSocket data can be returned in an object state or in the raw string response passed.
  *
  * This is configured through `jsonParse` options flag.
- * @see WSOptions
+ * @see WebSocketOptions
  */
 export type MessageDataType = AnyObject | string;
 

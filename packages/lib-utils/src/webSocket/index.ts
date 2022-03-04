@@ -1,4 +1,4 @@
-export { WSFactory, WSState } from './WSFactory';
+export { WebSocketFactory, WebSocketState } from './WebSocketFactory';
 export {
   BulkMessageHandler,
   CloseHandler,
@@ -6,5 +6,5 @@ export {
   ErrorHandler,
   MessageHandler,
   OpenHandler,
-  WSOptions,
+  WebSocketOptions,
 } from './types';

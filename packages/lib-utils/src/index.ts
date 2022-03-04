@@ -16,7 +16,7 @@ export {
   ErrorHandler,
   MessageHandler,
   OpenHandler,
-  WSFactory,
-  WSOptions,
-  WSState,
+  WebSocketFactory,
+  WebSocketOptions,
+  WebSocketState,
 } from './webSocket';

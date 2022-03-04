@@ -9,14 +9,14 @@ import type {
   MessageDataType,
   MessageHandler,
   OpenHandler,
-  WSOptions,
+  WebSocketOptions,
 } from './types';
-import { applyConfigSubProtocols, applyConfigHost, createURL } from './ws-utils';
+import { applyConfigSubProtocols, applyConfigHost, createURL } from './utils';
 
 /**
  * States the web socket can be in.
  */
-export enum WSState {
+export enum WebSocketState {
   INIT = 'init',
   OPENED = 'open',
   ERRORED = 'error',
@@ -27,7 +27,7 @@ export enum WSState {
 /**
  * @class WebSocket factory and utility wrapper.
  */
-export class WSFactory {
+export class WebSocketFactory {
   private readonly handlers: EventHandlers;
 
   private readonly flushCanceler: ReturnType<typeof setInterval>;
@@ -36,7 +36,7 @@ export class WSFactory {
 
   private paused = false;
 
-  private state: WSState = WSState.INIT;
+  private state: WebSocketState = WebSocketState.INIT;
 
   private messageBuffer: MessageDataType[] = [];
 
@@ -48,7 +48,7 @@ export class WSFactory {
     /** Unique identifier for the web socket. */
     private readonly id: string,
     /** Options to configure the web socket with. */
-    private readonly options: WSOptions,
+    private readonly options: WebSocketOptions,
   ) {
     this.bufferMax = options.bufferMax || 0;
     this.handlers = {
@@ -70,14 +70,14 @@ export class WSFactory {
   }
 
   private reconnect(): void {
-    if (this.connectionAttempt || this.state === WSState.DESTROYED) {
+    if (this.connectionAttempt || this.state === WebSocketState.DESTROYED) {
       return;
     }
 
     let duration = 0;
 
     const attempt = () => {
-      if (!this.options.reconnect || this.state === WSState.OPENED) {
+      if (!this.options.reconnect || this.state === WebSocketState.OPENED) {
         clearTimeout(this.connectionAttempt);
         this.connectionAttempt = -1;
         return;
@@ -99,7 +99,7 @@ export class WSFactory {
   }
 
   private connect(): void {
-    this.state = WSState.INIT;
+    this.state = WebSocketState.INIT;
     this.messageBuffer = [];
 
     const url = createURL(applyConfigHost(this.options.host), this.options.path);
@@ -116,7 +116,7 @@ export class WSFactory {
 
     this.ws.onopen = () => {
       consoleLogger.info(`websocket open: ${this.id}`);
-      this.state = WSState.OPENED;
+      this.state = WebSocketState.OPENED;
       this.triggerEvent('open', undefined);
       if (this.connectionAttempt) {
         clearTimeout(this.connectionAttempt);
@@ -125,13 +125,13 @@ export class WSFactory {
     };
     this.ws.onclose = (evt) => {
       consoleLogger.info(`websocket closed: ${this.id}`, evt);
-      this.state = WSState.CLOSED;
+      this.state = WebSocketState.CLOSED;
       this.triggerEvent('close', evt);
       this.reconnect();
     };
     this.ws.onerror = (evt) => {
       consoleLogger.info(`websocket error: ${this.id}`);
-      this.state = WSState.ERRORED;
+      this.state = WebSocketState.ERRORED;
       this.triggerEvent('error', evt);
     };
     this.ws.onmessage = (evt) => {
@@ -146,8 +146,8 @@ export class WSFactory {
         msg = evt.data;
       }
       // In some browsers, onmessage can fire after onclose/error. Don't update state to be incorrect.
-      if (this.state !== WSState.DESTROYED && this.state !== WSState.CLOSED) {
-        this.state = WSState.OPENED;
+      if (this.state !== WebSocketState.DESTROYED && this.state !== WebSocketState.CLOSED) {
+        this.state = WebSocketState.OPENED;
       }
       this.triggerEvent('message', msg);
     };
@@ -161,13 +161,13 @@ export class WSFactory {
         // @ts-ignore
         h(data); // typescript is having an issue with passing the data, muting for now
       } catch (e) {
-        consoleLogger.error('WS handling failed:', e);
+        consoleLogger.error('Web socket handling failed:', e);
       }
     });
   }
 
   private triggerEvent(type: EventHandlerTypes, data?: unknown): void {
-    if (this.state === WSState.DESTROYED) {
+    if (this.state === WebSocketState.DESTROYED) {
       return;
     }
 
@@ -193,8 +193,8 @@ export class WSFactory {
    * Sets up a listener to when a message comes through the web socket.
    * @param fn - The event handler that will be called
    */
-  onMessage(fn: MessageHandler): WSFactory {
-    if (this.state !== WSState.DESTROYED) {
+  onMessage(fn: MessageHandler): WebSocketFactory {
+    if (this.state !== WebSocketState.DESTROYED) {
       this.handlers.message.push(fn);
     }
     return this;
@@ -204,8 +204,8 @@ export class WSFactory {
    * Sets up a listener for when you set `options.bufferMax` to receive multiple messages at once.
    * @param fn - The event handler that will be called
    */
-  onBulkMessage(fn: BulkMessageHandler): WSFactory {
-    if (this.state !== WSState.DESTROYED) {
+  onBulkMessage(fn: BulkMessageHandler): WebSocketFactory {
+    if (this.state !== WebSocketState.DESTROYED) {
       this.handlers.bulkMessage.push(fn);
     }
     return this;
@@ -215,8 +215,8 @@ export class WSFactory {
    * Sets up a listener for when an error gets invoked in the web socket response.
    * @param fn - The event handler that will be called
    */
-  onError(fn: ErrorHandler): WSFactory {
-    if (this.state !== WSState.DESTROYED) {
+  onError(fn: ErrorHandler): WebSocketFactory {
+    if (this.state !== WebSocketState.DESTROYED) {
       this.handlers.error.push(fn);
     }
     return this;
@@ -226,8 +226,8 @@ export class WSFactory {
    * Sets up a listener for when the web socket opens.
    * @param fn - The event handler that will be called
    */
-  onOpen(fn: OpenHandler): WSFactory {
-    if (this.state !== WSState.DESTROYED) {
+  onOpen(fn: OpenHandler): WebSocketFactory {
+    if (this.state !== WebSocketState.DESTROYED) {
       this.handlers.open.push(fn);
     }
     return this;
@@ -237,8 +237,8 @@ export class WSFactory {
    * Sets up a listener for when the web socket closes.
    * @param fn - The event handler that will be called
    */
-  onClose(fn: CloseHandler): WSFactory {
-    if (this.state !== WSState.DESTROYED) {
+  onClose(fn: CloseHandler): WebSocketFactory {
+    if (this.state !== WebSocketState.DESTROYED) {
       this.handlers.close.push(fn);
     }
     return this;
@@ -248,8 +248,8 @@ export class WSFactory {
    * Sets up a listener for when the web socket is cleaned up and no longer in-use.
    * @param fn - The event handler that will be called
    */
-  onDestroy(fn: DestroyHandler): WSFactory {
-    if (this.state !== WSState.DESTROYED) {
+  onDestroy(fn: DestroyHandler): WebSocketFactory {
+    if (this.state !== WebSocketState.DESTROYED) {
       this.handlers.destroy.push(fn);
     }
     return this;
@@ -300,7 +300,7 @@ export class WSFactory {
   /**
    * Gets the current state of the web socket.
    */
-  getState(): WSState {
+  getState(): WebSocketState {
     return this.state;
   }
 
@@ -316,7 +316,7 @@ export class WSFactory {
    */
   destroy(): void {
     consoleLogger.info(`destroying websocket: ${this.id}`);
-    if (this.state === WSState.DESTROYED) {
+    if (this.state === WebSocketState.DESTROYED) {
       return;
     }
 
@@ -345,7 +345,7 @@ export class WSFactory {
       consoleLogger.error('Error while trigger destroy event for web socket', e);
     }
 
-    this.state = WSState.DESTROYED;
+    this.state = WebSocketState.DESTROYED;
 
     this.messageBuffer = [];
   }
