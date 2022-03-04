@@ -31,6 +31,8 @@ export type RoutePageProperties = {
   path: string | string[];
   /** When true, will only match if the path matches the `location.pathname` exactly. */
   exact?: boolean;
+  /** Option to add custom className to wrapper component */
+  className?: string;
 };
 
 export type ResourcePageProperties = {
