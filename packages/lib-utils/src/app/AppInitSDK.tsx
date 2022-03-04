@@ -13,6 +13,7 @@ type AppInitSDKProps = {
   configurations: {
     apiDiscovery?: InitAPIDiscovery;
     appFetch: UtilsConfig['appFetch'];
+    wsAppSettings: UtilsConfig['wsAppSettings'];
   };
 };
 
@@ -35,15 +36,15 @@ type AppInitSDKProps = {
  */
 const AppInitSDK: React.FC<AppInitSDKProps> = ({ children, configurations }) => {
   const { store, storeContextPresent } = useReduxStore();
-  const { appFetch, apiDiscovery = initAPIDiscovery } = configurations;
+  const { appFetch, wsAppSettings, apiDiscovery = initAPIDiscovery } = configurations;
   React.useEffect(() => {
     try {
-      setUtilsConfig({ appFetch });
+      setUtilsConfig({ appFetch, wsAppSettings });
       apiDiscovery(store);
     } catch (e) {
       consoleLogger.warn('Error while initializing AppInitSDK', e);
     }
-  }, [apiDiscovery, appFetch, store]);
+  }, [apiDiscovery, appFetch, store, wsAppSettings]);
 
   return !storeContextPresent ? <Provider store={store}>{children}</Provider> : children;
 };
