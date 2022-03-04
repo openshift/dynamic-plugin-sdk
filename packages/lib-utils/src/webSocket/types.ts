@@ -35,7 +35,7 @@ export type WSOptions = {
   reconnect?: boolean;
 
   /**
-   * Set to true if you wish to get your data back in JSON format when the WS sends a message.
+   * Set to true if you wish to get your data back in JSON format when the web socket sends a message.
    * Note: If it's not valid JSON, a warning will be logged and you get back the raw message.
    */
   jsonParse?: boolean;

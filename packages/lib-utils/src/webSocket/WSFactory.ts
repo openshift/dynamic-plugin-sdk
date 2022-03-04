@@ -190,7 +190,7 @@ export class WSFactory {
   }
 
   /**
-   * Sets up a listener to when a message comes through the ws.
+   * Sets up a listener to when a message comes through the web socket.
    * @param fn - The event handler that will be called
    */
   onMessage(fn: MessageHandler): WSFactory {
@@ -212,7 +212,7 @@ export class WSFactory {
   }
 
   /**
-   * Sets up a listener for when an error gets invoked in the WS response.
+   * Sets up a listener for when an error gets invoked in the web socket response.
    * @param fn - The event handler that will be called
    */
   onError(fn: ErrorHandler): WSFactory {
@@ -223,7 +223,7 @@ export class WSFactory {
   }
 
   /**
-   * Sets up a listener for when the WS opens.
+   * Sets up a listener for when the web socket opens.
    * @param fn - The event handler that will be called
    */
   onOpen(fn: OpenHandler): WSFactory {
@@ -234,7 +234,7 @@ export class WSFactory {
   }
 
   /**
-   * Sets up a listener for when the WS closes.
+   * Sets up a listener for when the web socket closes.
    * @param fn - The event handler that will be called
    */
   onClose(fn: CloseHandler): WSFactory {
@@ -245,7 +245,7 @@ export class WSFactory {
   }
 
   /**
-   * Sets up a listener for when the WS is cleaned up and no longer in-use.
+   * Sets up a listener for when the web socket is cleaned up and no longer in-use.
    * @param fn - The event handler that will be called
    */
   onDestroy(fn: DestroyHandler): WSFactory {
@@ -276,14 +276,14 @@ export class WSFactory {
   }
 
   /**
-   *  Pauses the WS event handlers from being invoked.
+   *  Pauses the web socket event handlers from being invoked.
    */
   pause(): void {
     this.paused = true;
   }
 
   /**
-   * Unpauses the WS event handlers, messages will be flushed automatically.
+   * Unpauses the web socket event handlers, messages will be flushed automatically.
    */
   unpause(): void {
     this.paused = false;
@@ -298,7 +298,7 @@ export class WSFactory {
   }
 
   /**
-   * Gets the current state of the WS.
+   * Gets the current state of the web socket.
    */
   getState(): WSState {
     return this.state;
@@ -312,7 +312,7 @@ export class WSFactory {
   }
 
   /**
-   * Cleans up the WS instance and related internal data.
+   * Cleans up the web socket instance and related internal data.
    */
   destroy(): void {
     consoleLogger.info(`destroying websocket: ${this.id}`);
@@ -325,7 +325,7 @@ export class WSFactory {
         this.ws.close();
       }
     } catch (e) {
-      consoleLogger.error('Error while close WS socket', e);
+      consoleLogger.error('Error while close web socket socket', e);
     }
 
     clearInterval(this.flushCanceler);
@@ -342,7 +342,7 @@ export class WSFactory {
     try {
       this.triggerEvent('destroy');
     } catch (e) {
-      consoleLogger.error('Error while trigger destroy event for WS socket', e);
+      consoleLogger.error('Error while trigger destroy event for web socket', e);
     }
 
     this.state = WSState.DESTROYED;
@@ -351,7 +351,7 @@ export class WSFactory {
   }
 
   /**
-   * Send a message through the WS to the server.
+   * Send a message through the web socket to the server.
    * @param data - String like data for the server to consume
    */
   send(data: Parameters<typeof WebSocket.prototype.send>[0]): void {
