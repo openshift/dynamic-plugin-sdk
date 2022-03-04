@@ -3,6 +3,7 @@
   "version": "1.0.0-alpha1",
   "description": "Allows building plugin assets with webpack",
   "license": "Apache-2.0",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/openshift/dynamic-plugin-sdk.git",
