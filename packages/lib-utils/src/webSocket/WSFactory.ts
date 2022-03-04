@@ -13,7 +13,7 @@ import type {
 import { applyConfigSubProtocols, applyConfigHost, createURL } from './ws-utils';
 
 /**
- * The WS configurations.
+ * The web socket configuration options.
  */
 export type WSOptions = {
   /**
@@ -22,23 +22,28 @@ export type WSOptions = {
   path: string;
 
   /**
-   * Overridable ws host url for Plugins. Normally set by the application.
+   * Overridable web socket host URL for plugins. Normally set by the application.
    */
   host?: string;
+
   /**
-   * Overridable ws sub protocols for Plugins. Normally set by the application.
-   * Is ignored if `host` is not set.
+   * Overridable web socket sub protocols for plugins. Normally set by the application.
+   * Note: This is ignored if `host` is not set.
    */
   subProtocols?: string[];
+
   /**
-   * Set to true if you want automatic reconnection if it fails to create or when the ws closes.
+   * Set to true if you want automatic reconnection if it fails to create or when the web socket
+   * closes.
    */
   reconnect?: boolean;
+
   /**
    * Set to true if you wish to get your data back in JSON format when the WS sends a message.
    * Note: If it's not valid JSON, a warning will be logged and you get back the raw message.
    */
   jsonParse?: boolean;
+
   /**
    * Set a maximum buffer to hold onto between `bufferFlushInterval`s. Messages that exceed the
    * buffer are dropped.
@@ -46,6 +51,7 @@ export type WSOptions = {
    * Unit is in number of messages.
    */
   bufferMax?: number;
+
   /**
    * Configure a duration between messages being flushed out in events.
    *
@@ -53,16 +59,18 @@ export type WSOptions = {
    * Defaults to 500ms.
    */
   bufferFlushInterval?: number;
+
   /**
-   * Set a connection limit for when to give up on the current instance of the WS.
+   * Set a connection limit for when to give up on the current instance of the web socket.
    *
-   * If omitted, the WS will continue to try ot reconnect only if you set the `reconnect` flag.
+   * If omitted, the web socket will continue to try to reconnect only if you set the `reconnect`
+   * flag.
    */
   timeout?: number;
 };
 
 /**
- * States the WS can be in.
+ * States the web socket can be in.
  */
 export enum WSState {
   INIT = 'init',
@@ -92,11 +100,12 @@ export class WSFactory {
 
   private ws: WebSocket | null = null;
 
-  /**
-   * @param id - unique id for the WebSocket.
-   * @param options - websocket options to initiate the WebSocket with.
-   */
-  constructor(private readonly id: string, private readonly options: WSOptions) {
+  constructor(
+    /** Unique identifier for the web socket. */
+    private readonly id: string,
+    /** Options to configure the web socket with. */
+    private readonly options: WSOptions,
+  ) {
     this.bufferMax = options.bufferMax || 0;
     this.handlers = {
       open: [],
@@ -126,12 +135,12 @@ export class WSFactory {
     const attempt = () => {
       if (!this.options.reconnect || this.state === WSState.OPENED) {
         clearTimeout(this.connectionAttempt);
-        this.connectionAttempt = null;
+        this.connectionAttempt = -1;
         return;
       }
       if (this.options.timeout && duration > this.options.timeout) {
         clearTimeout(this.connectionAttempt);
-        this.connectionAttempt = null;
+        this.connectionAttempt = -1;
         this.destroy();
         return;
       }

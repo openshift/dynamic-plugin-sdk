@@ -6,11 +6,3 @@ export type ResourceFetch = (
   requestInit?: RequestInit,
   isK8sAPIRequest?: boolean,
 ) => Promise<Response>;
-
-/**
- * Configure to use WebSockets.
- */
-export type WebSocketConfigs = {
-  host: string;
-  subProtocols: string[];
-};

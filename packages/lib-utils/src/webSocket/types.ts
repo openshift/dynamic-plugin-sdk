@@ -1,9 +1,13 @@
 import type { AnyObject } from '@monorepo/common';
 
-type GenericHandler<T = unknown> = (data: T) => void;
-export type OpenHandler = GenericHandler<never>;
-export type CloseHandler = GenericHandler<CloseEvent>;
-export type ErrorHandler = GenericHandler<Event>;
+/**
+ * Configuration that is used to configure WebSockets from a host app perspective.
+ */
+export type WebSocketConfigs = {
+  host: string;
+  subProtocols: string[];
+};
+
 /**
  * The WebSocket data can be returned in an object state or in the raw string response passed.
  *
@@ -11,6 +15,11 @@ export type ErrorHandler = GenericHandler<Event>;
  * @see WSOptions
  */
 export type MessageDataType = AnyObject | string;
+
+type GenericHandler<T = unknown> = (data: T) => void;
+export type OpenHandler = GenericHandler<never>;
+export type CloseHandler = GenericHandler<CloseEvent>;
+export type ErrorHandler = GenericHandler<Event>;
 export type MessageHandler = GenericHandler<MessageDataType>;
 export type DestroyHandler = GenericHandler<never>;
 export type BulkMessageHandler = GenericHandler<MessageDataType>;

@@ -19,4 +19,4 @@ export {
   WSFactory,
   WSOptions,
   WSState,
-} from './ws';
+} from './webSocket';
