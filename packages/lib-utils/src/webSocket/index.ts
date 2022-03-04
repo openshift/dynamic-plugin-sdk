@@ -1,9 +1,10 @@
-export { WSFactory, WSOptions, WSState } from './WSFactory';
+export { WSFactory, WSState } from './WSFactory';
 export {
-  OpenHandler,
+  BulkMessageHandler,
   CloseHandler,
+  DestroyHandler,
   ErrorHandler,
   MessageHandler,
-  DestroyHandler,
-  BulkMessageHandler,
+  OpenHandler,
+  WSOptions,
 } from './types';
