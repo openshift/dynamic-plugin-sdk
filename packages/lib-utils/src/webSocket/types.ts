@@ -73,7 +73,7 @@ export type WebSocketOptions = {
  */
 export type MessageDataType = AnyObject | string;
 
-type GenericHandler<T = unknown> = (data: T) => void;
+export type GenericHandler<T = unknown> = (data: T) => void;
 export type OpenHandler = GenericHandler<never>;
 export type CloseHandler = GenericHandler<CloseEvent>;
 export type ErrorHandler = GenericHandler<Event>;

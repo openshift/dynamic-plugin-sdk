@@ -6,6 +6,7 @@ import type {
   EventHandlers,
   EventHandlerTypes,
   ErrorHandler,
+  GenericHandler,
   MessageDataType,
   MessageHandler,
   OpenHandler,
@@ -25,7 +26,7 @@ export enum WebSocketState {
 }
 
 /**
- * @class WebSocket factory and utility wrapper.
+ * WebSocket factory and utility wrapper.
  */
 export class WebSocketFactory {
   private readonly handlers: EventHandlers;
@@ -157,9 +158,7 @@ export class WebSocketFactory {
     const handlers = this.handlers[type];
     handlers?.forEach((h) => {
       try {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        h(data); // typescript is having an issue with passing the data, muting for now
+        (h as GenericHandler)(data);
       } catch (e) {
         consoleLogger.error('Web socket handling failed:', e);
       }
