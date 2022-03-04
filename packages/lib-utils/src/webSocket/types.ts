@@ -3,7 +3,7 @@ import type { AnyObject } from '@monorepo/common';
 /**
  * Configuration that is used to configure WebSockets from a host app perspective.
  */
-export type WebSocketConfigs = {
+export type WebSocketAppSettings = {
   host: string;
   subProtocols: string[];
 };

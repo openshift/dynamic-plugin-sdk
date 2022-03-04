@@ -22,9 +22,9 @@ export const createURL = (host: string, path: string): string => {
 };
 
 export const applyConfigHost = (overrideHost?: string): string => {
-  return overrideHost ?? getUtilsConfig().wsConfigs.host;
+  return overrideHost ?? getUtilsConfig().wsAppSettings.host;
 };
 
 export const applyConfigSubProtocols = (overridableProtocols?: string[]): string[] => {
-  return overridableProtocols ?? getUtilsConfig().wsConfigs.subProtocols;
+  return overridableProtocols ?? getUtilsConfig().wsAppSettings.subProtocols;
 };

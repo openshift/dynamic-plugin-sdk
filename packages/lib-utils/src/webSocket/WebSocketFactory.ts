@@ -31,7 +31,7 @@ export enum WebSocketState {
 export class WebSocketFactory {
   private readonly handlers: EventHandlers;
 
-  private readonly flushCanceler: ReturnType<typeof setInterval> | number = -1;
+  private readonly flushCanceler: number = -1;
 
   private readonly bufferMax: number;
 
@@ -41,7 +41,7 @@ export class WebSocketFactory {
 
   private messageBuffer: MessageDataType[] = [];
 
-  private connectionAttempt: ReturnType<typeof setTimeout> | number = -1;
+  private connectionAttempt = -1;
 
   private ws: WebSocket | null = null;
 
@@ -63,7 +63,7 @@ export class WebSocketFactory {
     this.connect();
 
     if (this.bufferMax) {
-      this.flushCanceler = setInterval(
+      this.flushCanceler = window.setInterval(
         this.flushMessageBuffer.bind(this),
         this.options.bufferFlushInterval || 500,
       );
@@ -79,12 +79,12 @@ export class WebSocketFactory {
 
     const attempt = () => {
       if (!this.options.reconnect || this.state === WebSocketState.OPENED) {
-        clearTimeout(this.connectionAttempt as number);
+        window.clearTimeout(this.connectionAttempt);
         this.connectionAttempt = -1;
         return;
       }
       if (this.options.timeout && duration > this.options.timeout) {
-        clearTimeout(this.connectionAttempt as number);
+        window.clearTimeout(this.connectionAttempt);
         this.connectionAttempt = -1;
         this.destroy();
         return;
@@ -92,11 +92,11 @@ export class WebSocketFactory {
 
       this.connect();
       duration = Math.round(Math.min(1.5 * duration, 60000));
-      this.connectionAttempt = setTimeout(attempt, duration);
+      this.connectionAttempt = window.setTimeout(attempt, duration);
       consoleLogger.info(`attempting reconnect in ${duration / 1000} seconds...`);
     };
 
-    this.connectionAttempt = setTimeout(attempt, 1000);
+    this.connectionAttempt = window.setTimeout(attempt, 1000);
   }
 
   private connect(): void {
@@ -120,7 +120,7 @@ export class WebSocketFactory {
       this.state = WebSocketState.OPENED;
       this.triggerEvent('open', undefined);
       if (this.connectionAttempt) {
-        clearTimeout(this.connectionAttempt as number);
+        window.clearTimeout(this.connectionAttempt);
         this.connectionAttempt = -1;
       }
     };
@@ -327,8 +327,8 @@ export class WebSocketFactory {
       consoleLogger.error('Error while close web socket socket', e);
     }
 
-    clearInterval(this.flushCanceler as number);
-    clearTimeout(this.connectionAttempt as number);
+    window.clearInterval(this.flushCanceler);
+    window.clearTimeout(this.connectionAttempt);
 
     if (this.ws) {
       this.ws.onopen = null;
