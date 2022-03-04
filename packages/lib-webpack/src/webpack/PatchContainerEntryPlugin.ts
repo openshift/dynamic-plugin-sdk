@@ -1,5 +1,5 @@
 import { REMOTE_ENTRY_SCRIPT } from '@openshift/dynamic-plugin-sdk';
-import * as webpack from 'webpack';
+import webpack from 'webpack';
 
 export class PatchContainerEntryPlugin implements webpack.WebpackPluginInstance {
   constructor(private readonly callbackName: string, private readonly pluginID: string) {}

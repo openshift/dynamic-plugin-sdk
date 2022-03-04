@@ -1,6 +1,6 @@
 import { PLUGIN_MANIFEST } from '@openshift/dynamic-plugin-sdk';
 import type { PluginManifest } from '@openshift/dynamic-plugin-sdk';
-import * as webpack from 'webpack';
+import webpack from 'webpack';
 
 export class GenerateManifestPlugin implements webpack.WebpackPluginInstance {
   constructor(private readonly manifest: PluginManifest) {}
