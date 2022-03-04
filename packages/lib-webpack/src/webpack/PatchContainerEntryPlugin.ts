@@ -2,7 +2,7 @@ import { REMOTE_ENTRY_SCRIPT, REMOTE_ENTRY_CALLBACK } from '@openshift/dynamic-p
 import * as webpack from 'webpack';
 
 export class PatchContainerEntryPlugin implements webpack.WebpackPluginInstance {
-  constructor(private readonly pluginName: string) {}
+  constructor(private readonly pluginName: string, private readonly pluginVersion: string) {}
 
   apply(compiler: webpack.Compiler) {
     compiler.hooks.thisCompilation.tap(PatchContainerEntryPlugin.name, (compilation) => {
@@ -19,7 +19,7 @@ export class PatchContainerEntryPlugin implements webpack.WebpackPluginInstance 
             if (fromIndex >= 0) {
               newSource.insert(
                 fromIndex + REMOTE_ENTRY_CALLBACK.length + 1,
-                `'${this.pluginName}', `,
+                `'${this.pluginName}@${this.pluginVersion}', `,
               );
             } else {
               const error = new webpack.WebpackError(
