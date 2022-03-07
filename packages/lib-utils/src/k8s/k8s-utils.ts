@@ -141,6 +141,7 @@ export const k8sWatch = (
     fieldSelector?: string;
   } = {},
   wsOptions: {
+    // TODO add Partial<WebSocketOptions>
     [key: string]: unknown;
   } = {},
 ) => {
@@ -149,9 +150,9 @@ export const k8sWatch = (
     queryParams: QueryParams;
     ns?: string;
   } = { queryParams };
+  // TODO add WebSocketOptions type
   const wsOptionsUpdated = {
     path: '',
-    host: 'auto',
     reconnect: true,
     jsonParse: true,
     bufferFlushInterval: 500,

@@ -1,12 +1,14 @@
 import { consoleLogger } from '@monorepo/common';
 import * as _ from 'lodash-es';
+import type { Dispatch } from 'redux';
 import type { ActionType as Action } from 'typesafe-actions';
 import { action } from 'typesafe-actions';
-import { k8sListResource, k8sGetResource } from '../../../../k8s/k8s-resource';
-import { k8sWatch } from '../../../../k8s/k8s-utils';
-import type { DiscoveryResources } from '../../../../types/api-discovery';
-import type { K8sModelCommon, K8sResourceCommon, FilterValue } from '../../../../types/k8s';
-import { getImpersonate, getActiveCluster } from '../../reducers/core';
+import { k8sListResource, k8sGetResource } from '../../../k8s/k8s-resource';
+import { k8sWatch } from '../../../k8s/k8s-utils';
+import type { DiscoveryResources } from '../../../types/api-discovery';
+import type { K8sModelCommon, K8sResourceCommon, FilterValue } from '../../../types/k8s';
+import type { DispatchWithThunk, GetState } from '../../../types/redux';
+import { getImpersonate, getActiveCluster } from '../reducers/core/selector';
 
 export enum ActionType {
   ReceivedResources = 'resources',
@@ -27,7 +29,7 @@ type K8sEvent = { type: 'ADDED' | 'DELETED' | 'MODIFIED'; object: K8sResourceCom
 
 export const updateListFromWS = (id: string, k8sObjects: K8sEvent[]) =>
   action(ActionType.UpdateListFromWS, { id, k8sObjects });
-export const loaded = (id: string, k8sObjects: K8sResourceCommon | K8sResourceCommon[]) =>
+export const loaded = (id: string, k8sObjects: K8sResourceCommon[]) =>
   action(ActionType.Loaded, { id, k8sObjects });
 
 export const bulkAddToList = (id: string, k8sObjects: K8sResourceCommon[]) =>
@@ -44,6 +46,7 @@ export const errored = (id: string, k8sObjects: unknown) =>
   action(ActionType.Errored, { id, k8sObjects });
 export const filterList = (id: string, name: string, value: FilterValue) =>
   action(ActionType.FilterList, { id, name, value });
+type LoadedAction = typeof loaded;
 
 export const partialObjectMetadataListHeader = {
   Accept: 'application/json;as=PartialObjectMetadataList;v=v1;g=meta.k8s.io,application/json',
@@ -56,43 +59,40 @@ export const partialObjectMetadataHeader = {
 // TODO remove prolific use of any type
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const WS = {} as { [id: string]: WebSocket & any };
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const POLLs: any = {};
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const REF_COUNTS: any = {};
+const POLLs = {} as { [id: string]: number };
+const REF_COUNTS = {} as { [id: string]: number };
 
 const paginationLimit = 250;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const stopK8sWatch = (id: string) => (dispatch: any) => {
-  REF_COUNTS[id] -= 1;
-  if (REF_COUNTS[id] > 0) {
-    return _.noop;
-  }
+export const stopK8sWatch =
+  (id: string) =>
+  (dispatch: Dispatch): void => {
+    REF_COUNTS[id] -= 1;
+    if (REF_COUNTS[id] > 0) {
+      return;
+    }
 
-  const ws = WS[id];
-  if (ws) {
-    ws.destroy();
-    delete WS[id];
-  }
-  const poller = POLLs[id];
-  clearInterval(poller);
-  delete POLLs[id];
-  delete REF_COUNTS[id];
-  return dispatch(stopWatchK8s(id));
-};
+    const ws = WS[id];
+    if (ws) {
+      ws.destroy();
+      delete WS[id];
+    }
+    const poller = POLLs[id];
+    window.clearInterval(poller);
+    delete POLLs[id];
+    delete REF_COUNTS[id];
+    dispatch(stopWatchK8s(id));
+  };
 
 export const watchK8sList =
   (
     id: string,
     query: { [key: string]: string },
     k8skind: K8sModelCommon,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    extraAction?: any,
+    extraAction?: LoadedAction,
     partialMetadata = false,
   ) =>
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (dispatch: any, getState: any) => {
+  (dispatch: DispatchWithThunk, getState: GetState) => {
     // Only one watch per unique list ID
     if (id in REF_COUNTS) {
       REF_COUNTS[id] += 1;
@@ -179,7 +179,7 @@ export const watchK8sList =
             k8skind,
           );
           if (!POLLs[id]) {
-            POLLs[id] = setTimeout(pollAndWatch, 15 * 1000);
+            POLLs[id] = window.setTimeout(pollAndWatch, 15 * 1000);
           }
           return;
         }
@@ -203,7 +203,7 @@ export const watchK8sList =
         dispatch(errored(id, e));
 
         if (!POLLs[id]) {
-          POLLs[id] = setTimeout(pollAndWatch, 15 * 1000);
+          POLLs[id] = window.setTimeout(pollAndWatch, 15 * 1000);
         }
         return;
       }
@@ -232,7 +232,7 @@ export const watchK8sList =
             return;
           }
 
-          POLLs[id] = setTimeout(pollAndWatch, 15 * 1000);
+          POLLs[id] = window.setTimeout(pollAndWatch, 15 * 1000);
         })
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .onbulkmessage((events: any) =>
@@ -251,8 +251,7 @@ export const watchK8sObject =
     k8sType: K8sModelCommon,
     partialMetadata = false,
   ) =>
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (dispatch: any, getState: any) => {
+  (dispatch: Dispatch, getState: GetState) => {
     if (id in REF_COUNTS) {
       REF_COUNTS[id] += 1;
       return _.noop;
@@ -296,7 +295,7 @@ export const watchK8sObject =
           consoleLogger.error(err);
         });
     };
-    POLLs[id] = setInterval(poller, 30 * 1000);
+    POLLs[id] = window.setInterval(poller, 30 * 1000);
     poller();
 
     if (!_.get(k8sType, 'verbs', ['watch']).includes('watch')) {
@@ -304,11 +303,9 @@ export const watchK8sObject =
       return _.noop;
     }
 
-    const { subprotocols } = getImpersonate(getState()) || {};
-
     // TODO use websocket handler
-    WS[id] = k8sWatch(k8sType, queryWithCluster, { subprotocols });
-    // WS[id] = k8sWatch(k8sType, queryWithCluster, { subprotocols }).onbulkmessage((events: { object: K8sResourceCommon }[]) =>
+    WS[id] = k8sWatch(k8sType, queryWithCluster);
+    // WS[id] = k8sWatch(k8sType, queryWithCluster).onbulkmessage((events: { object: K8sResourceCommon }[]) =>
     //     events.forEach((e: { object: K8sResourceCommon }) => dispatch(modifyObject(id, e.object))),
     // );
     return watch;

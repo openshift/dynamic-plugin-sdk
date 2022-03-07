@@ -1,3 +1,5 @@
+import type { K8sVerb } from '@openshift/dynamic-plugin-sdk/src/types/core';
+
 export type K8sResourceIdentifier = {
   apiGroup?: string;
   apiVersion: string;
@@ -7,12 +9,9 @@ export type K8sResourceIdentifier = {
 export type K8sModelCommon = K8sResourceIdentifier & {
   plural: string;
   propagationPolicy?: 'Foreground' | 'Background';
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  verbs?: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  shortNames?: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  crd?: any;
+  verbs?: K8sVerb[];
+  shortNames?: string[];
+  crd?: boolean;
   namespaced?: boolean;
 };
 
