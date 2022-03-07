@@ -63,7 +63,7 @@ export type QueryParams = Partial<{
   labelSelector: string;
   fieldSelector: string;
   resourceVersion: string;
-  [key: string]: string | number;
+  [key: string]: string;
 }>;
 
 export type Patch = {

@@ -8,6 +8,7 @@ import { k8sWatch } from '../../../k8s/k8s-utils';
 import type { DiscoveryResources } from '../../../types/api-discovery';
 import type { K8sModelCommon, K8sResourceCommon, FilterValue } from '../../../types/k8s';
 import type { DispatchWithThunk, GetState } from '../../../types/redux';
+import type { WebSocketFactory } from '../../../webSocket/WebSocketFactory';
 import { getImpersonate, getActiveCluster } from '../reducers/core/selector';
 
 export enum ActionType {
@@ -56,11 +57,10 @@ export const partialObjectMetadataHeader = {
   Accept: 'application/json;as=PartialObjectMetadata;v=v1;g=meta.k8s.io,application/json',
 };
 
-// TODO remove prolific use of any type
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const WS = {} as { [id: string]: WebSocket & any };
-const POLLs = {} as { [id: string]: number };
-const REF_COUNTS = {} as { [id: string]: number };
+// TODO create a helper class that can help manage these objects
+const WS: { [id: string]: WebSocketFactory } = {};
+const POLLs: { [id: string]: number } = {};
+const REF_COUNTS: { [id: string]: number } = {};
 
 const paginationLimit = 250;
 
@@ -92,11 +92,11 @@ export const watchK8sList =
     extraAction?: LoadedAction,
     partialMetadata = false,
   ) =>
-  (dispatch: DispatchWithThunk, getState: GetState) => {
+  (dispatch: DispatchWithThunk, getState: GetState): void => {
     // Only one watch per unique list ID
     if (id in REF_COUNTS) {
       REF_COUNTS[id] += 1;
-      return _.noop;
+      return;
     }
 
     const queryWithCluster = query;
@@ -123,7 +123,7 @@ export const watchK8sList =
         model: k8skind,
         queryOptions: {
           queryParams: {
-            limit: paginationLimit,
+            limit: `${paginationLimit}`,
             ...queryWithCluster,
             ...(continueToken ? { continue: continueToken } : {}),
           },
@@ -209,7 +209,7 @@ export const watchK8sList =
       }
 
       WS[id]
-        .onclose((event: { code: number }) => {
+        .onClose((event: { code: number }) => {
           // Close Frame Status Codes: https://tools.ietf.org/html/rfc6455#section-7.4.1
           if (event.code !== 1006) {
             return;
@@ -218,7 +218,7 @@ export const watchK8sList =
           const ws = WS[id];
           ws?.destroy();
         })
-        .ondestroy((timedOut: boolean) => {
+        .onDestroy((timedOut: boolean) => {
           if (!timedOut) {
             return;
           }
@@ -235,11 +235,11 @@ export const watchK8sList =
           POLLs[id] = window.setTimeout(pollAndWatch, 15 * 1000);
         })
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .onbulkmessage((events: any) =>
+        .onBulkMessage((events: any) =>
           [updateListFromWS, extraAction].forEach((f) => f && dispatch(f(id, events))),
         );
     };
-    return pollAndWatch();
+    pollAndWatch();
   };
 
 export const watchK8sObject =
@@ -251,12 +251,12 @@ export const watchK8sObject =
     k8sType: K8sModelCommon,
     partialMetadata = false,
   ) =>
-  (dispatch: Dispatch, getState: GetState) => {
+  (dispatch: Dispatch, getState: GetState): void => {
     if (id in REF_COUNTS) {
       REF_COUNTS[id] += 1;
-      return _.noop;
+      return;
     }
-    const watch = dispatch(startWatchK8sObject(id));
+    dispatch(startWatchK8sObject(id));
     REF_COUNTS[id] = 1;
 
     const queryWithCluster = query;
@@ -300,7 +300,7 @@ export const watchK8sObject =
 
     if (!_.get(k8sType, 'verbs', ['watch']).includes('watch')) {
       consoleLogger.warn('Resource does not support watching', k8sType);
-      return _.noop;
+      return;
     }
 
     const { subprotocols } = getImpersonate(getState()) || {};
@@ -310,7 +310,6 @@ export const watchK8sObject =
       (events: any) =>
         events.forEach((e: { object: K8sResourceCommon }) => dispatch(modifyObject(id, e.object))),
     );
-    return watch;
   };
 
 export const receivedResources = (resources: DiscoveryResources) =>
