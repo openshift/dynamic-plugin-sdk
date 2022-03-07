@@ -79,7 +79,7 @@ export type CloseHandler = GenericHandler<CloseEvent>;
 export type ErrorHandler = GenericHandler<Event>;
 export type MessageHandler = GenericHandler<MessageDataType>;
 export type DestroyHandler = GenericHandler<never>;
-export type BulkMessageHandler = GenericHandler<MessageDataType>;
+export type BulkMessageHandler = GenericHandler<MessageDataType[]>;
 
 export type EventHandlers = {
   open: OpenHandler[];
