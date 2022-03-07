@@ -3,6 +3,7 @@
   "version": "1.0.0-alpha1",
   "description": "Allows building plugin assets with webpack",
   "license": "Apache-2.0",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/openshift/dynamic-plugin-sdk.git",
@@ -16,7 +17,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "prepack": "yarn build",
-    "prepublish": "yarn test",
+    "prepublishOnly": "yarn test",
     "build": "rm -rf dist && rollup -c",
     "lint": "echo 'Run the linter!'",
     "test": "echo 'Write some tests!'"

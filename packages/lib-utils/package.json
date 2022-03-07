@@ -1,8 +1,9 @@
 {
   "name": "@openshift/dynamic-plugin-sdk-utils",
-  "version": "1.0.0-alpha1",
+  "version": "1.0.0-alpha2",
   "description": "Provides Kubernetes and React utilities",
   "license": "Apache-2.0",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/openshift/dynamic-plugin-sdk.git",
@@ -16,7 +17,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "prepack": "yarn build",
-    "prepublish": "yarn test",
+    "prepublishOnly": "yarn test",
     "build": "rm -rf dist && rollup -c",
     "lint": "yarn lint:run --ext .ts,.tsx src rollup.config.js",
     "test": "echo 'Write some tests!'"

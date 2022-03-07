@@ -30,12 +30,6 @@ Each package is versioned and published independently from other packages.
 
 Make sure the `npm` package manager that comes with Node.js is up-to-date.
 
-To see the current installed version:
-
-```sh
-npm ls -g npm
-```
-
 To check if the current installed version is outdated:
 
 ```sh
@@ -45,7 +39,7 @@ npm outdated -g npm
 To install the latest version:
 
 ```sh
-npm install -g npm@<version>
+npm install -g npm@<VERSION>
 ```
 
 ### Log into npmjs account
@@ -54,21 +48,23 @@ Only members of npmjs [openshift organization](https://www.npmjs.com/org/openshi
 packages maintained in this repo.
 
 ```sh
-npm login
+npm login --scope=@openshift
 ```
 
 ### Publish a package
 
-To publish the given package using the current version as specified in its `package.json`:
+To see the latest published version of the given package:
 
 ```sh
-npm publish packages/lib-<pkg> --no-git-tag-version
+npm view $(jq -r .name < packages/<PKG_DIR>/package.json) dist-tags.latest
 ```
 
-To publish a package under a different version and update its `package.json` accordingly:
+Make sure the `version` field in the relevant `package.json` file(s) has the right value.
+
+To verify the package before publishing:
 
 ```sh
-npm publish packages/lib-<pkg> --no-git-tag-version --new-version <version>
+npm publish packages/<PKG_DIR> --no-git-tag-version --dry-run
 ```
 
-It's recommended to add `--dry-run` to `npm publish` command prior to actual publish.
+To publish the package, run the above command without `--dry-run` parameter.
