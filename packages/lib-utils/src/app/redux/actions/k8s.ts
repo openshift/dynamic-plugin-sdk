@@ -7,7 +7,7 @@ import { k8sListResource, k8sGetResource } from '../../../k8s/k8s-resource';
 import { k8sWatch } from '../../../k8s/k8s-utils';
 import type { DiscoveryResources } from '../../../types/api-discovery';
 import type { K8sModelCommon, K8sResourceCommon, FilterValue } from '../../../types/k8s';
-import type { DispatchWithThunk, GetState } from '../../../types/redux';
+import type { ThunkDispatchFunction } from '../../../types/redux';
 import type { WebSocketFactory } from '../../../web-socket/WebSocketFactory';
 import { getImpersonate, getActiveCluster } from '../reducers/core/selector';
 
@@ -91,8 +91,8 @@ export const watchK8sList =
     k8skind: K8sModelCommon,
     extraAction?: LoadedAction,
     partialMetadata = false,
-  ) =>
-  (dispatch: DispatchWithThunk, getState: GetState): void => {
+  ): ThunkDispatchFunction =>
+  (dispatch, getState) => {
     // Only one watch per unique list ID
     if (id in REF_COUNTS) {
       REF_COUNTS[id] += 1;
@@ -250,8 +250,8 @@ export const watchK8sObject =
     query: { [key: string]: string },
     k8sType: K8sModelCommon,
     partialMetadata = false,
-  ) =>
-  (dispatch: Dispatch, getState: GetState): void => {
+  ): ThunkDispatchFunction =>
+  (dispatch, getState) => {
     if (id in REF_COUNTS) {
       REF_COUNTS[id] += 1;
       return;

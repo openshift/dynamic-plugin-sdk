@@ -37,4 +37,6 @@ export type DispatchWithThunk = ThunkDispatch<SDKStoreState, undefined, AnyActio
 
 export type GetState = () => SDKStoreState;
 
+export type ThunkDispatchFunction = (dispatch: DispatchWithThunk, state: GetState) => void;
+
 export type GetUser = (state: SDKStoreState) => UserKind | undefined;

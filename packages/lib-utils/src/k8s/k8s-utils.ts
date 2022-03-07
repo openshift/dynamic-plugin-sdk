@@ -9,8 +9,8 @@ import type {
   MatchExpression,
   MatchLabels,
   K8sResourceKindReference,
-  K8sResourceIdentifier,
   GetGroupVersionKindForModel,
+  K8sGroupVersionKind,
 } from '../types/k8s';
 import type { WebSocketOptions } from '../web-socket/types';
 import { WebSocketFactory } from '../web-socket/WebSocketFactory';
@@ -204,18 +204,17 @@ export const getGroupVersionKindForModel: GetGroupVersionKindForModel = ({
  * @deprecated - This will become obsolete when we move away from K8sResourceKindReference to K8sGroupVersionKind
  * Provides a reference string that uniquely identifies the group, version, and kind of a k8s resource.
  * @param K8sGroupVersionKind Pass K8sGroupVersionKind which will have group, version, and kind of a k8s resource.
- * @param K8sGroupVersionKind.apiGroup Pass group of k8s resource or model.
- * @param K8sGroupVersionKind.apiVersion Pass version of k8s resource or model.
+ * @param K8sGroupVersionKind.group Pass group of k8s resource or model.
+ * @param K8sGroupVersionKind.version Pass version of k8s resource or model.
  * @param K8sGroupVersionKind.kind Pass kind of k8s resource or model.
  * @return The reference for any k8s resource i.e `group~version~kind`.
  * If the group will not be present then "core" will be returned as part of the group in reference.
  * * */
 export const getReference = ({
-  apiGroup,
-  apiVersion,
+  group,
+  version,
   kind,
-}: K8sResourceIdentifier): K8sResourceKindReference =>
-  [apiGroup || 'core', apiVersion, kind].join('~');
+}: K8sGroupVersionKind): K8sResourceKindReference => [group || 'core', version, kind].join('~');
 
 /**
  * @deprecated - This will become obsolete when we move away from K8sResourceKindReference to K8sGroupVersionKind
@@ -225,7 +224,7 @@ export const getReference = ({
  * @return The reference for model i.e `group~version~kind`.
  * * */
 export const getReferenceForModel = (model: K8sModelCommon): K8sResourceKindReference =>
-  getReference({ apiGroup: model.apiGroup, apiVersion: model.apiVersion, kind: model.kind });
+  getReference({ group: model.apiGroup, version: model.apiVersion, kind: model.kind });
 
 // TODO Migrate implementation or refactor K8s reducer to avoid usage
 let k8sModels: ImmutableMap<K8sResourceKindReference, K8sModelCommon>;
@@ -245,3 +244,35 @@ export const getNamespacedResources = () => {
   }
   return namespacedResources;
 };
+
+/**
+ * @deprecated - This will become obsolete when we move away from K8sResourceKindReference to K8sGroupVersionKind
+ * Provides a group, version, and kind for a reference.
+ * @param reference reference for group, version, kind i.e `group~version~kind`.
+ * @returns The group, version, kind for the provided reference.
+ * If the group's value is "core" it denotes resource does not have an API group.
+ * */
+export const getGroupVersionKindForReference = (
+  reference: K8sResourceKindReference,
+): K8sGroupVersionKind => {
+  const referenceSplit = reference.split('~');
+  if (referenceSplit.length > 3) throw new Error('Provided reference is invalid.');
+
+  const [group, version, kind] = referenceSplit;
+  return {
+    group,
+    version,
+    kind,
+  };
+};
+
+/**
+ * @deprecated - This will become obsolete when we move away from K8sResourceKindReference to K8sGroupVersionKind
+ * Provides a reference string that uniquely identifies the group, version, and kind of K8sGroupVersionKind.
+ * @param kind kind can be of type K8sResourceKindReference or K8sGroupVersionKind
+ * @return The reference i.e `group~version~kind`.
+ * * */
+export const transformGroupVersionKindToReference = (
+  kind: K8sResourceKindReference | K8sGroupVersionKind,
+): K8sResourceKindReference =>
+  kind && typeof kind !== 'string' ? getReference(kind) : (kind as K8sResourceKindReference);
