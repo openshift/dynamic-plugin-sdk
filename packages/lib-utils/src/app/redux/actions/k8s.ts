@@ -188,7 +188,7 @@ export const watchK8sList =
         WS[id] = k8sWatch(
           k8skind,
           { ...queryWithCluster, resourceVersion },
-          { subprotocols, timeout: 60 * 1000 },
+          { subProtocols: subprotocols, timeout: 60 * 1000 },
         );
       } catch (e) {
         if (!REF_COUNTS[id]) {
@@ -303,11 +303,13 @@ export const watchK8sObject =
       return _.noop;
     }
 
-    // TODO use websocket handler
-    WS[id] = k8sWatch(k8sType, queryWithCluster);
-    // WS[id] = k8sWatch(k8sType, queryWithCluster).onbulkmessage((events: { object: K8sResourceCommon }[]) =>
-    //     events.forEach((e: { object: K8sResourceCommon }) => dispatch(modifyObject(id, e.object))),
-    // );
+    const { subprotocols } = getImpersonate(getState()) || {};
+
+    WS[id] = k8sWatch(k8sType, queryWithCluster, { subProtocols: subprotocols }).onBulkMessage(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (events: any) =>
+        events.forEach((e: { object: K8sResourceCommon }) => dispatch(modifyObject(id, e.object))),
+    );
     return watch;
   };
 

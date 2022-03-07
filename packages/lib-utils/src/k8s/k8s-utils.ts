@@ -12,6 +12,8 @@ import type {
   K8sResourceIdentifier,
   GetGroupVersionKindForModel,
 } from '../types/k8s';
+import type { WebSocketOptions } from '../webSocket/types';
+import { WebSocketFactory } from '../webSocket/WebSocketFactory';
 
 const getQueryString = (queryParams: QueryParams) =>
   Object.entries(queryParams)
@@ -140,18 +142,14 @@ export const k8sWatch = (
     ns?: string;
     fieldSelector?: string;
   } = {},
-  wsOptions: {
-    // TODO add Partial<WebSocketOptions>
-    [key: string]: unknown;
-  } = {},
+  wsOptions: Partial<WebSocketOptions> = {},
 ) => {
   const queryParams: QueryParams = { watch: 'true' };
   const opts: {
     queryParams: QueryParams;
     ns?: string;
   } = { queryParams };
-  // TODO add WebSocketOptions type
-  const wsOptionsUpdated = {
+  const wsOptionsUpdated: WebSocketOptions = {
     path: '',
     reconnect: true,
     jsonParse: true,
@@ -183,9 +181,7 @@ export const k8sWatch = (
   const path = getK8sResourceURL(kind, undefined, opts);
   wsOptionsUpdated.path = path;
 
-  // TODO utilize ws-factory
-  return { path, wsOptionsUpdated };
-  // return new WSFactory(path, wsOptionsUpdated as WSOptions);
+  return new WebSocketFactory(path, wsOptionsUpdated as WebSocketOptions);
 };
 
 /**
