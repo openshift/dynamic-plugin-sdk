@@ -29,6 +29,8 @@ type PluginLoadListener = (pluginName: string, result: PluginLoadResult) => void
 export type PluginLoaderOptions = Partial<{
   /** Control which plugins can be loaded. */
   canLoadPlugin: (pluginName: string) => boolean;
+  /** Name of the global function used by plugin entry scripts. */
+  entryCallbackName: string;
   /** Custom resource fetch implementation. */
   fetchImpl: ResourceFetch;
   /** Get shared scope object for initializing `PluginEntryModule` containers. */
@@ -55,6 +57,7 @@ export class PluginLoader {
   constructor(options: PluginLoaderOptions = {}) {
     this.options = {
       canLoadPlugin: options.canLoadPlugin ?? (() => true),
+      entryCallbackName: options.entryCallbackName ?? REMOTE_ENTRY_CALLBACK,
       fetchImpl: options.fetchImpl ?? basicFetch,
       getSharedScope: options.getSharedScope ?? _.constant({}),
       postProcessManifest: options.postProcessManifest ?? (async (manifest) => manifest),
@@ -202,7 +205,7 @@ export class PluginLoader {
    */
   registerPluginEntryCallback(getWindow: () => typeof window = _.constant(window)) {
     const windowGlobal = getWindow() as unknown as AnyObject;
-    const callbackName = REMOTE_ENTRY_CALLBACK;
+    const callbackName = this.options.entryCallbackName;
 
     if (this.entryCallback !== undefined) {
       throw new Error(`Global function ${callbackName} is already registered by this loader`);
