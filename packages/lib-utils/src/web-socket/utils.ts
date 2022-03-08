@@ -18,7 +18,9 @@ export const createURL = (host: string, path: string): string => {
     url += path;
   }
 
-  return url;
+  const { urlAugment } = getUtilsConfig().wsAppSettings;
+
+  return urlAugment ? urlAugment(url) : url;
 };
 
 export const applyConfigHost = (overrideHost?: string): string => {

@@ -12,8 +12,8 @@ import type {
   K8sResourceIdentifier,
   GetGroupVersionKindForModel,
 } from '../types/k8s';
-import type { WebSocketOptions } from '../webSocket/types';
-import { WebSocketFactory } from '../webSocket/WebSocketFactory';
+import type { WebSocketOptions } from '../web-socket/types';
+import { WebSocketFactory } from '../web-socket/WebSocketFactory';
 
 const getQueryString = (queryParams: QueryParams) =>
   Object.entries(queryParams)

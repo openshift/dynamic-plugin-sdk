@@ -4,8 +4,23 @@ import type { AnyObject } from '@monorepo/common';
  * Configuration that is used to configure WebSockets from a host app perspective.
  */
 export type WebSocketAppSettings = {
+  /**
+   * The host to which the web socket will connect to.
+   */
   host: string;
+
+  /**
+   * The sub protocols that you wish to send along with the web socket connection call.
+   */
   subProtocols: string[];
+
+  /**
+   * An optional function to augment the URL after it's constructed and before it is used by the
+   * web socket.
+   * @param url - The fully qualified URL
+   * @returns - A optionally modified fully qualified URL
+   */
+  urlAugment?: (url: string) => string;
 };
 
 /**
