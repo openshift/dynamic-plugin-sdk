@@ -1,6 +1,6 @@
 {
   "name": "@openshift/dynamic-plugin-sdk-utils",
-  "version": "1.0.0-alpha2",
+  "version": "1.0.0-alpha3",
   "description": "Provides Kubernetes and React utilities",
   "license": "Apache-2.0",
   "type": "module",

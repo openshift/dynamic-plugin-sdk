@@ -56,7 +56,7 @@ npm login --scope=@openshift
 To see the latest published version of the given package:
 
 ```sh
-npm view $(jq -r .name < packages/<PKG_DIR>/package.json) dist-tags.latest
+npm view $(jq -r .name < ./packages/<PKG_DIR>/package.json) dist-tags.latest
 ```
 
 Make sure the `version` field in the relevant `package.json` file(s) has the right value.
@@ -64,7 +64,7 @@ Make sure the `version` field in the relevant `package.json` file(s) has the rig
 To verify the package before publishing:
 
 ```sh
-npm publish packages/<PKG_DIR> --no-git-tag-version --dry-run
+npm publish ./packages/<PKG_DIR> --no-git-tag-version --dry-run
 ```
 
 To publish the package, run the above command without `--dry-run` parameter.
