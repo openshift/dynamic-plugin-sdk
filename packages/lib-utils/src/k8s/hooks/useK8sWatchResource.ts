@@ -9,7 +9,9 @@ import { getWatchData, getReduxData, NoModelError } from './k8s-watcher';
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 import { useK8sModel } from './useK8sModel';
 import { useModelsLoaded } from './useModelsLoaded';
-import type { UseK8sWatchResource } from './watch-resource-types';
+import type { UseK8sWatchResource, WatchK8sResource } from './watch-resource-types';
+
+const NOT_A_VALUE = '__not-a-value__';
 
 /**
  * Hook that retrieves the k8s resource along with status for loaded and error.
@@ -28,7 +30,8 @@ import type { UseK8sWatchResource } from './watch-resource-types';
  */
 export const useK8sWatchResource: UseK8sWatchResource = (initResource) => {
   const cluster = useSelector<SDKStoreState, string>((state) => getActiveCluster(state));
-  const resource = useDeepCompareMemoize(initResource, true);
+  const withFallback: WatchK8sResource = initResource || { kind: NOT_A_VALUE };
+  const resource = useDeepCompareMemoize(withFallback, true);
   const modelsLoaded = useModelsLoaded();
 
   const [k8sModel] = useK8sModel(resource.groupVersionKind || resource.kind);
@@ -56,7 +59,7 @@ export const useK8sWatchResource: UseK8sWatchResource = (initResource) => {
   ) as ImmutableMap<string, unknown>; // TODO: Store state based off of Immutable is problematic
 
   return React.useMemo(() => {
-    if (!resource) {
+    if (!resource || resource.kind === NOT_A_VALUE) {
       return [undefined, true, undefined];
     }
     if (!resourceK8s) {
