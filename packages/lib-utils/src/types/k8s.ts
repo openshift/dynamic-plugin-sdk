@@ -108,6 +108,8 @@ export type FilterValue = Partial<{
 
 export type GetGroupVersionKindForModel = (model: K8sModelCommon) => K8sResourceIdentifier;
 
+export type K8sGroupVersionKind = { group?: string; version: string; kind: string };
+
 /**
  * @deprecated Use K8sResourceIdentifier type instead. Support for type GroupVersionKind will be removed in a future release.
  * @see K8sResourceIdentifier
