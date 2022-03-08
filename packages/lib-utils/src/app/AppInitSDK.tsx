@@ -1,6 +1,6 @@
 import { consoleLogger } from '@monorepo/common';
-import type { PluginStore } from '@openshift/dynamic-plugin-sdk/src/store/PluginStore';
-import { PluginStoreProvider } from '@openshift/dynamic-plugin-sdk/src/store/PluginStoreContext';
+import type { PluginStore } from '@openshift/dynamic-plugin-sdk';
+import { PluginStoreProvider } from '@openshift/dynamic-plugin-sdk';
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import type { UtilsConfig } from '../config';
