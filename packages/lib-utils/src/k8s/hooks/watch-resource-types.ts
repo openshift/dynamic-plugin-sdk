@@ -1,3 +1,4 @@
+import type { EitherNotBoth } from '@monorepo/common';
 import type {
   K8sGroupVersionKind,
   K8sResourceCommon,
@@ -21,17 +22,10 @@ export type WatchK8sResults<R extends ResourcesObject> = {
   [K in keyof R]: WatchK8sResultsObject<R[K]>;
 };
 
-/** @deprecated Use groupVersionKind instead. The kind property will be removed in a future release. */
-type UseKind = {
-  kind: K8sResourceKindReference;
-  groupVersionKind?: never;
-};
-type UseKindReference = {
-  groupVersionKind: K8sGroupVersionKind;
-  kind?: never;
-};
-
-export type WatchK8sResource = (UseKind | UseKindReference) & {
+export type WatchK8sResource = EitherNotBoth<
+  { kind: K8sResourceKindReference },
+  { groupVersionKind: K8sGroupVersionKind }
+> & {
   name?: string;
   namespace?: string;
   isList?: boolean;
