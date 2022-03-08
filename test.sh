@@ -13,14 +13,14 @@ if [[ -n "$(git status --porcelain -- yarn.lock)" ]]; then
   exit 1
 fi
 
+# Build packages
+yarn build
+
 # Analyze code for potential problems
 yarn lint
 
 # Run unit tests
 yarn test
-
-# Build packages
-yarn build
 
 # Run end-to-end tests
 # TODO
