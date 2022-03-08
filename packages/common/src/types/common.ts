@@ -18,19 +18,19 @@ export type AnyObject = Record<string, unknown>;
 export type AnyFunction = (...args: any) => any;
 
 /**
- * Replace existing direct properties of object `T` with ones declared in object `R`.
+ * Replace existing direct properties of `T` with ones declared in `R`.
  */
-export type ReplaceProperties<T extends AnyObject, R extends AnyObject> = {
+export type ReplaceProperties<T, R> = {
   [K in keyof T]: K extends keyof R ? R[K] : T[K];
-} & AnyObject;
+};
 
 /**
- * Never allow any properties of `Type`.
+ * Never allow any properties of `T`.
  *
  * Utility type, probably never a reason to export.
  */
-type Never<Type> = {
-  [K in keyof Type]?: never;
+type Never<T> = {
+  [K in keyof T]?: never;
 };
 
 /**

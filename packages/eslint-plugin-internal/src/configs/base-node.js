@@ -14,6 +14,10 @@ module.exports = {
     node: true,
   },
 
+  settings: {
+    ...require('./all-bases').settings,
+  },
+
   plugins: ['promise', 'node'],
 
   rules: require('../rules/all-bases'),

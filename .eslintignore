@@ -1,3 +1,7 @@
 **/node_modules
 **/dist
 **/.eslintrc.js
+**/rollup.config.js
+
+# TODO(vojtech): node-typescript-prettier preset needs tweaking
+/packages/lib-webpack/

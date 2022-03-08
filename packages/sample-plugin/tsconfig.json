@@ -1,0 +1,15 @@
+{
+  "extends": "@monorepo/common/tsconfig-bases/react-esm.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "sourceMap": true,
+    "declaration": false
+  },
+  "include": ["**/*.ts"],
+  "ts-node": {
+    "transpileOnly": true,
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  }
+}

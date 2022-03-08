@@ -1,9 +1,8 @@
 {
   "name": "@openshift/dynamic-plugin-sdk-utils",
   "version": "1.0.0-alpha4",
-  "description": "Provides Kubernetes and React utilities",
+  "description": "Provides React focused plugin SDK initialization and utilities",
   "license": "Apache-2.0",
-  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/openshift/dynamic-plugin-sdk.git",
@@ -13,18 +12,15 @@
     "dist/index.js",
     "dist/index.d.ts"
   ],
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "scripts": {
     "prepack": "yarn build",
     "prepublishOnly": "yarn test",
-    "build": "rm -rf dist && rollup -c",
-    "lint": "yarn lint:run --ext .ts,.tsx src rollup.config.js",
+    "build": "rm -rf dist && yarn run -T rollup -c",
+    "lint": "yarn run -T eslint $INIT_CWD",
     "test": "echo 'Write some tests!'"
   },
   "peerDependencies": {
     "@openshift/dynamic-plugin-sdk": "^1.0.0",
-    "lodash-es": "^4.17.21",
     "react": "^17.0.2",
     "react-redux": "^7.2.2",
     "redux": "^4.1.2",
@@ -37,21 +33,9 @@
     "typesafe-actions": "^4.4.2"
   },
   "devDependencies": {
-    "@monorepo/common": "0.0.0-fixed",
-    "@openshift/dynamic-plugin-sdk": "link:../lib-core",
-    "@rollup/plugin-node-resolve": "^13.1.1",
-    "@rollup/plugin-typescript": "^8.3.0",
-    "@types/lodash-es": "^4.17.5",
-    "@types/pluralize": "^0.0.29",
-    "@types/react": "^17.0.37",
-    "react": "^17.0.2",
-    "react-redux": "^7.2.2",
-    "redux": "^4.1.2",
-    "redux-thunk": "^2.4.1",
-    "rollup": "^2.61.1",
-    "rollup-plugin-analyzer": "^4.0.0",
-    "rollup-plugin-dts": "^4.0.1",
-    "tslib": "^2.3.1",
-    "typescript": "~4.4.4"
+    "@openshift/dynamic-plugin-sdk": "link:../lib-core/dist"
+  },
+  "publishConfig": {
+    "main": "index.js"
   }
 }
