@@ -7,7 +7,7 @@ import type { Extension } from '@openshift/dynamic-plugin-sdk';
 import * as _ from 'lodash-es';
 import * as glob from 'glob';
 import * as path from 'path';
-import * as webpack from 'webpack';
+import webpack from 'webpack';
 import type { PluginBuildMetadata } from '../types/plugin';
 import { parseJSONFile } from '../utils/json';
 import { pluginBuildMetadataSchema } from '../yup-schemas';
