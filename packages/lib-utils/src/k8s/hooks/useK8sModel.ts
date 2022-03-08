@@ -9,7 +9,7 @@ import {
   getGroupVersionKindForReference,
   transformGroupVersionKindToReference,
 } from '../k8s-utils';
-import type { UseK8sModel } from './useModelTypes';
+import type { UseK8sModel } from './use-model-types';
 
 export const getK8sModel = (
   k8s: K8sState,

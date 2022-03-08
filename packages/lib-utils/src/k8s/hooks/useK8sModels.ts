@@ -2,7 +2,7 @@ import type { Map as ImmutableMap } from 'immutable';
 import { useSelector } from 'react-redux';
 import type { K8sModelCommon } from '../../types/k8s';
 import type { SDKStoreState } from '../../types/redux';
-import type { UseK8sModels } from './useModelTypes';
+import type { UseK8sModels } from './use-model-types';
 
 /**
  * Hook that retrieves all current k8s models from redux.

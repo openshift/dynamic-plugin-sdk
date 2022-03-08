@@ -6,9 +6,9 @@ import type {
 } from '../../types/k8s';
 
 export type WatchK8sResult<R extends K8sResourceCommon | K8sResourceCommon[]> = [
-  R,
-  boolean,
-  unknown,
+  data: R,
+  loaded: boolean,
+  loadError: unknown,
 ];
 
 export type WatchK8sResultsObject<R extends K8sResourceCommon | K8sResourceCommon[]> = {
@@ -18,7 +18,7 @@ export type WatchK8sResultsObject<R extends K8sResourceCommon | K8sResourceCommo
 };
 
 export type WatchK8sResults<R extends ResourcesObject> = {
-  [k in keyof R]: WatchK8sResultsObject<R[k]>;
+  [K in keyof R]: WatchK8sResultsObject<R[K]>;
 };
 
 /** @deprecated Use groupVersionKind instead. The kind property will be removed in a future release. */

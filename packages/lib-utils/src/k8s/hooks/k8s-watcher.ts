@@ -13,14 +13,12 @@ export class NoModelError extends CustomError {
 }
 
 export const makeReduxID = (k8sKind: K8sModelCommon, query: Query, cluster?: string) => {
-  let qs = '';
+  let queryString = '';
   if (!_.isEmpty(query)) {
-    qs = `---${JSON.stringify(query)}`;
+    queryString = `---${JSON.stringify(query)}`;
   }
 
-  return `${cluster ?? 'local-cluster'}${getReferenceForModel(
-    k8sKind || ({} as K8sModelCommon),
-  )}${qs}`;
+  return `${cluster ?? 'local-cluster'}${getReferenceForModel(k8sKind)}${queryString}`;
 };
 
 export const makeQuery: MakeQuery = (namespace, labelSelector, fieldSelector, name, limit) => {
