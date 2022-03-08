@@ -9,6 +9,8 @@ export {
   k8sListResource,
   k8sListResourceItems,
 } from './k8s/k8s-resource';
+export { getK8sResourceURL } from './k8s/k8s-utils';
+export { K8sModelCommon, K8sResourceCommon } from './types/k8s';
 export {
   BulkMessageHandler,
   CloseHandler,
@@ -19,4 +21,4 @@ export {
   WebSocketFactory,
   WebSocketOptions,
   WebSocketState,
-} from './webSocket';
+} from './web-socket';

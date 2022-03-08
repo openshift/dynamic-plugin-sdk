@@ -8,7 +8,7 @@ import { k8sWatch } from '../../../k8s/k8s-utils';
 import type { DiscoveryResources } from '../../../types/api-discovery';
 import type { K8sModelCommon, K8sResourceCommon, FilterValue } from '../../../types/k8s';
 import type { DispatchWithThunk, GetState } from '../../../types/redux';
-import type { WebSocketFactory } from '../../../webSocket/WebSocketFactory';
+import type { WebSocketFactory } from '../../../web-socket/WebSocketFactory';
 import { getImpersonate, getActiveCluster } from '../reducers/core/selector';
 
 export enum ActionType {

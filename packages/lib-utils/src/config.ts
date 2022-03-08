@@ -1,6 +1,6 @@
 import type { ResourceFetch } from '@monorepo/common';
 import type { Store } from 'redux';
-import type { WebSocketAppSettings } from './webSocket/types';
+import type { WebSocketAppSettings } from './web-socket/types';
 
 export type UtilsConfig = {
   /**
