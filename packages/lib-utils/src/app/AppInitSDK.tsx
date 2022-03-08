@@ -1,4 +1,6 @@
 import { consoleLogger } from '@monorepo/common';
+import { PluginStoreProvider } from '@openshift/dynamic-plugin-sdk';
+import type { PluginStore } from '@openshift/dynamic-plugin-sdk';
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import type { UtilsConfig } from '../config';
@@ -13,6 +15,7 @@ type AppInitSDKProps = {
   configurations: {
     apiDiscovery?: InitAPIDiscovery;
     appFetch: UtilsConfig['appFetch'];
+    pluginStore: PluginStore;
     wsAppSettings: UtilsConfig['wsAppSettings'];
   };
 };
@@ -27,7 +30,7 @@ type AppInitSDKProps = {
  * ```tsx
  * return (
  *  <Provider store={store}>
- *   <AppInitSDK configurations={{ appFetch, apiDiscovery }}>
+ *   <AppInitSDK configurations={{ appFetch, pluginStore, wsAppSettings }}>
  *      <App />
  *   </AppInitSDK>
  *  </Provider>
@@ -36,7 +39,7 @@ type AppInitSDKProps = {
  */
 const AppInitSDK: React.FC<AppInitSDKProps> = ({ children, configurations }) => {
   const { store, storeContextPresent } = useReduxStore();
-  const { appFetch, wsAppSettings, apiDiscovery = initAPIDiscovery } = configurations;
+  const { appFetch, pluginStore, wsAppSettings, apiDiscovery = initAPIDiscovery } = configurations;
   React.useEffect(() => {
     try {
       setUtilsConfig({ appFetch, wsAppSettings });
@@ -46,7 +49,11 @@ const AppInitSDK: React.FC<AppInitSDKProps> = ({ children, configurations }) => 
     }
   }, [apiDiscovery, appFetch, store, wsAppSettings]);
 
-  return !storeContextPresent ? <Provider store={store}>{children}</Provider> : children;
+  return (
+    <PluginStoreProvider store={pluginStore}>
+      {!storeContextPresent ? <Provider store={store}>{children}</Provider> : children}
+    </PluginStoreProvider>
+  );
 };
 
 export default AppInitSDK;
