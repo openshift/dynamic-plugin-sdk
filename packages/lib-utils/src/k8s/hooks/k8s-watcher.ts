@@ -3,7 +3,7 @@ import * as _ from 'lodash-es';
 import * as k8sActions from '../../app/redux/actions/k8s';
 import type { K8sModelCommon } from '../../types/k8s';
 import { getReferenceForModel } from '../k8s-utils';
-import type { GetIDAndDispatch, MakeQuery, Query } from './k8s-watch-types';
+import type { GetWatchData, MakeQuery, Query } from './k8s-watch-types';
 import type { WatchK8sResource } from './watch-resource-types';
 
 export class NoModelError extends CustomError {
@@ -78,7 +78,7 @@ export const getReduxData = (immutableData, resource: WatchK8sResource) => {
   return null;
 };
 
-export const getIDAndDispatch: GetIDAndDispatch = (resource, k8sModel, cluster) => {
+export const getWatchData: GetWatchData = (resource, k8sModel, cluster) => {
   if (!k8sModel || !resource || !resource.name || !resource.namespace) {
     return null;
   }
@@ -95,7 +95,7 @@ export const getIDAndDispatch: GetIDAndDispatch = (resource, k8sModel, cluster) 
   }
 
   const id = makeReduxID(k8sModel, query, targetCluster);
-  const dispatch = resource.isList
+  const action = resource.isList
     ? k8sActions.watchK8sList(
         id,
         { ...query, cluster: targetCluster },
@@ -111,5 +111,5 @@ export const getIDAndDispatch: GetIDAndDispatch = (resource, k8sModel, cluster) 
         k8sModel,
         resource.partialMetadata,
       );
-  return { id, dispatch };
+  return { id, action };
 };

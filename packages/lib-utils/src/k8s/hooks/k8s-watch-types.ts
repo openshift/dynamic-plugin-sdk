@@ -2,11 +2,13 @@ import type { K8sModelCommon, Selector } from '../../types/k8s';
 import type { ThunkDispatchFunction } from '../../types/redux';
 import type { WatchK8sResource } from './watch-resource-types';
 
-export type GetIDAndDispatch = (
+export type WatchData = { id: string; action: ThunkDispatchFunction };
+
+export type GetWatchData = (
   resource?: WatchK8sResource,
   k8sModel?: K8sModelCommon,
   cluster?: string,
-) => { id: string; dispatch: ThunkDispatchFunction } | null;
+) => WatchData | null;
 
 export type Query = { [key: string]: unknown };
 

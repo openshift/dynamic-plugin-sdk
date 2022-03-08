@@ -5,7 +5,7 @@ import * as k8sActions from '../../app/redux/actions/k8s';
 import { getActiveCluster } from '../../app/redux/reducers/core';
 import { getReduxIdPayload } from '../../app/redux/reducers/k8s/selector';
 import type { SDKStoreState } from '../../types/redux';
-import { getIDAndDispatch, getReduxData, NoModelError } from './k8s-watcher';
+import { getWatchData, getReduxData, NoModelError } from './k8s-watcher';
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 import { useK8sModel } from './useK8sModel';
 import { useModelsLoaded } from './useModelsLoaded';
@@ -33,26 +33,26 @@ export const useK8sWatchResource: UseK8sWatchResource = (initResource) => {
 
   const [k8sModel] = useK8sModel(resource.groupVersionKind || resource.kind);
 
-  const reduxID = React.useMemo(
-    () => getIDAndDispatch(resource, k8sModel, cluster),
+  const watchData = React.useMemo(
+    () => getWatchData(resource, k8sModel, cluster),
     [k8sModel, resource, cluster],
   );
 
   const dispatch = useDispatch();
 
   React.useEffect(() => {
-    if (reduxID) {
-      dispatch(reduxID.dispatch);
+    if (watchData) {
+      dispatch(watchData.action);
     }
     return () => {
-      if (reduxID) {
-        dispatch(k8sActions.stopK8sWatch(reduxID.id));
+      if (watchData) {
+        dispatch(k8sActions.stopK8sWatch(watchData.id));
       }
     };
-  }, [dispatch, reduxID]);
+  }, [dispatch, watchData]);
 
   const resourceK8s = useSelector<SDKStoreState, unknown>((state) =>
-    reduxID ? getReduxIdPayload(state, reduxID.id) : null,
+    watchData ? getReduxIdPayload(state, watchData.id) : null,
   ) as ImmutableMap<string, unknown>; // TODO: Store state based off of Immutable is problematic
 
   return React.useMemo(() => {
