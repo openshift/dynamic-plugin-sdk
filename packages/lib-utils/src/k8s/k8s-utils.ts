@@ -25,11 +25,22 @@ const getK8sAPIPath = ({ apiGroup = 'core', apiVersion }: K8sModelCommon) => {
   return isLegacy ? `/api/${apiVersion}` : `/apis/${apiGroup}/${apiVersion}`;
 };
 
+/**
+ * Builds a k8s resource URL to the provided model, augmented with the resource or query metadata.
+ * @param model - the model of the resource you want to connect to
+ * @param resource - inspected if you provide it for metadata attributes
+ * @param queryOptions - additional and alternative configuration for the URL
+ * @param queryOptions.ns - namespace, if omitted resource.metadata.namespace
+ * @param queryOptions.name - name, if omitted resource.metadata.name
+ * @param queryOptions.path - additional path you want on the end
+ * @param queryOptions.queryParams - any additional query params you way want
+ */
 export const getK8sResourceURL = (
   model: K8sModelCommon,
   resource?: K8sResourceCommon,
-  { ns, name, path, queryParams }: QueryOptions = {},
+  queryOptions: QueryOptions = {},
 ) => {
+  const { ns, name, path, queryParams } = queryOptions;
   let resourcePath = getK8sAPIPath(model);
 
   if (resource?.metadata?.namespace) {
@@ -62,7 +73,7 @@ export const getK8sResourceURL = (
     resourcePath += `?${getQueryString(queryParams)}`;
   }
 
-  return `/${resourcePath}`;
+  return resourcePath;
 };
 
 const requirementToString = (requirement: MatchExpression): string => {
