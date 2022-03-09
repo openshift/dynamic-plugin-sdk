@@ -25,7 +25,14 @@ type UseReduxStoreResult = {
  * ```
  */
 export const useReduxStore = (): UseReduxStoreResult => {
-  const storeContext = useStore();
+  let storeContext: Store | null = null;
+  try {
+    // It'll always be invoked -- it just might blow up
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    storeContext = useStore();
+  } catch (e) {
+    // TODO: Handle this better...
+  }
   const [storeContextPresent, setStoreContextPresent] = React.useState(false);
   const store = React.useMemo(() => {
     if (storeContext) {
