@@ -18,6 +18,8 @@ import { cacheResources, getCachedResources } from './discovery-cache';
 const POLLs: { [id: string]: number } = {};
 const apiDiscovery = 'apiDiscovery';
 const API_DISCOVERY_POLL_INTERVAL = 60_000;
+const API_DISCOVERY_INIT_DELAY = 15_000;
+const API_DISCOVERY_REQUEST_BATCH_SIZE = 5;
 
 const pluralizeKind = (kind: string): string => {
   // Use startCase to separate words so the last can be pluralized but remove spaces so as not to humanize
@@ -78,15 +80,27 @@ const getResources = async (): Promise<DiscoveryResources> => {
     },
     {},
   );
-  const all: Promise<APIResourceList>[] = _.flatten(
-    apiResourceData.groups.map((group) =>
-      group.versions.map((version) => `/apis/${version.groupVersion}`),
+  const all = _.flatten(
+    apiResourceData.groups.map<string[]>((group) =>
+      group.versions.map<string>((version) => `/apis/${version.groupVersion}`),
     ),
-  )
-    .concat(['/api/v1'])
-    .map((p) => commonFetchJSON<K8sModelCommon>(`api/kubernetes${p}`).catch((err) => err));
+  ).concat(['/api/v1']);
 
-  return Promise.all(all).then((data) => {
+  let batchedData: APIResourceList[] = [];
+  const batches = _.chunk(all, API_DISCOVERY_REQUEST_BATCH_SIZE);
+  // forEach does not play nice with async awaits
+  // eslint-disable-next-line no-restricted-syntax
+  for (const batch of batches) {
+    // eslint-disable-next-line no-await-in-loop
+    const result = await Promise.all(
+      batch.map<Promise<APIResourceList>>((p: string) =>
+        commonFetchJSON<K8sModelCommon>(p).catch((err) => err),
+      ),
+    );
+    batchedData = _.concat(batchedData, result);
+  }
+
+  return Promise.resolve(batchedData).then((data) => {
     const resourceSet = new Set<string>();
     const namespacedSet = new Set<string>();
     data.forEach(
@@ -138,35 +152,49 @@ const getResources = async (): Promise<DiscoveryResources> => {
   });
 };
 
-const updateResources = () => (dispatch: Dispatch) => {
-  dispatch(getResourcesInFlight());
+const updateResources =
+  () =>
+  (dispatch: Dispatch): Promise<DiscoveryResources> => {
+    dispatch(getResourcesInFlight());
 
-  getResources()
-    .then((resources) => {
+    return getResources().then((resources) => {
       // Cache the resources whenever discovery completes to improve console load times.
       cacheResources(resources);
       dispatch(receivedResources(resources));
       return resources;
-    })
-    .catch((err) => consoleLogger.error('Fetching resource failed:', err));
-};
+    });
+  };
 
 const startAPIDiscovery = () => (dispatch: DispatchWithThunk) => {
-  consoleLogger.info('API discovery method: Polling');
-  // Poll API discovery every 30 seconds since we can't watch CRDs
-  dispatch(updateResources());
-  if (POLLs[apiDiscovery]) {
-    clearTimeout(POLLs[apiDiscovery]);
-    delete POLLs[apiDiscovery];
-  }
-  POLLs[apiDiscovery] = window.setTimeout(
-    () => dispatch(startAPIDiscovery()),
-    API_DISCOVERY_POLL_INTERVAL,
+  consoleLogger.info(
+    `API discovery startAPIDiscovery: Polling every ${API_DISCOVERY_POLL_INTERVAL} ms`,
   );
+  // Poll API discovery since we can't watch CRDs
+  dispatch(updateResources())
+    .then((resources) => {
+      if (POLLs[apiDiscovery]) {
+        clearTimeout(POLLs[apiDiscovery]);
+        delete POLLs[apiDiscovery];
+      }
+      POLLs[apiDiscovery] = window.setTimeout(
+        () => dispatch(startAPIDiscovery()),
+        API_DISCOVERY_POLL_INTERVAL,
+      );
+      return resources;
+    })
+    // TODO handle failures - retry if error is recoverable
+    .catch((err) => consoleLogger.error('API discovery startAPIDiscovery polling failed:', err));
 };
 
 export const initAPIDiscovery: InitAPIDiscovery = (storeInstance) => {
-  getCachedResources()
+  consoleLogger.info(`API discovery waiting ${API_DISCOVERY_INIT_DELAY} ms before initializing`);
+  const initDelay = new Promise((resolve) => {
+    window.setTimeout(resolve, API_DISCOVERY_INIT_DELAY);
+  });
+  initDelay
+    .then(() => {
+      return getCachedResources();
+    })
     .then((resources) => {
       if (resources) {
         storeInstance.dispatch(receivedResources(resources));
