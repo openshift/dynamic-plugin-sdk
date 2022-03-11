@@ -184,8 +184,8 @@ export class PluginLoader {
 
       data.entryCallbackFired = true;
 
-      entryModule
-        .init(this.options.getSharedScope())
+      // TODO(vojtech): investigate why the init method doesn't return Promise-like object
+      Promise.resolve(entryModule.init(this.options.getSharedScope()))
         // eslint-disable-next-line promise/always-return -- entryModule.init() returns Promise<void>
         .then(() => {
           data.status = 'loaded';
