@@ -31,7 +31,8 @@ export const useReduxStore = (): UseReduxStoreResult => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     storeContext = useStore();
   } catch (e) {
-    // TODO: Handle this better...
+    // TODO: remove once proven not needed (redux versioning issue)
+    consoleLogger.error(e);
   }
   const [storeContextPresent, setStoreContextPresent] = React.useState(false);
   const store = React.useMemo(() => {
