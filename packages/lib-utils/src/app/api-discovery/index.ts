@@ -78,13 +78,15 @@ const getResources = async (): Promise<DiscoveryResources> => {
     },
     {},
   );
-  const all: Promise<APIResourceList>[] = _.flatten(
-    apiResourceData.groups.map((group) =>
-      group.versions.map((version) => `/apis/${version.groupVersion}`),
+  const all = _.flatten(
+    apiResourceData.groups.map<string[]>((group) =>
+      group.versions.map<string>((version) => `/apis/${version.groupVersion}`),
     ),
   )
     .concat(['/api/v1'])
-    .map((p) => commonFetchJSON<K8sModelCommon>(`api/kubernetes${p}`).catch((err) => err));
+    .map<Promise<APIResourceList>>((p: string) =>
+      commonFetchJSON<K8sModelCommon>(p).catch((err) => err),
+    );
 
   return Promise.all(all).then((data) => {
     const resourceSet = new Set<string>();
