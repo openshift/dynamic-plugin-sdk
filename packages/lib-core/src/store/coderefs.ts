@@ -43,7 +43,7 @@ const isEncodedCodeRef = (obj: unknown): obj is EncodedCodeRef =>
 const isCodeRef = (obj: unknown): obj is CodeRef =>
   typeof obj === 'function' &&
   _.isEqual(Object.getOwnPropertySymbols(obj), [codeRefSymbol]) &&
-  (obj as unknown as Record<symbol, unknown>)[codeRefSymbol] === true;
+  (obj as unknown as Record<symbol, boolean>)[codeRefSymbol] === true;
 
 /**
  * Parse data from the {@link EncodedCodeRef} object.

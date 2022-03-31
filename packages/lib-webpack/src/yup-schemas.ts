@@ -1,12 +1,10 @@
 import * as yup from 'yup';
-import { pluginRuntimeMetadataSchema } from '@openshift/dynamic-plugin-sdk';
+import { pluginRuntimeMetadataSchema } from '@openshift/dynamic-plugin-sdk/src/yup-schemas';
 
 /**
  * Schema for `PluginBuildMetadata` objects.
  */
 export const pluginBuildMetadataSchema = pluginRuntimeMetadataSchema.shape({
-  // TODO(vojtech): Here we'd like to validate `{ [moduleName: string]: string }`.
-  // Unfortunately, Yup doesn't support map-like structures natively and workarounds
-  // are ugly; we might need to switch to a different JS object validation library.
+  // TODO(vojtech): Yup lacks native support for map-like structures with arbitrary keys
   exposedModules: yup.object(),
 });

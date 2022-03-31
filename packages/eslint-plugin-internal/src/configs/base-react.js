@@ -17,6 +17,10 @@ module.exports = {
     browser: true,
   },
 
+  settings: {
+    ...require('./all-bases').settings,
+  },
+
   plugins: ['promise'],
 
   rules: require('../rules/all-bases'),

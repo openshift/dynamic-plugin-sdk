@@ -1,9 +1,8 @@
-import { PLUGIN_MANIFEST } from '@openshift/dynamic-plugin-sdk';
-import type { PluginManifest } from '@openshift/dynamic-plugin-sdk';
+import type { PluginManifest } from '@openshift/dynamic-plugin-sdk/src/types/plugin';
 import webpack from 'webpack';
 
 export class GenerateManifestPlugin implements webpack.WebpackPluginInstance {
-  constructor(private readonly manifest: PluginManifest) {}
+  constructor(private readonly fileName: string, private readonly manifest: PluginManifest) {}
 
   apply(compiler: webpack.Compiler) {
     compiler.hooks.thisCompilation.tap(GenerateManifestPlugin.name, (compilation) => {
@@ -14,7 +13,7 @@ export class GenerateManifestPlugin implements webpack.WebpackPluginInstance {
         },
         () => {
           compilation.emitAsset(
-            PLUGIN_MANIFEST,
+            this.fileName,
             new webpack.sources.RawSource(Buffer.from(JSON.stringify(this.manifest, null, 2))),
           );
         },

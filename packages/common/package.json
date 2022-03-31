@@ -5,11 +5,7 @@
   "private": true,
   "main": "src/index.ts",
   "scripts": {
-    "lint": "yarn lint:run --ext .ts,.tsx src rollup-configs.js",
+    "lint": "yarn run -T eslint $INIT_CWD",
     "test": "echo 'Write some tests!'"
-  },
-  "devDependencies": {
-    "@types/lodash-es": "^4.17.5",
-    "lodash-es": "^4.17.21"
   }
 }

@@ -50,7 +50,7 @@ export const extensionSchema = yup.object().required().shape({
 });
 
 /**
- * Schema for an array of extensions.
+ * Schema for an array of `Extension` objects.
  */
 export const extensionArraySchema = yup.array().of(extensionSchema).required();
 

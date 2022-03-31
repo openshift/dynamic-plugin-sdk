@@ -1,13 +1,11 @@
 reviewers:
   - BlakeHolifield
-  - florkbr
   - fhlavac
-  - invincibleJai
+  - florkbr
   - karelhala
-  - ryelo
+  - vojtechszocs
 approvers:
-  - christianvogt
   - andrewballantyne
-  - spadgett
+  - florkbr
   - vojtechszocs
 component: Dynamic Plugin SDK
