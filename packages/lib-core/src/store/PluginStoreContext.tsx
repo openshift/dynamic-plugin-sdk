@@ -1,6 +1,5 @@
 import * as React from 'react';
 import type { PluginConsumer, PluginManager } from '../types/store';
-import { createMethodDelegate } from '../utils/objects';
 import type { PluginStore } from './PluginStore';
 
 const PluginStoreContext = React.createContext<PluginStore | undefined>(undefined);
@@ -30,10 +29,7 @@ export const usePluginConsumer = (): PluginConsumer => {
     throw new Error('usePluginConsumer hook called outside a PluginStoreProvider');
   }
 
-  return React.useMemo(
-    () => createMethodDelegate(store, ['subscribe', 'getExtensions', 'getPluginInfo']),
-    [store],
-  );
+  return store;
 };
 
 /**
@@ -46,8 +42,5 @@ export const usePluginManager = (): PluginManager => {
     throw new Error('usePluginManager hook called outside a PluginStoreProvider');
   }
 
-  return React.useMemo(
-    () => createMethodDelegate(store, ['loadPlugin', 'setPluginsEnabled']),
-    [store],
-  );
+  return store;
 };
