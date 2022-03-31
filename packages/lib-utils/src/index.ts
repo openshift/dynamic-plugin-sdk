@@ -1,4 +1,5 @@
 export { default as AppInitSDK } from './app/AppInitSDK';
+export { SDKReducers } from './app/redux/reducers';
 export { UtilsConfig, isUtilsConfigSet, setUtilsConfig, getUtilsConfig } from './config';
 export { commonFetch, commonFetchText, commonFetchJSON } from './utils/common-fetch';
 export { useK8sWatchResource } from './k8s/hooks';
