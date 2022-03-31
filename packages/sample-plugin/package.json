@@ -1,0 +1,17 @@
+{
+  "name": "@monorepo/sample-plugin",
+  "version": "0.0.0-fixed",
+  "description": "Sample dynamic plugin project",
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "yarn clean && NODE_ENV=production yarn webpack",
+    "build-dev": "yarn clean && yarn webpack",
+    "lint": "yarn run -T eslint $INIT_CWD",
+    "webpack": "node -r ts-node/register $PROJECT_CWD/node_modules/.bin/webpack"
+  },
+  "devDependencies": {
+    "@openshift/dynamic-plugin-sdk": "link:../lib-core/dist",
+    "@openshift/dynamic-plugin-sdk-webpack": "link:../lib-webpack/dist"
+  }
+}

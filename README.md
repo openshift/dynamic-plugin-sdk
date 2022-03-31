@@ -2,69 +2,33 @@
 
 > Provides APIs, utilities and types to develop and run dynamic plugins in host web applications.
 
-## Developer Setup
+## Overview
 
-### Dependencies
+Host applications can load and interpret plugins from remote sources at runtime by utilizing
+[webpack module federation](https://webpack.js.org/concepts/module-federation/). Module federation
+allows a JavaScript application to load additional code while sharing common runtime dependencies.
 
-1. [Node.js](https://nodejs.org/) - [Active LTS](https://nodejs.org/en/about/releases/) release
-2. [Yarn](https://yarnpkg.com/getting-started/install) - standard per-project install
-```
-npm install -g yarn
-```
+Both host applications and plugins can be built, released and deployed independently from each
+other. This reduces the coupling between an application and its plugins and allows individual
+plugins to be updated more frequently.
+
+Tools provided by this SDK are [React](https://reactjs.org/) focused. Host applications are React
+web apps built with [webpack](https://webpack.js.org/). Plugins use React APIs (hooks, components,
+etc.) to extend the functionality of the application itself and/or other plugins.
+
+## Quick References
+
+- [Developer Setup](./docs/developer-setup.md)
+- [Publishing Distributable Packages](./docs/publish-packages.md)
 
 ## Distributable Packages
 
-Following packages are distributed via [npm registry](https://www.npmjs.com/):
+Following SDK packages are distributed via [npmjs](https://www.npmjs.com/):
 
-| Package Name | Description |
-| ------------ | ----------- |
-| `@openshift/dynamic-plugin-sdk` | Allows loading, managing and interpreting plugins. |
-| `@openshift/dynamic-plugin-sdk-utils` | Provides Kubernetes and React utilities. |
-| `@openshift/dynamic-plugin-sdk-webpack` | Allows building plugin assets with webpack. |
+| Package Name | Sources |
+| ------------ | ------- |
+| `@openshift/dynamic-plugin-sdk` | [packages/lib-core](./packages/lib-core/) |
+| `@openshift/dynamic-plugin-sdk-utils` | [packages/lib-utils](./packages/lib-utils/) |
+| `@openshift/dynamic-plugin-sdk-webpack` | [packages/lib-webpack](./packages/lib-webpack/) |
 
 Each package is versioned and published independently from other packages.
-
-## Publishing Packages
-
-### Update npm
-
-Make sure the `npm` package manager that comes with Node.js is up-to-date.
-
-To check if the current installed version is outdated:
-
-```sh
-npm outdated -g npm
-```
-
-To install the latest version:
-
-```sh
-npm install -g npm@<VERSION>
-```
-
-### Log into npmjs account
-
-Only members of npmjs [openshift organization](https://www.npmjs.com/org/openshift) can publish
-packages maintained in this repo.
-
-```sh
-npm login --scope=@openshift
-```
-
-### Publish a package
-
-To see the latest published version of the given package:
-
-```sh
-npm view $(jq -r .name < ./packages/<PKG_DIR>/package.json) dist-tags.latest
-```
-
-Make sure the `version` field in the relevant `package.json` file(s) has the right value.
-
-To verify the package before publishing:
-
-```sh
-npm publish ./packages/<PKG_DIR> --no-git-tag-version --dry-run
-```
-
-To publish the package, run the above command without `--dry-run` parameter.

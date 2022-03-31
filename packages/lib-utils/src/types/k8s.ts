@@ -1,4 +1,12 @@
-import type { K8sVerb } from '@openshift/dynamic-plugin-sdk/src/types/core';
+export type K8sVerb =
+  | 'create'
+  | 'get'
+  | 'list'
+  | 'update'
+  | 'patch'
+  | 'delete'
+  | 'deletecollection'
+  | 'watch';
 
 export type K8sResourceIdentifier = {
   apiGroup?: string;

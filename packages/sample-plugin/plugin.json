@@ -1,0 +1,7 @@
+{
+  "name": "sample-plugin",
+  "version": "1.2.3",
+  "exposedModules": {
+    "telemetryListener": "./src/telemetry-listener"
+  }
+}
