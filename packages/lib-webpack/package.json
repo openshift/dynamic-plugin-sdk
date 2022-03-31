@@ -1,6 +1,6 @@
 {
   "name": "@openshift/dynamic-plugin-sdk-webpack",
-  "version": "1.0.0-alpha2",
+  "version": "1.0.0-alpha3",
   "description": "Allows building dynamic plugin assets with webpack",
   "license": "Apache-2.0",
   "repository": {
@@ -12,6 +12,7 @@
     "dist/index.js",
     "dist/index.d.ts"
   ],
+  "main": "dist/index.js",
   "scripts": {
     "prepack": "yarn build",
     "prepublishOnly": "yarn test",
@@ -26,9 +27,6 @@
     "glob": "^7.2.0",
     "lodash": "^4.17.21",
     "yup": "^0.32.11"
-  },
-  "publishConfig": {
-    "main": "index.js"
   },
   "engines": {
     "node": ">=16"
