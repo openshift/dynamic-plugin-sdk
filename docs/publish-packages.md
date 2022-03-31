@@ -37,6 +37,10 @@ npm view $(jq -r .name < ./packages/PKG_DIR/package.json) dist-tags.latest
 
 Make sure the `version` field in the relevant `package.json` file(s) has the right value.
 
+```sh
+npm pkg set version='NEW_VERSION' -workspace ./packages/PKG_DIR
+```
+
 To verify the package before publishing:
 
 ```sh
