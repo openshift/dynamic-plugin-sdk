@@ -13,6 +13,7 @@
     "dist/index.d.ts"
   ],
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "prepack": "yarn build",
     "prepublishOnly": "yarn test",
@@ -34,8 +35,5 @@
     "lodash-es": "^4.17.21",
     "pluralize": "^8.0.0",
     "typesafe-actions": "^4.4.2"
-  },
-  "devDependencies": {
-    "@openshift/dynamic-plugin-sdk": "link:../lib-core/dist"
   }
 }

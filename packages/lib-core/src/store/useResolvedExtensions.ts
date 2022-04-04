@@ -9,7 +9,7 @@ import type {
 } from '../types/extension';
 import { settleAllPromises } from '../utils/promise';
 import { isExtensionCodeRefsResolutionError, resolveCodeRefValues } from './coderefs';
-import { usePluginManager } from './PluginStoreContext';
+import { usePluginStore } from './PluginStoreContext';
 import { useExtensions } from './useExtensions';
 
 type UseResolvedExtensionsResult<TExtension extends Extension> = [
@@ -38,7 +38,7 @@ export const useResolvedExtensions = <TExtension extends Extension>(
   predicate?: ExtensionPredicate<TExtension>,
 ): UseResolvedExtensionsResult<TExtension> => {
   const extensions = useExtensions(predicate);
-  const pluginManager = usePluginManager();
+  const pluginStore = usePluginStore();
 
   const [resolvedExtensions, setResolvedExtensions] = React.useState<
     LoadedExtension<ResolvedExtension<TExtension>>[]
@@ -64,7 +64,9 @@ export const useResolvedExtensions = <TExtension extends Extension>(
               .map((e) => e.extension.pluginName),
           );
 
-          pluginManager.setPluginsEnabled(
+          // TODO(vojtech): provide a way to inform consumers about plugin(s) being disabled
+          // due to code reference resolution errors
+          pluginStore.setPluginsEnabled(
             failedPluginNames.map((pluginName) => ({ pluginName, enabled: false })),
           );
         }
@@ -74,7 +76,7 @@ export const useResolvedExtensions = <TExtension extends Extension>(
         setErrors(rejectedReasons);
       },
     );
-  }, [extensions, pluginManager]);
+  }, [extensions, pluginStore]);
 
   return [resolvedExtensions, resolved, errors];
 };

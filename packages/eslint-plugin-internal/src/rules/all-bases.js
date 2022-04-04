@@ -8,8 +8,6 @@ module.exports = {
         order: 'asc',
         caseInsensitive: true,
       },
-      'newlines-between': 'never',
-      warnOnUnassignedImports: true,
     },
   ],
 

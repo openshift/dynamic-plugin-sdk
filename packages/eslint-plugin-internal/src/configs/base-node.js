@@ -1,16 +1,13 @@
-const ecmaVersion =
-  require('@monorepo/common/tsconfig-bases/node-cjs.json').compilerOptions.target.substring(2);
-
 module.exports = {
   extends: ['airbnb-base', 'plugin:promise/recommended', 'plugin:node/recommended'],
 
   parserOptions: {
-    ecmaVersion,
+    ecmaVersion: 2021,
     sourceType: 'module',
   },
 
   env: {
-    [`es${ecmaVersion}`]: true,
+    es2021: true,
     node: true,
   },
 

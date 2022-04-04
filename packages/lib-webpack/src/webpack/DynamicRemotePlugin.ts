@@ -8,8 +8,9 @@ import type { EncodedExtension } from '@openshift/dynamic-plugin-sdk/src/types/e
 import * as _ from 'lodash-es';
 import glob from 'glob';
 import path from 'path';
-import webpack from 'webpack';
+import { WebpackPluginInstance, Compiler, container } from 'webpack';
 import type { PluginBuildMetadata } from '../types/plugin';
+import type { WebpackSharedObject } from '../types/webpack';
 import { parseJSONFile } from '../utils/json';
 import { pluginBuildMetadataSchema } from '../yup-schemas';
 import { GenerateManifestPlugin } from './GenerateManifestPlugin';
@@ -32,32 +33,6 @@ const validatePluginMetadata = (pluginMetadata: PluginBuildMetadata) => {
 const validateExtensions = (extensions: EncodedExtension[]) => {
   extensionArraySchema.strict(true).validateSync(extensions);
 };
-
-const getSharedModulesWithStrictSingletonConfig = (modules: string[]) =>
-  modules.reduce((acc, moduleRequest) => {
-    acc[moduleRequest] = {
-      // Enforce a single version of the shared module to be used at runtime
-      singleton: true,
-      // Prevent plugins from using a fallback version of the shared module
-      import: false,
-    };
-    return acc;
-  }, {} as WebpackSharedModules);
-
-/**
- * Minimal subset of webpack `SharedConfig` type.
- *
- * @see https://webpack.js.org/plugins/module-federation-plugin/#sharing-hints
- */
-type WebpackSharedModuleConfig = {
-  import?: string | false;
-  singleton?: boolean;
-};
-
-/**
- * Equivalent to webpack `SharedObject` type.
- */
-type WebpackSharedModules = { [moduleRequest: string]: WebpackSharedModuleConfig };
 
 /**
  * Settings for the global function used by plugin entry scripts.
@@ -99,11 +74,9 @@ export type DynamicRemotePluginOptions = Partial<{
   /**
    * Modules shared between the host application and its plugins at runtime.
    *
-   * Essential modules like `react` and `redux` will be added automatically.
-   *
    * Default value: empty object.
    */
-  sharedModules: WebpackSharedModules;
+  sharedModules: WebpackSharedObject;
 
   /**
    * Customize the global function used by plugin entry scripts at runtime.
@@ -113,12 +86,12 @@ export type DynamicRemotePluginOptions = Partial<{
   entryCallbackSettings: PluginEntryCallbackSettings;
 }>;
 
-export class DynamicRemotePlugin implements webpack.WebpackPluginInstance {
+export class DynamicRemotePlugin implements WebpackPluginInstance {
   private readonly pluginMetadata: PluginBuildMetadata;
 
   private readonly extensions: EncodedExtension[];
 
-  private readonly sharedModules: WebpackSharedModules;
+  private readonly sharedModules: WebpackSharedObject;
 
   private readonly entryCallbackSettings: Required<PluginEntryCallbackSettings>;
 
@@ -144,10 +117,7 @@ export class DynamicRemotePlugin implements webpack.WebpackPluginInstance {
 
     validateExtensions(this.extensions);
 
-    this.sharedModules = {
-      ...adaptedOptions.sharedModules,
-      ...getSharedModulesWithStrictSingletonConfig(['react', 'redux']),
-    };
+    this.sharedModules = adaptedOptions.sharedModules;
 
     this.entryCallbackSettings = {
       name: adaptedOptions.entryCallbackSettings.name ?? REMOTE_ENTRY_CALLBACK,
@@ -155,7 +125,7 @@ export class DynamicRemotePlugin implements webpack.WebpackPluginInstance {
     };
   }
 
-  apply(compiler: webpack.Compiler) {
+  apply(compiler: Compiler) {
     const containerName = this.pluginMetadata.name;
 
     if (!compiler.options.output.publicPath) {
@@ -173,7 +143,7 @@ export class DynamicRemotePlugin implements webpack.WebpackPluginInstance {
     compiler.options.output.uniqueName = containerName;
 
     // Generate webpack federated module container assets
-    new webpack.container.ModuleFederationPlugin({
+    new container.ModuleFederationPlugin({
       name: containerName,
       library: {
         type: 'jsonp',

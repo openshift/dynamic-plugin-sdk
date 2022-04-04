@@ -20,26 +20,13 @@ export type PluginStoreProviderProps = React.PropsWithChildren<{
 }>;
 
 /**
- * React hook for exposing the {@link PluginConsumer} interface.
+ * React hook that provides access to the {@link PluginStore} functionality.
  */
-export const usePluginConsumer = (): PluginConsumer => {
+export const usePluginStore = (): PluginConsumer & PluginManager => {
   const store = React.useContext(PluginStoreContext);
 
   if (store === undefined) {
-    throw new Error('usePluginConsumer hook called outside a PluginStoreProvider');
-  }
-
-  return store;
-};
-
-/**
- * React hook for exposing the {@link PluginManager} interface.
- */
-export const usePluginManager = (): PluginManager => {
-  const store = React.useContext(PluginStoreContext);
-
-  if (store === undefined) {
-    throw new Error('usePluginManager hook called outside a PluginStoreProvider');
+    throw new Error('usePluginStore hook called outside a PluginStoreProvider');
   }
 
   return store;
