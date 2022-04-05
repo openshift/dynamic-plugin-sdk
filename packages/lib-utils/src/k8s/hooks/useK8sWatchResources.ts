@@ -57,11 +57,7 @@ export const useK8sWatchResources: UseK8sWatchResources = (initResources) => {
     prevResources !== resources ||
     (prevK8sModels !== allK8sModels &&
       Object.values(resources).some((r) => {
-        /**
-         * Q - What is the guideline on functions like transformGroupVersionKindToReference that have been copied over but marked as deprecated?
-         * There are TODOs indicating they will be obsolete when we move away from K8sResourceKindReference to K8sGroupVersionKind.
-         * Is that for now or later?
-         */
+        // TODO: Use model in lieu of modelReference
         const modelReference = transformGroupVersionKindToReference(r.groupVersionKind || r.kind);
         return (
           getK8sModel(prevK8sModels, modelReference) !== getK8sModel(allK8sModels, modelReference)
@@ -85,60 +81,65 @@ export const useK8sWatchResources: UseK8sWatchResources = (initResources) => {
   // Contains mapping of model's kind/GVK (string) to the specific model objects to be watched (ImmutableMap)
   const k8sModels = k8sModelsRef.current;
 
+  type WatchModel = ReturnType<GetWatchData> & { noModel: boolean };
+
   // reduxIDs -- Map of keys from "resources" to the {id, action} for watching the specific resource
   const reduxIDs = React.useMemo<{
-    [key: string]: ReturnType<GetWatchData> & { noModel: boolean };
+    [key: string]: WatchModel;
   } | null>(
     () =>
-      modelsLoaded // Added a type to "ids" to fix the following error on lines 104, 110:  "Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'. No index signature with a parameter of type 'string' was found on type '{}'.""
-        ? Object.keys(resources).reduce((ids: { [key: string]: any }, key) => {
-            const r = resources[key];
-            const modelReference = transformGroupVersionKindToReference(
-              r.groupVersionKind || r.kind,
-            );
+      modelsLoaded
+        ? Object.keys(resources).reduce(
+            (
+              ids: {
+                [key: string]: WatchModel;
+              } | null,
+              key,
+            ) => {
+              const r = resources[key];
+              const modelReference = transformGroupVersionKindToReference(
+                r.groupVersionKind || r.kind,
+              );
 
-            const resourceModel =
-              k8sModels.get(modelReference) ||
-              k8sModels.get(getGroupVersionKindForReference(modelReference).kind);
-            if (!resourceModel) {
-              ids[key] = {
-                noModel: true,
-              };
-            } else {
-              const watchData = getWatchData(resources[key], resourceModel, cluster);
-              if (watchData) {
-                ids[key] = watchData;
+              const resourceModel =
+                k8sModels.get(modelReference) ||
+                k8sModels.get(getGroupVersionKindForReference(modelReference).kind);
+              if (!resourceModel && ids) {
+                ids[key] = {
+                  noModel: true,
+                } as WatchModel;
+              } else if (ids) {
+                const watchData = getWatchData(resources[key], resourceModel, cluster);
+                if (watchData) {
+                  ids[key] = watchData as WatchModel;
+                }
               }
-            }
-            return ids;
-          }, {})
+              return ids;
+            },
+            {},
+          )
         : null,
     [k8sModels, modelsLoaded, resources, cluster],
   );
 
-  // The following block of lines dispatches action to watchResource (with cleanup for stopping the watch) for each resource in "resources"
+  // Dispatch action to watchResource (with cleanup for stopping the watch) for each resource in "resources"
   const dispatch = useDispatch();
   React.useEffect(() => {
     const reduxIDKeys = Object.keys(reduxIDs || {});
     reduxIDKeys.forEach((k) => {
-      if (reduxIDs && reduxIDs[k] && reduxIDs[k].action) {
-        // Changed this if condition (and the one on line 131) to include check for reduxIDs since it could be null
+      if (reduxIDs?.[k] && reduxIDs[k].action) {
         dispatch(reduxIDs[k].action);
       }
     });
     return () => {
       reduxIDKeys.forEach((k) => {
-        if (reduxIDs && reduxIDs[k] && reduxIDs[k].action) {
+        if (reduxIDs?.[k] && reduxIDs[k].action) {
           dispatch(k8sActions.stopK8sWatch(reduxIDs[k].id));
         }
       });
     };
   }, [dispatch, reduxIDs]);
 
-  /**
-   * Fixed Error - lines 148-154 by removing type assertion (as any) for defaultMemoize
-   * Argument of type '(oldK8s: ImmutableMap<string, K8sModelCommon>, newK8s: ImmutableMap<string, K8sModelCommon>) => boolean' is not assignable to parameter of type 'never'.
-   */
   const resourceK8sSelectorCreator = React.useMemo(
     () =>
       createSelectorCreator(
@@ -156,10 +157,9 @@ export const useK8sWatchResources: UseK8sWatchResources = (initResources) => {
   );
 
   const resourceK8sSelector = React.useMemo(
-    // Q: What's the reason for useMemo here - reselect also appears to return a memoized selector
     () =>
       resourceK8sSelectorCreator(
-        (state: SDKStoreState) => state.k8s, //  Replaced OpenShiftReduxRootState with SDKStoreState
+        (state: SDKStoreState) => state.k8s,
         (k8s) => k8s,
       ),
     [resourceK8sSelectorCreator],
@@ -176,8 +176,7 @@ export const useK8sWatchResources: UseK8sWatchResources = (initResources) => {
             loaded: true,
             loadError: new NoModelError(),
           };
-        } else if (resourceK8s && reduxIDs && resourceK8s.has(reduxIDs?.[key].id)) {
-          // Added checks for resourceK8s && reduxIDs - to fix Error "Object is possibly 'undefined'."
+        } else if (reduxIDs && resourceK8s?.has(reduxIDs?.[key].id)) {
           const data = getReduxData(resourceK8s.getIn([reduxIDs[key].id, 'data']), resources[key]);
           const loaded = resourceK8s.getIn([reduxIDs[key].id, 'loaded']);
           const loadError = resourceK8s.getIn([reduxIDs[key].id, 'loadError']);
