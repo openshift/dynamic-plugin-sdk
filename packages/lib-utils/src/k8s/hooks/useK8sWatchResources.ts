@@ -14,7 +14,7 @@ import {
   getReferenceForModel,
   getGroupVersionKindForReference,
 } from '../k8s-utils';
-import { GetWatchData, OpenShiftReduxRootState } from './k8s-watch-types';
+import { GetWatchData } from './k8s-watch-types';
 import { getWatchData, getReduxData, NoModelError } from './k8s-watcher';
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 import { getK8sModel } from './useK8sModel';
@@ -43,8 +43,8 @@ export const useK8sWatchResources: UseK8sWatchResources = (initResources) => {
   const resources = useDeepCompareMemoize(initResources, true);
   const modelsLoaded = useModelsLoaded();
 
-  const allK8sModels = useSelector<SDKStoreState, ImmutableMap<string, K8sModelCommon>>(({ k8s }) =>
-    k8s?.getIn(['RESOURCES', 'models']),
+  const allK8sModels = useSelector<SDKStoreState, ImmutableMap<string, K8sModelCommon>>(
+    (state: SDKStoreState) => state.k8s?.getIn(['RESOURCES', 'models']),
   );
 
   const prevK8sModels = usePrevious(allK8sModels);
@@ -75,12 +75,10 @@ export const useK8sWatchResources: UseK8sWatchResources = (initResources) => {
 
     // Filter all models to get the specific models required for the watched resources
     k8sModelsRef.current = allK8sModels.filter((model) => {
-      if (model) {
-        return (
-          requiredModels.includes(getReferenceForModel(model)) ||
-          requiredModels.includes(model.kind)
-        );
-      }
+      return model
+        ? requiredModels.includes(getReferenceForModel(model)) ||
+            requiredModels.includes(model.kind)
+        : false;
     }) as ImmutableMap<string, K8sModelCommon>;
   }
 
@@ -90,17 +88,13 @@ export const useK8sWatchResources: UseK8sWatchResources = (initResources) => {
   // reduxIDs -- Map of keys from "resources" to the {id, action} for watching the specific resource
   const reduxIDs = React.useMemo<{
     [key: string]: ReturnType<GetWatchData> & { noModel: boolean };
-  }>(
+  } | null>(
     () =>
-      modelsLoaded
-        ? Object.keys(resources).reduce((ids, key) => {
+      modelsLoaded // Added a type to "ids" to fix the following error on lines 104, 110:  "Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'. No index signature with a parameter of type 'string' was found on type '{}'.""
+        ? Object.keys(resources).reduce((ids: { [key: string]: any }, key) => {
+            const r = resources[key];
             const modelReference = transformGroupVersionKindToReference(
-              /**
-               * This throws the error: "Argument of type 'string | K8sGroupVersionKind | undefined' is not assignable to
-               * parameter of type 'string | K8sGroupVersionKind'. Type 'undefined' is not assignable to type 'string | K8sGroupVersionKind'"
-               * Q: Why does the similar line not throw an error on line 65, 73
-               */
-              resources[key].groupVersionKind || resources[key].kind,
+              r.groupVersionKind || r.kind,
             );
 
             const resourceModel =
@@ -118,7 +112,7 @@ export const useK8sWatchResources: UseK8sWatchResources = (initResources) => {
             }
             return ids;
           }, {})
-        : {}, // Replaced null with {} to fix error - TODO - return specific type wherever possible
+        : null,
     [k8sModels, modelsLoaded, resources, cluster],
   );
 
@@ -127,36 +121,36 @@ export const useK8sWatchResources: UseK8sWatchResources = (initResources) => {
   React.useEffect(() => {
     const reduxIDKeys = Object.keys(reduxIDs || {});
     reduxIDKeys.forEach((k) => {
-      // if (reduxIDs[k].action) {    // Commented out as error indicates this line always returns true
-      dispatch(reduxIDs[k].action);
-      // }
+      if (reduxIDs && reduxIDs[k] && reduxIDs[k].action) {
+        // Changed this if condition (and the one on line 131) to include check for reduxIDs since it could be null
+        dispatch(reduxIDs[k].action);
+      }
     });
     return () => {
       reduxIDKeys.forEach((k) => {
-        // if (reduxIDs[k].action) {  // Commented out as error indicates this line always returns true
-        dispatch(k8sActions.stopK8sWatch(reduxIDs[k].id));
-        // }
+        if (reduxIDs && reduxIDs[k] && reduxIDs[k].action) {
+          dispatch(k8sActions.stopK8sWatch(reduxIDs[k].id));
+        }
       });
     };
   }, [dispatch, reduxIDs]);
 
   /**
-   * Error - lines 151-158
+   * Fixed Error - lines 148-154 by removing type assertion (as any) for defaultMemoize
    * Argument of type '(oldK8s: ImmutableMap<string, K8sModelCommon>, newK8s: ImmutableMap<string, K8sModelCommon>) => boolean' is not assignable to parameter of type 'never'.
-   * Q - not fully clear on how the custom memoization options using oldK8s and newK8s
    */
   const resourceK8sSelectorCreator = React.useMemo(
     () =>
       createSelectorCreator(
         // specifying createSelectorCreator<ImmutableMap<string, K8sKind>> throws type error
-        defaultMemoize as any,
+        defaultMemoize,
         (
           oldK8s: ImmutableMap<string, K8sModelCommon>,
           newK8s: ImmutableMap<string, K8sModelCommon>,
         ) =>
           Object.keys(reduxIDs || {})
-            .filter((k) => !reduxIDs[k].noModel)
-            .every((k) => oldK8s.get(reduxIDs[k].id) === newK8s.get(reduxIDs[k].id)),
+            .filter((k) => reduxIDs && !reduxIDs[k].noModel)
+            .every((k) => reduxIDs && oldK8s.get(reduxIDs[k].id) === newK8s.get(reduxIDs[k].id)),
       ),
     [reduxIDs],
   );
@@ -182,8 +176,8 @@ export const useK8sWatchResources: UseK8sWatchResources = (initResources) => {
             loaded: true,
             loadError: new NoModelError(),
           };
-        } else if (resourceK8s.has(reduxIDs?.[key].id)) {
-          // lines 187-189 - Error on resourceK8s "Object is possibly 'undefined'."
+        } else if (resourceK8s && reduxIDs && resourceK8s.has(reduxIDs?.[key].id)) {
+          // Added checks for resourceK8s && reduxIDs - to fix Error "Object is possibly 'undefined'."
           const data = getReduxData(resourceK8s.getIn([reduxIDs[key].id, 'data']), resources[key]);
           const loaded = resourceK8s.getIn([reduxIDs[key].id, 'loaded']);
           const loadError = resourceK8s.getIn([reduxIDs[key].id, 'loadError']);
