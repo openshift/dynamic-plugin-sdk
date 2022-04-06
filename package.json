@@ -13,6 +13,8 @@
     "eslint-print-config": "yarn eslint --print-config"
   },
   "devDependencies": {
+    "@patternfly/react-core": "^4.198.19",
+    "@patternfly/react-table": "^4.67.19",
     "@rollup/plugin-commonjs": "^21.0.2",
     "@rollup/plugin-node-resolve": "^13.1.1",
     "@rollup/plugin-typescript": "^8.3.0",
