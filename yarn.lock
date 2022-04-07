@@ -168,6 +168,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@monorepo/root@workspace:."
   dependencies:
+    "@patternfly/react-core": ^4.198.19
+    "@patternfly/react-table": ^4.67.19
     "@rollup/plugin-commonjs": ^21.0.2
     "@rollup/plugin-node-resolve": ^13.1.1
     "@rollup/plugin-typescript": ^8.3.0
@@ -279,6 +281,8 @@ __metadata:
     typesafe-actions: ^4.4.2
   peerDependencies:
     "@openshift/dynamic-plugin-sdk": ^1.0.0
+    "@patternfly/react-core": ^4.198.19
+    "@patternfly/react-table": ^4.67.19
     react: ^17.0.2
     react-redux: ^7.2.2
     redux: ^4.1.2
@@ -333,6 +337,65 @@ __metadata:
       optional: true
   languageName: unknown
   linkType: soft
+
+"@patternfly/react-core@npm:^4.198.19, @patternfly/react-core@npm:^4.202.14":
+  version: 4.202.14
+  resolution: "@patternfly/react-core@npm:4.202.14"
+  dependencies:
+    "@patternfly/react-icons": ^4.53.14
+    "@patternfly/react-styles": ^4.52.14
+    "@patternfly/react-tokens": ^4.54.14
+    focus-trap: 6.2.2
+    react-dropzone: 9.0.0
+    tippy.js: 5.1.2
+    tslib: ^2.0.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0
+    react-dom: ^16.8.0 || ^17.0.0
+  checksum: 10a4f2cd07d99bd236ae7881dbf0fac21b669a0a3908be236514cc543dd72b346f8a871bd2444882640695af6018dc63bcb5e0fa9af85929734ce538e2148af2
+  languageName: node
+  linkType: hard
+
+"@patternfly/react-icons@npm:^4.53.14":
+  version: 4.53.14
+  resolution: "@patternfly/react-icons@npm:4.53.14"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0
+    react-dom: ^16.8.0 || ^17.0.0
+  checksum: cff76374f6dee2bcc9bc7c16c572ab9cf2ff4b444c32f8851cf8e40715ac659431a2a2d8ebbaeb541d312e93b46edb80db9b89e60133d4958d77ecc568643584
+  languageName: node
+  linkType: hard
+
+"@patternfly/react-styles@npm:^4.52.14":
+  version: 4.52.14
+  resolution: "@patternfly/react-styles@npm:4.52.14"
+  checksum: 1192c2aec668800fa5936bbc635b36975a2c139d3eba2311f78b36f01d23d99ce7d2630704391976db083331d3283186dafa73eb5527f49eccaf2b6a86fc1d4d
+  languageName: node
+  linkType: hard
+
+"@patternfly/react-table@npm:^4.67.19":
+  version: 4.71.14
+  resolution: "@patternfly/react-table@npm:4.71.14"
+  dependencies:
+    "@patternfly/react-core": ^4.202.14
+    "@patternfly/react-icons": ^4.53.14
+    "@patternfly/react-styles": ^4.52.14
+    "@patternfly/react-tokens": ^4.54.14
+    lodash: ^4.17.19
+    tslib: ^2.0.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0
+    react-dom: ^16.8.0 || ^17.0.0
+  checksum: aa1ffdbca4e9647c9daae98f95ef5c64393325057fb3ed4e29a2c21624dd19a176ee1afbb12e3f764c4676dafe4b3e74e11c683502ebcb9954f85c1e4ecdf923
+  languageName: node
+  linkType: hard
+
+"@patternfly/react-tokens@npm:^4.54.14":
+  version: 4.54.14
+  resolution: "@patternfly/react-tokens@npm:4.54.14"
+  checksum: e1b8f4a1ba0101ca7904e9b4b51e90ee00e196b041595233f2a032e8f6ea21793d4660eb71913f9a963d2a7cbe685688aed1672c90bc9c859ef75c4f5a7fce23
+  languageName: node
+  linkType: hard
 
 "@rollup/plugin-commonjs@npm:^21.0.2":
   version: 21.0.2
@@ -1157,6 +1220,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"attr-accept@npm:^1.1.3":
+  version: 1.1.3
+  resolution: "attr-accept@npm:1.1.3"
+  dependencies:
+    core-js: ^2.5.0
+  checksum: 836c0e863719c0355e8ad4214e4c81f24dd9e724233153200189732da691f73e6f13316b8ac456d75749a89780f0da67e44387e46dfc3fd9a517a84a0e45acbc
+  languageName: node
+  linkType: hard
+
 "axe-core@npm:^4.3.5":
   version: 4.3.5
   resolution: "axe-core@npm:4.3.5"
@@ -1423,6 +1495,13 @@ __metadata:
   version: 3.19.1
   resolution: "core-js-pure@npm:3.19.1"
   checksum: b6d593ce2ac9da1adf8da3efc0b9cca8cc969d7d758c511db877a41d92216dbdf7a2341f89c07516bf0da1ce8b994e103f604ab37ca31379a35512c05d291804
+  languageName: node
+  linkType: hard
+
+"core-js@npm:^2.5.0":
+  version: 2.6.12
+  resolution: "core-js@npm:2.6.12"
+  checksum: 44fa9934a85f8c78d61e0c8b7b22436330471ffe59ec5076fe7f324d6e8cf7f824b14b1c81ca73608b13bdb0fef035bd820989bf059767ad6fa13123bb8bd016
   languageName: node
   linkType: hard
 
@@ -2222,6 +2301,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"file-selector@npm:^0.1.8":
+  version: 0.1.19
+  resolution: "file-selector@npm:0.1.19"
+  dependencies:
+    tslib: ^2.0.1
+  checksum: 5b105a3ede9139729ada72d6653ae3f4387a7bf2585e8700f9fa53f22457d1f88304fdde9ad7b43b694a5610d67058302257f448a75248fc2225880bca6df5df
+  languageName: node
+  linkType: hard
+
 "fill-range@npm:^7.0.1":
   version: 7.0.1
   resolution: "fill-range@npm:7.0.1"
@@ -2264,6 +2352,15 @@ __metadata:
   version: 3.2.4
   resolution: "flatted@npm:3.2.4"
   checksum: 7d33846428ab337ec81ef9b8b9103894c1c81f5f67feb32bd4ed106fbc47da60d56edb42efd36c9f1f30a010272aeccd34ec1ffacfe9dfdff19673b1d4df481b
+  languageName: node
+  linkType: hard
+
+"focus-trap@npm:6.2.2":
+  version: 6.2.2
+  resolution: "focus-trap@npm:6.2.2"
+  dependencies:
+    tabbable: ^5.1.4
+  checksum: 0bab3fbd8ca83724dbfeceed47a4fb99bd8f6d193ca8c3948fb0f1eff8554f718de017c25107cb3c52aa7761fd47150441d3a21eb6cd009d9b8698149ab05e98
   languageName: node
   linkType: hard
 
@@ -3034,14 +3131,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.17.21":
+"lodash@npm:^4.17.19, lodash@npm:^4.17.21":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: eb835a2e51d381e561e508ce932ea50a8e5a68f4ebdd771ea240d3048244a8d13658acbd502cd4829768c56f2e16bdd4340b9ea141297d472517b83868e677f7
   languageName: node
   linkType: hard
 
-"loose-envify@npm:^1.1.0, loose-envify@npm:^1.2.0, loose-envify@npm:^1.3.1, loose-envify@npm:^1.4.0":
+"loose-envify@npm:^1.0.0, loose-envify@npm:^1.1.0, loose-envify@npm:^1.2.0, loose-envify@npm:^1.3.1, loose-envify@npm:^1.4.0":
   version: 1.4.0
   resolution: "loose-envify@npm:1.4.0"
   dependencies:
@@ -3639,6 +3736,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"popper.js@npm:^1.16.0":
+  version: 1.16.1
+  resolution: "popper.js@npm:1.16.1"
+  checksum: c56ae5001ec50a77ee297a8061a0221d99d25c7348d2e6bcd3e45a0d0f32a1fd81bca29d46cb0d4bdf13efb77685bd6a0ce93f9eb3c608311a461f945fffedbe
+  languageName: node
+  linkType: hard
+
 "postcss-modules-extract-imports@npm:^3.0.0":
   version: 3.0.0
   resolution: "postcss-modules-extract-imports@npm:3.0.0"
@@ -3760,6 +3864,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"prop-types-extra@npm:^1.1.0":
+  version: 1.1.1
+  resolution: "prop-types-extra@npm:1.1.1"
+  dependencies:
+    react-is: ^16.3.2
+    warning: ^4.0.0
+  peerDependencies:
+    react: ">=0.14.0"
+  checksum: ebf1c048687bb538457f91a3610abb36ca0f50587a6afae80443a9e65b9db96882d18c3511175a8967fad4ca5dcd804913bbc241d7b5160c74cf69aacdd054f0
+  languageName: node
+  linkType: hard
+
 "prop-types@npm:^15.6.2":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
@@ -3812,7 +3928,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-is@npm:^16.13.1, react-is@npm:^16.6.0, react-is@npm:^16.7.0, react-is@npm:^16.8.1":
+"react-dropzone@npm:9.0.0":
+  version: 9.0.0
+  resolution: "react-dropzone@npm:9.0.0"
+  dependencies:
+    attr-accept: ^1.1.3
+    file-selector: ^0.1.8
+    prop-types: ^15.6.2
+    prop-types-extra: ^1.1.0
+  peerDependencies:
+    react: ">=0.14.0"
+  checksum: 03fd7fb78b49045c2c30d3841fbab30ba8513e03c69103527c9c1895c4298ca1ad76a6f9ba82acd5f505d9b713c4a0b2dedf248d891c9da639aa18004c35fee2
+  languageName: node
+  linkType: hard
+
+"react-is@npm:^16.13.1, react-is@npm:^16.3.2, react-is@npm:^16.6.0, react-is@npm:^16.7.0, react-is@npm:^16.8.1":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
   checksum: f7a19ac3496de32ca9ae12aa030f00f14a3d45374f1ceca0af707c831b2a6098ef0d6bdae51bd437b0a306d7f01d4677fcc8de7c0d331eb47ad0f46130e53c5f
@@ -4453,6 +4583,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tabbable@npm:^5.1.4":
+  version: 5.2.1
+  resolution: "tabbable@npm:5.2.1"
+  checksum: d26e9eeb880c4c78b59244bac2c931ad46f6c64a01e5c15ba6da348dc86442222912733846a9e63373342a81fa15d4afb31267606b38431510d10b0fb9ec9bba
+  languageName: node
+  linkType: hard
+
 "table@npm:^6.0.9":
   version: 6.7.3
   resolution: "table@npm:6.7.3"
@@ -4544,6 +4681,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tippy.js@npm:5.1.2":
+  version: 5.1.2
+  resolution: "tippy.js@npm:5.1.2"
+  dependencies:
+    popper.js: ^1.16.0
+  checksum: bcf51d3263a8ad9410704bdc6ebf7b0fa9e1f05e74e6ca6d9ef7a3c5540a3f0ff4ba08febf738b8e6205d91b10ebe7f26dc4186f7165114a2c4f8d464f608909
+  languageName: node
+  linkType: hard
+
 "to-regex-range@npm:^5.0.1":
   version: 5.0.1
   resolution: "to-regex-range@npm:5.0.1"
@@ -4632,7 +4778,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.3.1":
+"tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.3.1":
   version: 2.3.1
   resolution: "tslib@npm:2.3.1"
   checksum: de17a98d4614481f7fcb5cd53ffc1aaf8654313be0291e1bfaee4b4bb31a20494b7d218ff2e15017883e8ea9626599b3b0e0229c18383ba9dce89da2adf15cb9
@@ -4757,6 +4903,15 @@ __metadata:
   version: 1.0.1
   resolution: "value-equal@npm:1.0.1"
   checksum: bb7ae1facc76b5cf8071aeb6c13d284d023fdb370478d10a5d64508e0e6e53bb459c4bbe34258df29d82e6f561f874f0105eba38de0e61fe9edd0bdce07a77a2
+  languageName: node
+  linkType: hard
+
+"warning@npm:^4.0.0":
+  version: 4.0.3
+  resolution: "warning@npm:4.0.3"
+  dependencies:
+    loose-envify: ^1.0.0
+  checksum: 4f2cb6a9575e4faf71ddad9ad1ae7a00d0a75d24521c193fa464f30e6b04027bd97aa5d9546b0e13d3a150ab402eda216d59c1d0f2d6ca60124d96cd40dfa35c
   languageName: node
   linkType: hard
 
