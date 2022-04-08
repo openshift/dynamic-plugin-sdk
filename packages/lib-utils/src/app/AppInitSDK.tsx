@@ -37,7 +37,6 @@ type AppInitSDKProps = {
  */
 const AppInitSDK: React.FC<AppInitSDKProps> = ({ children, configurations }) => {
   const { store, storeContextPresent } = useReduxStore();
-  const [canRender, setCanRender] = React.useState(false);
 
   const { appFetch, pluginStore, wsAppSettings, apiDiscovery = initAPIDiscovery } = configurations;
 
@@ -45,17 +44,12 @@ const AppInitSDK: React.FC<AppInitSDKProps> = ({ children, configurations }) => 
     try {
       if (!isUtilsConfigSet()) {
         setUtilsConfig({ appFetch, wsAppSettings });
-        setCanRender(true);
       }
       apiDiscovery(store);
     } catch (e) {
       consoleLogger.warn('Error while initializing AppInitSDK', e);
     }
   }, [apiDiscovery, appFetch, store, wsAppSettings]);
-
-  if (!canRender) {
-    return null;
-  }
 
   return (
     <PluginStoreProvider store={pluginStore}>
