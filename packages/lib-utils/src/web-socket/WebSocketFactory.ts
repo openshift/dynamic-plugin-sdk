@@ -70,14 +70,14 @@ export class WebSocketFactory {
     }
   }
 
-  private reconnect(): void {
+  private async reconnect(): Promise<void> {
     if (this.connectionAttempt || this.state === WebSocketState.DESTROYED) {
       return;
     }
 
     let duration = 0;
 
-    const attempt = () => {
+    const attempt = async () => {
       if (!this.options.reconnect || this.state === WebSocketState.OPENED) {
         window.clearTimeout(this.connectionAttempt);
         this.connectionAttempt = -1;
@@ -90,7 +90,7 @@ export class WebSocketFactory {
         return;
       }
 
-      this.connect();
+      await this.connect();
       duration = Math.round(Math.min(1.5 * duration, 60000));
       this.connectionAttempt = window.setTimeout(attempt, duration);
       consoleLogger.info(`attempting reconnect in ${duration / 1000} seconds...`);
@@ -99,19 +99,19 @@ export class WebSocketFactory {
     this.connectionAttempt = window.setTimeout(attempt, 1000);
   }
 
-  private connect(): void {
+  private async connect(): Promise<void> {
     this.state = WebSocketState.INIT;
     this.messageBuffer = [];
 
-    const url = createURL(applyConfigHost(this.options.host), this.options.path);
-    const subProtocols = applyConfigSubProtocols(
+    const url = await createURL(await applyConfigHost(this.options.host), this.options.path);
+    const subProtocols = await applyConfigSubProtocols(
       this.options.host ? this.options.subProtocols : undefined,
     );
     try {
       this.ws = new WebSocket(url, subProtocols);
     } catch (e) {
       consoleLogger.error('Error creating websocket:', e);
-      this.reconnect();
+      await this.reconnect();
       return;
     }
 
