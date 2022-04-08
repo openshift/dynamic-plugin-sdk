@@ -16,7 +16,7 @@ export type UtilsConfig = {
   /**
    * Configure the web socket settings for your application.
    */
-  wsAppSettings: WebSocketAppSettings;
+  wsAppSettings: () => Promise<WebSocketAppSettings>;
 };
 
 let config: Readonly<UtilsConfig> | undefined;

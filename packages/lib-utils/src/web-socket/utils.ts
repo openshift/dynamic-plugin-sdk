@@ -1,6 +1,6 @@
 import { getUtilsConfig } from '../config';
 
-export const createURL = (host: string, path: string): string => {
+export const createURL = async (host: string, path: string): Promise<string> => {
   let url;
 
   if (host === 'auto') {
@@ -18,15 +18,17 @@ export const createURL = (host: string, path: string): string => {
     url += path;
   }
 
-  const { urlAugment } = getUtilsConfig().wsAppSettings;
+  const { urlAugment } = await getUtilsConfig().wsAppSettings();
 
   return urlAugment ? urlAugment(url) : url;
 };
 
-export const applyConfigHost = (overrideHost?: string): string => {
-  return overrideHost ?? getUtilsConfig().wsAppSettings.host;
+export const applyConfigHost = async (overrideHost?: string): Promise<string> => {
+  return overrideHost ?? (await getUtilsConfig().wsAppSettings()).host;
 };
 
-export const applyConfigSubProtocols = (overridableProtocols?: string[]): string[] => {
-  return overridableProtocols ?? getUtilsConfig().wsAppSettings.subProtocols;
+export const applyConfigSubProtocols = async (
+  overridableProtocols?: string[],
+): Promise<string[]> => {
+  return overridableProtocols ?? (await getUtilsConfig().wsAppSettings()).subProtocols;
 };
