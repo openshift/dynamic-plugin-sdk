@@ -33,7 +33,6 @@
     "immutable": "^3.8.2",
     "lodash-es": "^4.17.21",
     "pluralize": "^8.0.0",
-    "reselect": "4.x",
     "typesafe-actions": "^4.4.2"
   },
   "devDependencies": {

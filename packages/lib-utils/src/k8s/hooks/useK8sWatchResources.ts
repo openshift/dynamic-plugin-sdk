@@ -3,11 +3,10 @@ import { Map as ImmutableMap } from 'immutable';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore: FIXME missing exports due to out-of-sync @types/react-redux version
 import { useSelector, useDispatch } from 'react-redux';
-import { createSelectorCreator, defaultMemoize } from 'reselect';
 import { K8sModelCommon } from '../../types/k8s';
 import { getActiveCluster } from '../../app/redux/reducers/core';
 import * as k8sActions from '../../app/redux/actions/k8s';
-import { SDKStoreState } from '../../types/redux';
+import { K8sState, SDKStoreState } from '../../types/redux';
 import { UseK8sWatchResources } from './watch-resource-types';
 import {
   transformGroupVersionKindToReference,
@@ -140,32 +139,16 @@ export const useK8sWatchResources: UseK8sWatchResources = (initResources) => {
     };
   }, [dispatch, reduxIDs]);
 
-  const resourceK8sSelectorCreator = React.useMemo(
-    () =>
-      createSelectorCreator(
-        // specifying createSelectorCreator<ImmutableMap<string, K8sKind>> throws type error
-        defaultMemoize,
-        (
-          oldK8s: ImmutableMap<string, K8sModelCommon>,
-          newK8s: ImmutableMap<string, K8sModelCommon>,
-        ) =>
-          Object.keys(reduxIDs || {})
-            .filter((k) => reduxIDs && !reduxIDs[k].noModel)
-            .every((k) => reduxIDs && oldK8s.get(reduxIDs[k].id) === newK8s.get(reduxIDs[k].id)),
-      ),
+  // Create selector to select k8s from the store on each update of reduxIDs
+  const resourceK8sSelectorCreator = React.useCallback(
+    (oldK8s: K8sState, newK8s: K8sState) =>
+      Object.values(reduxIDs || {})
+        .filter(({ noModel }) => !noModel)
+        .every(({ id }) => oldK8s?.get(id) === newK8s?.get(id)),
     [reduxIDs],
   );
 
-  const resourceK8sSelector = React.useMemo(
-    () =>
-      resourceK8sSelectorCreator(
-        (state: SDKStoreState) => state.k8s,
-        (k8s) => k8s,
-      ),
-    [resourceK8sSelectorCreator],
-  );
-
-  const resourceK8s = useSelector(resourceK8sSelector);
+  const resourceK8s = useSelector((state: SDKStoreState) => state.k8s, resourceK8sSelectorCreator);
 
   const results = React.useMemo(
     () =>
