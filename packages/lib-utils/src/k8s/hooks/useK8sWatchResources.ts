@@ -1,24 +1,22 @@
-import * as React from 'react';
 import { Map as ImmutableMap } from 'immutable';
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore: FIXME missing exports due to out-of-sync @types/react-redux version
+import * as React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { K8sModelCommon } from '../../types/k8s';
-import { getActiveCluster } from '../../app/redux/reducers/core';
 import * as k8sActions from '../../app/redux/actions/k8s';
-import { K8sState, SDKStoreState } from '../../types/redux';
-import { UseK8sWatchResources } from './watch-resource-types';
+import { getActiveCluster } from '../../app/redux/reducers/core';
+import type { K8sModelCommon } from '../../types/k8s';
+import type { K8sState, SDKStoreState } from '../../types/redux';
 import {
   transformGroupVersionKindToReference,
   getReferenceForModel,
   getGroupVersionKindForReference,
 } from '../k8s-utils';
-import { GetWatchData } from './k8s-watch-types';
+import type { GetWatchData } from './k8s-watch-types';
 import { getWatchData, getReduxData, NoModelError } from './k8s-watcher';
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 import { getK8sModel } from './useK8sModel';
 import { useModelsLoaded } from './useModelsLoaded';
 import { usePrevious } from './usePrevious';
+import type { UseK8sWatchResources } from './watch-resource-types';
 
 /**
  * Hook that retrieves the k8s resources along with their respective status for loaded and error.
@@ -104,12 +102,14 @@ export const useK8sWatchResources: UseK8sWatchResources = (initResources) => {
                 k8sModels.get(modelReference) ||
                 k8sModels.get(getGroupVersionKindForReference(modelReference).kind);
               if (!resourceModel && ids) {
+                // eslint-disable-next-line no-param-reassign
                 ids[key] = {
                   noModel: true,
                 } as WatchModel;
               } else if (ids) {
                 const watchData = getWatchData(resources[key], resourceModel, cluster);
                 if (watchData) {
+                  // eslint-disable-next-line no-param-reassign
                   ids[key] = watchData as WatchModel;
                 }
               }
