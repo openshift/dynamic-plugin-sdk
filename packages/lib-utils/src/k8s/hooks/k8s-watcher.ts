@@ -77,7 +77,7 @@ export const getReduxData = (immutableData, resource: WatchK8sResource) => {
 };
 
 export const getWatchData: GetWatchData = (resource, k8sModel, cluster) => {
-  if (!k8sModel || !resource || !resource.name || !resource.namespace) {
+  if (!k8sModel || !resource?.namespace) {
     return null;
   }
   const query = makeQuery(
@@ -93,21 +93,26 @@ export const getWatchData: GetWatchData = (resource, k8sModel, cluster) => {
   }
 
   const id = makeReduxID(k8sModel, query, targetCluster);
-  const action = resource.isList
-    ? k8sActions.watchK8sList(
-        id,
-        { ...query, cluster: targetCluster },
-        k8sModel,
-        undefined,
-        resource.partialMetadata,
-      )
-    : k8sActions.watchK8sObject(
-        id,
-        resource.name,
-        resource.namespace,
-        { ...query, cluster: targetCluster },
-        k8sModel,
-        resource.partialMetadata,
-      );
+  let action;
+  if (resource.isList) {
+    action = k8sActions.watchK8sList(
+      id,
+      { ...query, cluster: targetCluster },
+      k8sModel,
+      undefined,
+      resource.partialMetadata,
+    );
+  } else if (resource.name) {
+    action = k8sActions.watchK8sObject(
+      id,
+      resource.name,
+      resource.namespace,
+      { ...query, cluster: targetCluster },
+      k8sModel,
+      resource.partialMetadata,
+    );
+  } else {
+    return null;
+  }
   return { id, action };
 };

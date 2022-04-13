@@ -7,6 +7,7 @@ export type InitAPIDiscovery = (store: Store<unknown, Action<AnyAction>>) => voi
 export type APIResourceList = K8sModelCommon & {
   kind: 'APIResourceList';
   apiVersion: 'v1';
+  groupVersion: string;
   resources?: {
     name: string;
     singularName?: string;

@@ -122,9 +122,9 @@ export const watchK8sList =
       const response = await k8sListResource({
         model: k8skind,
         queryOptions: {
+          ...queryWithCluster,
           queryParams: {
             limit: `${paginationLimit}`,
-            ...queryWithCluster,
             ...(continueToken ? { continue: continueToken } : {}),
           },
         },
