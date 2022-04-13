@@ -93,7 +93,10 @@ export type OpenHandler = GenericHandler<never>;
 export type CloseHandler = GenericHandler<CloseEvent>;
 export type ErrorHandler = GenericHandler<Event>;
 export type MessageHandler = GenericHandler<MessageDataType>;
-export type DestroyHandler = GenericHandler<never>;
+/**
+ * Data is provided potentially by .destroy() caller.
+ */
+export type DestroyHandler = GenericHandler<unknown | undefined>;
 export type BulkMessageHandler = GenericHandler<MessageDataType[]>;
 
 export type EventHandlers = {

@@ -313,7 +313,7 @@ export class WebSocketFactory {
   /**
    * Cleans up the web socket instance and related internal data.
    */
-  destroy(): void {
+  destroy(eventData?: unknown): void {
     consoleLogger.info(`destroying websocket: ${this.id}`);
     if (this.state === WebSocketState.DESTROYED) {
       return;
@@ -339,7 +339,7 @@ export class WebSocketFactory {
     }
 
     try {
-      this.triggerEvent('destroy');
+      this.triggerEvent('destroy', eventData);
     } catch (e) {
       consoleLogger.error('Error while trigger destroy event for web socket', e);
     }
