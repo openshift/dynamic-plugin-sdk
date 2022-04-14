@@ -13,7 +13,7 @@ import {
 import type { GetWatchData } from './k8s-watch-types';
 import { getWatchData, getReduxData, NoModelError } from './k8s-watcher';
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';
-import { getK8sModel } from './useK8sModel';
+import { getK8sModelFromMapOfModels } from './useK8sModel';
 import { useModelsLoaded } from './useModelsLoaded';
 import { usePrevious } from './usePrevious';
 import type { UseK8sWatchResources } from './watch-resource-types';
@@ -57,7 +57,8 @@ export const useK8sWatchResources: UseK8sWatchResources = (initResources) => {
         // TODO: Use model in lieu of modelReference
         const modelReference = transformGroupVersionKindToReference(r.groupVersionKind || r.kind);
         return (
-          getK8sModel(prevK8sModels, modelReference) !== getK8sModel(allK8sModels, modelReference)
+          getK8sModelFromMapOfModels(prevK8sModels, modelReference) !==
+          getK8sModelFromMapOfModels(allK8sModels, modelReference)
         );
       }))
   ) {

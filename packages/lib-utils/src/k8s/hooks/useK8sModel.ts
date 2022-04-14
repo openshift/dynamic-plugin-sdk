@@ -1,3 +1,4 @@
+import type { Map as ImmutableMap } from 'immutable';
 import { useSelector } from 'react-redux';
 import type {
   K8sGroupVersionKind,
@@ -19,6 +20,18 @@ export const getK8sModel = (
   return kindReference
     ? k8s?.getIn(['RESOURCES', 'models', kindReference]) ??
         k8s?.getIn(['RESOURCES', 'models', getGroupVersionKindForReference(kindReference).kind])
+    : undefined;
+};
+
+// Retrieve a specific k8s model from a map of k8s models
+export const getK8sModelFromMapOfModels = (
+  k8sModels: ImmutableMap<string, K8sModelCommon> | undefined,
+  k8sGroupVersionKind: K8sResourceKindReference | K8sGroupVersionKind,
+): K8sModelCommon => {
+  const kindReference = transformGroupVersionKindToReference(k8sGroupVersionKind);
+  return kindReference
+    ? k8sModels?.getIn([kindReference]) ??
+        k8sModels?.getIn([getGroupVersionKindForReference(kindReference).kind])
     : undefined;
 };
 
