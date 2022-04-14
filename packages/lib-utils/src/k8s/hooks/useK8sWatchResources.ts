@@ -13,7 +13,6 @@ import {
 import type { GetWatchData } from './k8s-watch-types';
 import { getWatchData, getReduxData, NoModelError } from './k8s-watcher';
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';
-import { getK8sModelFromMapOfModels } from './useK8sModel';
 import { useModelsLoaded } from './useModelsLoaded';
 import { usePrevious } from './usePrevious';
 import type { UseK8sWatchResources } from './watch-resource-types';
@@ -56,10 +55,7 @@ export const useK8sWatchResources: UseK8sWatchResources = (initResources) => {
       Object.values(resources).some((r) => {
         // TODO: Use model in lieu of modelReference
         const modelReference = transformGroupVersionKindToReference(r.groupVersionKind || r.kind);
-        return (
-          getK8sModelFromMapOfModels(prevK8sModels, modelReference) !==
-          getK8sModelFromMapOfModels(allK8sModels, modelReference)
-        );
+        return prevK8sModels?.get(modelReference) !== allK8sModels?.get(modelReference);
       }))
   ) {
     // String array containing list of model kinds/GVK based on input resources
