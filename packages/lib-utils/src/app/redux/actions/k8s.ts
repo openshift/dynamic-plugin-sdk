@@ -216,9 +216,10 @@ export const watchK8sList =
           }
           consoleLogger.info('WS closed abnormally - starting polling loop over!');
           const ws = WS[id];
-          ws?.destroy();
+          const timedOut = true;
+          ws?.destroy(timedOut);
         })
-        .onDestroy((timedOut: boolean) => {
+        .onDestroy((timedOut) => {
           if (!timedOut) {
             return;
           }
