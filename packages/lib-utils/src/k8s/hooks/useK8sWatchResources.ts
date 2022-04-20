@@ -34,7 +34,7 @@ import type {
         'pod': {...}
         ...
       }
- *   const {deployment, pod}  = useK8sWatchResources(watchResources)
+ *   const {deployment, pod} = useK8sWatchResources(watchResources)
  *   return ...
  * }
  * ```
