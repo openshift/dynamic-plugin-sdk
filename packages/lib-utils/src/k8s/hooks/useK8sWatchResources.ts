@@ -15,7 +15,12 @@ import { getWatchData, getReduxData, NoModelError } from './k8s-watcher';
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 import { useModelsLoaded } from './useModelsLoaded';
 import { usePrevious } from './usePrevious';
-import type { UseK8sWatchResources } from './watch-resource-types';
+import type {
+  ResourcesObject,
+  WatchK8sResources,
+  WatchK8sResultsObject,
+  WatchK8sResults,
+} from './watch-resource-types';
 
 /**
  * Hook that retrieves the k8s resources along with their respective status for loaded and error.
@@ -34,7 +39,9 @@ import type { UseK8sWatchResources } from './watch-resource-types';
  * }
  * ```
  */
-export const useK8sWatchResources: UseK8sWatchResources = (initResources) => {
+export const useK8sWatchResources = <R extends ResourcesObject>(
+  initResources: WatchK8sResources<R>,
+): WatchK8sResults<R> => {
   const cluster = useSelector((state: SDKStoreState) => getActiveCluster(state));
   const resources = useDeepCompareMemoize(initResources, true);
   const modelsLoaded = useModelsLoaded();
@@ -151,25 +158,25 @@ export const useK8sWatchResources: UseK8sWatchResources = (initResources) => {
     () =>
       Object.keys(resources).reduce((acc, key) => {
         if (reduxIDs?.[key].noModel) {
-          acc[key] = {
+          acc[key as keyof R] = {
             data: resources[key].isList ? [] : {},
             loaded: true,
             loadError: new NoModelError(),
-          };
+          } as WatchK8sResultsObject<R[typeof key]>;
         } else if (reduxIDs && resourceK8s?.has(reduxIDs?.[key].id)) {
           const data = getReduxData(resourceK8s.getIn([reduxIDs[key].id, 'data']), resources[key]);
           const loaded = resourceK8s.getIn([reduxIDs[key].id, 'loaded']);
           const loadError = resourceK8s.getIn([reduxIDs[key].id, 'loadError']);
-          acc[key] = { data, loaded, loadError };
+          acc[key as keyof R] = { data, loaded, loadError };
         } else {
-          acc[key] = {
+          acc[key as keyof R] = {
             data: resources[key].isList ? [] : {},
             loaded: false,
             loadError: undefined,
-          };
+          } as WatchK8sResultsObject<R[typeof key]>;
         }
         return acc;
-      }, {} as any),
+      }, {} as WatchK8sResults<R>),
     [resources, reduxIDs, resourceK8s],
   );
   return results;
