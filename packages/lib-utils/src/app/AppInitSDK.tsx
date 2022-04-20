@@ -12,6 +12,7 @@ import { useReduxStore } from './redux';
 type AppInitSDKProps = {
   configurations: {
     apiDiscovery?: InitAPIDiscovery;
+    apiPriorityList?: string[];
     appFetch: UtilsConfig['appFetch'];
     pluginStore: PluginStore;
     wsAppSettings: UtilsConfig['wsAppSettings'];
@@ -38,18 +39,24 @@ type AppInitSDKProps = {
 const AppInitSDK: React.FC<AppInitSDKProps> = ({ children, configurations }) => {
   const { store, storeContextPresent } = useReduxStore();
 
-  const { appFetch, pluginStore, wsAppSettings, apiDiscovery = initAPIDiscovery } = configurations;
+  const {
+    appFetch,
+    pluginStore,
+    wsAppSettings,
+    apiDiscovery = initAPIDiscovery,
+    apiPriorityList,
+  } = configurations;
 
   React.useEffect(() => {
     try {
       if (!isUtilsConfigSet()) {
         setUtilsConfig({ appFetch, wsAppSettings });
       }
-      apiDiscovery(store);
+      apiDiscovery(store, apiPriorityList);
     } catch (e) {
       consoleLogger.warn('Error while initializing AppInitSDK', e);
     }
-  }, [apiDiscovery, appFetch, store, wsAppSettings]);
+  }, [apiDiscovery, appFetch, store, wsAppSettings, apiPriorityList]);
 
   return (
     <PluginStoreProvider store={pluginStore}>

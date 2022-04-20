@@ -69,7 +69,7 @@ type APIResourceData = {
   }[];
 };
 
-const getResources = async (): Promise<DiscoveryResources> => {
+const getResources = async (preferenceList: string[]): Promise<DiscoveryResources> => {
   const apiResourceData: APIResourceData = await commonFetchJSON('/apis');
   const groupVersionMap = apiResourceData.groups.reduce(
     (acc: AnyObject, { name, versions, preferredVersion: { version } }) => {
@@ -85,7 +85,9 @@ const getResources = async (): Promise<DiscoveryResources> => {
     apiResourceData.groups.map<string[]>((group) =>
       group.versions.map<string>((version) => `/apis/${version.groupVersion}`),
     ),
-  ).concat(['/api/v1']);
+  )
+    .concat(['/api/v1'])
+    .sort((api) => (preferenceList.find((item) => api.includes(`/apis/${item}`)) ? -1 : 0));
 
   let batchedData: APIResourceList[] = [];
   const batches = _.chunk(all, API_DISCOVERY_REQUEST_BATCH_SIZE);
@@ -154,11 +156,11 @@ const getResources = async (): Promise<DiscoveryResources> => {
 };
 
 const updateResources =
-  () =>
+  (preferenceList: string[]) =>
   (dispatch: Dispatch): Promise<DiscoveryResources> => {
     dispatch(getResourcesInFlight());
 
-    return getResources().then((resources) => {
+    return getResources(preferenceList).then((resources) => {
       // Cache the resources whenever discovery completes to improve console load times.
       cacheResources(resources);
       dispatch(receivedResources(resources));
@@ -166,19 +168,19 @@ const updateResources =
     });
   };
 
-const startAPIDiscovery = () => (dispatch: DispatchWithThunk) => {
+const startAPIDiscovery = (preferenceList: string[]) => (dispatch: DispatchWithThunk) => {
   consoleLogger.info(
     `API discovery startAPIDiscovery: Polling every ${API_DISCOVERY_POLL_INTERVAL} ms`,
   );
   // Poll API discovery since we can't watch CRDs
-  dispatch(updateResources())
+  dispatch(updateResources(preferenceList))
     .then((resources) => {
       if (POLLs[apiDiscovery]) {
         clearTimeout(POLLs[apiDiscovery]);
         delete POLLs[apiDiscovery];
       }
       POLLs[apiDiscovery] = window.setTimeout(
-        () => dispatch(startAPIDiscovery()),
+        () => dispatch(startAPIDiscovery(preferenceList)),
         API_DISCOVERY_POLL_INTERVAL,
       );
       return resources;
@@ -187,7 +189,7 @@ const startAPIDiscovery = () => (dispatch: DispatchWithThunk) => {
     .catch((err) => consoleLogger.error('API discovery startAPIDiscovery polling failed:', err));
 };
 
-export const initAPIDiscovery: InitAPIDiscovery = (storeInstance) => {
+export const initAPIDiscovery: InitAPIDiscovery = (storeInstance, preferenceList = []) => {
   consoleLogger.info(`API discovery waiting ${API_DISCOVERY_INIT_DELAY} ms before initializing`);
   const initDelay = new Promise((resolve) => {
     window.setTimeout(resolve, API_DISCOVERY_INIT_DELAY);
@@ -201,8 +203,8 @@ export const initAPIDiscovery: InitAPIDiscovery = (storeInstance) => {
         storeInstance.dispatch(receivedResources(resources));
       }
       // Still perform discovery to refresh the cache.
-      storeInstance.dispatch(startAPIDiscovery());
+      storeInstance.dispatch(startAPIDiscovery(preferenceList));
       return resources;
     })
-    .catch(() => storeInstance.dispatch(startAPIDiscovery()));
+    .catch(() => storeInstance.dispatch(startAPIDiscovery(preferenceList)));
 };
