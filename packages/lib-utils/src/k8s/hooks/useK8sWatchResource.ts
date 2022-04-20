@@ -4,12 +4,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import * as k8sActions from '../../app/redux/actions/k8s';
 import { getActiveCluster } from '../../app/redux/reducers/core';
 import { getReduxIdPayload } from '../../app/redux/reducers/k8s/selector';
+import type { K8sResourceCommon } from '../../types/k8s';
 import type { SDKStoreState } from '../../types/redux';
 import { getWatchData, getReduxData, NoModelError } from './k8s-watcher';
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 import { useK8sModel } from './useK8sModel';
 import { useModelsLoaded } from './useModelsLoaded';
-import type { UseK8sWatchResource, WatchK8sResource } from './watch-resource-types';
+import type { WatchK8sResource, WatchK8sResult } from './watch-resource-types';
 
 const NOT_A_VALUE = '__not-a-value__';
 
@@ -23,12 +24,14 @@ const NOT_A_VALUE = '__not-a-value__';
  *   const watchRes = {
         ...
       }
- *   const [data, loaded, error] = UseK8sWatchResource(watchRes)
+ *   const [data, loaded, error] = useK8sWatchResource(watchRes)
  *   return ...
  * }
  * ```
  */
-export const useK8sWatchResource: UseK8sWatchResource = (initResource) => {
+export const useK8sWatchResource = <R extends K8sResourceCommon | K8sResourceCommon[]>(
+  initResource: WatchK8sResource | null,
+): WatchK8sResult<R> => {
   const cluster = useSelector<SDKStoreState, string>((state) => getActiveCluster(state));
   const withFallback: WatchK8sResource = initResource || { kind: NOT_A_VALUE };
   const resource = useDeepCompareMemoize(withFallback, true);

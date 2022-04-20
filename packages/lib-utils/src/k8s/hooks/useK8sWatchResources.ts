@@ -34,7 +34,7 @@ import type {
         'pod': {...}
         ...
       }
- *   const {deployment, pod}  = UseK8sWatchResources(watchResources)
+ *   const {deployment, pod}  = useK8sWatchResources(watchResources)
  *   return ...
  * }
  * ```
@@ -156,9 +156,10 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
 
   const results = React.useMemo(
     () =>
-      Object.keys(resources).reduce((acc, key) => {
+      Object.keys(resources).reduce<WatchK8sResults<R>>((acc, key) => {
+        const accKey = key as keyof R;
         if (reduxIDs?.[key].noModel) {
-          acc[key as keyof R] = {
+          acc[accKey] = {
             data: resources[key].isList ? [] : {},
             loaded: true,
             loadError: new NoModelError(),
@@ -167,9 +168,9 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
           const data = getReduxData(resourceK8s.getIn([reduxIDs[key].id, 'data']), resources[key]);
           const loaded = resourceK8s.getIn([reduxIDs[key].id, 'loaded']);
           const loadError = resourceK8s.getIn([reduxIDs[key].id, 'loadError']);
-          acc[key as keyof R] = { data, loaded, loadError };
+          acc[accKey] = { data, loaded, loadError };
         } else {
-          acc[key as keyof R] = {
+          acc[accKey] = {
             data: resources[key].isList ? [] : {},
             loaded: false,
             loadError: undefined,
