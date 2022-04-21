@@ -9,7 +9,7 @@ export {
 export { useExtensions } from './store/useExtensions';
 export { usePluginInfo } from './store/usePluginInfo';
 export { useResolvedExtensions } from './store/useResolvedExtensions';
-export { EncodedExtension } from './types/extension';
+export * from './types';
 
 // Core extension types, to be exported via lib-extensions package
 export * from './extensions';
