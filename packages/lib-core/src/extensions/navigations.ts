@@ -39,12 +39,21 @@ export type Separator = Extension<
   Omit<NavItemProperties, 'startsWith'>
 >;
 
+export type NavSection = Extension<
+  'core.navigation/section',
+  Omit<NavItemProperties, 'startsWith' | 'section'> & {
+    /** Name of this section. If not supplied, only a separator will be shown above the section. */
+    name?: string;
+  }
+>;
+
 // Type guards
 
 export const isHrefNavItem = (e: Extension): e is HrefNavItem => e.type === 'core.navigation/href';
 export const isResourceNSNavItem = (e: Extension): e is ResourceNSNavItem =>
   e.type === 'core.navigation/resource-ns';
 export const isSeparator = (e: Extension): e is Separator => e.type === 'core.navigation/separator';
+export const isNavSection = (e: Extension): e is NavSection => e.type === 'core.navigation/section';
 
 // Arbitrary types
 
