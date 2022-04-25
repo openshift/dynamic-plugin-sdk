@@ -56,15 +56,16 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
   // Ref to immutable map mapping model's kind (string) to the model object (ImmutableMap)
   const k8sModelsRef = React.useRef<ImmutableMap<string, K8sModelCommon>>(ImmutableMap());
 
-  if (
-    prevResources !== resources ||
-    (prevK8sModels !== allK8sModels &&
-      Object.values(resources).some((r) => {
-        // TODO: Use model in lieu of modelReference
-        const modelReference = transformGroupVersionKindToReference(r.groupVersionKind || r.kind);
-        return prevK8sModels?.get(modelReference) !== allK8sModels?.get(modelReference);
-      }))
-  ) {
+  const haveResourcesChanged = prevResources !== resources;
+  const haveK8sModelsChanged =
+    prevK8sModels !== allK8sModels &&
+    Object.values(resources).some((r) => {
+      // TODO: Use model in lieu of modelReference
+      const modelReference = transformGroupVersionKindToReference(r.groupVersionKind || r.kind);
+      return prevK8sModels?.get(modelReference) !== allK8sModels?.get(modelReference);
+    });
+
+  if (haveResourcesChanged || haveK8sModelsChanged) {
     // String array containing list of model kinds/GVK based on input resources
     const requiredModels = Object.values(resources).map((r) =>
       transformGroupVersionKindToReference(r.groupVersionKind || r.kind),
@@ -84,46 +85,41 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
 
   type WatchModel = ReturnType<GetWatchData> & { noModel: boolean };
 
-  // reduxIDs -- Map of keys from "resources" to the {id, action} for watching the specific resource
+  // Map of keys from "resources" to the {id, action} for watching the specific resource
   const reduxIDs = React.useMemo<{
     [key: string]: WatchModel;
-  } | null>(
-    () =>
-      modelsLoaded
-        ? Object.keys(resources).reduce(
-            (
-              ids: {
-                [key: string]: WatchModel;
-              } | null,
-              key,
-            ) => {
-              const r = resources[key];
-              const modelReference = transformGroupVersionKindToReference(
-                r.groupVersionKind || r.kind,
-              );
+  } | null>(() => {
+    const watchDataForResources = Object.keys(resources).reduce(
+      (
+        ids: {
+          [key: string]: WatchModel;
+        } | null,
+        key,
+      ) => {
+        const r = resources[key];
+        const modelReference = transformGroupVersionKindToReference(r.groupVersionKind || r.kind);
 
-              const resourceModel =
-                k8sModels.get(modelReference) ||
-                k8sModels.get(getGroupVersionKindForReference(modelReference).kind);
-              if (!resourceModel && ids) {
-                // eslint-disable-next-line no-param-reassign
-                ids[key] = {
-                  noModel: true,
-                } as WatchModel;
-              } else if (ids) {
-                const watchData = getWatchData(resources[key], resourceModel, cluster);
-                if (watchData) {
-                  // eslint-disable-next-line no-param-reassign
-                  ids[key] = watchData as WatchModel;
-                }
-              }
-              return ids;
-            },
-            {},
-          )
-        : null,
-    [k8sModels, modelsLoaded, resources, cluster],
-  );
+        const resourceModel =
+          k8sModels.get(modelReference) ||
+          k8sModels.get(getGroupVersionKindForReference(modelReference).kind);
+        if (!resourceModel && ids) {
+          // eslint-disable-next-line no-param-reassign
+          ids[key] = {
+            noModel: true,
+          } as WatchModel;
+        } else if (ids) {
+          const watchData = getWatchData(resources[key], resourceModel, cluster);
+          if (watchData) {
+            // eslint-disable-next-line no-param-reassign
+            ids[key] = watchData as WatchModel;
+          }
+        }
+        return ids;
+      },
+      {},
+    );
+    return modelsLoaded ? watchDataForResources : null;
+  }, [k8sModels, modelsLoaded, resources, cluster]);
 
   // Dispatch action to watchResource (with cleanup for stopping the watch) for each resource in "resources"
   const dispatch = useDispatch();
