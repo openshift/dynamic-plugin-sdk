@@ -7,13 +7,13 @@ import type {
 } from '../../types/k8s';
 
 export type WatchK8sResult<R extends K8sResourceCommon | K8sResourceCommon[]> = [
-  data: R | unknown,
+  data: R,
   loaded: boolean,
   loadError: unknown,
 ];
 
 export type WatchK8sResultsObject<R extends K8sResourceCommon | K8sResourceCommon[]> = {
-  data: R | unknown;
+  data: R;
   loaded: boolean;
   loadError: unknown;
 };
