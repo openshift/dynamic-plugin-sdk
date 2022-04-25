@@ -3,13 +3,14 @@ import * as _ from 'lodash-es';
 import type { Dispatch } from 'redux';
 import type { ActionType as Action } from 'typesafe-actions';
 import { action } from 'typesafe-actions';
+import type { Query } from '../../../k8s/hooks/k8s-watch-types';
 import { k8sListResource, k8sGetResource } from '../../../k8s/k8s-resource';
 import { k8sWatch } from '../../../k8s/k8s-utils';
 import type { DiscoveryResources } from '../../../types/api-discovery';
 import type { K8sModelCommon, K8sResourceCommon, FilterValue } from '../../../types/k8s';
 import type { ThunkDispatchFunction } from '../../../types/redux';
 import type { WebSocketFactory } from '../../../web-socket/WebSocketFactory';
-import { getImpersonate, getActiveCluster } from '../reducers/core/selector';
+import { getImpersonate } from '../reducers/core/selector';
 
 export enum ActionType {
   ReceivedResources = 'resources',
@@ -37,7 +38,7 @@ export const bulkAddToList = (id: string, k8sObjects: K8sResourceCommon[]) =>
   action(ActionType.BulkAddToList, { id, k8sObjects });
 
 export const startWatchK8sObject = (id: string) => action(ActionType.StartWatchK8sObject, { id });
-export const startWatchK8sList = (id: string, query: { [key: string]: string }) =>
+export const startWatchK8sList = (id: string, query: Query) =>
   action(ActionType.StartWatchK8sList, { id, query });
 export const modifyObject = (id: string, k8sObjects: K8sResourceCommon) =>
   action(ActionType.ModifyObject, { id, k8sObjects });
@@ -87,7 +88,7 @@ export const stopK8sWatch =
 export const watchK8sList =
   (
     id: string,
-    query: { [key: string]: string },
+    query: Query,
     k8skind: K8sModelCommon,
     extraAction?: LoadedAction,
     partialMetadata = false,
@@ -100,9 +101,9 @@ export const watchK8sList =
     }
 
     const queryWithCluster = query;
-    if (!queryWithCluster.cluster) {
-      queryWithCluster.cluster = getActiveCluster(getState());
-    }
+    // if (!queryWithCluster.cluster) {
+    //   queryWithCluster.cluster = getActiveCluster(getState());
+    // }
     dispatch(startWatchK8sList(id, queryWithCluster));
     REF_COUNTS[id] = 1;
 
@@ -248,7 +249,7 @@ export const watchK8sObject =
     id: string,
     name: string,
     namespace: string,
-    query: { [key: string]: string },
+    query: Query,
     k8sType: K8sModelCommon,
     partialMetadata = false,
   ): ThunkDispatchFunction =>
@@ -261,9 +262,9 @@ export const watchK8sObject =
     REF_COUNTS[id] = 1;
 
     const queryWithCluster = query;
-    if (!queryWithCluster.cluster) {
-      queryWithCluster.cluster = getActiveCluster(getState());
-    }
+    // if (!queryWithCluster.cluster) {
+    //   queryWithCluster.cluster = getActiveCluster(getState());
+    // }
 
     if (queryWithCluster.name) {
       queryWithCluster.fieldSelector = `metadata.name=${queryWithCluster.name}`;
@@ -282,7 +283,7 @@ export const watchK8sObject =
         queryOptions: {
           name,
           ns: namespace,
-          queryParams: { cluster: queryWithCluster.cluster },
+          // queryParams: { cluster: queryWithCluster.cluster },
         },
         fetchOptions: {
           requestInit: requestOptions,

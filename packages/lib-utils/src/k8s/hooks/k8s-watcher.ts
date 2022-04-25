@@ -88,16 +88,16 @@ export const getWatchData: GetWatchData = (resource, k8sModel, cluster) => {
     resource.limit,
   );
   const targetCluster = resource.cluster ?? cluster;
-  if (!targetCluster) {
-    return null;
-  }
+  // if (!targetCluster) {
+  //   return null;
+  // }
 
   const id = makeReduxID(k8sModel, query, targetCluster);
   let action;
   if (resource.isList) {
     action = k8sActions.watchK8sList(
       id,
-      { ...query, cluster: targetCluster },
+      { ...query }, //  , cluster: targetCluster },
       k8sModel,
       undefined,
       resource.partialMetadata,
@@ -107,7 +107,7 @@ export const getWatchData: GetWatchData = (resource, k8sModel, cluster) => {
       id,
       resource.name,
       resource.namespace,
-      { ...query, cluster: targetCluster },
+      { ...query }, //  , cluster: targetCluster },
       k8sModel,
       resource.partialMetadata,
     );

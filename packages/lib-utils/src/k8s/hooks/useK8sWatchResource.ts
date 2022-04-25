@@ -2,7 +2,7 @@ import type { Map as ImmutableMap } from 'immutable';
 import * as React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import * as k8sActions from '../../app/redux/actions/k8s';
-import { getActiveCluster } from '../../app/redux/reducers/core';
+// import { getActiveCluster } from '../../app/redux/reducers/core';
 import { getReduxIdPayload } from '../../app/redux/reducers/k8s/selector';
 import type { K8sResourceCommon } from '../../types/k8s';
 import type { SDKStoreState } from '../../types/redux';
@@ -32,7 +32,7 @@ const NOT_A_VALUE = '__not-a-value__';
 export const useK8sWatchResource = <R extends K8sResourceCommon | K8sResourceCommon[]>(
   initResource: WatchK8sResource | null,
 ): WatchK8sResult<R> => {
-  const cluster = useSelector<SDKStoreState, string>((state) => getActiveCluster(state));
+  // const cluster = useSelector<SDKStoreState, string>((state) => getActiveCluster(state));
   const withFallback: WatchK8sResource = initResource || { kind: NOT_A_VALUE };
   const resource = useDeepCompareMemoize(withFallback, true);
   const modelsLoaded = useModelsLoaded();
@@ -40,8 +40,9 @@ export const useK8sWatchResource = <R extends K8sResourceCommon | K8sResourceCom
   const [k8sModel] = useK8sModel(resource.groupVersionKind || resource.kind);
 
   const watchData = React.useMemo(
-    () => getWatchData(resource, k8sModel, cluster),
-    [k8sModel, resource, cluster],
+    // () => getWatchData(resource, k8sModel, cluster),
+    () => getWatchData(resource, k8sModel),
+    [k8sModel, resource],
   );
 
   const dispatch = useDispatch();
