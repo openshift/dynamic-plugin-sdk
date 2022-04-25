@@ -2,7 +2,10 @@ import type { Store, AnyAction } from 'redux';
 import type { ActionType as Action } from 'typesafe-actions';
 import type { K8sVerb, K8sModelCommon } from './k8s';
 
-export type InitAPIDiscovery = (store: Store<unknown, Action<AnyAction>>) => void;
+export type InitAPIDiscovery = (
+  store: Store<unknown, Action<AnyAction>>,
+  preferenceList?: string[],
+) => void;
 
 export type APIResourceList = K8sModelCommon & {
   kind: 'APIResourceList';

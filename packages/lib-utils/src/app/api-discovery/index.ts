@@ -18,7 +18,7 @@ import { cacheResources, getCachedResources } from './discovery-cache';
 const POLLs: { [id: string]: number } = {};
 const apiDiscovery = 'apiDiscovery';
 const API_DISCOVERY_POLL_INTERVAL = 60_000;
-const API_DISCOVERY_INIT_DELAY = 15_000;
+const API_DISCOVERY_INIT_DELAY = 5_000;
 const API_DISCOVERY_REQUEST_BATCH_SIZE = 5;
 
 const pluralizeKind = (kind: string): string => {
@@ -69,56 +69,25 @@ type APIResourceData = {
   }[];
 };
 
-const getResources = async (): Promise<DiscoveryResources> => {
-  const apiResourceData: APIResourceData = await commonFetchJSON('/apis');
-  const groupVersionMap = apiResourceData.groups.reduce(
-    (acc: AnyObject, { name, versions, preferredVersion: { version } }) => {
-      acc[name] = {
-        versions: _.map(versions, 'version'),
-        preferredVersion: version,
-      };
-      return acc;
-    },
-    {},
-  );
-  const all = _.flatten(
-    apiResourceData.groups.map<string[]>((group) =>
-      group.versions.map<string>((version) => `/apis/${version.groupVersion}`),
-    ),
-  ).concat(['/api/v1']);
-
-  let batchedData: APIResourceList[] = [];
-  const batches = _.chunk(all, API_DISCOVERY_REQUEST_BATCH_SIZE);
-  // forEach does not play nice with async awaits
-  // eslint-disable-next-line no-restricted-syntax
-  for (const batch of batches) {
-    // eslint-disable-next-line no-await-in-loop
-    const result = await Promise.all(
-      batch.map<Promise<APIResourceList>>((p: string) =>
-        commonFetchJSON<K8sModelCommon>(p).catch((err) => err),
-      ),
-    );
-    batchedData = _.concat(batchedData, result);
-  }
-
-  return Promise.resolve(batchedData).then((data) => {
+const batchResourcesRequest = (
+  batch: string[],
+  groupVersionMap: AnyObject,
+): Promise<DiscoveryResources>[] => {
+  return batch.map<Promise<DiscoveryResources>>(async (p: string) => {
+    const resourceList = await commonFetchJSON<APIResourceList>(p);
     const resourceSet = new Set<string>();
     const namespacedSet = new Set<string>();
-    data.forEach(
-      (d) =>
-        d.resources &&
-        d.resources.forEach(({ namespaced, name }) => {
-          resourceSet.add(name);
-          if (namespaced) {
-            namespacedSet.add(name);
-          }
-        }),
-    );
+    resourceList.resources?.forEach(({ namespaced, name }) => {
+      resourceSet.add(name);
+      if (namespaced) {
+        namespacedSet.add(name);
+      }
+    });
     const allResources = [...resourceSet].sort();
 
     const safeResources: string[] = [];
     const adminResources: string[] = [];
-    const models = _.flatten(data.filter((d) => d.resources).map(defineModels));
+    const models = _.flatten(defineModels(resourceList));
     const coreResources = new Set([
       'roles',
       'rolebindings',
@@ -153,32 +122,69 @@ const getResources = async (): Promise<DiscoveryResources> => {
   });
 };
 
+const getResources = async (
+  preferenceList: string[],
+  dispatch: Dispatch,
+): Promise<DiscoveryResources> => {
+  const apiResourceData: APIResourceData = await commonFetchJSON('/apis');
+  const groupVersionMap = apiResourceData.groups.reduce(
+    (acc: AnyObject, { name, versions, preferredVersion: { version } }) => {
+      acc[name] = {
+        versions: _.map(versions, 'version'),
+        preferredVersion: version,
+      };
+      return acc;
+    },
+    {},
+  );
+  const all = _.flatten(
+    apiResourceData.groups.map<string[]>((group) =>
+      group.versions.map<string>((version) => `/apis/${version.groupVersion}`),
+    ),
+  )
+    .concat(['/api/v1'])
+    .sort((api) => (preferenceList.find((item) => api.includes(`/apis/${item}`)) ? -1 : 0));
+
+  // let batchedData: APIResourceList[] = [];
+  const batches = _.chunk(all, API_DISCOVERY_REQUEST_BATCH_SIZE);
+  const allResources: DiscoveryResources[] = [];
+  // eslint-disable-next-line no-restricted-syntax
+  for (const batch of batches) {
+    // eslint-disable-next-line no-await-in-loop
+    const resources = await Promise.all(batchResourcesRequest(batch, groupVersionMap));
+    resources.forEach((resource) => {
+      allResources.push(resource);
+      dispatch(receivedResources(resource));
+    });
+  }
+  return allResources.reduce((acc, curr) => _.merge(acc, curr));
+};
+
 const updateResources =
-  () =>
-  (dispatch: Dispatch): Promise<DiscoveryResources> => {
+  (preferenceList: string[]) =>
+  async (dispatch: Dispatch): Promise<DiscoveryResources> => {
     dispatch(getResourcesInFlight());
 
-    return getResources().then((resources) => {
-      // Cache the resources whenever discovery completes to improve console load times.
-      cacheResources(resources);
-      dispatch(receivedResources(resources));
-      return resources;
-    });
+    const resources = await getResources(preferenceList, dispatch);
+    // // Cache the resources whenever discovery completes to improve console load times.
+    cacheResources(resources);
+
+    return resources;
   };
 
-const startAPIDiscovery = () => (dispatch: DispatchWithThunk) => {
+const startAPIDiscovery = (preferenceList: string[]) => (dispatch: DispatchWithThunk) => {
   consoleLogger.info(
     `API discovery startAPIDiscovery: Polling every ${API_DISCOVERY_POLL_INTERVAL} ms`,
   );
   // Poll API discovery since we can't watch CRDs
-  dispatch(updateResources())
+  dispatch(updateResources(preferenceList))
     .then((resources) => {
       if (POLLs[apiDiscovery]) {
         clearTimeout(POLLs[apiDiscovery]);
         delete POLLs[apiDiscovery];
       }
       POLLs[apiDiscovery] = window.setTimeout(
-        () => dispatch(startAPIDiscovery()),
+        () => dispatch(startAPIDiscovery(preferenceList)),
         API_DISCOVERY_POLL_INTERVAL,
       );
       return resources;
@@ -187,7 +193,7 @@ const startAPIDiscovery = () => (dispatch: DispatchWithThunk) => {
     .catch((err) => consoleLogger.error('API discovery startAPIDiscovery polling failed:', err));
 };
 
-export const initAPIDiscovery: InitAPIDiscovery = (storeInstance) => {
+export const initAPIDiscovery: InitAPIDiscovery = (storeInstance, preferenceList = []) => {
   consoleLogger.info(`API discovery waiting ${API_DISCOVERY_INIT_DELAY} ms before initializing`);
   const initDelay = new Promise((resolve) => {
     window.setTimeout(resolve, API_DISCOVERY_INIT_DELAY);
@@ -201,8 +207,8 @@ export const initAPIDiscovery: InitAPIDiscovery = (storeInstance) => {
         storeInstance.dispatch(receivedResources(resources));
       }
       // Still perform discovery to refresh the cache.
-      storeInstance.dispatch(startAPIDiscovery());
+      storeInstance.dispatch(startAPIDiscovery(preferenceList));
       return resources;
     })
-    .catch(() => storeInstance.dispatch(startAPIDiscovery()));
+    .catch(() => storeInstance.dispatch(startAPIDiscovery(preferenceList)));
 };
