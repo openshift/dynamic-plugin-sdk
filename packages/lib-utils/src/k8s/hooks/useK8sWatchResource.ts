@@ -30,7 +30,7 @@ const NOT_A_VALUE = '__not-a-value__';
  * ```
  */
 export const useK8sWatchResource = <R extends K8sResourceCommon | K8sResourceCommon[]>(
-  initResource: WatchK8sResource | null,
+  initResource: WatchK8sResource,
 ): WatchK8sResult<R> => {
   const cluster = useSelector<SDKStoreState, string>((state) => getActiveCluster(state));
   const withFallback: WatchK8sResource = initResource || { kind: NOT_A_VALUE };
