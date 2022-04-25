@@ -20,16 +20,16 @@ import Table from '../table/Table';
 import './table-view.scss';
 
 export type FilterItem = {
-  /* Label of a parameter used for filtering. */
+  /** Label of a parameter used for filtering. */
   label: string;
-  /* Column name for given filtering parameter. */
+  /** Column name for given filtering parameter. */
   id: string;
 };
 
 export type TableViewProps<D> = TableProps<D> & {
-  /* Optional custom onFilter callback. */
+  /** Optional custom onFilter callback. */
   onFilter?: (filterValues: Record<string, string>, activeFilter?: FilterItem) => D[];
-  /* Optional array of filterBy options. */
+  /** Optional array of filterBy options. */
   filters?: FilterItem[];
 };
 
