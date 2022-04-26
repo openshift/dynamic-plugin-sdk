@@ -7,26 +7,41 @@ import type { LoadError } from '../status/StatusBox';
 import { StatusBox } from '../status/StatusBox';
 
 export type RowProps<D> = {
+  /** Row data object. */
   obj: D;
 };
 
 export type TableColumn = ICell & {
+  /** Column title. */
   title: string;
+  /** Column id. */
   id: string;
+  /** Optional sort attribute - please do not use string value (deprecated). */
   sort?: ThProps['sort'] | string;
 };
 
 export type TableProps<D> = {
+  /** Optional flag indicating that external filters are applied. */
   areFiltersApplied?: boolean;
+  /** Data array. */
   data: D[];
+  /** Data loaded flag. */
   loaded: boolean;
+  /** Optional load error object. */
   loadError?: LoadError;
+  /** Table volumns. */
   columns: TableColumn[];
+  /** Table row component used for rendering rows. */
   Row: React.FC<RowProps<D>>;
+  /** Optional default message used when data loading fails. */
   LoadErrorDefaultMsg?: React.ComponentType;
+  /** Optional message used when there is no data. */
   NoDataEmptyMsg?: React.ComponentType;
+  /** Optional message used when there is no data after filtering. */
   EmptyMsg?: React.ComponentType;
+  /** Optional label used where there is no data. */
   emptyLabel?: string;
+  /** Optional aria label. */
   'aria-label'?: string;
 };
 

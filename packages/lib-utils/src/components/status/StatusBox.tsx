@@ -3,11 +3,14 @@ import * as _ from 'lodash-es';
 import * as React from 'react';
 
 export type LoadError = {
+  /** Error message. */
   message: string;
+  /** Error HTTP status code. */
   status: number;
 };
 
 type AccessDeniedProps = {
+  /** Access denied message. */
   message: string | React.ComponentType;
 };
 
@@ -28,14 +31,23 @@ export const AccessDenied: React.FC<AccessDeniedProps> = ({
 );
 
 export type StatusBoxProps = {
+  /** Optional flag indicating that external filters are applied. */
   areFiltersApplied?: boolean;
+  /** Flag indicating that there is no data. */
   noData: boolean;
+  /** Optional children component containing rendered data. */
   children?: React.ReactElement;
+  /** Optional label used where there is no data. */
   emptyLabel?: string;
+  /** Optional load error object. */
   loadError?: LoadError;
+  /** Data loaded flag. */
   loaded?: boolean;
+  /** Optional default message used when data loading fails. */
   LoadErrorDefaultMsg?: React.ComponentType;
+  /** Optional message used when there is no data at all. */
   NoDataEmptyMsg?: React.ComponentType;
+  /** Optional message used when there is no relevant data. */
   EmptyMsg?: React.ComponentType;
 };
 
