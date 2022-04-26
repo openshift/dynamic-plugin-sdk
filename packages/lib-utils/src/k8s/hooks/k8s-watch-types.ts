@@ -7,7 +7,7 @@ export type WatchData = { id: string; action: ThunkDispatchFunction };
 export type GetWatchData = (
   resource?: WatchK8sResource,
   k8sModel?: K8sModelCommon,
-  cluster?: string,
+  // cluster?: string,
 ) => WatchData | null;
 
 export type Query = { [key: string]: unknown };

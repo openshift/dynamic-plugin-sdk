@@ -35,7 +35,7 @@ export type WatchK8sResource = EitherNotBoth<
   fieldSelector?: string;
   optional?: boolean;
   partialMetadata?: boolean;
-  cluster?: string;
+  // cluster?: string;
 };
 
 export type ResourcesObject = { [key: string]: K8sResourceCommon | K8sResourceCommon[] };
