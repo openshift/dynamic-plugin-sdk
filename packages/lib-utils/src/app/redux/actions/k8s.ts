@@ -10,7 +10,7 @@ import type { DiscoveryResources } from '../../../types/api-discovery';
 import type { K8sModelCommon, K8sResourceCommon, FilterValue } from '../../../types/k8s';
 import type { ThunkDispatchFunction } from '../../../types/redux';
 import type { WebSocketFactory } from '../../../web-socket/WebSocketFactory';
-import { getImpersonate } from '../reducers/core/selector';
+// import { getImpersonate } from '../reducers/core/selector';
 
 export enum ActionType {
   ReceivedResources = 'resources',
@@ -93,7 +93,7 @@ export const watchK8sList =
     extraAction?: LoadedAction,
     partialMetadata = false,
   ): ThunkDispatchFunction =>
-  (dispatch, getState) => {
+  (dispatch) => {
     // Only one watch per unique list ID
     if (id in REF_COUNTS) {
       REF_COUNTS[id] += 1;
@@ -185,11 +185,11 @@ export const watchK8sList =
           return;
         }
 
-        const { subprotocols } = getImpersonate(getState()) || {};
+        // const { subprotocols } = getImpersonate(getState()) || {};
         WS[id] = k8sWatch(
           k8skind,
           { ...queryWithCluster, resourceVersion },
-          { subProtocols: subprotocols, timeout: 60 * 1000 },
+          { timeout: 60 * 1000 },
         );
       } catch (e) {
         if (!REF_COUNTS[id]) {
@@ -253,7 +253,7 @@ export const watchK8sObject =
     k8sType: K8sModelCommon,
     partialMetadata = false,
   ): ThunkDispatchFunction =>
-  (dispatch, getState) => {
+  (dispatch) => {
     if (id in REF_COUNTS) {
       REF_COUNTS[id] += 1;
       return;
@@ -305,9 +305,9 @@ export const watchK8sObject =
       return;
     }
 
-    const { subprotocols } = getImpersonate(getState()) || {};
+    // const { subprotocols } = getImpersonate(getState()) || {};
 
-    WS[id] = k8sWatch(k8sType, queryWithCluster, { subProtocols: subprotocols }).onBulkMessage(
+    WS[id] = k8sWatch(k8sType, queryWithCluster).onBulkMessage(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (events: any) =>
         events.forEach((e: { object: K8sResourceCommon }) => dispatch(modifyObject(id, e.object))),
