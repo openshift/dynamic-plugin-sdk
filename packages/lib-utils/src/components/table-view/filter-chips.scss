@@ -1,0 +1,15 @@
+.pf-c-chip-group.dps-table-view-chips.pf-m-category {
+  margin-bottom: var(--pf-global--spacer--sm);
+  margin-top: var(--pf-global--spacer--sm);
+  margin-right: var(--pf-global--spacer--sm);
+}
+
+.pf-c-button.pf-m-link.dps-table-view-clear {
+  margin-left: var(--pf-global--spacer--xs);
+  padding-bottom: var(--pf-global--spacer--sm);
+  padding-top: var(--pf-global--spacer--sm);
+}
+
+.pf-c-toolbar__content.dps-table-view-filters {
+  margin-top: calc(-1 * var(--pf-global--spacer--lg));
+}

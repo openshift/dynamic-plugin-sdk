@@ -2,8 +2,6 @@
   margin-right: var(--pf-global--spacer--sm);
 }
 
-.pf-c-toolbar__item.dps-table-view-clear {
-  margin-left: var(--pf-global--spacer--md);
-  padding-bottom: var(--pf-global--spacer--sm);
-  padding-top: var(--pf-global--spacer--sm);
+.pf-c-toolbar__item.dps-table-view-top-pagination {
+  margin-left: auto;
 }
