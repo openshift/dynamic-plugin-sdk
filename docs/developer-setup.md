@@ -5,7 +5,7 @@
 - [Node.js](https://nodejs.org/) current [Active LTS](https://nodejs.org/en/about/releases/) release
 - [Yarn](https://yarnpkg.com/getting-started/install) package manager
 
-## Git clone and remote setup
+## GitHub repo setup
 
 ```sh
 git clone https://github.com/openshift/dynamic-plugin-sdk.git

@@ -15,8 +15,8 @@
     "eslint-print-config": "yarn eslint --print-config"
   },
   "devDependencies": {
-    "@patternfly/react-core": "^4.198.19",
-    "@patternfly/react-table": "^4.67.19",
+    "@patternfly/react-core": "^4.202.16",
+    "@patternfly/react-table": "^4.71.16",
     "@rollup/plugin-commonjs": "^21.0.2",
     "@rollup/plugin-node-resolve": "^13.1.1",
     "@rollup/plugin-typescript": "^8.3.0",
@@ -44,6 +44,7 @@
     "lodash-es": "^4.17.21",
     "prettier": "^2.4.1",
     "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-redux": "^7.2.2",
     "react-router": "^5.2.1",
     "redux": "^4.1.2",

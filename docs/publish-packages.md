@@ -23,8 +23,7 @@ npm install -g npm@VERSION
 Make sure you're in sync with the upstream `main` branch:
 
 ```sh
-git fetch upstream
-git rebase upstream/main
+git fetch upstream && git rebase upstream/main
 ```
 
 ## Log into npmjs account
