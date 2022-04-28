@@ -43,7 +43,7 @@ export const useReduxStore = (): UseReduxStoreResult => {
       consoleLogger.info('Creating the SDK redux store');
       setStoreContextPresent(false);
       const storeInstance = createStore(
-        combineReducers<SDKStoreState>(SDKReducers),
+        combineReducers<SDKReducers>(SDKReducers),
         {},
         compose(applyMiddleware(thunk)),
       );

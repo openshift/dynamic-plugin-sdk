@@ -10,7 +10,6 @@ import type { DiscoveryResources } from '../../../types/api-discovery';
 import type { K8sModelCommon, K8sResourceCommon, FilterValue } from '../../../types/k8s';
 import type { ThunkDispatchFunction } from '../../../types/redux';
 import type { WebSocketFactory } from '../../../web-socket/WebSocketFactory';
-// import { getImpersonate } from '../reducers/core/selector';
 
 export enum ActionType {
   ReceivedResources = 'resources',
@@ -101,9 +100,7 @@ export const watchK8sList =
     }
 
     const queryWithCluster = query;
-    // if (!queryWithCluster.cluster) {
-    //   queryWithCluster.cluster = getActiveCluster(getState());
-    // }
+
     dispatch(startWatchK8sList(id, queryWithCluster));
     REF_COUNTS[id] = 1;
 
@@ -185,7 +182,6 @@ export const watchK8sList =
           return;
         }
 
-        // const { subprotocols } = getImpersonate(getState()) || {};
         WS[id] = k8sWatch(
           k8skind,
           { ...queryWithCluster, resourceVersion },
@@ -262,9 +258,6 @@ export const watchK8sObject =
     REF_COUNTS[id] = 1;
 
     const queryWithCluster = query;
-    // if (!queryWithCluster.cluster) {
-    //   queryWithCluster.cluster = getActiveCluster(getState());
-    // }
 
     if (queryWithCluster.name) {
       queryWithCluster.fieldSelector = `metadata.name=${queryWithCluster.name}`;
@@ -283,7 +276,6 @@ export const watchK8sObject =
         queryOptions: {
           name,
           ns: namespace,
-          // queryParams: { cluster: queryWithCluster.cluster },
         },
         fetchOptions: {
           requestInit: requestOptions,
@@ -304,8 +296,6 @@ export const watchK8sObject =
       consoleLogger.warn('Resource does not support watching', k8sType);
       return;
     }
-
-    // const { subprotocols } = getImpersonate(getState()) || {};
 
     WS[id] = k8sWatch(k8sType, queryWithCluster).onBulkMessage(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
