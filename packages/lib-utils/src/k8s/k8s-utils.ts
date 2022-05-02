@@ -171,14 +171,14 @@ export const k8sWatch = (
 
   const { labelSelector } = query;
   if (labelSelector) {
-    const encodedSelector = encodeURIComponent(selectorToString(labelSelector));
+    const encodedSelector = selectorToString(labelSelector);
     if (encodedSelector) {
       queryParams.labelSelector = encodedSelector;
     }
   }
 
   if (query.fieldSelector) {
-    queryParams.fieldSelector = encodeURIComponent(query.fieldSelector);
+    queryParams.fieldSelector = query.fieldSelector;
   }
 
   if (query.ns) {
@@ -186,7 +186,7 @@ export const k8sWatch = (
   }
 
   if (query.resourceVersion) {
-    queryParams.resourceVersion = encodeURIComponent(query.resourceVersion);
+    queryParams.resourceVersion = query.resourceVersion;
   }
 
   const path = getK8sResourceURL(kind, undefined, opts);
