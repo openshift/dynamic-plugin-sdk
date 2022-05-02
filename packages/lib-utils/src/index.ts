@@ -4,6 +4,13 @@ export { UtilsConfig, isUtilsConfigSet, setUtilsConfig, getUtilsConfig } from '.
 export { commonFetch, commonFetchText, commonFetchJSON } from './utils/common-fetch';
 export { useK8sWatchResource, useK8sWatchResources } from './k8s/hooks';
 export {
+  WatchK8sResource,
+  WatchK8sResources,
+  ResourcesObject,
+  WatchK8sResult,
+  WatchK8sResultsObject,
+} from './k8s/hooks/watch-resource-types';
+export {
   k8sGetResource,
   k8sCreateResource,
   k8sUpdateResource,
@@ -13,7 +20,21 @@ export {
   k8sListResourceItems,
 } from './k8s/k8s-resource';
 export { getK8sResourceURL } from './k8s/k8s-utils';
-export { K8sModelCommon, K8sResourceCommon } from './types/k8s';
+export {
+  K8sModelCommon,
+  K8sResourceCommon,
+  K8sGroupVersionKind,
+  K8sResourceIdentifier,
+  GetGroupVersionKindForModel,
+  QueryOptions,
+  QueryParams,
+  Patch,
+  Operator,
+  MatchExpression,
+  MatchLabels,
+  Selector,
+  FilterValue,
+} from './types/k8s';
 export {
   BulkMessageHandler,
   CloseHandler,
