@@ -9,6 +9,7 @@ import { k8sWatch } from '../../../k8s/k8s-utils';
 import type { DiscoveryResources } from '../../../types/api-discovery';
 import type { K8sModelCommon, K8sResourceCommon, FilterValue } from '../../../types/k8s';
 import type { ThunkDispatchFunction } from '../../../types/redux';
+import type { MessageDataType } from '../../../web-socket/types';
 import type { WebSocketFactory } from '../../../web-socket/WebSocketFactory';
 
 export enum ActionType {
@@ -62,7 +63,25 @@ const WS: { [id: string]: WebSocketFactory } = {};
 const POLLs: { [id: string]: number } = {};
 const REF_COUNTS: { [id: string]: number } = {};
 
-const paginationLimit = 250;
+const PAGINATION_LIMIT = 250;
+const WS_TIMEOUT = 60 * 1000;
+
+type EventType = { object: K8sResourceCommon };
+
+const isOfEventType = (e: MessageDataType): e is EventType => {
+  return (e as EventType).object !== undefined;
+};
+
+type EventsType = K8sEvent[] & K8sResourceCommon[];
+
+const isOfEventsType = (events: MessageDataType[]): events is EventsType => {
+  const event = (events as EventsType)[0];
+  return (
+    ('type' in event && 'object' in event) ||
+    'kind' in event ||
+    ('type' in event && 'object' in event && 'kind' in event)
+  );
+};
 
 export const stopK8sWatch =
   (id: string) =>
@@ -122,7 +141,7 @@ export const watchK8sList =
         queryOptions: {
           ...queryWithCluster,
           queryParams: {
-            limit: `${paginationLimit}`,
+            limit: `${PAGINATION_LIMIT}`,
             ...(continueToken ? { continue: continueToken } : {}),
           },
         },
@@ -185,7 +204,7 @@ export const watchK8sList =
         WS[id] = k8sWatch(
           k8skind,
           { ...queryWithCluster, resourceVersion },
-          { timeout: 60 * 1000 },
+          { timeout: WS_TIMEOUT },
         );
       } catch (e) {
         if (!REF_COUNTS[id]) {
@@ -232,9 +251,10 @@ export const watchK8sList =
 
           POLLs[id] = window.setTimeout(pollAndWatch, 15 * 1000);
         })
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .onBulkMessage((events: any) =>
-          [updateListFromWS, extraAction].forEach((f) => f && dispatch(f(id, events))),
+        .onBulkMessage((events: MessageDataType[]) =>
+          [updateListFromWS, extraAction].forEach((f) => {
+            return f && isOfEventsType(events) && dispatch(f(id, events));
+          }),
         );
     };
     pollAndWatch();
@@ -297,10 +317,12 @@ export const watchK8sObject =
       return;
     }
 
-    WS[id] = k8sWatch(k8sType, queryWithCluster).onBulkMessage(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (events: any) =>
-        events.forEach((e: { object: K8sResourceCommon }) => dispatch(modifyObject(id, e.object))),
+    WS[id] = k8sWatch(k8sType, queryWithCluster).onBulkMessage((events: MessageDataType[]) =>
+      events.forEach((e: MessageDataType) => {
+        if (isOfEventType(e)) {
+          dispatch(modifyObject(id, e.object));
+        }
+      }),
     );
   };
 
