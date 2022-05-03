@@ -16,7 +16,7 @@ import * as React from 'react';
 import type { TableProps } from '../table/Table';
 import Table from '../table/Table';
 import FilterChips from './FilterChips';
-import './table-view.scss';
+import './table-view.css';
 
 export type FilterItem = {
   /* Label of a parameter used for filtering. */
@@ -101,7 +101,7 @@ const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
               </ToolbarItem>
               <ToolbarItem variant={ToolbarItemVariant['search-filter']} key="search-filter">
                 <SearchInput
-                  className="dps-table-view-search"
+                  className="table-view__search"
                   onChange={(value) => {
                     if (activeFilter) {
                       setFilterValues({
@@ -117,7 +117,7 @@ const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
               </ToolbarItem>
             </>
           ) : null}
-          <ToolbarItem className="dps-table-view-top-pagination">
+          <ToolbarItem className="table-view__top-pagination">
             <Pagination
               itemCount={(filters ? filteredData : data).length}
               perPage={pagination.limit}
@@ -130,7 +130,7 @@ const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
           </ToolbarItem>
         </ToolbarContent>
         {Object.keys(filterValues).length > 0 && (
-          <ToolbarContent className="dps-table-view-filters">
+          <ToolbarContent className="table-view__filters">
             <ToolbarItem>
               <FilterChips
                 filters={filters}

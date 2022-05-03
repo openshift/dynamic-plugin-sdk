@@ -1,6 +1,6 @@
 import { Chip, ChipGroup, Button } from '@patternfly/react-core';
 import * as React from 'react';
-import './filter-chips.scss';
+import './filter-chips.css';
 
 export type FilterChipItem = {
   /* Label of a parameter used for filtering. */
@@ -22,7 +22,7 @@ const FilterChips: React.FunctionComponent<FilterChipsProps> = ({
 }) => {
   const groupedFilters = Object.keys(filterValues).map((key) => (
     <ChipGroup
-      className="dps-table-view-chips"
+      className="filter-chips__chip-group"
       key={`group-${key}`}
       categoryName={filters.find((item) => item.id === key)?.label}
     >
@@ -42,7 +42,7 @@ const FilterChips: React.FunctionComponent<FilterChipsProps> = ({
     <>
       {groupedFilters}
       {Object.values(filterValues).some((value) => value?.length > 0) && (
-        <Button className="dps-table-view-clear" variant="link" onClick={() => onDelete()}>
+        <Button className="filter-chips__clear-filters" variant="link" onClick={() => onDelete()}>
           Clear filters
         </Button>
       )}
