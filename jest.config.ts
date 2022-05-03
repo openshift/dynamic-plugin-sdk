@@ -6,16 +6,9 @@ const config: Config.InitialOptions = {
   verbose: true,
   coverageDirectory: 'coverage',
   collectCoverage: true,
-  transformIgnorePatterns: [
-    'node_modules/(?!@patternfly|lodash-es|@popperjs|i18next)'
-  ],
+  transformIgnorePatterns: ['node_modules/(?!@patternfly|lodash-es|@popperjs|i18next)'],
   clearMocks: true,
-  coverageReporters: [
-    'json',
-    'lcov',
-    'text',
-    'text-summary'
-  ],
+  coverageReporters: ['json', 'lcov', 'text', 'text-summary', 'html'],
   collectCoverageFrom: [
     '!**/node_modules/**',
     '!**/dist/**',
@@ -25,9 +18,7 @@ const config: Config.InitialOptions = {
   testURL: 'http://localhost',
   testRegex: '.*\\.(spec|test)\\.(ts|tsx|js|jsx)$',
   testEnvironment: 'jsdom',
-  testPathIgnorePatterns: [
-    '<rootDir>/node_modules/'
-  ],
+  testPathIgnorePatterns: ['<rootDir>/node_modules/'],
   roots: ['<rootDir>'],
   projects: [
     '<rootDir>/packages/common',
