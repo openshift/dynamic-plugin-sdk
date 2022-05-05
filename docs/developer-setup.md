@@ -7,11 +7,19 @@
 
 ## GitHub repo setup
 
-```sh
-git clone https://github.com/openshift/dynamic-plugin-sdk.git
-cd dynamic-plugin-sdk
-git remote rename origin upstream
-git remote add USER https://github.com/USER/dynamic-plugin-sdk.git
+Fork the upstream [OpenShift Dynamic Plugin SDK](https://github.com/openshift/dynamic-plugin-sdk) repo,
+then `git clone` your forked repo. Refer to [GitHub docs](https://docs.github.com/en/get-started/quickstart/fork-a-repo)
+for details.
+
+We suggest renaming the Git remote representing the upstream repo to `upstream`. For example, assuming
+your GitHub user name is `your_user_name`:
+
+```
+$ git remote -v
+upstream        https://github.com/openshift/dynamic-plugin-sdk.git (fetch)
+upstream        https://github.com/openshift/dynamic-plugin-sdk.git (push)
+your_user_name  https://github.com/your_user_name/dynamic-plugin-sdk.git (fetch)
+your_user_name  https://github.com/your_user_name/dynamic-plugin-sdk.git (push)
 ```
 
 ## Steps after cloning

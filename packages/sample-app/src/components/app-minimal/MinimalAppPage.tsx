@@ -34,6 +34,18 @@ const ExtensionGallery: React.FC<ExtensionGalleryProps> = ({ extensions }) => (
   </Gallery>
 );
 
+/**
+ * This is an example on how to consume extensions contributed by plugins.
+ *
+ * The `useExtensions` hook returns extensions which are currently in use, without any further
+ * transformations. Its argument is a predicate function that filters extensions based on their
+ * `type`.
+ *
+ * The `useResolvedExtensions` hook extends the `useExtensions` functionality by transforming
+ * the properties of matching extensions, resolving all `CodeRef<T>` functions into `T` values.
+ * This resolution is inherently asynchronous, so the hook provides the `resolved` flag which
+ * indicates the completion of the code reference resolution.
+ */
 const TestExtensions: React.FC = () => {
   const extensions = useExtensions(isModelFeatureFlag);
   const [resolvedExtensions, resolved] = useResolvedExtensions(isTelemetryListener);

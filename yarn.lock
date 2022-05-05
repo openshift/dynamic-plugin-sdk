@@ -246,7 +246,6 @@ __metadata:
     "@openshift/dynamic-plugin-sdk-webpack": "portal:../lib-webpack"
     "@patternfly/react-core": ^4.202.16
     "@patternfly/react-table": ^4.71.16
-    "@sample-app/plugin-sdk-addons": "link:../sample-app/src/plugin-sdk-addons"
     css-loader: ^6.7.1
     css-minimizer-webpack-plugin: ^3.4.1
     http-server: ^14.1.0
@@ -534,12 +533,6 @@ __metadata:
   checksum: 8be16e27863c219edbb25a4e6ec2fe0e1e451d9e917b6a43cf2ae5bc025a6b8faaa40f82a6e53b66d0de37b58ff472c6c3d57a83037ae635041f8df959d6d9aa
   languageName: node
   linkType: hard
-
-"@sample-app/plugin-sdk-addons@link:../sample-app/src/plugin-sdk-addons::locator=%40monorepo%2Fsample-plugin%40workspace%3Apackages%2Fsample-plugin":
-  version: 0.0.0-use.local
-  resolution: "@sample-app/plugin-sdk-addons@link:../sample-app/src/plugin-sdk-addons::locator=%40monorepo%2Fsample-plugin%40workspace%3Apackages%2Fsample-plugin"
-  languageName: node
-  linkType: soft
 
 "@tootallnate/once@npm:1":
   version: 1.1.2

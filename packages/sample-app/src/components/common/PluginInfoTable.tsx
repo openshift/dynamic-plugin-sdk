@@ -34,13 +34,6 @@ const PluginInfoTable: React.FC = () => {
   const pluginStore = usePluginStore();
   const infoEntries = usePluginInfo().sort((a, b) => a.pluginName.localeCompare(b.pluginName));
 
-  const setPluginEnabled = React.useCallback(
-    (pluginName: string, enabled: boolean) => {
-      pluginStore.setPluginsEnabled([{ pluginName, enabled }]);
-    },
-    [pluginStore],
-  );
-
   return (
     <TableComposable variant="compact">
       <Thead>
@@ -85,7 +78,14 @@ const PluginInfoTable: React.FC = () => {
                   <TableText>
                     <Button
                       variant="secondary"
-                      onClick={() => setPluginEnabled(entry.pluginName, !entry.enabled)}
+                      onClick={() =>
+                        pluginStore.setPluginsEnabled([
+                          {
+                            pluginName: entry.pluginName,
+                            enabled: !entry.enabled,
+                          },
+                        ])
+                      }
                     >
                       {entry.enabled ? actionButtonLabels.disable : actionButtonLabels.enable}
                     </Button>

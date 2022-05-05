@@ -29,25 +29,19 @@ const LoadPluginModal = React.forwardRef<LoadPluginModalRefProps, LoadPluginModa
       [setBaseURL, setBaseURLValid],
     );
 
-    const openModal = React.useCallback(() => {
-      setModalOpen(true);
-    }, [setModalOpen]);
-
-    const closeModal = React.useCallback(() => {
-      setModalOpen(false);
-    }, [setModalOpen]);
-
     const loadPlugin = React.useCallback(() => {
       pluginStore.loadPlugin(baseURL);
-      closeModal();
-    }, [baseURL, pluginStore, closeModal]);
+      setModalOpen(false);
+    }, [baseURL, pluginStore, setModalOpen]);
 
     React.useImperativeHandle(
       ref,
       () => ({
-        open: openModal,
+        open: () => {
+          setModalOpen(true);
+        },
       }),
-      [openModal],
+      [setModalOpen],
     );
 
     return (
@@ -56,12 +50,11 @@ const LoadPluginModal = React.forwardRef<LoadPluginModalRefProps, LoadPluginModa
         title="Load plugin"
         showClose={false}
         isOpen={isModalOpen}
-        onClose={closeModal}
         actions={[
           <Button key="load" variant="primary" onClick={loadPlugin} isDisabled={!baseURLValid}>
             Load
           </Button>,
-          <Button key="cancel" variant="link" onClick={closeModal}>
+          <Button key="cancel" variant="link" onClick={() => setModalOpen(false)}>
             Cancel
           </Button>,
         ]}

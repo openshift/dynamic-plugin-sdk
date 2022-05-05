@@ -8,7 +8,7 @@
     "build": "yarn workspaces foreach run build",
     "build-libs": "yarn workspaces foreach --from '@openshift/*' run build",
     "build-samples": "yarn workspaces foreach --from '@monorepo/sample-*' run build",
-    "start-samples-servers": "yarn workspaces foreach -pvi --from '@monorepo/sample-*' run http-server",
+    "run-samples": "yarn workspaces foreach -pvi --from '@monorepo/sample-*' run http-server",
     "lint": "yarn eslint packages",
     "test": "yarn workspaces foreach run test",
     "eslint": "eslint --max-warnings 0 --ext .js,.jsx,.ts,.tsx --color",

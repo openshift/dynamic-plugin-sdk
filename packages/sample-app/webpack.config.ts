@@ -1,4 +1,5 @@
 import path from 'path';
+import type { WebpackSharedObject } from '@openshift/dynamic-plugin-sdk-webpack';
 import CopyPlugin from 'copy-webpack-plugin';
 import CSSMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import HTMLPlugin from 'html-webpack-plugin';
@@ -6,26 +7,45 @@ import _ from 'lodash';
 import MiniCSSExtractPlugin from 'mini-css-extract-plugin';
 import type { Configuration, WebpackPluginInstance } from 'webpack';
 import { EnvironmentPlugin, container } from 'webpack';
-import { getSampleAppSharedModules } from './src/plugin-sdk-addons/shared-modules';
 
 const isProd = process.env.NODE_ENV === 'production';
 
 const pathTo = (relativePath: string) => path.resolve(__dirname, relativePath);
 
-const sharedModules = getSampleAppSharedModules({
-  eager: true,
-  requiredVersion: false,
-});
-
 const getNodeModulesTest = (modulePaths: string[]) =>
   new RegExp(`/node_modules/(${modulePaths.map(_.escapeRegExp).join('|')})/`);
+
+/**
+ * Shared modules provided by the host application to its plugins.
+ *
+ * `eager: true` means include the module in the application's initial chunk.
+ * We generally want this for all shared modules provided by the application.
+ *
+ * `singleton: true` means allow only a single version of the module to be loaded.
+ * We want this for libraries which are meant to be used as singletons, including
+ * the ones which rely on global state.
+ *
+ * `requiredVersion` can be used to manually specify the required module version
+ * as a semver range. We're using it here because the sample application's package
+ * manifest refers to plugin SDK packages via the `portal:` protocol. You normally
+ * don't need this in real world applications.
+ *
+ * @see https://webpack.js.org/plugins/module-federation-plugin/#sharing-hints
+ */
+const appSharedModules: WebpackSharedObject = {
+  '@openshift/dynamic-plugin-sdk': { eager: true, singleton: true, requiredVersion: '*' },
+  '@patternfly/react-core': { eager: true },
+  '@patternfly/react-table': { eager: true },
+  react: { eager: true, singleton: true },
+  'react-dom': { eager: true, singleton: true },
+};
 
 const plugins: WebpackPluginInstance[] = [
   new EnvironmentPlugin({
     NODE_ENV: 'development',
   }),
   new container.ModuleFederationPlugin({
-    shared: sharedModules,
+    shared: appSharedModules,
   }),
   new HTMLPlugin({
     filename: isProd ? '[name].[contenthash].html' : '[name].html',

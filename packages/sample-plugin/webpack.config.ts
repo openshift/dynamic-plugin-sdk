@@ -1,6 +1,6 @@
 import path from 'path';
 import { DynamicRemotePlugin } from '@openshift/dynamic-plugin-sdk-webpack';
-import { getSampleAppSharedModules } from '@sample-app/plugin-sdk-addons/shared-modules';
+import type { WebpackSharedObject } from '@openshift/dynamic-plugin-sdk-webpack';
 import CSSMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import type { Configuration, WebpackPluginInstance } from 'webpack';
 import { EnvironmentPlugin } from 'webpack';
@@ -10,9 +10,22 @@ const isProd = process.env.NODE_ENV === 'production';
 
 const pathTo = (relativePath: string) => path.resolve(__dirname, relativePath);
 
-const sharedModules = getSampleAppSharedModules({
-  import: false,
-});
+/**
+ * Shared modules consumed and/or provided by this plugin.
+ *
+ * A host application typically provides some modules to its plugins. If an application
+ * provided module is configured as an eager singleton, we suggest using `import: false`
+ * to avoid bundling a fallback version of the module when building your plugin.
+ *
+ * Plugins may provide additional shared modules that can be consumed by other plugins.
+ */
+const pluginSharedModules: WebpackSharedObject = {
+  '@openshift/dynamic-plugin-sdk': { singleton: true, import: false },
+  '@patternfly/react-core': {},
+  '@patternfly/react-table': {},
+  react: { singleton: true, import: false },
+  'react-dom': { singleton: true, import: false },
+};
 
 const plugins: WebpackPluginInstance[] = [
   new EnvironmentPlugin({
@@ -20,7 +33,7 @@ const plugins: WebpackPluginInstance[] = [
   }),
   new DynamicRemotePlugin({
     extensions,
-    sharedModules,
+    sharedModules: pluginSharedModules,
   }),
 ];
 

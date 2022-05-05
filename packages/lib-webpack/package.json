@@ -1,6 +1,6 @@
 {
   "name": "@openshift/dynamic-plugin-sdk-webpack",
-  "version": "1.0.0-alpha3",
+  "version": "1.0.0-alpha4",
   "description": "Allows building dynamic plugin assets with webpack",
   "license": "Apache-2.0",
   "repository": {
