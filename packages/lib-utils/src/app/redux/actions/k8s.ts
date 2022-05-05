@@ -66,23 +66,6 @@ const REF_COUNTS: { [id: string]: number } = {};
 const PAGINATION_LIMIT = 250;
 const WS_TIMEOUT = 60 * 1000;
 
-type EventType = { object: K8sResourceCommon };
-
-const isOfEventType = (e: MessageDataType): e is EventType => {
-  return (e as EventType).object !== undefined;
-};
-
-type EventsType = K8sEvent[] & K8sResourceCommon[];
-
-const isOfEventsType = (events: MessageDataType[]): events is EventsType => {
-  return (events as EventsType).every(
-    (event) =>
-      ('type' in event && 'object' in event) ||
-      'kind' in event ||
-      ('type' in event && 'object' in event && 'kind' in event),
-  );
-};
-
 export const stopK8sWatch =
   (id: string) =>
   (dispatch: Dispatch): void => {
@@ -253,7 +236,11 @@ export const watchK8sList =
         })
         .onBulkMessage((events: MessageDataType[]) =>
           [updateListFromWS, extraAction].forEach((f) => {
-            return f && isOfEventsType(events) && dispatch(f(id, events));
+            const safeEvents = _.filter(
+              events,
+              (e: MessageDataType): e is K8sModelCommon & K8sEvent => typeof e !== 'string',
+            );
+            return f && dispatch(f(id, safeEvents));
           }),
         );
     };
@@ -319,9 +306,10 @@ export const watchK8sObject =
 
     WS[id] = k8sWatch(k8sType, queryWithCluster).onBulkMessage((events: MessageDataType[]) =>
       events.forEach((e: MessageDataType) => {
-        if (isOfEventType(e)) {
-          dispatch(modifyObject(id, e.object));
+        if (typeof e === 'string') {
+          return;
         }
+        dispatch(modifyObject(id, e.object as K8sResourceCommon));
       }),
     );
   };
