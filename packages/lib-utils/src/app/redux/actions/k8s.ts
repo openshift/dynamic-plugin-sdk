@@ -75,11 +75,11 @@ const isOfEventType = (e: MessageDataType): e is EventType => {
 type EventsType = K8sEvent[] & K8sResourceCommon[];
 
 const isOfEventsType = (events: MessageDataType[]): events is EventsType => {
-  const event = (events as EventsType)[0];
-  return (
-    ('type' in event && 'object' in event) ||
-    'kind' in event ||
-    ('type' in event && 'object' in event && 'kind' in event)
+  return (events as EventsType).every(
+    (event) =>
+      ('type' in event && 'object' in event) ||
+      'kind' in event ||
+      ('type' in event && 'object' in event && 'kind' in event),
   );
 };
 
