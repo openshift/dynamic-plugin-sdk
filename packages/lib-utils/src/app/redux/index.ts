@@ -5,7 +5,6 @@ import type { Store } from 'redux';
 import { applyMiddleware, combineReducers, createStore, compose } from 'redux';
 import thunk from 'redux-thunk';
 import { setReduxStore, getReduxStore } from '../../config';
-import type { SDKStoreState } from '../../types/redux';
 import { SDKReducers } from './reducers';
 
 type UseReduxStoreResult = {
@@ -43,7 +42,7 @@ export const useReduxStore = (): UseReduxStoreResult => {
       consoleLogger.info('Creating the SDK redux store');
       setStoreContextPresent(false);
       const storeInstance = createStore(
-        combineReducers<SDKStoreState>(SDKReducers),
+        combineReducers<typeof SDKReducers>(SDKReducers),
         {},
         compose(applyMiddleware(thunk)),
       );

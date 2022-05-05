@@ -3,13 +3,14 @@ import * as _ from 'lodash-es';
 import type { Dispatch } from 'redux';
 import type { ActionType as Action } from 'typesafe-actions';
 import { action } from 'typesafe-actions';
+import type { Query } from '../../../k8s/hooks/k8s-watch-types';
 import { k8sListResource, k8sGetResource } from '../../../k8s/k8s-resource';
 import { k8sWatch } from '../../../k8s/k8s-utils';
 import type { DiscoveryResources } from '../../../types/api-discovery';
 import type { K8sModelCommon, K8sResourceCommon, FilterValue } from '../../../types/k8s';
 import type { ThunkDispatchFunction } from '../../../types/redux';
+import type { MessageDataType } from '../../../web-socket/types';
 import type { WebSocketFactory } from '../../../web-socket/WebSocketFactory';
-import { getImpersonate, getActiveCluster } from '../reducers/core/selector';
 
 export enum ActionType {
   ReceivedResources = 'resources',
@@ -37,7 +38,7 @@ export const bulkAddToList = (id: string, k8sObjects: K8sResourceCommon[]) =>
   action(ActionType.BulkAddToList, { id, k8sObjects });
 
 export const startWatchK8sObject = (id: string) => action(ActionType.StartWatchK8sObject, { id });
-export const startWatchK8sList = (id: string, query: { [key: string]: string }) =>
+export const startWatchK8sList = (id: string, query: Query) =>
   action(ActionType.StartWatchK8sList, { id, query });
 export const modifyObject = (id: string, k8sObjects: K8sResourceCommon) =>
   action(ActionType.ModifyObject, { id, k8sObjects });
@@ -62,7 +63,8 @@ const WS: { [id: string]: WebSocketFactory } = {};
 const POLLs: { [id: string]: number } = {};
 const REF_COUNTS: { [id: string]: number } = {};
 
-const paginationLimit = 250;
+const PAGINATION_LIMIT = 250;
+const WS_TIMEOUT = 60 * 1000;
 
 export const stopK8sWatch =
   (id: string) =>
@@ -87,12 +89,12 @@ export const stopK8sWatch =
 export const watchK8sList =
   (
     id: string,
-    query: { [key: string]: string },
+    query: Query,
     k8skind: K8sModelCommon,
     extraAction?: LoadedAction,
     partialMetadata = false,
   ): ThunkDispatchFunction =>
-  (dispatch, getState) => {
+  (dispatch) => {
     // Only one watch per unique list ID
     if (id in REF_COUNTS) {
       REF_COUNTS[id] += 1;
@@ -100,9 +102,7 @@ export const watchK8sList =
     }
 
     const queryWithCluster = query;
-    if (!queryWithCluster.cluster) {
-      queryWithCluster.cluster = getActiveCluster(getState());
-    }
+
     dispatch(startWatchK8sList(id, queryWithCluster));
     REF_COUNTS[id] = 1;
 
@@ -124,7 +124,7 @@ export const watchK8sList =
         queryOptions: {
           ...queryWithCluster,
           queryParams: {
-            limit: `${paginationLimit}`,
+            limit: `${PAGINATION_LIMIT}`,
             ...(continueToken ? { continue: continueToken } : {}),
           },
         },
@@ -184,11 +184,10 @@ export const watchK8sList =
           return;
         }
 
-        const { subprotocols } = getImpersonate(getState()) || {};
         WS[id] = k8sWatch(
           k8skind,
           { ...queryWithCluster, resourceVersion },
-          { subProtocols: subprotocols, timeout: 60 * 1000 },
+          { timeout: WS_TIMEOUT },
         );
       } catch (e) {
         if (!REF_COUNTS[id]) {
@@ -235,9 +234,14 @@ export const watchK8sList =
 
           POLLs[id] = window.setTimeout(pollAndWatch, 15 * 1000);
         })
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .onBulkMessage((events: any) =>
-          [updateListFromWS, extraAction].forEach((f) => f && dispatch(f(id, events))),
+        .onBulkMessage((events: MessageDataType[]) =>
+          [updateListFromWS, extraAction].forEach((f) => {
+            const safeEvents = _.filter(
+              events,
+              (e: MessageDataType): e is K8sModelCommon & K8sEvent => typeof e !== 'string',
+            );
+            return f && dispatch(f(id, safeEvents));
+          }),
         );
     };
     pollAndWatch();
@@ -248,11 +252,11 @@ export const watchK8sObject =
     id: string,
     name: string,
     namespace: string,
-    query: { [key: string]: string },
+    query: Query,
     k8sType: K8sModelCommon,
     partialMetadata = false,
   ): ThunkDispatchFunction =>
-  (dispatch, getState) => {
+  (dispatch) => {
     if (id in REF_COUNTS) {
       REF_COUNTS[id] += 1;
       return;
@@ -261,9 +265,6 @@ export const watchK8sObject =
     REF_COUNTS[id] = 1;
 
     const queryWithCluster = query;
-    if (!queryWithCluster.cluster) {
-      queryWithCluster.cluster = getActiveCluster(getState());
-    }
 
     if (queryWithCluster.name) {
       queryWithCluster.fieldSelector = `metadata.name=${queryWithCluster.name}`;
@@ -282,7 +283,6 @@ export const watchK8sObject =
         queryOptions: {
           name,
           ns: namespace,
-          queryParams: { cluster: queryWithCluster.cluster },
         },
         fetchOptions: {
           requestInit: requestOptions,
@@ -304,12 +304,13 @@ export const watchK8sObject =
       return;
     }
 
-    const { subprotocols } = getImpersonate(getState()) || {};
-
-    WS[id] = k8sWatch(k8sType, queryWithCluster, { subProtocols: subprotocols }).onBulkMessage(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (events: any) =>
-        events.forEach((e: { object: K8sResourceCommon }) => dispatch(modifyObject(id, e.object))),
+    WS[id] = k8sWatch(k8sType, queryWithCluster).onBulkMessage((events: MessageDataType[]) =>
+      events.forEach((e: MessageDataType) => {
+        if (typeof e === 'string') {
+          return;
+        }
+        dispatch(modifyObject(id, e.object as K8sResourceCommon));
+      }),
     );
   };
 

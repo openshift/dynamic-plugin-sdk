@@ -12,13 +12,13 @@ export class NoModelError extends CustomError {
   }
 }
 
-export const makeReduxID = (k8sKind: K8sModelCommon, query: Query, cluster?: string) => {
+export const makeReduxID = (k8sKind: K8sModelCommon, query: Query) => {
   let queryString = '';
   if (!_.isEmpty(query)) {
     queryString = `---${JSON.stringify(query)}`;
   }
 
-  return `${cluster ?? 'local-cluster'}${getReferenceForModel(k8sKind)}${queryString}`;
+  return `${getReferenceForModel(k8sKind)}${queryString}`;
 };
 
 export const makeQuery: MakeQuery = (namespace, labelSelector, fieldSelector, name, limit) => {
@@ -76,7 +76,7 @@ export const getReduxData = (immutableData, resource: WatchK8sResource) => {
   return null;
 };
 
-export const getWatchData: GetWatchData = (resource, k8sModel, cluster) => {
+export const getWatchData: GetWatchData = (resource, k8sModel) => {
   if (!k8sModel || !resource?.namespace) {
     return null;
   }
@@ -87,17 +87,13 @@ export const getWatchData: GetWatchData = (resource, k8sModel, cluster) => {
     resource.name,
     resource.limit,
   );
-  const targetCluster = resource.cluster ?? cluster;
-  if (!targetCluster) {
-    return null;
-  }
 
-  const id = makeReduxID(k8sModel, query, targetCluster);
+  const id = makeReduxID(k8sModel, query);
   let action;
   if (resource.isList) {
     action = k8sActions.watchK8sList(
       id,
-      { ...query, cluster: targetCluster },
+      { ...query },
       k8sModel,
       undefined,
       resource.partialMetadata,
@@ -107,7 +103,7 @@ export const getWatchData: GetWatchData = (resource, k8sModel, cluster) => {
       id,
       resource.name,
       resource.namespace,
-      { ...query, cluster: targetCluster },
+      { ...query },
       k8sModel,
       resource.partialMetadata,
     );

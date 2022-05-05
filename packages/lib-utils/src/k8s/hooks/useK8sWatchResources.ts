@@ -2,7 +2,6 @@ import { Map as ImmutableMap } from 'immutable';
 import * as React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import * as k8sActions from '../../app/redux/actions/k8s';
-import { getActiveCluster } from '../../app/redux/reducers/core';
 import type { K8sModelCommon } from '../../types/k8s';
 import type { K8sState, SDKStoreState } from '../../types/redux';
 import {
@@ -42,7 +41,6 @@ import type {
 export const useK8sWatchResources = <R extends ResourcesObject>(
   initResources: WatchK8sResources<R>,
 ): WatchK8sResults<R> => {
-  const cluster = useSelector((state: SDKStoreState) => getActiveCluster(state));
   const resources = useDeepCompareMemoize(initResources, true);
   const modelsLoaded = useModelsLoaded();
 
@@ -108,7 +106,7 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
             noModel: true,
           } as WatchModel;
         } else if (ids) {
-          const watchData = getWatchData(resources[key], resourceModel, cluster);
+          const watchData = getWatchData(resources[key], resourceModel);
           if (watchData) {
             // eslint-disable-next-line no-param-reassign
             ids[key] = watchData as WatchModel;
@@ -119,7 +117,7 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
       {},
     );
     return modelsLoaded ? watchDataForResources : null;
-  }, [k8sModels, modelsLoaded, resources, cluster]);
+  }, [k8sModels, modelsLoaded, resources]);
 
   // Dispatch action to watchResource (with cleanup for stopping the watch) for each resource in "resources"
   const dispatch = useDispatch();
