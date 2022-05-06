@@ -9,9 +9,13 @@ export type ErrorBoundaryFallbackProps = {
 
 type ErrorBoundaryProps = AnyObject;
 
-type ErrorBoundaryState = {
-  hasError: boolean;
-} & Partial<ErrorBoundaryFallbackProps>;
+type ErrorBoundaryState =
+  | {
+      hasError: false;
+    }
+  | ({
+      hasError: true;
+    } & ErrorBoundaryFallbackProps);
 
 /**
  * @see https://reactjs.org/docs/error-boundaries.html
@@ -30,11 +34,15 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   render() {
-    const { hasError, error, errorInfo } = this.state;
+    const { hasError } = this.state;
     const { children } = this.props;
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return hasError ? <ErrorBoundaryFallback error={error!} errorInfo={errorInfo!} /> : children;
+    if (!hasError) {
+      return children;
+    }
+
+    const { error, errorInfo } = this.state;
+    return <ErrorBoundaryFallback error={error} errorInfo={errorInfo} />;
   }
 }
 
