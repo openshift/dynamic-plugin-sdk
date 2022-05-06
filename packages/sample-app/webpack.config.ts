@@ -33,7 +33,7 @@ const getNodeModulesTest = (modulePaths: string[]) =>
  * @see https://webpack.js.org/plugins/module-federation-plugin/#sharing-hints
  */
 const appSharedModules: WebpackSharedObject = {
-  '@openshift/dynamic-plugin-sdk': { eager: true, singleton: true, requiredVersion: '*' },
+  '@openshift/dynamic-plugin-sdk': { eager: true, singleton: true, requiredVersion: false },
   '@patternfly/react-core': { eager: true },
   '@patternfly/react-table': { eager: true },
   react: { eager: true, singleton: true },

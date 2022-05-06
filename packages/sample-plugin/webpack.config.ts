@@ -18,6 +18,8 @@ const pathTo = (relativePath: string) => path.resolve(__dirname, relativePath);
  * to avoid bundling a fallback version of the module when building your plugin.
  *
  * Plugins may provide additional shared modules that can be consumed by other plugins.
+ *
+ * @see https://webpack.js.org/plugins/module-federation-plugin/#sharing-hints
  */
 const pluginSharedModules: WebpackSharedObject = {
   '@openshift/dynamic-plugin-sdk': { singleton: true, import: false },
