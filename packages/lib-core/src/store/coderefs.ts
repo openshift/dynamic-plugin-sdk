@@ -17,12 +17,8 @@ class CodeRefError extends CustomError {
 }
 
 class ExtensionCodeRefsResolutionError extends CustomError {
-  constructor(
-    message: string,
-    readonly resolutionErrors: unknown[],
-    readonly extension: LoadedExtension,
-  ) {
-    super(message);
+  constructor(readonly extension: LoadedExtension, readonly resolutionErrors: unknown[]) {
+    super();
   }
 }
 
@@ -185,11 +181,7 @@ export const resolveCodeRefValues = async <TExtension extends Extension>(
   await Promise.allSettled(resolutions);
 
   if (resolutionErrors.length > 0) {
-    throw new ExtensionCodeRefsResolutionError(
-      'Failed to resolve code references',
-      resolutionErrors,
-      extension,
-    );
+    throw new ExtensionCodeRefsResolutionError(extension, resolutionErrors);
   }
 
   return {

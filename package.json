@@ -7,14 +7,16 @@
   "scripts": {
     "build": "yarn workspaces foreach run build",
     "build-libs": "yarn workspaces foreach --from '@openshift/*' run build",
+    "build-samples": "yarn workspaces foreach --from '@monorepo/sample-*' run build",
+    "run-samples": "yarn workspaces foreach -pvi --from '@monorepo/sample-*' run http-server",
     "lint": "yarn eslint packages",
     "test": "yarn workspaces foreach run test",
     "eslint": "eslint --max-warnings 0 --ext .js,.jsx,.ts,.tsx --color",
     "eslint-print-config": "yarn eslint --print-config"
   },
   "devDependencies": {
-    "@patternfly/react-core": "^4.198.19",
-    "@patternfly/react-table": "^4.67.19",
+    "@patternfly/react-core": "^4.202.16",
+    "@patternfly/react-table": "^4.71.16",
     "@rollup/plugin-commonjs": "^21.0.2",
     "@rollup/plugin-node-resolve": "^13.1.1",
     "@rollup/plugin-typescript": "^8.3.0",
@@ -22,11 +24,11 @@
     "@types/lodash-es": "^4.17.5",
     "@types/node": "^16.11.12",
     "@types/pluralize": "^0.0.29",
-    "@types/react": "^17.0.37",
+    "@types/react": "^17.0.43",
+    "@types/react-dom": "^17.0.14",
     "@types/react-router": "^5.1.17",
     "@typescript-eslint/eslint-plugin": "^5.3.1",
     "@typescript-eslint/parser": "^5.3.1",
-    "css-loader": "^6.7.1",
     "eslint": "^7.32.0",
     "eslint-config-airbnb": "^19.0.0",
     "eslint-config-airbnb-base": "^15.0.0",
@@ -42,6 +44,7 @@
     "lodash-es": "^4.17.21",
     "prettier": "^2.4.1",
     "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-redux": "^7.2.2",
     "react-router": "^5.2.1",
     "redux": "^4.1.2",
@@ -49,12 +52,9 @@
     "rollup": "^2.61.1",
     "rollup-plugin-analyzer": "^4.0.0",
     "rollup-plugin-dts": "^4.0.1",
-    "style-loader": "^3.3.1",
-    "ts-loader": "^9.2.8",
     "ts-node": "^10.7.0",
     "tslib": "^2.3.1",
     "typescript": "~4.4.4",
-    "webpack": "^5.69.1",
-    "webpack-cli": "^4.9.2"
+    "webpack": "^5.69.1"
   }
 }

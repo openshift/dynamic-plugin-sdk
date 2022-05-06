@@ -7,7 +7,7 @@ import type { AnyObject } from '@monorepo/common';
  */
 export type PluginEntryModule = {
   /** Initialize the container with shared modules. */
-  init: (sharedScope: AnyObject) => Promise<void>;
+  init: (sharedScope: AnyObject) => void | Promise<void>;
   /** Get a module exposed through the container. */
   get: <TModule extends AnyObject>(moduleRequest: string) => Promise<() => TModule>;
 };

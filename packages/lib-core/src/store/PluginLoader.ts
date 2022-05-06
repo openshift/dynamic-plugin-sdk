@@ -33,8 +33,8 @@ export type PluginLoaderOptions = Partial<{
   entryCallbackName: string;
   /** Custom resource fetch implementation. */
   fetchImpl: ResourceFetch;
-  /** Get shared scope object for initializing `PluginEntryModule` containers. */
-  getSharedScope: () => AnyObject;
+  /** Shared scope object for initializing `PluginEntryModule` containers. */
+  sharedScope: AnyObject;
   /** Post-process the plugin manifest. Can be used as a custom validation hook. */
   postProcessManifest: (manifest: PluginManifest) => Promise<PluginManifest>;
 }>;
@@ -59,7 +59,7 @@ export class PluginLoader {
       canLoadPlugin: options.canLoadPlugin ?? (() => true),
       entryCallbackName: options.entryCallbackName ?? REMOTE_ENTRY_CALLBACK,
       fetchImpl: options.fetchImpl ?? basicFetch,
-      getSharedScope: options.getSharedScope ?? _.constant({}),
+      sharedScope: options.sharedScope ?? {},
       postProcessManifest: options.postProcessManifest ?? (async (manifest) => manifest),
     };
   }
@@ -184,8 +184,7 @@ export class PluginLoader {
 
       data.entryCallbackFired = true;
 
-      // TODO(vojtech): investigate why the init method doesn't return Promise-like object
-      Promise.resolve(entryModule.init(this.options.getSharedScope()))
+      Promise.resolve(entryModule.init(this.options.sharedScope))
         // eslint-disable-next-line promise/always-return -- entryModule.init() returns Promise<void>
         .then(() => {
           data.status = 'loaded';

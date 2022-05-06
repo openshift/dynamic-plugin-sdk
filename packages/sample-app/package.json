@@ -1,7 +1,7 @@
 {
-  "name": "@monorepo/sample-plugin",
+  "name": "@monorepo/sample-app",
   "version": "0.0.0-fixed",
-  "description": "Sample dynamic plugin project",
+  "description": "Sample plugin host application project",
   "private": true,
   "scripts": {
     "clean": "rm -rf dist",
@@ -9,16 +9,21 @@
     "build-prod": "yarn clean && NODE_ENV=production yarn webpack",
     "lint": "yarn run -T eslint $INIT_CWD",
     "webpack": "node -r ts-node/register ./node_modules/.bin/webpack",
-    "http-server": "http-server dist -p 9001 -c-1 --cors"
+    "http-server": "http-server dist -p 9000 -c-1"
   },
   "devDependencies": {
     "@openshift/dynamic-plugin-sdk": "portal:../lib-core",
     "@openshift/dynamic-plugin-sdk-webpack": "portal:../lib-webpack",
     "@patternfly/react-core": "^4.202.16",
+    "@patternfly/react-icons": "^4.53.16",
+    "@patternfly/react-styles": "^4.52.16",
     "@patternfly/react-table": "^4.71.16",
+    "copy-webpack-plugin": "^10.2.4",
     "css-loader": "^6.7.1",
     "css-minimizer-webpack-plugin": "^3.4.1",
+    "html-webpack-plugin": "^5.5.0",
     "http-server": "^14.1.0",
+    "mini-css-extract-plugin": "^2.6.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "style-loader": "^3.3.1",

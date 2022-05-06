@@ -18,6 +18,14 @@ To install the latest version:
 npm install -g npm@VERSION
 ```
 
+## Sync with upstream main branch
+
+Make sure you're in sync with the upstream `main` branch:
+
+```sh
+git fetch upstream && git rebase upstream/main
+```
+
 ## Log into npmjs account
 
 Only members of npmjs [openshift organization](https://www.npmjs.com/org/openshift) can publish
@@ -35,7 +43,7 @@ To see the latest published version of the given package:
 npm view $(jq -r .name < ./packages/PKG_DIR/package.json) dist-tags.latest
 ```
 
-Make sure the `version` field in the relevant `package.json` file(s) has the right value.
+Make sure the `version` field in the relevant `package.json` file(s) has the right value:
 
 ```sh
 npm pkg set version='NEW_VERSION' -workspace ./packages/PKG_DIR

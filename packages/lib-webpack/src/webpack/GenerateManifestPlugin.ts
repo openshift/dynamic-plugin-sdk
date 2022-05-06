@@ -1,20 +1,20 @@
 import type { PluginManifest } from '@openshift/dynamic-plugin-sdk/src/types/plugin';
-import webpack from 'webpack';
+import { WebpackPluginInstance, Compiler, Compilation, sources } from 'webpack';
 
-export class GenerateManifestPlugin implements webpack.WebpackPluginInstance {
+export class GenerateManifestPlugin implements WebpackPluginInstance {
   constructor(private readonly fileName: string, private readonly manifest: PluginManifest) {}
 
-  apply(compiler: webpack.Compiler) {
+  apply(compiler: Compiler) {
     compiler.hooks.thisCompilation.tap(GenerateManifestPlugin.name, (compilation) => {
       compilation.hooks.processAssets.tap(
         {
           name: GenerateManifestPlugin.name,
-          stage: webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
+          stage: Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
         },
         () => {
           compilation.emitAsset(
             this.fileName,
-            new webpack.sources.RawSource(Buffer.from(JSON.stringify(this.manifest, null, 2))),
+            new sources.RawSource(Buffer.from(JSON.stringify(this.manifest, null, 2))),
           );
         },
       );
