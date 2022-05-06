@@ -35,7 +35,21 @@ packages maintained in this repo.
 npm login --scope=@openshift
 ```
 
-## Publish package(s)
+## Build packages
+
+To build all distributable SDK packages:
+
+```sh
+yarn build-libs
+```
+
+Alternatively, you can build a specific SDK package:
+
+```sh
+(cd ./packages/PKG_DIR ; yarn build)
+```
+
+## Publish packages
 
 To see the latest published version of the given package:
 
@@ -46,6 +60,7 @@ npm view $(jq -r .name < ./packages/PKG_DIR/package.json) dist-tags.latest
 Make sure the `version` field in the relevant `package.json` file(s) has the right value:
 
 ```sh
+npm pkg get version -workspace ./packages/PKG_DIR | jq -r .[]
 npm pkg set version='NEW_VERSION' -workspace ./packages/PKG_DIR
 ```
 
