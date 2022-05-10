@@ -13,6 +13,7 @@ export {
   ResolvedExtension,
 } from './types/extension';
 export { PluginEventType, PluginInfoEntry, PluginConsumer, PluginManager } from './types/store';
+export { PluginManifest, PluginRuntimeMetadata, LoadedPlugin } from './types/plugin';
 
 // Core extension types, to be exported via lib-extensions package
 export * from './extensions';
