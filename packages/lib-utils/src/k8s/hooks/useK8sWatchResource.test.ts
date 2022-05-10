@@ -3,11 +3,12 @@ import { Map as ImmutableMap } from 'immutable';
 import * as redux from 'react-redux';
 import type { K8sModelCommon, K8sResourceCommon } from '../../types/k8s';
 import type { WatchData } from './k8s-watch-types';
-import * as watcher from './k8s-watcher';
-import * as deepCompare from './useDeepCompareMemoize';
-import * as k8sModel from './useK8sModel';
+import type { NoModelError } from './k8s-watcher';
+import { getWatchData, getReduxData } from './k8s-watcher';
+import { useDeepCompareMemoize } from './useDeepCompareMemoize';
+import { useK8sModel } from './useK8sModel';
 import { useK8sWatchResource } from './useK8sWatchResource';
-import * as modelsLoaded from './useModelsLoaded';
+import { useModelsLoaded } from './useModelsLoaded';
 import type { WatchK8sResource } from './watch-resource-types';
 
 const watchedResourceMock: WatchK8sResource = {
@@ -61,13 +62,28 @@ const resourceDataMock: K8sResourceCommon = {
 
 let undefinedModelMock: K8sModelCommon | undefined;
 
+// Mock modules
+
+jest.mock('./k8s-watcher', () => ({
+  getWatchData: jest.fn(),
+  getReduxData: jest.fn(),
+  NoModelError: jest.fn(() => ({ message: 'Model does not exist' })),
+}));
+
+jest.mock('./useK8sModel', () => ({
+  useK8sModel: jest.fn(),
+}));
+
+jest.mock('./useDeepCompareMemoize', () => ({ useDeepCompareMemoize: jest.fn() }));
+
+jest.mock('./useModelsLoaded', () => ({ useModelsLoaded: jest.fn() }));
+
 describe('useK8sWatchResource', () => {
   beforeEach(() => {
     jest.resetModules();
 
     jest.spyOn(redux, 'useDispatch').mockReturnValue(jest.fn());
-
-    jest.spyOn(watcher, 'getWatchData').mockReturnValue(null);
+    (getWatchData as jest.Mock).mockReturnValue(null);
   });
 
   afterEach(() => {
@@ -76,11 +92,12 @@ describe('useK8sWatchResource', () => {
 
   test('should support null as an input value', () => {
     jest.spyOn(redux, 'useSelector').mockReturnValueOnce(null); // get resourceK8s
-    jest.spyOn(modelsLoaded, 'useModelsLoaded').mockReturnValue(true);
-    jest.spyOn(deepCompare, 'useDeepCompareMemoize').mockReturnValue({ kind: '__not-a-value__' });
-    jest
-      .spyOn(k8sModel, 'useK8sModel')
-      .mockReturnValue([undefinedModelMock, false] as [K8sModelCommon, boolean]);
+    (useModelsLoaded as jest.Mock).mockReturnValue(true);
+    (useDeepCompareMemoize as jest.Mock).mockReturnValue({ kind: '__not-a-value__' });
+    (useK8sModel as jest.Mock).mockReturnValue([undefinedModelMock, false] as [
+      K8sModelCommon,
+      boolean,
+    ]);
 
     const { result } = renderHook(() => useK8sWatchResource(null));
     const [data, loaded, error] = result.current;
@@ -92,12 +109,13 @@ describe('useK8sWatchResource', () => {
 
   test('should return "loaded" as false when models have not loaded', () => {
     const haveModelsLoaded = false;
-    jest.spyOn(modelsLoaded, 'useModelsLoaded').mockReturnValue(haveModelsLoaded);
+    (useModelsLoaded as jest.Mock).mockReturnValue(haveModelsLoaded);
     jest.spyOn(redux, 'useSelector').mockReturnValueOnce(null); // get resourceK8s
-    jest.spyOn(deepCompare, 'useDeepCompareMemoize').mockReturnValue(watchedResourceMock);
-    jest
-      .spyOn(k8sModel, 'useK8sModel')
-      .mockReturnValue([undefinedModelMock, false] as [K8sModelCommon, boolean]);
+    (useDeepCompareMemoize as jest.Mock).mockReturnValue(watchedResourceMock);
+    (useK8sModel as jest.Mock).mockReturnValue([undefinedModelMock, false] as [
+      K8sModelCommon,
+      boolean,
+    ]);
 
     const { result } = renderHook(() => useK8sWatchResource(watchedResourceMock));
     const [data, loaded, error] = result.current;
@@ -109,18 +127,21 @@ describe('useK8sWatchResource', () => {
 
   test('should return specific error if the model for the watched resource does not exist', () => {
     jest.spyOn(redux, 'useSelector').mockReturnValueOnce(null); // get resourceK8s
-    jest.spyOn(modelsLoaded, 'useModelsLoaded').mockReturnValue(true);
-    jest.spyOn(deepCompare, 'useDeepCompareMemoize').mockReturnValue(watchedResourceMock);
-    jest
-      .spyOn(k8sModel, 'useK8sModel')
-      .mockReturnValue([undefinedModelMock, false] as [K8sModelCommon, boolean]);
+    (useModelsLoaded as jest.Mock).mockReturnValue(true);
+    (useDeepCompareMemoize as jest.Mock).mockReturnValue(watchedResourceMock);
+    (useK8sModel as jest.Mock).mockReturnValue([undefinedModelMock, false] as [
+      K8sModelCommon,
+      boolean,
+    ]);
+    // (NoModelError as jest.Mock).mockReturnValue({ message: 'Model does not exist' });
+    // NoModelError.mockImplementation(() => ({ message: 'Model does not exist' }));
 
     const { result } = renderHook(() => useK8sWatchResource(watchedResourceMock));
     const [data, loaded, error] = result.current;
 
     expect(data).toMatchObject({});
     expect(loaded).toEqual(true);
-    expect((error as watcher.NoModelError).message).toEqual('Model does not exist');
+    expect((error as NoModelError).message).toEqual('Model does not exist');
   });
 
   test('should return data for the watched resource', () => {
@@ -135,13 +156,14 @@ describe('useK8sWatchResource', () => {
     };
     const reduxIdPayload: ImmutableMap<string, unknown> = ImmutableMap(payload);
     const useSelectorSpy = jest.spyOn(redux, 'useSelector').mockReturnValueOnce(reduxIdPayload); // get resourceK8s
-    jest.spyOn(watcher, 'getReduxData').mockReturnValue(resourceDataMock);
-    jest.spyOn(modelsLoaded, 'useModelsLoaded').mockReturnValue(true);
-    jest.spyOn(deepCompare, 'useDeepCompareMemoize').mockReturnValue(watchedResourceMock);
-    jest
-      .spyOn(k8sModel, 'useK8sModel')
-      .mockReturnValue([resourceModelMock, false] as [K8sModelCommon, boolean]);
-    jest.spyOn(watcher, 'getWatchData').mockReturnValue(mockWatchData);
+    (getReduxData as jest.Mock).mockReturnValue(resourceDataMock);
+    (useModelsLoaded as jest.Mock).mockReturnValue(true);
+    (useDeepCompareMemoize as jest.Mock).mockReturnValue(watchedResourceMock);
+    (useK8sModel as jest.Mock).mockReturnValue([resourceModelMock, false] as [
+      K8sModelCommon,
+      boolean,
+    ]);
+    (getWatchData as jest.Mock).mockReturnValue(mockWatchData);
 
     const { result } = renderHook(() => useK8sWatchResource(watchedResourceMock));
     const [data, loaded, error] = result.current;
