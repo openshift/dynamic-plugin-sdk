@@ -12,3 +12,4 @@
 
 # Generated project artifacts
 **/dist
+/coverage

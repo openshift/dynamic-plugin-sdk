@@ -4,13 +4,13 @@ import type { AnyObject } from '../types/common';
 /**
  * Create new object by recursively assigning property defaults to `obj`.
  */
-export const applyDefaults = <TObject>(obj: TObject, defaults: TObject): TObject =>
+export const applyDefaults = <TObject>(obj: TObject, defaults: unknown): TObject =>
   _.defaultsDeep({}, obj, defaults);
 
 /**
  * Create new object by recursively assigning property overrides to `obj`.
  */
-export const applyOverrides = <TObject>(obj: TObject, overrides: TObject): TObject =>
+export const applyOverrides = <TObject>(obj: TObject, overrides: unknown): TObject =>
   _.defaultsDeep({}, overrides, obj);
 
 /**
