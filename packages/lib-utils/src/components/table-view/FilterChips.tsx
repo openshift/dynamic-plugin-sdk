@@ -3,15 +3,18 @@ import * as React from 'react';
 import './filter-chips.css';
 
 export type FilterChipItem = {
-  /* Label of a parameter used for filtering. */
+  /** Filter chip item label. */
   label: string;
-  /* Column name for given filtering parameter. */
+  /** Filter chip item label ID. */
   id: string;
 };
 
 export interface FilterChipsProps {
+  /** Optional available filters */
   filters?: FilterChipItem[];
+  /** Optional applied filter values. */
   filterValues?: Record<string, string>;
+  /** Optional callback for on chip delete. */
   onDelete?: (key?: string) => void;
 }
 
@@ -22,13 +25,14 @@ const FilterChips: React.FunctionComponent<FilterChipsProps> = ({
 }) => {
   const groupedFilters = Object.keys(filterValues).map((key) => (
     <ChipGroup
-      className="filter-chips__chip-group"
+      className="dps-filter-chips__chip-group"
       key={`group-${key}`}
       categoryName={filters.find((item) => item.id === key)?.label}
     >
       <Chip
         key={filterValues[key]}
         onClick={(event) => {
+          event.preventDefault();
           event.stopPropagation();
           onDelete(key);
         }}
@@ -42,7 +46,11 @@ const FilterChips: React.FunctionComponent<FilterChipsProps> = ({
     <>
       {groupedFilters}
       {Object.values(filterValues).some((value) => value?.length > 0) && (
-        <Button className="filter-chips__clear-filters" variant="link" onClick={() => onDelete()}>
+        <Button
+          className="dps-filter-chips__clear-filters"
+          variant="link"
+          onClick={() => onDelete()}
+        >
           Clear filters
         </Button>
       )}
