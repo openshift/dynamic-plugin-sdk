@@ -1,14 +1,13 @@
+// This adds custom Jest matchers for working with the DOM
+// https://github.com/testing-library/jest-dom#custom-matchers
 import '@testing-library/jest-dom';
 
-jest.mock('react', () => {
-  const originalModule = jest.requireActual('react');
+import type { AnyObject } from '../src/types/common';
 
-  return {
-    __esModule: true,
-    ...originalModule,
-    useLayoutEffect: jest.requireActual('react').useEffect,
-  };
-});
+jest.mock('react', () => ({
+  ...jest.requireActual<AnyObject>('react'),
+  useLayoutEffect: jest.requireActual('react').useEffect,
+}));
 
 // Following APIs are not implemented in jsdom
 // eslint-disable-next-line @typescript-eslint/no-empty-function
