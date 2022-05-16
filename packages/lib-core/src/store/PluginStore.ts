@@ -219,6 +219,11 @@ export class PluginStore implements PluginConsumer, PluginManager {
     }
   }
 
+  /**
+   * Checks whether an extension is in use based on the values of required and disallowed feature flags
+   * @param {Extension} extension The extension to check for
+   * @returns {boolean} returns `true` if the extension is in use, and `false` if it is not in use
+   */
   isExtensionInUse(extension: Extension) {
     return (
       (extension.flags?.required?.every((f) => this.options.isFeatureFlagEnabled(f)) ?? true) &&
