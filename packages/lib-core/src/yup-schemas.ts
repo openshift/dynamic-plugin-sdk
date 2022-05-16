@@ -42,12 +42,33 @@ const extensionTypeSchema = yup
   .matches(/^[a-z]+[a-z-]*\.[a-z]+[a-z-]*(?:\/[a-z]+[a-z-]*)*$/, 'extension type');
 
 /**
+ * Schema for a valid feature flag name.
+ *
+ * Examples:
+ *
+ * ```
+ * FOO, FOO_BAR
+ * ```
+ */
+const featureFlagNameSchema = yup
+  .string()
+  .required()
+  .matches(/^[A-Z]+[A-Z_]*$/, 'feature flag name');
+
+/**
  * Schema for `Extension` objects.
  */
-export const extensionSchema = yup.object().required().shape({
-  type: extensionTypeSchema,
-  properties: yup.object().required(),
-});
+export const extensionSchema = yup
+  .object()
+  .required()
+  .shape({
+    type: extensionTypeSchema,
+    properties: yup.object().required(),
+    flags: yup.object().shape({
+      required: yup.array().of(featureFlagNameSchema),
+      disallowed: yup.array().of(featureFlagNameSchema),
+    }),
+  });
 
 /**
  * Schema for an array of `Extension` objects.
