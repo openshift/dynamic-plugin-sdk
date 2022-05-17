@@ -39,29 +39,15 @@ const resourceDataMock: K8sResourceCommon = {
   apiVersion: 'appstudio.redhat.com/v1alpha1',
   kind: 'Application',
   metadata: {
-    annotations: { finalizeCount: '0', test: 'patched-value' },
     creationTimestamp: '2022-04-29T13:41:21Z',
-    finalizers: ['application.appstudio.redhat.com/finalizer'],
     generation: 1,
     name: 'test',
     namespace: 'vnambiar',
     resourceVersion: '414309692',
     uid: '602ad43f-1a71-4e71-9314-d93bffbc0762',
   },
-  spec: { appModelRepository: { url: '' }, displayName: '', gitOpsRepository: { url: '' } },
-  status: {
-    conditions: [
-      {
-        lastTransitionTime: '2022-04-29T13:41:22Z',
-        message: 'Application has been successfully created',
-        reason: 'OK',
-        status: 'True',
-        type: 'Created',
-      },
-    ],
-    devfile:
-      'metadata:\\n  attributes:\\n    appModelRepository.context: /\\n    appModelRepository.url: https://github.com/redhat-appstudio-appdata/-vnambiar-touch-drive\\n    gitOpsRepository.context: /\\n    gitOpsRepository.url: https://github.com/redhat-appstudio-appdata/-vnambiar-touch-drive\\nschemaVersion: 2.1.0\\n',
-  },
+  spec: {},
+  status: {},
 };
 
 // Mock modules
@@ -81,10 +67,18 @@ jest.mock('./useModelsLoaded', () => ({ useModelsLoaded: jest.fn() }));
 
 jest.mock('./useDeepCompareMemoize', () => ({ useDeepCompareMemoize: jest.fn() }));
 
+const useSelectorMock = jest.mocked(useSelector, false);
+const useModelsLoadedMock = jest.mocked(useModelsLoaded, false);
+const useDeepCompareMemoizeMock = jest.mocked(useDeepCompareMemoize, false);
+const getWatchDataMock = jest.mocked(getWatchData, false);
+const getReduxDataMock = jest.mocked(getReduxData, false);
+
 describe('useK8sWatchResources', () => {
   beforeEach(() => {
     jest.resetModules();
-    (getWatchData as jest.Mock).mockReturnValue(null);
+    getWatchDataMock.mockReturnValue(null);
+    useDeepCompareMemoizeMock.mockReturnValue(watchedResourcesMock);
+    useModelsLoadedMock.mockReturnValue(true);
   });
 
   afterEach(() => {
@@ -93,11 +87,10 @@ describe('useK8sWatchResources', () => {
 
   test('should return "loaded" as false when models have not loaded', () => {
     const haveModelsLoaded = false;
-    (useModelsLoaded as jest.Mock).mockReturnValue(haveModelsLoaded);
-    (useSelector as jest.Mock)
+    useModelsLoadedMock.mockReturnValue(haveModelsLoaded);
+    useSelectorMock
       .mockReturnValueOnce(ImmutableMap<string, K8sModelCommon>()) // Models have not loaded so allK8sModels is empty
       .mockReturnValueOnce(ImmutableMap<string, unknown>());
-    (useDeepCompareMemoize as jest.Mock).mockReturnValue(watchedResourcesMock);
 
     const { result } = renderHook(() => useK8sWatchResources(watchedResourcesMock));
     const { application } = result.current;
@@ -109,9 +102,7 @@ describe('useK8sWatchResources', () => {
   });
 
   test('should return specific error if the model for the watched resource does not exist', () => {
-    (useModelsLoaded as jest.Mock).mockReturnValue(true);
-    (useDeepCompareMemoize as jest.Mock).mockReturnValue(watchedResourcesMock);
-    (useSelector as jest.Mock)
+    useSelectorMock
       .mockReturnValueOnce(ImmutableMap<string, K8sModelCommon>()) // Models have loaded but do not contain "application" model
       .mockReturnValueOnce(ImmutableMap<string, unknown>());
 
@@ -125,12 +116,13 @@ describe('useK8sWatchResources', () => {
   });
 
   test('should return data for the watched resource', () => {
+    const ID_MOCK = 'appstudio.redhat.com~v1alpha1~Application---{"ns":"test-ns","name":"test"}';
     const mockWatchData: WatchData = {
-      id: 'appstudio.redhat.com~v1alpha1~Application---{"ns":"test-ns","name":"test"}',
+      id: ID_MOCK,
       action: jest.fn(),
     };
     const payload = {
-      'appstudio.redhat.com~v1alpha1~Application---{"ns":"test-ns","name":"test"}': {
+      [ID_MOCK]: {
         data: resourceDataMock,
         loaded: true,
         loadError: '',
@@ -141,20 +133,33 @@ describe('useK8sWatchResources', () => {
     jest.mock('./usePrevious', () => ({
       usePrevious: jest.fn(() => undefined),
     }));
-    (useModelsLoaded as jest.Mock).mockReturnValue(true);
-    (useDeepCompareMemoize as jest.Mock).mockReturnValue(watchedResourcesMock);
-    const useSelectorSpy = (useSelector as jest.Mock)
+    useSelectorMock
       .mockReturnValueOnce(ImmutableMap<string, K8sModelCommon>(allModelsMock)) // Mock models
       .mockReturnValueOnce(ImmutableMap<string, unknown>(resourceK8s));
-    (getWatchData as jest.Mock).mockReturnValue(mockWatchData);
-    (getReduxData as jest.Mock).mockReturnValue(resourceDataMock);
+    getWatchDataMock.mockReturnValue(mockWatchData);
+    getReduxDataMock.mockReturnValue(resourceDataMock);
 
     const { result } = renderHook(() => useK8sWatchResources(watchedResourcesMock));
     const { application } = result.current;
     const { data, loaded, loadError } = application;
     expect(loaded).toEqual(true);
     expect(loadError).toEqual('');
-    expect((data as K8sResourceCommon).metadata?.creationTimestamp).toEqual('2022-04-29T13:41:21Z');
-    expect(useSelectorSpy).toHaveBeenCalledTimes(2);
+    expect(data as K8sResourceCommon).toEqual(
+      expect.objectContaining({
+        apiVersion: expect.any(String),
+        kind: expect.any(String),
+        metadata: {
+          creationTimestamp: expect.any(String),
+          generation: expect.any(Number),
+          name: expect.any(String),
+          namespace: expect.any(String),
+          resourceVersion: expect.any(String),
+          uid: expect.any(String),
+        },
+        spec: expect.objectContaining({}),
+        status: expect.objectContaining({}),
+      }),
+    );
+    expect(useSelectorMock).toHaveBeenCalled();
   });
 });

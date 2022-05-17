@@ -35,29 +35,15 @@ const resourceDataMock: K8sResourceCommon = {
   apiVersion: 'appstudio.redhat.com/v1alpha1',
   kind: 'Application',
   metadata: {
-    annotations: { finalizeCount: '0', test: 'patched-value' },
     creationTimestamp: '2022-04-29T13:41:21Z',
-    finalizers: ['application.appstudio.redhat.com/finalizer'],
     generation: 1,
     name: 'test',
     namespace: 'vnambiar',
     resourceVersion: '414309692',
     uid: '602ad43f-1a71-4e71-9314-d93bffbc0762',
   },
-  spec: { appModelRepository: { url: '' }, displayName: '', gitOpsRepository: { url: '' } },
-  status: {
-    conditions: [
-      {
-        lastTransitionTime: '2022-04-29T13:41:22Z',
-        message: 'Application has been successfully created',
-        reason: 'OK',
-        status: 'True',
-        type: 'Created',
-      },
-    ],
-    devfile:
-      'metadata:\\n  attributes:\\n    appModelRepository.context: /\\n    appModelRepository.url: https://github.com/redhat-appstudio-appdata/-vnambiar-touch-drive\\n    gitOpsRepository.context: /\\n    gitOpsRepository.url: https://github.com/redhat-appstudio-appdata/-vnambiar-touch-drive\\nschemaVersion: 2.1.0\\n',
-  },
+  spec: {},
+  status: {},
 };
 
 let undefinedModelMock: K8sModelCommon | undefined;
@@ -83,11 +69,21 @@ jest.mock('react-redux', () => ({
   useSelector: jest.fn(),
 }));
 
+const useSelectorMock = jest.mocked(useSelector, false);
+const useModelsLoadedMock = jest.mocked(useModelsLoaded, false);
+const useDeepCompareMemoizeMock = jest.mocked(useDeepCompareMemoize, false);
+const useK8sModelMock = jest.mocked(useK8sModel, false);
+const getWatchDataMock = jest.mocked(getWatchData, false);
+const getReduxDataMock = jest.mocked(getReduxData, false);
+
 describe('useK8sWatchResource', () => {
   beforeEach(() => {
     jest.resetModules();
 
-    (getWatchData as jest.Mock).mockReturnValue(null);
+    getWatchDataMock.mockReturnValue(null);
+    useSelectorMock.mockReturnValue(null); // get resourceK8s
+    useModelsLoadedMock.mockReturnValue(true);
+    useK8sModelMock.mockReturnValue([undefinedModelMock, false] as [K8sModelCommon, boolean]);
   });
 
   afterEach(() => {
@@ -95,13 +91,7 @@ describe('useK8sWatchResource', () => {
   });
 
   test('should support null as an input value', () => {
-    (useSelector as jest.Mock).mockReturnValue(null); // get resourceK8s
-    (useModelsLoaded as jest.Mock).mockReturnValue(true);
-    (useDeepCompareMemoize as jest.Mock).mockReturnValue({ kind: '__not-a-value__' });
-    (useK8sModel as jest.Mock).mockReturnValue([undefinedModelMock, false] as [
-      K8sModelCommon,
-      boolean,
-    ]);
+    useDeepCompareMemoizeMock.mockReturnValue({ kind: '__not-a-value__' });
 
     const { result } = renderHook(() => useK8sWatchResource(null));
     const [data, loaded, error] = result.current;
@@ -113,13 +103,8 @@ describe('useK8sWatchResource', () => {
 
   test('should return "loaded" as false when models have not loaded', () => {
     const haveModelsLoaded = false;
-    (useModelsLoaded as jest.Mock).mockReturnValue(haveModelsLoaded);
-    (useSelector as jest.Mock).mockReturnValue(null); // get resourceK8s
-    (useDeepCompareMemoize as jest.Mock).mockReturnValue(watchedResourceMock);
-    (useK8sModel as jest.Mock).mockReturnValue([undefinedModelMock, false] as [
-      K8sModelCommon,
-      boolean,
-    ]);
+    useModelsLoadedMock.mockReturnValue(haveModelsLoaded);
+    useDeepCompareMemoizeMock.mockReturnValue(watchedResourceMock);
 
     const { result } = renderHook(() => useK8sWatchResource(watchedResourceMock));
     const [data, loaded, error] = result.current;
@@ -130,13 +115,7 @@ describe('useK8sWatchResource', () => {
   });
 
   test('should return specific error if the model for the watched resource does not exist', () => {
-    (useSelector as jest.Mock).mockReturnValue(null); // get resourceK8s
-    (useModelsLoaded as jest.Mock).mockReturnValue(true);
-    (useDeepCompareMemoize as jest.Mock).mockReturnValue(watchedResourceMock);
-    (useK8sModel as jest.Mock).mockReturnValue([undefinedModelMock, false] as [
-      K8sModelCommon,
-      boolean,
-    ]);
+    useDeepCompareMemoizeMock.mockReturnValue(watchedResourceMock);
 
     const { result } = renderHook(() => useK8sWatchResource(watchedResourceMock));
     const [data, loaded, error] = result.current;
@@ -157,22 +136,35 @@ describe('useK8sWatchResource', () => {
       loadError: '',
     };
     const reduxIdPayload: ImmutableMap<string, unknown> = ImmutableMap(payload);
-    (useSelector as jest.Mock).mockReturnValue(reduxIdPayload); // get resourceK8s
-    (getReduxData as jest.Mock).mockReturnValue(resourceDataMock);
-    (useModelsLoaded as jest.Mock).mockReturnValue(true);
-    (useDeepCompareMemoize as jest.Mock).mockReturnValue(watchedResourceMock);
-    (useK8sModel as jest.Mock).mockReturnValue([resourceModelMock, false] as [
-      K8sModelCommon,
-      boolean,
-    ]);
-    (getWatchData as jest.Mock).mockReturnValue(mockWatchData);
+    useSelectorMock.mockReturnValue(reduxIdPayload); // get resourceK8s
+    getReduxDataMock.mockReturnValue(resourceDataMock);
+    useDeepCompareMemoizeMock.mockReturnValue(watchedResourceMock);
+    useK8sModelMock.mockReturnValue([resourceModelMock, false] as [K8sModelCommon, boolean]);
+    getWatchDataMock.mockReturnValue(mockWatchData);
 
     const { result } = renderHook(() => useK8sWatchResource(watchedResourceMock));
     const [data, loaded, error] = result.current;
 
-    expect(useSelector as jest.Mock).toHaveBeenCalled();
+    expect(useSelectorMock).toHaveBeenCalled();
     const resourceData = data as K8sResourceCommon;
-    expect(resourceData?.metadata?.creationTimestamp).toEqual('2022-04-29T13:41:21Z');
+
+    expect(resourceData).toEqual(
+      expect.objectContaining({
+        apiVersion: expect.any(String),
+        kind: expect.any(String),
+        metadata: {
+          creationTimestamp: expect.any(String),
+          generation: expect.any(Number),
+          name: expect.any(String),
+          namespace: expect.any(String),
+          resourceVersion: expect.any(String),
+          uid: expect.any(String),
+        },
+        spec: expect.objectContaining({}),
+        status: expect.objectContaining({}),
+      }),
+    );
+
     expect(loaded).toEqual(true);
     expect(error).toEqual('');
   });
