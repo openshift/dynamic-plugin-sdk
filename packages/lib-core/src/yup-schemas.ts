@@ -53,7 +53,7 @@ const extensionTypeSchema = yup
 const featureFlagNameSchema = yup
   .string()
   .required()
-  .matches(/^[A-Z]+[A-Z_]*$/, 'feature flag name');
+  .matches(/^[A-Z]+[A-Z0-9_]*$/, 'feature flag name');
 
 /**
  * Schema for `Extension` objects.

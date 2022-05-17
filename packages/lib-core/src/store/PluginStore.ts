@@ -224,7 +224,7 @@ export class PluginStore implements PluginConsumer, PluginManager {
    * @param {Extension} extension The extension to check for
    * @returns {boolean} returns `true` if the extension is in use, and `false` if it is not in use
    */
-  isExtensionInUse(extension: Extension) {
+  private isExtensionInUse(extension: Extension) {
     return (
       (extension.flags?.required?.every((f) => this.options.isFeatureFlagEnabled(f)) ?? true) &&
       (extension.flags?.disallowed?.every((f) => !this.options.isFeatureFlagEnabled(f)) ?? true)
