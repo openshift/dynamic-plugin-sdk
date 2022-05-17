@@ -31,24 +31,24 @@ export const AccessDenied: React.FC<AccessDeniedProps> = ({
 );
 
 export type StatusBoxProps = {
-  /** Optional flag indicating that external filters are applied. */
+  /** Optional flag indicating that filters are applied to data */
   areFiltersApplied?: boolean;
-  /** Flag indicating that there is no data. */
+  /** Flag indicating that no data exist */
   noData: boolean;
-  /** Optional children component containing rendered data. */
+  /** Optional children element to be rendered */
   children?: React.ReactElement;
-  /** Optional label used where there is no data. */
-  emptyLabel?: string;
-  /** Optional load error object. */
+  /** Optional empty state description string */
+  emptyStateDescription?: string;
+  /** Optional load error object */
   loadError?: LoadError;
-  /** Data loaded flag. */
+  /** Optional flag indicating that data has been loaded */
   loaded?: boolean;
-  /** Optional default message used when data loading fails. */
-  LoadErrorDefaultMsg?: React.ComponentType;
-  /** Optional message used when there is no data at all. */
-  NoDataEmptyMsg?: React.ComponentType;
-  /** Optional message used when there is no relevant data. */
-  EmptyMsg?: React.ComponentType;
+  /** Load error default message */
+  loadErrorDefaultText?: string;
+  /** Custom empty state when no data exist */
+  CustomNoDataEmptyState?: React.ComponentType;
+  /** Custom empty state when there are no applicable data */
+  CustomEmptyState?: React.ComponentType;
 };
 
 export const StatusBox: React.FC<StatusBoxProps> = ({
@@ -56,15 +56,15 @@ export const StatusBox: React.FC<StatusBoxProps> = ({
   noData,
   children = null,
   loadError,
-  emptyLabel,
+  emptyStateDescription,
   loaded,
-  EmptyMsg,
-  LoadErrorDefaultMsg,
-  NoDataEmptyMsg,
+  CustomEmptyState,
+  loadErrorDefaultText,
+  CustomNoDataEmptyState,
 }): React.ReactElement | null => {
   if (loadError) {
     const status = _.get(loadError, 'response.status');
-    const loadErrorMsg = loadError.message || LoadErrorDefaultMsg || 'Data loading failed.';
+    const loadErrorMsg = loadError.message || loadErrorDefaultText || 'Data loading failed.';
     switch (status) {
       case 404:
         return (
@@ -80,8 +80,8 @@ export const StatusBox: React.FC<StatusBoxProps> = ({
 
     return (
       <EmptyState>
-        <Title headingLevel="h1">{emptyLabel}</Title>
-        <EmptyStateBody>{loadErrorMsg}</EmptyStateBody>
+        <Title headingLevel="h1">{loadErrorMsg}</Title>
+        <EmptyStateBody>{emptyStateDescription}</EmptyStateBody>
       </EmptyState>
     );
   }
@@ -95,14 +95,14 @@ export const StatusBox: React.FC<StatusBoxProps> = ({
   }
 
   if (noData) {
-    if (!areFiltersApplied && NoDataEmptyMsg) {
-      return <NoDataEmptyMsg />;
+    if (!areFiltersApplied && CustomNoDataEmptyState) {
+      return <CustomNoDataEmptyState />;
     }
-    return EmptyMsg ? (
-      <EmptyMsg />
+    return CustomEmptyState ? (
+      <CustomEmptyState />
     ) : (
       <EmptyState>
-        <Text>{emptyLabel}</Text>
+        <Text>{emptyStateDescription}</Text>
       </EmptyState>
     );
   }

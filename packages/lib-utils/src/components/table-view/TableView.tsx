@@ -1,8 +1,4 @@
 import {
-  Button,
-  ButtonVariant,
-  Chip,
-  ChipGroup,
   SearchInput,
   Select,
   SelectOption,
@@ -15,9 +11,10 @@ import {
 import { FilterIcon } from '@patternfly/react-icons';
 import { omit } from 'lodash';
 import * as React from 'react';
-import type { TableProps } from '../table/Table';
-import Table from '../table/Table';
-import './table-view.scss';
+import type { VirtualizedTableProps } from '../table/VirtualizedTable';
+import VirtualizedTable from '../table/VirtualizedTable';
+import FilterChips from './FilterChips';
+import './table-view.css';
 
 export type FilterItem = {
   /** Label of a parameter used for filtering. */
@@ -26,7 +23,7 @@ export type FilterItem = {
   id: string;
 };
 
-export type TableViewProps<D> = TableProps<D> & {
+export type TableViewProps<D> = VirtualizedTableProps<D> & {
   /** Optional custom onFilter callback. */
   onFilter?: (filterValues: Record<string, string>, activeFilter?: FilterItem) => D[];
   /** Optional array of filterBy options. */
@@ -34,18 +31,17 @@ export type TableViewProps<D> = TableProps<D> & {
 };
 
 const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
-  areFiltersApplied,
-  data,
-  loaded,
-  loadError,
   columns,
-  Row,
-  LoadErrorDefaultMsg,
-  NoDataEmptyMsg,
+  data,
+  filters = [],
   onFilter,
-  filters,
-  EmptyMsg,
-  emptyLabel,
+  loadError,
+  loaded,
+  Row,
+  CustomEmptyState,
+  emptyStateDescription,
+  loadErrorDefaultText,
+  CustomNoDataEmptyState,
   'aria-label': ariaLabel,
 }) => {
   const [activeFilter, setActiveFilter] = React.useState<FilterItem | undefined>(filters?.[0]);
@@ -58,7 +54,7 @@ const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
       setFilteredData(
         onFilter
           ? onFilter(filterValues, activeFilter)
-          : [...data].filter((item: Record<string, unknown>) =>
+          : [...data].filter((item) =>
               Object.keys(filterValues).every((key) =>
                 (item[key] as string)?.toLowerCase()?.includes(filterValues[key]?.toLowerCase()),
               ),
@@ -69,80 +65,73 @@ const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
 
   return (
     <>
-      {filters ? (
-        <Toolbar>
-          <ToolbarContent>
-            <ToolbarItem key="filter-select">
-              <Select
-                toggleIcon={<FilterIcon />}
-                variant={SelectVariant.single}
-                onToggle={(value) => setFilterSelectExpanded(value)}
-                onSelect={(e, selection) => {
-                  setActiveFilter(filters.find((item) => item.id === selection));
-                  setFilterSelectExpanded(false);
+      <Toolbar>
+        <ToolbarContent>
+          {filters ? (
+            <>
+              <ToolbarItem key="filter-select">
+                <Select
+                  toggleIcon={<FilterIcon />}
+                  variant={SelectVariant.single}
+                  onToggle={(value) => setFilterSelectExpanded(value)}
+                  onSelect={(e, selection) => {
+                    setActiveFilter(filters.find((item) => item.id === selection));
+                    setFilterSelectExpanded(false);
+                  }}
+                  placeholderText={activeFilter?.label}
+                  isOpen={isFilterSelectExpanded}
+                >
+                  {filters.map((option) => (
+                    <SelectOption key={option.id} value={option.id}>
+                      {option.label}
+                    </SelectOption>
+                  ))}
+                </Select>
+              </ToolbarItem>
+              <ToolbarItem variant={ToolbarItemVariant['search-filter']} key="search-filter">
+                <SearchInput
+                  className="dps-table-view__search"
+                  onChange={(value) => {
+                    if (activeFilter) {
+                      setFilterValues({
+                        ...filterValues,
+                        [activeFilter.id]: value,
+                      });
+                    }
+                  }}
+                  value={activeFilter ? filterValues[activeFilter.id] : ''}
+                  placeholder={`Filter by ${activeFilter?.label}`}
+                />
+              </ToolbarItem>
+            </>
+          ) : null}
+        </ToolbarContent>
+        {Object.keys(filterValues)?.length > 0 && (
+          <ToolbarContent className="dps-table-view__filters">
+            <ToolbarItem>
+              <FilterChips
+                filters={filters}
+                filterValues={filterValues}
+                onDelete={(key) => {
+                  setFilterValues(key ? omit(filterValues, key) : {});
                 }}
-                placeholderText={activeFilter?.label}
-                isOpen={isFilterSelectExpanded}
-              >
-                {filters?.map((option) => (
-                  <SelectOption key={option.id} value={option.id}>
-                    {option.label}
-                  </SelectOption>
-                ))}
-              </Select>
-            </ToolbarItem>
-            <ToolbarItem variant={ToolbarItemVariant['search-filter']} key="search-filter">
-              <SearchInput
-                className="dps-table-view-search"
-                onChange={(value) =>
-                  activeFilter &&
-                  setFilterValues({
-                    ...filterValues,
-                    [activeFilter.id]: value,
-                  })
-                }
-                value={activeFilter ? filterValues[activeFilter.id] : ''}
-                placeholder={`Filter by ${activeFilter?.label}`}
               />
             </ToolbarItem>
-            {Object.keys(filterValues).map((key) =>
-              filterValues[key]?.length > 0 ? (
-                <ToolbarItem variant={ToolbarItemVariant['chip-group']} key={`chips-${key}`}>
-                  <ChipGroup categoryName={filters.find((item) => item.id === key)?.label}>
-                    <Chip
-                      key={filterValues[key]}
-                      onClick={() => setFilterValues(omit(filterValues, key))}
-                    >
-                      {filterValues[key]}
-                    </Chip>
-                  </ChipGroup>
-                </ToolbarItem>
-              ) : null,
-            )}
-            {Object.values(filterValues).some((value) => value?.length > 0) ? (
-              <ToolbarItem key="delete-chips" className="dps-table-view-clear">
-                <Button variant={ButtonVariant.link} onClick={() => setFilterValues({})} isInline>
-                  Clear all filters
-                </Button>
-              </ToolbarItem>
-            ) : null}
           </ToolbarContent>
-        </Toolbar>
-      ) : null}
-      <Table
-        areFiltersApplied={
-          areFiltersApplied || Object.values(filterValues).some((value) => value?.length > 0)
-        }
-        data={filteredData}
+        )}
+      </Toolbar>
+      <VirtualizedTable
+        aria-label={ariaLabel}
+        areFiltersApplied={Object.values(filterValues).some((value) => value?.length > 0)}
+        data={filters ? filteredData : data}
         loaded={loaded}
-        loadError={loadError}
         columns={columns}
         Row={Row}
-        LoadErrorDefaultMsg={LoadErrorDefaultMsg}
-        NoDataEmptyMsg={NoDataEmptyMsg}
-        EmptyMsg={EmptyMsg}
-        emptyLabel={emptyLabel}
-        aria-label={ariaLabel}
+        emptyStateDescription={emptyStateDescription}
+        CustomEmptyState={CustomEmptyState}
+        loadError={loadError}
+        loadErrorDefaultText={loadErrorDefaultText}
+        CustomNoDataEmptyState={CustomNoDataEmptyState}
       />
     </>
   );
