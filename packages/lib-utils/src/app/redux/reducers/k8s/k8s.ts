@@ -95,8 +95,8 @@ export const sdkK8sReducer = (state: K8sState, action: K8sAction): K8sState => {
 
   let newList;
   switch (action.type) {
-    case ActionType.GetResourcesInFlight:
-      return state.setIn(['RESOURCES', 'inFlight'], true);
+    case ActionType.SetResourcesInFlight:
+      return state.setIn(['RESOURCES', 'inFlight'], action.payload.inFlight);
 
     case ActionType.ReceivedResources:
       return (
@@ -146,7 +146,6 @@ export const sdkK8sReducer = (state: K8sState, action: K8sAction): K8sState => {
           )
           .setIn(['RESOURCES', 'namespacedSet'], action.payload.resources.namespacedSet)
           .setIn(['RESOURCES', 'groupToVersionMap'], action.payload.resources.groupVersionMap)
-          .setIn(['RESOURCES', 'inFlight'], false)
       );
 
     case ActionType.StartWatchK8sObject:
