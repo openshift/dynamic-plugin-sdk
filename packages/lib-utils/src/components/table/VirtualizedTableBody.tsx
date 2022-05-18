@@ -1,3 +1,4 @@
+import { Td } from '@patternfly/react-table';
 import type { ICell, SortByDirection, ThProps } from '@patternfly/react-table';
 import { VirtualTableBody } from '@patternfly/react-virtualized-extension';
 import type { Scroll } from '@patternfly/react-virtualized-extension/dist/js/components/Virtualized/types';
@@ -51,6 +52,10 @@ type VirtualizedTableBodyProps<D> = {
   onChildScroll: (params: Scroll) => void;
   /** Row component. */
   Row: React.ComponentType<RowProps<D>>;
+  /** Optional isSelected row callback */
+  isRowSelected?: (item: D) => boolean;
+  /** Optional onSelect row callback */
+  onSelect?: (event: React.FormEvent<HTMLInputElement>, isRowSelected: boolean, data: D[]) => void;
   /** Scroll top number. */
   scrollTop: number;
   /** Table body width. */
@@ -64,13 +69,15 @@ const VirtualizedTableBody = <D,>({
   isScrolling,
   onChildScroll,
   Row,
+  isRowSelected,
+  onSelect,
   scrollTop,
   width,
 }: VirtualizedTableBodyProps<D>) => {
   const cellMeasurementCache = new CellMeasurerCache({
     fixedWidth: true,
     minHeight: 44,
-    keyMapper: (rowIndex) =>
+    keyMapper: (rowIndex: number) =>
       (data?.[rowIndex] as unknown as Record<string, Record<string, unknown>>)?.metadata?.uid ??
       rowIndex,
   });
@@ -98,6 +105,7 @@ const VirtualizedTableBody = <D,>({
     if (!isVisible) {
       return null;
     }
+
     return (
       <CellMeasurer
         cache={cellMeasurementCache}
@@ -107,6 +115,16 @@ const VirtualizedTableBody = <D,>({
         rowIndex={index}
       >
         <TableRow id={key} index={index} trKey={key} style={style}>
+          {onSelect && (
+            <Td
+              select={{
+                rowIndex: index,
+                onSelect: (event, isSelected) => onSelect?.(event, isSelected, [rowArgs.obj]),
+                isSelected: isRowSelected?.(rowArgs.obj) || false,
+                disable: !!(rowArgs?.obj as Record<string, unknown>)?.disable,
+              }}
+            />
+          )}
           <RowMemo Row={Row} obj={rowArgs.obj} />
         </TableRow>
       </CellMeasurer>

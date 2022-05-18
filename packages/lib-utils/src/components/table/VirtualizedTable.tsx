@@ -24,6 +24,10 @@ export type VirtualizedTableProps<D> = {
   Row: React.FC<RowProps<D>>;
   /** Optional load error default text. */
   loadErrorDefaultText?: string;
+  /** Optional isSelected row callback */
+  isRowSelected?: (item: D) => boolean;
+  /** Optional onSelect row callback */
+  onSelect?: (event: React.FormEvent<HTMLInputElement>, isRowSelected: boolean, data: D[]) => void;
   /** Optional no data empty state component. */
   CustomNoDataEmptyState?: React.ComponentType;
   /** Optional no applicable data empty state component. */
@@ -33,7 +37,7 @@ export type VirtualizedTableProps<D> = {
   /** Optional aria label. */
   'aria-label'?: string;
   /** Optional scroll node. */
-  scrollNode?: () => HTMLElement;
+  scrollNode?: HTMLElement;
 };
 
 const isHTMLElement = (n: Node): n is HTMLElement => {
@@ -82,6 +86,8 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
   CustomNoDataEmptyState,
   CustomEmptyState,
   emptyStateDescription,
+  onSelect,
+  isRowSelected,
   scrollNode,
   'aria-label': ariaLabel,
 }) => {
@@ -130,6 +136,7 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
                 height={height}
                 isScrolling={isScrolling}
                 onChildScroll={onChildScroll}
+                onSelect={onSelect}
                 data={data}
                 columns={columns}
                 scrollTop={scrollTop}
@@ -157,6 +164,12 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
         <TableComposable aria-label={ariaLabel} role="presentation">
           <Thead>
             <Tr>
+              <Th
+                select={{
+                  onSelect: (event, rowSelected) => onSelect?.(event, rowSelected, data),
+                  isSelected: data.every((item) => isRowSelected?.(item)),
+                }}
+              />
               {columns.map(
                 ({ title, props: properties, sort, transforms, visibility, id }, columnIndex) => {
                   const isSortable = !!transforms?.find((item) => item?.name === 'sortable');
