@@ -316,8 +316,8 @@ export const watchK8sObject =
 
 export const receivedResources = (resources: DiscoveryResources) =>
   action(ActionType.ReceivedResources, { resources });
-export const setResourcesInFlight = (inFlight: boolean) =>
-  action(ActionType.SetResourcesInFlight, { inFlight });
+export const setResourcesInFlight = (isInFlight: boolean) =>
+  action(ActionType.SetResourcesInFlight, { isInFlight });
 
 const k8sActions = {
   startWatchK8sObject,
