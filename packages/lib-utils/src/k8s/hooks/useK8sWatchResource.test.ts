@@ -107,8 +107,20 @@ describe('useK8sWatchResource', () => {
     useDeepCompareMemoizeMock.mockReturnValue(watchedResourceMock);
 
     const { result } = renderHook(() => useK8sWatchResource(watchedResourceMock));
-    const [data, loaded, error] = result.current;
+    let [data, loaded, error] = result.current;
 
+    expect(data).toMatchObject({});
+    expect(loaded).toEqual(false);
+    expect(error).toBeUndefined();
+
+    // When an initial batch of models have loaded but not all batches
+    useModelsLoadedMock.mockReturnValue(true);
+    useSelectorMock
+      .mockReturnValueOnce(null) // get resourceK8s
+      .mockReturnValueOnce(true); // batchesInFlight: true to indicate all batches of resources have loaded
+
+    const checkAllBatches = renderHook(() => useK8sWatchResource(watchedResourceMock));
+    [data, loaded, error] = checkAllBatches.result.current;
     expect(data).toMatchObject({});
     expect(loaded).toEqual(false);
     expect(error).toBeUndefined();
@@ -116,6 +128,9 @@ describe('useK8sWatchResource', () => {
 
   test('should return specific error if the model for the watched resource does not exist', () => {
     useDeepCompareMemoizeMock.mockReturnValue(watchedResourceMock);
+    useSelectorMock
+      .mockReturnValueOnce(null) // get resourceK8s
+      .mockReturnValueOnce(false); // batchesInFlight: true to indicate all batches of resources have loaded
 
     const { result } = renderHook(() => useK8sWatchResource(watchedResourceMock));
     const [data, loaded, error] = result.current;

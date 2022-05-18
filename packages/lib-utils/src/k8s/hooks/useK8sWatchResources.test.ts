@@ -90,7 +90,8 @@ describe('useK8sWatchResources', () => {
     useModelsLoadedMock.mockReturnValue(haveModelsLoaded);
     useSelectorMock
       .mockReturnValueOnce(ImmutableMap<string, K8sModelCommon>()) // Models have not loaded so allK8sModels is empty
-      .mockReturnValueOnce(ImmutableMap<string, unknown>());
+      .mockReturnValueOnce(ImmutableMap<string, unknown>())
+      .mockReturnValueOnce(false);
 
     const { result } = renderHook(() => useK8sWatchResources(watchedResourcesMock));
     const { application } = result.current;
@@ -99,12 +100,27 @@ describe('useK8sWatchResources', () => {
     expect(data).toMatchObject({});
     expect(loaded).toEqual(false);
     expect(loadError).toBeUndefined();
+
+    // When an initial batch of models have loaded but not all batches
+    useModelsLoadedMock.mockReturnValue(true);
+    useSelectorMock
+      .mockReturnValueOnce(ImmutableMap<string, K8sModelCommon>()) // get resourceK8s
+      .mockReturnValueOnce(ImmutableMap<string, unknown>())
+      .mockReturnValueOnce(true); // batchesInFlight: true to indicate all batches of resources have loaded
+
+    const checkAllBatches = renderHook(() => useK8sWatchResources(watchedResourcesMock));
+    const resultingApp = checkAllBatches.result.current.application;
+
+    expect(resultingApp.data).toMatchObject({});
+    expect(resultingApp.loaded).toEqual(false);
+    expect(resultingApp.loadError).toBeUndefined();
   });
 
   test('should return specific error if the model for the watched resource does not exist', () => {
     useSelectorMock
       .mockReturnValueOnce(ImmutableMap<string, K8sModelCommon>()) // Models have loaded but do not contain "application" model
-      .mockReturnValueOnce(ImmutableMap<string, unknown>());
+      .mockReturnValueOnce(ImmutableMap<string, unknown>())
+      .mockReturnValueOnce(false);
 
     const { result } = renderHook(() => useK8sWatchResources(watchedResourcesMock));
     const { application } = result.current;
@@ -135,7 +151,8 @@ describe('useK8sWatchResources', () => {
     }));
     useSelectorMock
       .mockReturnValueOnce(ImmutableMap<string, K8sModelCommon>(allModelsMock)) // Mock models
-      .mockReturnValueOnce(ImmutableMap<string, unknown>(resourceK8s));
+      .mockReturnValueOnce(ImmutableMap<string, unknown>(resourceK8s))
+      .mockReturnValueOnce(false);
     getWatchDataMock.mockReturnValue(mockWatchData);
     getReduxDataMock.mockReturnValue(resourceDataMock);
 
