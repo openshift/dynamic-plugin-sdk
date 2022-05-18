@@ -148,22 +148,7 @@ describe('useK8sWatchResource', () => {
     expect(useSelectorMock).toHaveBeenCalled();
     const resourceData = data as K8sResourceCommon;
 
-    expect(resourceData).toEqual(
-      expect.objectContaining({
-        apiVersion: expect.any(String),
-        kind: expect.any(String),
-        metadata: {
-          creationTimestamp: expect.any(String),
-          generation: expect.any(Number),
-          name: expect.any(String),
-          namespace: expect.any(String),
-          resourceVersion: expect.any(String),
-          uid: expect.any(String),
-        },
-        spec: expect.objectContaining({}),
-        status: expect.objectContaining({}),
-      }),
-    );
+    expect(resourceData).toMatchObject(resourceDataMock);
 
     expect(loaded).toEqual(true);
     expect(error).toEqual('');

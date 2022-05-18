@@ -144,22 +144,7 @@ describe('useK8sWatchResources', () => {
     const { data, loaded, loadError } = application;
     expect(loaded).toEqual(true);
     expect(loadError).toEqual('');
-    expect(data as K8sResourceCommon).toEqual(
-      expect.objectContaining({
-        apiVersion: expect.any(String),
-        kind: expect.any(String),
-        metadata: {
-          creationTimestamp: expect.any(String),
-          generation: expect.any(Number),
-          name: expect.any(String),
-          namespace: expect.any(String),
-          resourceVersion: expect.any(String),
-          uid: expect.any(String),
-        },
-        spec: expect.objectContaining({}),
-        status: expect.objectContaining({}),
-      }),
-    );
+    expect(data as K8sResourceCommon).toMatchObject(resourceDataMock);
     expect(useSelectorMock).toHaveBeenCalled();
   });
 });
