@@ -15,6 +15,7 @@ import type { WebSocketFactory } from '../../../web-socket/WebSocketFactory';
 export enum ActionType {
   ReceivedResources = 'resources',
   SetResourcesInFlight = 'setResourcesInFlight',
+  SetBatchesInFlight = 'setBatchesInFlight',
   StartWatchK8sObject = 'startWatchK8sObject',
   StartWatchK8sList = 'startWatchK8sList',
   ModifyObject = 'modifyObject',
@@ -318,6 +319,8 @@ export const receivedResources = (resources: DiscoveryResources) =>
   action(ActionType.ReceivedResources, { resources });
 export const setResourcesInFlight = (isInFlight: boolean) =>
   action(ActionType.SetResourcesInFlight, { isInFlight });
+export const setBatchesInFlight = (isInFlight: boolean) =>
+  action(ActionType.SetBatchesInFlight, { isInFlight });
 
 const k8sActions = {
   startWatchK8sObject,
@@ -331,6 +334,7 @@ const k8sActions = {
   filterList,
   receivedResources,
   setResourcesInFlight,
+  setBatchesInFlight,
 };
 
 export type K8sAction = Action<typeof k8sActions>;

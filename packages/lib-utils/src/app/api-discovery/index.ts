@@ -12,7 +12,7 @@ import type {
 import type { K8sModelCommon } from '../../types/k8s';
 import type { DispatchWithThunk } from '../../types/redux';
 import { commonFetchJSON } from '../../utils/common-fetch';
-import { setResourcesInFlight, receivedResources } from '../redux/actions/k8s';
+import { setResourcesInFlight, setBatchesInFlight, receivedResources } from '../redux/actions/k8s';
 import { cacheResources, getCachedResources } from './discovery-cache';
 
 const POLLs: { [id: string]: number } = {};
@@ -157,8 +157,8 @@ const getResources = async (
       dispatch(receivedResources(resource));
     });
   }
-  // Dispatch action to set inFlight to false
-  dispatch(setResourcesInFlight(false));
+  // Dispatch action to indicate all batches were loaded
+  dispatch(setBatchesInFlight(false));
   return allResources.reduce((acc, curr) => _.merge(acc, curr));
 };
 
@@ -166,6 +166,7 @@ const updateResources =
   (preferenceList: string[]) =>
   async (dispatch: Dispatch): Promise<DiscoveryResources> => {
     dispatch(setResourcesInFlight(true));
+    dispatch(setBatchesInFlight(true));
 
     const resources = await getResources(preferenceList, dispatch);
     // // Cache the resources whenever discovery completes to improve console load times.
