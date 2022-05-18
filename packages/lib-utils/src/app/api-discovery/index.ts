@@ -15,9 +15,6 @@ import { commonFetchJSON } from '../../utils/common-fetch';
 import { setResourcesInFlight, setBatchesInFlight, receivedResources } from '../redux/actions/k8s';
 import { cacheResources, getCachedResources } from './discovery-cache';
 
-const POLLs: { [id: string]: number } = {};
-const apiDiscovery = 'apiDiscovery';
-const API_DISCOVERY_POLL_INTERVAL = 60_000;
 const API_DISCOVERY_INIT_DELAY = 5_000;
 const API_DISCOVERY_REQUEST_BATCH_SIZE = 5;
 
@@ -176,24 +173,12 @@ const updateResources =
   };
 
 const startAPIDiscovery = (preferenceList: string[]) => (dispatch: DispatchWithThunk) => {
-  consoleLogger.info(
-    `API discovery startAPIDiscovery: Polling every ${API_DISCOVERY_POLL_INTERVAL} ms`,
-  );
-  // Poll API discovery since we can't watch CRDs
   dispatch(updateResources(preferenceList))
     .then((resources) => {
-      if (POLLs[apiDiscovery]) {
-        clearTimeout(POLLs[apiDiscovery]);
-        delete POLLs[apiDiscovery];
-      }
-      POLLs[apiDiscovery] = window.setTimeout(
-        () => dispatch(startAPIDiscovery(preferenceList)),
-        API_DISCOVERY_POLL_INTERVAL,
-      );
       return resources;
     })
     // TODO handle failures - retry if error is recoverable
-    .catch((err) => consoleLogger.error('API discovery startAPIDiscovery polling failed:', err));
+    .catch((err) => consoleLogger.error('API discovery startAPIDiscovery failed:', err));
 };
 
 export const initAPIDiscovery: InitAPIDiscovery = (storeInstance, preferenceList = []) => {
