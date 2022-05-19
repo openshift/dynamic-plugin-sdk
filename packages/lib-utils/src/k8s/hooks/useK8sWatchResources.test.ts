@@ -101,12 +101,12 @@ describe('useK8sWatchResources', () => {
     expect(loaded).toEqual(false);
     expect(loadError).toBeUndefined();
 
-    // When an initial batch of models have loaded but not all batches
+    // When an initial batch of models has loaded
     useModelsLoadedMock.mockReturnValue(true);
     useSelectorMock
       .mockReturnValueOnce(ImmutableMap<string, K8sModelCommon>()) // get resourceK8s
       .mockReturnValueOnce(ImmutableMap<string, unknown>())
-      .mockReturnValueOnce(true); // batchesInFlight: true to indicate all batches of resources have loaded
+      .mockReturnValueOnce(true); // batchesInFlight: true to indicate that some batches of resources are still loading
 
     const checkAllBatches = renderHook(() => useK8sWatchResources(watchedResourcesMock));
     const resultingApp = checkAllBatches.result.current.application;

@@ -113,11 +113,11 @@ describe('useK8sWatchResource', () => {
     expect(loaded).toEqual(false);
     expect(error).toBeUndefined();
 
-    // When an initial batch of models have loaded but not all batches
+    // When an initial batch of models has loaded
     useModelsLoadedMock.mockReturnValue(true);
     useSelectorMock
       .mockReturnValueOnce(null) // get resourceK8s
-      .mockReturnValueOnce(true); // batchesInFlight: true to indicate all batches of resources have loaded
+      .mockReturnValueOnce(true); // batchesInFlight: true to indicate that some batches of resources are still loading
 
     const checkAllBatches = renderHook(() => useK8sWatchResource(watchedResourceMock));
     [data, loaded, error] = checkAllBatches.result.current;
@@ -130,7 +130,7 @@ describe('useK8sWatchResource', () => {
     useDeepCompareMemoizeMock.mockReturnValue(watchedResourceMock);
     useSelectorMock
       .mockReturnValueOnce(null) // get resourceK8s
-      .mockReturnValueOnce(false); // batchesInFlight: true to indicate all batches of resources have loaded
+      .mockReturnValueOnce(false); // batchesInFlight: true to indicate that some batches of resources are still loading
 
     const { result } = renderHook(() => useK8sWatchResource(watchedResourceMock));
     const [data, loaded, error] = result.current;
