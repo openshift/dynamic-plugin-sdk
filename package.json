@@ -13,7 +13,8 @@
     "test": "jest --collectCoverage --logHeapUsage -w 1",
     "test-print-config": "jest --showConfig",
     "eslint": "eslint --max-warnings 0 --ext .js,.jsx,.ts,.tsx",
-    "eslint-print-config": "eslint --print-config"
+    "eslint-print-config": "eslint --print-config",
+    "e2e-test": "cypress run --config-file packages/common/test-configs/cypress.json"
   },
   "devDependencies": {
     "@patternfly/react-core": "^4.202.16",
@@ -38,6 +39,7 @@
     "@types/react-virtualized": "^9.21.21",
     "@typescript-eslint/eslint-plugin": "^5.3.1",
     "@typescript-eslint/parser": "^5.3.1",
+    "cypress": "^9.7.0",
     "eslint": "^7.32.0",
     "eslint-config-airbnb": "^19.0.0",
     "eslint-config-airbnb-base": "^15.0.0",
