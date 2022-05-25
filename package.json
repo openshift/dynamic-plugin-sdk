@@ -14,7 +14,8 @@
     "test-print-config": "jest --showConfig",
     "eslint": "eslint --max-warnings 0 --ext .js,.jsx,.ts,.tsx",
     "eslint-print-config": "eslint --print-config",
-    "e2e-test": "cypress run --config-file packages/common/test-configs/cypress.json"
+    "e2e-test": "cypress run --config-file packages/common/test-configs/cypress.json",
+    "e2e-test:open": "cypress open --config-file packages/common/test-configs/cypress.json"
   },
   "devDependencies": {
     "@patternfly/react-core": "^4.202.16",

@@ -1,11 +1,5 @@
 {
   "baseUrl": "http://localhost:9000",
   "video": false,
-  "defaultCommandTimeout": 40000,
-  "viewportWidth": 1920,
-  "viewportHeight": 1080,
-  "execTimeout": 150000,
-  "pageLoadTimeout": 90000,
-  "requestTimeout": 15000,
-  "responseTimeout": 15000
+  "defaultCommandTimeout": 5000
 }
