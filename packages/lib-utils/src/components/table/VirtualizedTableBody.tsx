@@ -56,7 +56,9 @@ type VirtualizedTableBodyProps<D> = {
   width: number;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const RowMemo = React.memo<RowProps<any> & { Row: React.ComponentType<RowProps<any>> }>(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ({ Row, obj }: RowProps<any> & { Row: React.ComponentType<RowProps<any>> }) => <Row obj={obj} />,
 );
 

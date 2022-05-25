@@ -110,28 +110,34 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
     setData(updatedRows);
   };
 
-  const renderVirtualizedTable = (scrollContainer: (() => HTMLElement) | HTMLElement) => (
-    <WindowScroller scrollElement={scrollContainer as Element}>
-      {({ height, isScrolling, registerChild, onChildScroll, scrollTop }: AnyObject) => (
-        <AutoSizer disableHeight>
-          {({ width }: AnyObject) => (
-            <div ref={registerChild as React.LegacyRef<HTMLDivElement> | undefined}>
-              <VirtualizedTableBody
-                Row={Row}
-                height={height as number}
-                isScrolling={isScrolling as boolean}
-                onChildScroll={onChildScroll as () => unknown}
-                data={data}
-                columns={columns}
-                scrollTop={scrollTop as number}
-                width={width as number}
-              />
-            </div>
-          )}
-        </AutoSizer>
-      )}
-    </WindowScroller>
-  );
+  const renderVirtualizedTable = (scrollContainer: (() => HTMLElement) | HTMLElement) => {
+    let scrollElement = scrollContainer;
+    if (typeof scrollElement === 'function') {
+      scrollElement = scrollElement();
+    }
+    return (
+      <WindowScroller scrollElement={scrollElement}>
+        {({ height, isScrolling, registerChild, onChildScroll, scrollTop }: AnyObject) => (
+          <AutoSizer disableHeight>
+            {({ width }: AnyObject) => (
+              <div ref={registerChild as React.LegacyRef<HTMLDivElement> | undefined}>
+                <VirtualizedTableBody
+                  Row={Row}
+                  height={height as number}
+                  isScrolling={isScrolling as boolean}
+                  onChildScroll={onChildScroll as () => unknown}
+                  data={data}
+                  columns={columns}
+                  scrollTop={scrollTop as number}
+                  width={width as number}
+                />
+              </div>
+            )}
+          </AutoSizer>
+        )}
+      </WindowScroller>
+    );
+  };
 
   return (
     <StatusBox
