@@ -13,3 +13,4 @@
 # Generated project artifacts
 **/dist
 /coverage
+cypress/.DS_Store
