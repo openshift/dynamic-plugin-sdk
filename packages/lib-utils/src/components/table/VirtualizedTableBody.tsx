@@ -4,6 +4,7 @@ import { VirtualTableBody } from '@patternfly/react-virtualized-extension';
 import type { Scroll } from '@patternfly/react-virtualized-extension/dist/js/components/Virtualized/types';
 import * as React from 'react';
 import { CellMeasurerCache, CellMeasurer } from 'react-virtualized';
+import type { MeasuredCellParent } from 'react-virtualized/dist/es/CellMeasurer';
 
 export type RowProps<D> = {
   /** Row data object. */
@@ -90,9 +91,9 @@ const VirtualizedTableBody = <D,>({
       <CellMeasurer
         cache={cellMeasurementCache}
         columnIndex={0}
-        key={key}
-        parent={parent}
-        rowIndex={index}
+        key={key as string}
+        parent={parent as MeasuredCellParent}
+        rowIndex={index as number}
       >
         <TableRow
           id={key as string}

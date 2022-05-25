@@ -111,7 +111,7 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
   };
 
   const renderVirtualizedTable = (scrollContainer: (() => HTMLElement) | HTMLElement) => (
-    <WindowScroller scrollElement={scrollContainer}>
+    <WindowScroller scrollElement={scrollContainer as Element}>
       {({ height, isScrolling, registerChild, onChildScroll, scrollTop }: AnyObject) => (
         <AutoSizer disableHeight>
           {({ width }: AnyObject) => (
