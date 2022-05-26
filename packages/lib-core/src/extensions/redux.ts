@@ -1,7 +1,12 @@
-import type { Reducer } from 'redux';
+import type { ReactReduxContextValue } from 'react-redux';
+import type { Reducer, Store } from 'redux';
 import type { CodeRef, Extension } from '../types/extension';
 
-/** Adds new reducer to host application's Redux store which operates on `plugins.<scope>` substate. */
+/**
+ * Adds new reducer to host application's Redux store which operates on `plugins.<scope>` substate.
+ *
+ * @deprecated use the `core.redux-provider` extension instead
+ */
 export type ReduxReducer = Extension<
   'core.redux-reducer',
   {
@@ -12,6 +17,23 @@ export type ReduxReducer = Extension<
   }
 >;
 
+/** Provides a configuration for establishing new Redux store instance scoped to the contributing plugin.  */
+export type ReduxProvider = Extension<
+  'core.redux-provider',
+  {
+    /** The configured Redux store object; configured with reducers, middleware, etc... */
+    store: CodeRef<Store>;
+    /** The Redux React context object for which the instance will be scoped to. */
+    context: CodeRef<React.Context<ReactReduxContextValue>>;
+  }
+>;
+
 // Type guards
 
+/**
+ * @deprecated use the `core.redux-provider` extension instead
+ */
 export const isReduxReducer = (e: Extension): e is ReduxReducer => e.type === 'core.redux-reducer';
+
+export const isReduxProvider = (e: Extension): e is ReduxProvider =>
+  e.type === 'core.redux-reducer';
