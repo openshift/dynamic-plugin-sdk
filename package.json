@@ -9,7 +9,7 @@
     "build-libs": "yarn workspaces foreach --from '@openshift/*' run build",
     "build-samples": "yarn workspaces foreach --from '@monorepo/sample-*' run build",
     "run-samples": "yarn workspaces foreach -pvi --from '@monorepo/sample-*' run http-server",
-    "lint": "eslint packages",
+    "lint": "yarn eslint packages",
     "test": "jest --collectCoverage",
     "test-print-config": "jest --showConfig",
     "eslint": "eslint --max-warnings 0 --ext .js,.jsx,.ts,.tsx",

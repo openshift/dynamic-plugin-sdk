@@ -3,6 +3,7 @@ import { Th, Thead, Tr, TableComposable } from '@patternfly/react-table';
 import { AutoSizer, WindowScroller } from '@patternfly/react-virtualized-extension';
 import * as _ from 'lodash';
 import * as React from 'react';
+import type { Size, WindowScrollerChildProps } from 'react-virtualized';
 import type { LoadError } from '../status/StatusBox';
 import { StatusBox } from '../status/StatusBox';
 import type { RowProps, TableColumn } from './VirtualizedTableBody';
@@ -110,34 +111,36 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
     setData(updatedRows);
   };
 
-  const renderVirtualizedTable = (scrollContainer: (() => HTMLElement) | HTMLElement) => {
-    let scrollElement = scrollContainer;
-    if (typeof scrollElement === 'function') {
-      scrollElement = scrollElement();
-    }
-    return (
-      <WindowScroller scrollElement={scrollElement}>
-        {({ height, isScrolling, registerChild, onChildScroll, scrollTop }: AnyObject) => (
-          <AutoSizer disableHeight>
-            {({ width }: AnyObject) => (
-              <div ref={registerChild as React.LegacyRef<HTMLDivElement> | undefined}>
-                <VirtualizedTableBody
-                  Row={Row}
-                  height={height as number}
-                  isScrolling={isScrolling as boolean}
-                  onChildScroll={onChildScroll as () => unknown}
-                  data={data}
-                  columns={columns}
-                  scrollTop={scrollTop as number}
-                  width={width as number}
-                />
-              </div>
-            )}
-          </AutoSizer>
-        )}
-      </WindowScroller>
-    );
-  };
+  const renderVirtualizedTable = (scrollContainer: (() => HTMLElement) | HTMLElement) => (
+    <WindowScroller
+      scrollElement={typeof scrollContainer === 'function' ? scrollContainer() : scrollContainer}
+    >
+      {({
+        height,
+        isScrolling,
+        registerChild,
+        onChildScroll,
+        scrollTop,
+      }: WindowScrollerChildProps) => (
+        <AutoSizer disableHeight>
+          {({ width }: Size) => (
+            <div ref={registerChild}>
+              <VirtualizedTableBody
+                Row={Row}
+                height={height}
+                isScrolling={isScrolling}
+                onChildScroll={onChildScroll}
+                data={data}
+                columns={columns}
+                scrollTop={scrollTop}
+                width={width}
+              />
+            </div>
+          )}
+        </AutoSizer>
+      )}
+    </WindowScroller>
+  );
 
   return (
     <StatusBox

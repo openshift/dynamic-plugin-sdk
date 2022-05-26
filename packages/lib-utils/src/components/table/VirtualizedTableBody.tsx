@@ -1,4 +1,3 @@
-import type { AnyObject } from '@monorepo/common';
 import type { ICell, SortByDirection, ThProps } from '@patternfly/react-table';
 import { VirtualTableBody } from '@patternfly/react-virtualized-extension';
 import type { Scroll } from '@patternfly/react-virtualized-extension/dist/js/components/Virtualized/types';
@@ -10,6 +9,8 @@ export type RowProps<D> = {
   /** Row data object. */
   obj: D;
 };
+
+type RowMemoProps<D> = RowProps<D> & { Row: React.ComponentType<RowProps<D>> };
 
 export type TableColumn<D> = ICell & {
   /** Column ID. */
@@ -56,12 +57,6 @@ type VirtualizedTableBodyProps<D> = {
   width: number;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const RowMemo = React.memo<RowProps<any> & { Row: React.ComponentType<RowProps<any>> }>(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ({ Row, obj }: RowProps<any> & { Row: React.ComponentType<RowProps<any>> }) => <Row obj={obj} />,
-);
-
 const VirtualizedTableBody = <D,>({
   columns,
   data,
@@ -75,14 +70,28 @@ const VirtualizedTableBody = <D,>({
   const cellMeasurementCache = new CellMeasurerCache({
     fixedWidth: true,
     minHeight: 44,
-    keyMapper: (rowIndex: number) =>
+    keyMapper: (rowIndex) =>
       (data?.[rowIndex] as unknown as Record<string, Record<string, unknown>>)?.metadata?.uid ??
       rowIndex,
   });
 
-  const rowRenderer = ({ index, isVisible, key, parent, style }: AnyObject) => {
+  // eslint-disable-next-line react/prop-types -- this rule has issues with React.memo
+  const RowMemo: React.FC<RowMemoProps<D>> = React.memo(({ Row: RowComponent, obj }) => (
+    <RowComponent obj={obj} />
+  ));
+
+  type RowRendererParams = {
+    index: number;
+    key: string;
+    parent: MeasuredCellParent;
+    style: object;
+    isScrolling: boolean;
+    isVisible: boolean;
+  };
+
+  const rowRenderer = ({ index, isVisible, key, parent, style }: RowRendererParams) => {
     const rowArgs: RowProps<D> = {
-      obj: data[index as number],
+      obj: data[index],
     };
 
     // do not render non visible elements (this excludes overscan)
@@ -93,16 +102,11 @@ const VirtualizedTableBody = <D,>({
       <CellMeasurer
         cache={cellMeasurementCache}
         columnIndex={0}
-        key={key as string}
-        parent={parent as MeasuredCellParent}
-        rowIndex={index as number}
+        key={key}
+        parent={parent}
+        rowIndex={index}
       >
-        <TableRow
-          id={key as string}
-          index={index as number}
-          trKey={key as string}
-          style={style as object}
-        >
+        <TableRow id={key} index={index} trKey={key} style={style}>
           <RowMemo Row={Row} obj={rowArgs.obj} />
         </TableRow>
       </CellMeasurer>
