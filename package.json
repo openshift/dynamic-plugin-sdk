@@ -10,7 +10,7 @@
     "build-samples": "yarn workspaces foreach --from '@monorepo/sample-*' run build",
     "run-samples": "yarn workspaces foreach -pvi --from '@monorepo/sample-*' run http-server",
     "lint": "yarn eslint packages",
-    "test": "jest --collectCoverage --logHeapUsage",
+    "test": "jest --collectCoverage --logHeapUsage -w 1",
     "test-print-config": "jest --showConfig",
     "eslint": "eslint --max-warnings 0 --ext .js,.jsx,.ts,.tsx",
     "eslint-print-config": "eslint --print-config"
