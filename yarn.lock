@@ -844,6 +844,7 @@ __metadata:
     "@types/react": ^17.0.43
     "@types/react-dom": ^17.0.14
     "@types/react-router": ^5.1.17
+    "@types/react-virtualized": ^9.21.21
     "@typescript-eslint/eslint-plugin": ^5.3.1
     "@typescript-eslint/parser": ^5.3.1
     eslint: ^7.32.0
@@ -1661,6 +1662,16 @@ __metadata:
     "@types/history": ^4.7.11
     "@types/react": "*"
   checksum: f08b37ee822f9f9ff904ffd0778fe2bb7c717ed3ee311610382ee024d02a35169bd3301ecde863cac21aae8fdee919501e8ea22bad0260c02c10cfbdba5c71be
+  languageName: node
+  linkType: hard
+
+"@types/react-virtualized@npm:^9.21.21":
+  version: 9.21.21
+  resolution: "@types/react-virtualized@npm:9.21.21"
+  dependencies:
+    "@types/prop-types": "*"
+    "@types/react": ^17
+  checksum: 7f360746ae926c93ba07d830a33940ab1598f6966263594896d0dc746d704f9c0e0d1692cf543e925bcca7b007d70d3cc53379a9b1810f60c2d43ee5cfdb591e
   languageName: node
   linkType: hard
 

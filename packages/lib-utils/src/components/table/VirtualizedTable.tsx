@@ -3,6 +3,7 @@ import { Th, Thead, Tr, TableComposable } from '@patternfly/react-table';
 import { AutoSizer, WindowScroller } from '@patternfly/react-virtualized-extension';
 import * as _ from 'lodash';
 import * as React from 'react';
+import type { Size, WindowScrollerChildProps } from 'react-virtualized';
 import type { LoadError } from '../status/StatusBox';
 import { StatusBox } from '../status/StatusBox';
 import type { RowProps, TableColumn } from './VirtualizedTableBody';
@@ -111,20 +112,28 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
   };
 
   const renderVirtualizedTable = (scrollContainer: (() => HTMLElement) | HTMLElement) => (
-    <WindowScroller scrollElement={scrollContainer}>
-      {({ height, isScrolling, registerChild, onChildScroll, scrollTop }: AnyObject) => (
+    <WindowScroller
+      scrollElement={typeof scrollContainer === 'function' ? scrollContainer() : scrollContainer}
+    >
+      {({
+        height,
+        isScrolling,
+        registerChild,
+        onChildScroll,
+        scrollTop,
+      }: WindowScrollerChildProps) => (
         <AutoSizer disableHeight>
-          {({ width }: AnyObject) => (
-            <div ref={registerChild as React.LegacyRef<HTMLDivElement> | undefined}>
+          {({ width }: Size) => (
+            <div ref={registerChild}>
               <VirtualizedTableBody
                 Row={Row}
-                height={height as number}
-                isScrolling={isScrolling as boolean}
-                onChildScroll={onChildScroll as () => unknown}
+                height={height}
+                isScrolling={isScrolling}
+                onChildScroll={onChildScroll}
                 data={data}
                 columns={columns}
-                scrollTop={scrollTop as number}
-                width={width as number}
+                scrollTop={scrollTop}
+                width={width}
               />
             </div>
           )}
