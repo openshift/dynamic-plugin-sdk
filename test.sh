@@ -19,12 +19,10 @@ fi
 yarn build
 
 # Analyze code for potential problems
-# TEMP DISABLED due to OOM errors - see https://coreos.slack.com/archives/C02EQERSV3N/p1653510153952209
-# yarn lint
+yarn lint
 
 # Run unit tests
-# TEMP DISABLED due to OOM errors - see https://coreos.slack.com/archives/C02EQERSV3N/p1653510153952209
-# yarn test
+yarn test
 
 # Run end-to-end tests
 # TODO
