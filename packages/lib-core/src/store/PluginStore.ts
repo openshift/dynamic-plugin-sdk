@@ -211,7 +211,7 @@ export class PluginStore implements PluginConsumer, PluginManager {
 
     this.extensions = Array.from(this.loadedPlugins.values()).reduce(
       (acc, p) =>
-        p.enabled ? [...acc, ...p.extensions.filter(_.bind(this.isExtensionInUse, this))] : acc,
+        p.enabled ? [...acc, ...p.extensions.filter((e) => this.isExtensionInUse(e))] : acc,
       [] as LoadedExtension[],
     );
 
