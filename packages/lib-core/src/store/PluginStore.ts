@@ -13,9 +13,9 @@ export type PluginStoreOptions = Partial<{
   autoEnableLoadedPlugins: boolean;
   /** Post-process loaded extension objects before adding associated plugin to the {@link PluginStore}. */
   postProcessExtensions: (extensions: LoadedExtension[]) => LoadedExtension[];
-  /** Determine whether the given feature flag is currently enabled. */
-  isFeatureFlagEnabled: (flag: string) => boolean;
 }>;
+
+export type FeatureFlags = { [key: string]: boolean };
 
 /**
  * Manages plugins and their extensions.
@@ -39,11 +39,12 @@ export class PluginStore implements PluginConsumer, PluginManager {
   /** Subscribed event listeners. */
   private readonly listeners = new Map<PluginEventType, Set<VoidFunction>>();
 
+  private featureFlags: FeatureFlags = {};
+
   constructor(options: PluginStoreOptions = {}) {
     this.options = {
       autoEnableLoadedPlugins: options.autoEnableLoadedPlugins ?? true,
       postProcessExtensions: options.postProcessExtensions ?? _.identity,
-      isFeatureFlagEnabled: options.isFeatureFlagEnabled ?? (() => false),
     };
 
     Object.values(PluginEventType).forEach((t) => {
@@ -227,9 +228,23 @@ export class PluginStore implements PluginConsumer, PluginManager {
    */
   private isExtensionInUse(extension: Extension) {
     return (
-      (extension.flags?.required?.every((f) => this.options.isFeatureFlagEnabled(f)) ?? true) &&
-      (extension.flags?.disallowed?.every((f) => !this.options.isFeatureFlagEnabled(f)) ?? true)
+      (extension.flags?.required?.every((f) => this.featureFlags[f]) ?? true) &&
+      (extension.flags?.disallowed?.every((f) => !this.featureFlags[f]) ?? true)
     );
+  }
+
+  setFeatureFlags(newFlags: FeatureFlags) {
+    const prevFeatureFlags = this.featureFlags;
+
+    this.featureFlags = { ...this.featureFlags, ...newFlags };
+
+    if (!_.isEqual(prevFeatureFlags, this.featureFlags)) {
+      this.updateExtensions();
+    }
+  }
+
+  getFeatureFlags() {
+    return { ...this.featureFlags };
   }
 
   /**

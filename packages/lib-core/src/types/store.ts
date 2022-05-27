@@ -1,3 +1,4 @@
+import type { FeatureFlags } from '../store/PluginStore';
 import type { LoadedExtension } from './extension';
 import type { LoadedPlugin } from './plugin';
 
@@ -83,13 +84,12 @@ export type PluginManager = {
   setPluginsEnabled: (config: { pluginName: string; enabled: boolean }[]) => void;
 
   /**
-   * Update extensions which are currently in use.
-   *
-   * This function should be called whenever a change is detected in any feature flags that
-   * may be used by plugins to gate their extensions, including:
-   * - flags managed by the host application
-   * - flags contributed by plugins
-   * - flags managed by external services like Unleash
+   * Set feature flags in the PluginStore
    */
-  updateExtensions: () => void;
+  setFeatureFlags: (newFeatureFlags: FeatureFlags) => void;
+
+  /**
+   * Get feature flags from the PluginStore
+   */
+  getFeatureFlags: () => FeatureFlags;
 };
