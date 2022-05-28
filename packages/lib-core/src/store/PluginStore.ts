@@ -13,6 +13,8 @@ export type PluginStoreOptions = Partial<{
   autoEnableLoadedPlugins: boolean;
   /** Post-process loaded extension objects before adding associated plugin to the {@link PluginStore}. */
   postProcessExtensions: (extensions: LoadedExtension[]) => LoadedExtension[];
+  /** Determine whether the given feature flag is currently enabled. */
+  isFeatureFlagEnabled: (flag: string) => boolean;
 }>;
 
 /**
@@ -41,6 +43,7 @@ export class PluginStore implements PluginConsumer, PluginManager {
     this.options = {
       autoEnableLoadedPlugins: options.autoEnableLoadedPlugins ?? true,
       postProcessExtensions: options.postProcessExtensions ?? _.identity,
+      isFeatureFlagEnabled: options.isFeatureFlagEnabled ?? (() => false),
     };
 
     Object.values(PluginEventType).forEach((t) => {
@@ -114,11 +117,9 @@ export class PluginStore implements PluginConsumer, PluginManager {
     };
   }
 
-  private invokeListeners(eventTypes: PluginEventType[]) {
-    eventTypes.forEach((t) => {
-      this.listeners.get(t)?.forEach((listener) => {
-        listener();
-      });
+  private invokeListeners(eventType: PluginEventType) {
+    this.listeners.get(eventType)?.forEach((listener) => {
+      listener();
     });
   }
 
@@ -177,7 +178,7 @@ export class PluginStore implements PluginConsumer, PluginManager {
   }
 
   setPluginsEnabled(config: { pluginName: string; enabled: boolean }[]) {
-    let updateExtensions = false;
+    let update = false;
 
     config.forEach(({ pluginName, enabled }) => {
       if (!this.loadedPlugins.has(pluginName)) {
@@ -195,18 +196,40 @@ export class PluginStore implements PluginConsumer, PluginManager {
       if (plugin.enabled !== enabled) {
         plugin.enabled = enabled;
         consoleLogger.info(`Plugin ${pluginName} will be ${enabled ? 'enabled' : 'disabled'}`);
-        updateExtensions = true;
+        update = true;
       }
     });
 
-    if (updateExtensions) {
-      this.extensions = Array.from(this.loadedPlugins.values()).reduce(
-        (acc, p) => (p.enabled ? [...acc, ...p.extensions] : acc),
-        [] as LoadedExtension[],
-      );
-
-      this.invokeListeners([PluginEventType.PluginInfoChanged, PluginEventType.ExtensionsChanged]);
+    if (update) {
+      this.invokeListeners(PluginEventType.PluginInfoChanged);
+      this.updateExtensions();
     }
+  }
+
+  updateExtensions() {
+    const prevExtensions = this.extensions;
+
+    this.extensions = Array.from(this.loadedPlugins.values()).reduce(
+      (acc, p) =>
+        p.enabled ? [...acc, ...p.extensions.filter((e) => this.isExtensionInUse(e))] : acc,
+      [] as LoadedExtension[],
+    );
+
+    if (!_.isEqual(prevExtensions, this.extensions)) {
+      this.invokeListeners(PluginEventType.ExtensionsChanged);
+    }
+  }
+
+  /**
+   * Checks whether an extension is in use based on the values of required and disallowed feature flags
+   * @param {Extension} extension The extension to check for
+   * @returns {boolean} returns `true` if the extension is in use, and `false` if it is not in use
+   */
+  private isExtensionInUse(extension: Extension) {
+    return (
+      (extension.flags?.required?.every((f) => this.options.isFeatureFlagEnabled(f)) ?? true) &&
+      (extension.flags?.disallowed?.every((f) => !this.options.isFeatureFlagEnabled(f)) ?? true)
+    );
   }
 
   /**
@@ -232,7 +255,7 @@ export class PluginStore implements PluginConsumer, PluginManager {
     });
 
     this.failedPlugins.delete(pluginName);
-    this.invokeListeners([PluginEventType.PluginInfoChanged]);
+    this.invokeListeners(PluginEventType.PluginInfoChanged);
 
     consoleLogger.info(`Added plugin ${pluginName} version ${pluginVersion}`);
 
@@ -246,7 +269,7 @@ export class PluginStore implements PluginConsumer, PluginManager {
     }
 
     this.failedPlugins.add(pluginName);
-    this.invokeListeners([PluginEventType.PluginInfoChanged]);
+    this.invokeListeners(PluginEventType.PluginInfoChanged);
   }
 
   /**
