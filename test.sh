@@ -42,3 +42,6 @@ if [[ "${JOB_TYPE}" != "local" ]]; then
   chmod +x codecov
   ./codecov -t ${CODECOV_TOKEN} -r "openshift/dynamic-plugin-sdk" ${REF_FLAGS} --dir ./coverage
 fi
+
+# Publish
+./publish.sh
