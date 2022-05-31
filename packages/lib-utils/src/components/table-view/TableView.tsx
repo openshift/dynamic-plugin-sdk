@@ -34,6 +34,8 @@ const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
   columns,
   data,
   filters = [],
+  isRowSelected,
+  onSelect,
   onFilter,
   loadError,
   loaded,
@@ -126,6 +128,8 @@ const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
         data={filters ? filteredData : data}
         loaded={loaded}
         columns={columns}
+        isRowSelected={isRowSelected}
+        onSelect={onSelect}
         Row={Row}
         emptyStateDescription={emptyStateDescription}
         CustomEmptyState={CustomEmptyState}
