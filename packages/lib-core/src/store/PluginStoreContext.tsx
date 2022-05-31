@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { PluginConsumer, PluginManager } from '../types/store';
-import type { PluginStore, FeatureFlags } from './PluginStore';
+import type { PluginStore } from './PluginStore';
 
 const PluginStoreContext = React.createContext<PluginStore | undefined>(undefined);
 
@@ -33,10 +33,17 @@ export const usePluginStore = (): PluginConsumer & PluginManager => {
 };
 
 /**
- * React hook that provides access to the feature flags.
+ * React hook that provides access to a feature flag.
+ *
+ * @example
+ * ```ts
+ * const [flag, setFlag] = useFeatureFlag('MY_FLAG');
+ * ...
+ * setFlag(true);
+ * ```
  */
-export const useFeatureFlags = (): [FeatureFlags, (newFeatureFlags: FeatureFlags) => void] => {
+export const useFeatureFlag = (flagName: string): [boolean, (newValue: boolean) => void] => {
   const store = usePluginStore();
 
-  return [store.getFeatureFlags(), store.setFeatureFlags];
+  return [store.getFeatureFlag(flagName), store.setFeatureFlag(flagName)];
 };

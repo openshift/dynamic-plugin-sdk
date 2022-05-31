@@ -1,4 +1,3 @@
-import type { FeatureFlags } from '../store/PluginStore';
 import type { LoadedExtension } from './extension';
 import type { LoadedPlugin } from './plugin';
 
@@ -84,12 +83,12 @@ export type PluginManager = {
   setPluginsEnabled: (config: { pluginName: string; enabled: boolean }[]) => void;
 
   /**
-   * Set feature flags in the PluginStore
+   * Set a single feature flag in the PluginStore
    */
-  setFeatureFlags: (newFeatureFlags: FeatureFlags) => void;
+  setFeatureFlag: (featureFlagName: string) => (featureFlagValue: boolean) => void;
 
   /**
-   * Get feature flags from the PluginStore
+   * Get a single feature flag from the PluginStore
    */
-  getFeatureFlags: () => FeatureFlags;
+  getFeatureFlag: (flagName: string) => boolean;
 };
