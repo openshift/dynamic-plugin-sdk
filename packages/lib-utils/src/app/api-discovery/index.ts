@@ -12,12 +12,9 @@ import type {
 import type { K8sModelCommon } from '../../types/k8s';
 import type { DispatchWithThunk } from '../../types/redux';
 import { commonFetchJSON } from '../../utils/common-fetch';
-import { getResourcesInFlight, receivedResources } from '../redux/actions/k8s';
+import { setResourcesInFlight, setBatchesInFlight, receivedResources } from '../redux/actions/k8s';
 import { cacheResources, getCachedResources } from './discovery-cache';
 
-const POLLs: { [id: string]: number } = {};
-const apiDiscovery = 'apiDiscovery';
-const API_DISCOVERY_POLL_INTERVAL = 60_000;
 const API_DISCOVERY_INIT_DELAY = 5_000;
 const API_DISCOVERY_REQUEST_BATCH_SIZE = 5;
 
@@ -157,13 +154,16 @@ const getResources = async (
       dispatch(receivedResources(resource));
     });
   }
+  // Dispatch action to indicate all batches were loaded
+  dispatch(setBatchesInFlight(false));
   return allResources.reduce((acc, curr) => _.merge(acc, curr));
 };
 
 const updateResources =
   (preferenceList: string[]) =>
   async (dispatch: Dispatch): Promise<DiscoveryResources> => {
-    dispatch(getResourcesInFlight());
+    dispatch(setResourcesInFlight(true));
+    dispatch(setBatchesInFlight(true));
 
     const resources = await getResources(preferenceList, dispatch);
     // // Cache the resources whenever discovery completes to improve console load times.
@@ -173,24 +173,12 @@ const updateResources =
   };
 
 const startAPIDiscovery = (preferenceList: string[]) => (dispatch: DispatchWithThunk) => {
-  consoleLogger.info(
-    `API discovery startAPIDiscovery: Polling every ${API_DISCOVERY_POLL_INTERVAL} ms`,
-  );
-  // Poll API discovery since we can't watch CRDs
   dispatch(updateResources(preferenceList))
     .then((resources) => {
-      if (POLLs[apiDiscovery]) {
-        clearTimeout(POLLs[apiDiscovery]);
-        delete POLLs[apiDiscovery];
-      }
-      POLLs[apiDiscovery] = window.setTimeout(
-        () => dispatch(startAPIDiscovery(preferenceList)),
-        API_DISCOVERY_POLL_INTERVAL,
-      );
       return resources;
     })
     // TODO handle failures - retry if error is recoverable
-    .catch((err) => consoleLogger.error('API discovery startAPIDiscovery polling failed:', err));
+    .catch((err) => consoleLogger.error('API discovery startAPIDiscovery failed:', err));
 };
 
 export const initAPIDiscovery: InitAPIDiscovery = (storeInstance, preferenceList = []) => {

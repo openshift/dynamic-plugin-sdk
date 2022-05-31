@@ -148,11 +148,15 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
 
   const resourceK8s = useSelector((state: SDKStoreState) => state.k8s, resourceK8sSelectorCreator);
 
+  const batchesInFlight = useSelector<SDKStoreState, boolean>(({ k8s }) =>
+    k8s?.getIn(['RESOURCES', 'batchesInFlight']),
+  );
+
   const results = React.useMemo(
     () =>
       Object.keys(resources).reduce<WatchK8sResults<R>>((acc, key) => {
         const accKey = key as keyof R;
-        if (reduxIDs?.[key].noModel) {
+        if (reduxIDs?.[key].noModel && !batchesInFlight) {
           acc[accKey] = {
             data: resources[key].isList ? [] : {},
             loaded: true,
@@ -172,7 +176,7 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
         }
         return acc;
       }, {} as WatchK8sResults<R>),
-    [resources, reduxIDs, resourceK8s],
+    [resources, reduxIDs, resourceK8s, batchesInFlight],
   );
   return results;
 };

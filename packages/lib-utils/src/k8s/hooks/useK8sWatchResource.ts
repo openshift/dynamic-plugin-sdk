@@ -56,13 +56,17 @@ export const useK8sWatchResource = <R extends K8sResourceCommon | K8sResourceCom
     watchData ? getReduxIdPayload(state, watchData.id) : null,
   ) as ImmutableMap<string, unknown>; // TODO: Store state based off of Immutable is problematic
 
+  const batchesInFlight = useSelector<SDKStoreState, boolean>(({ k8s }) =>
+    k8s?.getIn(['RESOURCES', 'batchesInFlight']),
+  );
+
   return React.useMemo(() => {
     if (!resource || resource.kind === NOT_A_VALUE) {
       return [undefined, true, undefined];
     }
     if (!resourceK8s) {
       const data = resource.isList ? [] : {};
-      return modelsLoaded && !k8sModel
+      return modelsLoaded && !k8sModel && !batchesInFlight
         ? [data, true, new NoModelError()]
         : [data, false, undefined];
     }
@@ -71,5 +75,5 @@ export const useK8sWatchResource = <R extends K8sResourceCommon | K8sResourceCom
     const loaded = resourceK8s.get('loaded') as boolean;
     const loadError = resourceK8s.get('loadError');
     return [data, loaded, loadError];
-  }, [resource, resourceK8s, modelsLoaded, k8sModel]);
+  }, [resource, resourceK8s, modelsLoaded, k8sModel, batchesInFlight]);
 };
