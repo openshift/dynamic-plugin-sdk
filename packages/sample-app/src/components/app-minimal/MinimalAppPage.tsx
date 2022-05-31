@@ -3,6 +3,7 @@ import {
   useResolvedExtensions,
   isModelFeatureFlag,
   isTelemetryListener,
+  useFeatureFlag,
 } from '@openshift/dynamic-plugin-sdk';
 import type { LoadedExtension } from '@openshift/dynamic-plugin-sdk';
 import {
@@ -53,18 +54,23 @@ const TestExtensions: React.FC = () => {
   return resolved ? <ExtensionGallery extensions={[...extensions, ...resolvedExtensions]} /> : null;
 };
 
-const MinimalAppPage: React.FC = () => (
-  <Flex direction={{ default: 'column' }}>
-    <FlexItem>
-      <PluginInfoTable />
-    </FlexItem>
-    <FlexItem>
-      <FeatureFlagTable />
-    </FlexItem>
-    <FlexItem>
-      <TestExtensions />
-    </FlexItem>
-  </Flex>
-);
+const MinimalAppPage: React.FC = () => {
+  const [, setFlag] = useFeatureFlag('TELEMETRY_FLAG'); // Setting sample feature flag for the application
+  setFlag(true);
+
+  return (
+    <Flex direction={{ default: 'column' }}>
+      <FlexItem>
+        <PluginInfoTable />
+      </FlexItem>
+      <FlexItem>
+        <FeatureFlagTable />
+      </FlexItem>
+      <FlexItem>
+        <TestExtensions />
+      </FlexItem>
+    </Flex>
+  );
+};
 
 export default MinimalAppPage;

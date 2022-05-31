@@ -2,13 +2,11 @@
 /// <reference path="./types.d.ts" />
 
 import { PluginLoader, PluginStore, PluginStoreProvider } from '@openshift/dynamic-plugin-sdk';
-import type { PluginStoreOptions } from '@openshift/dynamic-plugin-sdk';
 import '@patternfly/react-core/dist/styles/base.css';
 import * as React from 'react';
 import { render } from 'react-dom';
 import './app-minimal.css';
 import MinimalAppPage from './components/app-minimal/MinimalAppPage';
-import { setFlagForSampleApp, getFlagsForSampleApp } from './components/common/AppFeatureFlags';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import Loading from './components/common/Loading';
 import PageHeader from './components/common/PageHeader';
@@ -23,14 +21,7 @@ render(<Loading />, appContainer);
 initSharedScope().then(() => {
   const pluginLoader = new PluginLoader({ sharedScope: getSharedScope() });
 
-  setFlagForSampleApp('TELEMETRY_FLAG', true); // Setting sample feature flag for the application
-  const pluginStoreOptions: PluginStoreOptions = {
-    isFeatureFlagEnabled: (flag: string) => {
-      const flagsForSampleApp = getFlagsForSampleApp();
-      return flagsForSampleApp[flag] ?? false;
-    },
-  };
-  const pluginStore = new PluginStore(pluginStoreOptions);
+  const pluginStore = new PluginStore();
 
   pluginLoader.registerPluginEntryCallback();
   pluginStore.setLoader(pluginLoader);
