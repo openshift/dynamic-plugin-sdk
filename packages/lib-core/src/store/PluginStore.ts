@@ -233,12 +233,12 @@ export class PluginStore implements PluginConsumer, PluginManager {
     );
   }
 
-  setFeatureFlag = (flagName: string) => (newFlagValue: boolean) => {
+  setFeatureFlag = (flagName: string, flagValue: boolean) => {
     const prevFeatureFlags = this.featureFlags;
 
     this.featureFlags = {
       ...this.featureFlags,
-      [flagName]: newFlagValue,
+      [flagName]: flagValue,
     };
 
     if (!_.isEqual(prevFeatureFlags, this.featureFlags)) {

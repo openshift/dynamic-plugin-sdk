@@ -85,7 +85,7 @@ export type PluginManager = {
   /**
    * Set a single feature flag in the PluginStore
    */
-  setFeatureFlag: (featureFlagName: string) => (featureFlagValue: boolean) => void;
+  setFeatureFlag: (flagName: string, flagValue: boolean) => void;
 
   /**
    * Get a single feature flag from the PluginStore

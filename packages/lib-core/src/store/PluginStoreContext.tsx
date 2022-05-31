@@ -39,11 +39,13 @@ export const usePluginStore = (): PluginConsumer & PluginManager => {
  * ```ts
  * const [flag, setFlag] = useFeatureFlag('MY_FLAG');
  * ...
- * setFlag(true);
+ * setFlag('MY_FLAG', true);
  * ```
  */
-export const useFeatureFlag = (flagName: string): [boolean, (newValue: boolean) => void] => {
+export const useFeatureFlag = (
+  flagName: string,
+): [boolean, (flagName: string, newValue: boolean) => void] => {
   const store = usePluginStore();
 
-  return [store.getFeatureFlag(flagName), store.setFeatureFlag(flagName)];
+  return [store.getFeatureFlag(flagName), store.setFeatureFlag];
 };
