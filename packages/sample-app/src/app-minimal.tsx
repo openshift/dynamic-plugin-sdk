@@ -8,7 +8,7 @@ import * as React from 'react';
 import { render } from 'react-dom';
 import './app-minimal.css';
 import MinimalAppPage from './components/app-minimal/MinimalAppPage';
-import { setFlagsForSampleApp, getFlagsForSampleApp } from './components/common/AppFeatureFlags';
+import { setFlagForSampleApp, getFlagsForSampleApp } from './components/common/AppFeatureFlags';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import Loading from './components/common/Loading';
 import PageHeader from './components/common/PageHeader';
@@ -23,11 +23,11 @@ render(<Loading />, appContainer);
 initSharedScope().then(() => {
   const pluginLoader = new PluginLoader({ sharedScope: getSharedScope() });
 
-  setFlagsForSampleApp(['SHOW_NAV', 'TELEMETRY_FLAG']); // Setting some sample feature flags for the application
+  setFlagForSampleApp('TELEMETRY_FLAG', true); // Setting sample feature flag for the application
   const pluginStoreOptions: PluginStoreOptions = {
     isFeatureFlagEnabled: (flag: string) => {
       const flagsForSampleApp = getFlagsForSampleApp();
-      return flagsForSampleApp.includes(flag);
+      return flagsForSampleApp[flag] ?? false;
     },
   };
   const pluginStore = new PluginStore(pluginStoreOptions);

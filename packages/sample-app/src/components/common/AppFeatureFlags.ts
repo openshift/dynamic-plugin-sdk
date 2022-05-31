@@ -1,11 +1,15 @@
-let flagsForSampleApp: string[] = [];
+const flagsForSampleApp: { [key: string]: boolean } = {};
 
-const setFlagsForSampleApp = (flags: string[]): void => {
-  flagsForSampleApp = flags;
+const setFlagForSampleApp = (flag: string, isEnabled: boolean): void => {
+  flagsForSampleApp[flag] = isEnabled;
+};
+
+const getFlagForSampleApp = (flag: string): boolean => {
+  return flagsForSampleApp[flag];
 };
 
 const getFlagsForSampleApp = () => {
   return flagsForSampleApp;
 };
 
-export { setFlagsForSampleApp, getFlagsForSampleApp };
+export { setFlagForSampleApp, getFlagForSampleApp, getFlagsForSampleApp };

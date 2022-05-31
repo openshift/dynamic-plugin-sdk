@@ -10,7 +10,6 @@ import {
 import { ModuleIcon } from '@patternfly/react-icons';
 import { TableComposable, TableText, Thead, Tbody, Tr, Th, Td } from '@patternfly/react-table';
 import * as React from 'react';
-import { setFlagsForSampleApp, getFlagsForSampleApp } from './AppFeatureFlags';
 
 const columnNames = {
   name: 'Name',
@@ -18,7 +17,6 @@ const columnNames = {
   version: 'Version',
   enabled: 'Enabled',
   actions: 'Actions',
-  featureFlags: 'Feature flags',
 };
 
 const columnTooltips = {
@@ -35,24 +33,6 @@ const enabledText = (value: boolean) => (value ? 'Yes' : 'No');
 const PluginInfoTable: React.FC = () => {
   const pluginStore = usePluginStore();
   const infoEntries = usePluginInfo().sort((a, b) => a.pluginName.localeCompare(b.pluginName));
-  const [featureFlagButtonTitle, setfeatureFlagButtonTitle] = React.useState(
-    getFlagsForSampleApp().includes('TELEMETRY_FLAG')
-      ? 'Turn off TELEMETRY_FLAG'
-      : 'Turn on TELEMETRY_FLAG',
-  );
-  const toggleTelemetryFeatureFlag = () => {
-    const featureFlags: string[] = getFlagsForSampleApp();
-    if (featureFlags.includes('TELEMETRY_FLAG')) {
-      setFlagsForSampleApp(featureFlags.filter((f) => f !== 'TELEMETRY_FLAG'));
-      setfeatureFlagButtonTitle('Turn on TELEMETRY_FLAG');
-    } else {
-      featureFlags.push('TELEMETRY_FLAG');
-      setFlagsForSampleApp(featureFlags);
-      setfeatureFlagButtonTitle('Turn off TELEMETRY_FLAG');
-    }
-    // TELEMETRY_FLAG is used to gate the telemetryListener extension
-    pluginStore.updateExtensions();
-  };
 
   return (
     <TableComposable variant="compact">
@@ -63,7 +43,6 @@ const PluginInfoTable: React.FC = () => {
           <Th>{columnNames.version}</Th>
           <Th info={{ tooltip: columnTooltips.enabled }}>{columnNames.enabled}</Th>
           <Th>{columnNames.actions}</Th>
-          <Th>{columnNames.featureFlags}</Th>
           <Td />
         </Tr>
       </Thead>
@@ -113,13 +92,6 @@ const PluginInfoTable: React.FC = () => {
                     </Button>
                   </TableText>
                 ) : null}
-              </Td>
-              <Td>
-                {entry.status === 'loaded' && entry.enabled && (
-                  <Button variant="secondary" onClick={toggleTelemetryFeatureFlag}>
-                    {featureFlagButtonTitle}
-                  </Button>
-                )}
               </Td>
             </Tr>
           ))
