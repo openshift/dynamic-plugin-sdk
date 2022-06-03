@@ -239,6 +239,7 @@ export class PluginStore implements PluginConsumer, PluginManager {
 
     if (flagChanged) {
       this.updateExtensions();
+      this.invokeListeners(PluginEventType.FeatureFlagsChanged);
     }
   };
 

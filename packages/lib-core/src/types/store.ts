@@ -20,6 +20,13 @@ export enum PluginEventType {
    * Associated data getter: {@link PluginConsumer.getPluginInfo}
    */
   PluginInfoChanged = 'PluginInfoChanged',
+
+  /**
+   * Triggers when a feature flag value is changed.
+   *
+   * Associated data getter: {@link PluginManager.getFeatureFlag}
+   */
+  FeatureFlagsChanged = 'FeatureFlagsChanged',
 }
 
 export type PluginInfoEntry =
