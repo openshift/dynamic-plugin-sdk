@@ -233,6 +233,10 @@ export class PluginStore implements PluginConsumer, PluginManager {
   }
 
   setFeatureFlag = (name: string, value: boolean) => {
+    if (typeof value !== 'boolean') {
+      return;
+    }
+
     const flagChanged = this.featureFlags[name] !== value;
 
     this.featureFlags[name] = value;
