@@ -3,7 +3,7 @@ import * as _ from 'lodash-es';
 import type { Extension, LoadedExtension, CodeRef } from '../types/extension';
 import type { PluginRuntimeMetadata, PluginManifest, LoadedPlugin } from '../types/plugin';
 import type { PluginEntryModule } from '../types/runtime';
-import type { PluginInfoEntry, PluginConsumer, PluginManager } from '../types/store';
+import type { PluginInfoEntry, PluginConsumer, PluginManager, FeatureFlags } from '../types/store';
 import { PluginEventType } from '../types/store';
 import { decodeCodeRefs } from './coderefs';
 import type { PluginLoader } from './PluginLoader';
@@ -14,8 +14,6 @@ export type PluginStoreOptions = Partial<{
   /** Post-process loaded extension objects before adding associated plugin to the {@link PluginStore}. */
   postProcessExtensions: (extensions: LoadedExtension[]) => LoadedExtension[];
 }>;
-
-export type FeatureFlags = { [key: string]: boolean };
 
 /**
  * Manages plugins and their extensions.
@@ -39,6 +37,7 @@ export class PluginStore implements PluginConsumer, PluginManager {
   /** Subscribed event listeners. */
   private readonly listeners = new Map<PluginEventType, Set<VoidFunction>>();
 
+  /** Feature flags used to determine the availability of extensions. */
   private featureFlags: FeatureFlags = {};
 
   constructor(options: PluginStoreOptions = {}) {
@@ -228,26 +227,23 @@ export class PluginStore implements PluginConsumer, PluginManager {
    */
   private isExtensionInUse(extension: Extension) {
     return (
-      (extension.flags?.required?.every((f) => this.featureFlags[f]) ?? true) &&
-      (extension.flags?.disallowed?.every((f) => !this.featureFlags[f]) ?? true)
+      (extension.flags?.required?.every((f) => this.featureFlags[f] === true) ?? true) &&
+      (extension.flags?.disallowed?.every((f) => this.featureFlags[f] === false) ?? true)
     );
   }
 
-  setFeatureFlag = (flagName: string, flagValue: boolean) => {
-    const prevFeatureFlags = this.featureFlags;
+  setFeatureFlag = (name: string, value: boolean) => {
+    const flagChanged = this.featureFlags[name] !== value;
 
-    this.featureFlags = {
-      ...this.featureFlags,
-      [flagName]: flagValue,
-    };
+    this.featureFlags[name] = value;
 
-    if (!_.isEqual(prevFeatureFlags, this.featureFlags)) {
+    if (flagChanged) {
       this.updateExtensions();
     }
   };
 
-  getFeatureFlag(flagName: string) {
-    return this.featureFlags[flagName];
+  getFeatureFlag(name: string) {
+    return this.featureFlags[name];
   }
 
   /**

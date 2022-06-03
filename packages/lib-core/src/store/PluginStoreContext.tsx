@@ -32,20 +32,28 @@ export const usePluginStore = (): PluginConsumer & PluginManager => {
   return store;
 };
 
+type UseFeatureFlagResult = [currentValue: boolean, setValue: (newValue: boolean) => void];
+
 /**
  * React hook that provides access to a feature flag.
  *
  * @example
  * ```ts
- * const [flag, setFlag] = useFeatureFlag('MY_FLAG');
+ * const [flag, setFlag] = useFeatureFlag('FOO');
  * ...
- * setFlag('MY_FLAG', true);
+ * setFlag(true);
  * ```
  */
-export const useFeatureFlag = (
-  flagName: string,
-): [boolean, (flagName: string, newValue: boolean) => void] => {
-  const store = usePluginStore();
+export const useFeatureFlag = (name: string): UseFeatureFlagResult => {
+  const pluginStore = usePluginStore();
+  const currentValue = pluginStore.getFeatureFlag(name);
 
-  return [store.getFeatureFlag(flagName), store.setFeatureFlag];
+  const setValue = React.useCallback(
+    (value: boolean) => {
+      pluginStore.setFeatureFlag(name, value);
+    },
+    [pluginStore, name],
+  );
+
+  return [currentValue, setValue];
 };

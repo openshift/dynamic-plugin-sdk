@@ -34,6 +34,8 @@ export type PluginInfoEntry =
       status: 'pending' | 'failed';
     };
 
+export type FeatureFlags = { [key: string]: boolean };
+
 /**
  * Interface for consuming plugin information and extensions.
  */
@@ -85,10 +87,10 @@ export type PluginManager = {
   /**
    * Set a single feature flag in the PluginStore
    */
-  setFeatureFlag: (flagName: string, flagValue: boolean) => void;
+  setFeatureFlag: (name: string, value: boolean) => void;
 
   /**
    * Get a single feature flag from the PluginStore
    */
-  getFeatureFlag: (flagName: string) => boolean;
+  getFeatureFlag: (name: string) => boolean;
 };
