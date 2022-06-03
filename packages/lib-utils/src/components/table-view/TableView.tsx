@@ -11,6 +11,8 @@ import {
 import { FilterIcon } from '@patternfly/react-icons';
 import { omit } from 'lodash';
 import * as React from 'react';
+import { useHistory } from 'react-router-dom';
+import { applyFiltersToURL, syncFiltersWithURL } from '../../utils/url-sync';
 import type { VirtualizedTableProps } from '../table/VirtualizedTable';
 import VirtualizedTable from '../table/VirtualizedTable';
 import FilterChips from './FilterChips';
@@ -46,12 +48,28 @@ const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
   CustomNoDataEmptyState,
   'aria-label': ariaLabel,
 }) => {
+  const history = useHistory();
   const [activeFilter, setActiveFilter] = React.useState<FilterItem | undefined>(filters?.[0]);
   const [filterValues, setFilterValues] = React.useState<Record<string, string>>({});
   const [filteredData, setFilteredData] = React.useState(data);
   const [isFilterSelectExpanded, setFilterSelectExpanded] = React.useState(false);
 
   React.useEffect(() => {
+    const initialFilterValues = syncFiltersWithURL(
+      history,
+      filters.map((filter) => filter.id),
+      filterValues,
+    );
+    setFilterValues(initialFilterValues);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  React.useEffect(() => {
+    applyFiltersToURL(
+      history,
+      filters.map((filter) => filter.id),
+      filterValues,
+    );
     if (filters) {
       setFilteredData(
         onFilter
@@ -63,7 +81,8 @@ const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
             ),
       );
     }
-  }, [activeFilter, data, filterValues, filters, onFilter]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, filterValues, onFilter]);
 
   return (
     <>

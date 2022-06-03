@@ -35,9 +35,11 @@ export type TableRowProps = {
   className?: string;
 };
 
-export const TableRow: React.FC<TableRowProps> = ({ id, style, trKey, className }) => {
-  return <tr id={id} style={style} key={trKey} className={className} role="row" />;
-};
+export const TableRow: React.FC<TableRowProps> = ({ id, children, style, trKey, className }) => (
+  <tr id={id} style={style} key={trKey} className={className} role="row">
+    {children}
+  </tr>
+);
 
 type VirtualizedTableBodyProps<D> = {
   /** Table columns. */

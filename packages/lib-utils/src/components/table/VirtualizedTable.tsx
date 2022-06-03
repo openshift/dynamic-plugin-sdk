@@ -134,6 +134,7 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
               <VirtualizedTableBody
                 Row={Row}
                 height={height}
+                isRowSelected={isRowSelected}
                 isScrolling={isScrolling}
                 onChildScroll={onChildScroll}
                 onSelect={onSelect}
