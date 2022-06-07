@@ -113,12 +113,11 @@ const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
                 <SearchInput
                   className="dps-table-view__search"
                   onChange={(value) => {
-                    if (activeFilter) {
-                      setFilterValues({
-                        ...filterValues,
-                        [activeFilter.id]: value,
-                      });
-                    }
+                    const newValues =
+                      value?.length > 0
+                        ? { ...filterValues, [activeFilter.id]: value }
+                        : omit(filterValues, activeFilter.id);
+                    setFilterValues(newValues);
                   }}
                   value={activeFilter ? filterValues[activeFilter.id] : ''}
                   placeholder={`Filter by ${activeFilter?.label}`}
