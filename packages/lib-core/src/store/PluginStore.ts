@@ -3,7 +3,7 @@ import * as _ from 'lodash-es';
 import type { Extension, LoadedExtension, CodeRef } from '../types/extension';
 import type { PluginRuntimeMetadata, PluginManifest, LoadedPlugin } from '../types/plugin';
 import type { PluginEntryModule } from '../types/runtime';
-import type { PluginInfoEntry, PluginConsumer, PluginManager } from '../types/store';
+import type { PluginInfoEntry, PluginConsumer, PluginManager, FeatureFlags } from '../types/store';
 import { PluginEventType } from '../types/store';
 import { decodeCodeRefs } from './coderefs';
 import type { PluginLoader } from './PluginLoader';
@@ -13,8 +13,6 @@ export type PluginStoreOptions = Partial<{
   autoEnableLoadedPlugins: boolean;
   /** Post-process loaded extension objects before adding associated plugin to the {@link PluginStore}. */
   postProcessExtensions: (extensions: LoadedExtension[]) => LoadedExtension[];
-  /** Determine whether the given feature flag is currently enabled. */
-  isFeatureFlagEnabled: (flag: string) => boolean;
 }>;
 
 /**
@@ -39,11 +37,13 @@ export class PluginStore implements PluginConsumer, PluginManager {
   /** Subscribed event listeners. */
   private readonly listeners = new Map<PluginEventType, Set<VoidFunction>>();
 
+  /** Feature flags used to determine the availability of extensions. */
+  private featureFlags: FeatureFlags = {};
+
   constructor(options: PluginStoreOptions = {}) {
     this.options = {
       autoEnableLoadedPlugins: options.autoEnableLoadedPlugins ?? true,
       postProcessExtensions: options.postProcessExtensions ?? _.identity,
-      isFeatureFlagEnabled: options.isFeatureFlagEnabled ?? (() => false),
     };
 
     Object.values(PluginEventType).forEach((t) => {
@@ -227,9 +227,25 @@ export class PluginStore implements PluginConsumer, PluginManager {
    */
   private isExtensionInUse(extension: Extension) {
     return (
-      (extension.flags?.required?.every((f) => this.options.isFeatureFlagEnabled(f)) ?? true) &&
-      (extension.flags?.disallowed?.every((f) => !this.options.isFeatureFlagEnabled(f)) ?? true)
+      (extension.flags?.required?.every((f) => this.featureFlags[f] === true) ?? true) &&
+      (extension.flags?.disallowed?.every((f) => this.featureFlags[f] === false) ?? true)
     );
+  }
+
+  setFeatureFlags(newFlags: FeatureFlags): void {
+    const prevFeatureFlags = this.featureFlags;
+    const nextFeatureFlags = _.pickBy(newFlags, (value) => typeof value === 'boolean');
+
+    this.featureFlags = { ...this.featureFlags, ...nextFeatureFlags };
+
+    if (!_.isEqual(prevFeatureFlags, this.featureFlags)) {
+      this.updateExtensions();
+      this.invokeListeners(PluginEventType.FeatureFlagsChanged);
+    }
+  }
+
+  getFeatureFlags() {
+    return { ...this.featureFlags };
   }
 
   /**
