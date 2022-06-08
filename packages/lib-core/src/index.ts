@@ -1,7 +1,8 @@
 // Main APIs, to be consumed by plugins and host applications
 export { PluginLoader, PluginLoaderOptions } from './store/PluginLoader';
 export { PluginStore, PluginStoreOptions } from './store/PluginStore';
-export { PluginStoreProvider, usePluginStore, useFeatureFlag } from './store/PluginStoreContext';
+export { PluginStoreProvider, usePluginStore } from './store/PluginStoreContext';
+export { useFeatureFlag } from './store/useFeatureFlag';
 export { useExtensions } from './store/useExtensions';
 export { usePluginInfo } from './store/usePluginInfo';
 export { useResolvedExtensions } from './store/useResolvedExtensions';
