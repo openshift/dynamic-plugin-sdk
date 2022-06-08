@@ -1,0 +1,8 @@
+{
+  "baseUrl": "http://localhost:9000",
+  "integrationFolder": "tests",
+  "supportFile": "../e2e-common/support/index.ts",
+  "pluginsFile": "../e2e-common/plugins/index.ts",
+  "screenshotsFolder": "screenshots",
+  "video": false
+}

@@ -858,6 +858,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@monorepo/e2e-common@workspace:packages/e2e-common":
+  version: 0.0.0-use.local
+  resolution: "@monorepo/e2e-common@workspace:packages/e2e-common"
+  languageName: unknown
+  linkType: soft
+
+"@monorepo/e2e-sample-app@workspace:packages/e2e-sample-app":
+  version: 0.0.0-use.local
+  resolution: "@monorepo/e2e-sample-app@workspace:packages/e2e-sample-app"
+  languageName: unknown
+  linkType: soft
+
 "@monorepo/eslint-plugin-internal@workspace:packages/eslint-plugin-internal":
   version: 0.0.0-use.local
   resolution: "@monorepo/eslint-plugin-internal@workspace:packages/eslint-plugin-internal"

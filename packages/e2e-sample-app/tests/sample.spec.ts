@@ -1,7 +1,7 @@
 // <reference types="cypress" />
 
-describe('example to-do app', () => {
-  it('displays two todo items by default', () => {
+describe('Sample app', () => {
+  it('displays a button to load plugins', () => {
     cy.visit('/app-minimal.html');
     cy.get('div.pf-c-toolbar__item > button.pf-c-button')
       .first()
