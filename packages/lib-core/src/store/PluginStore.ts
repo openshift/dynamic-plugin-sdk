@@ -232,23 +232,20 @@ export class PluginStore implements PluginConsumer, PluginManager {
     );
   }
 
-  setFeatureFlag = (name: string, value: boolean) => {
-    if (typeof value !== 'boolean') {
-      return;
-    }
+  setFeatureFlags(newFlags: FeatureFlags): void {
+    const prevFeatureFlags = this.featureFlags;
+    const nextFeatureFlags = _.pickBy(newFlags, (value) => typeof value === 'boolean');
 
-    const flagChanged = this.featureFlags[name] !== value;
+    this.featureFlags = { ...this.featureFlags, ...nextFeatureFlags };
 
-    this.featureFlags[name] = value;
-
-    if (flagChanged) {
+    if (!_.isEqual(prevFeatureFlags, this.featureFlags)) {
       this.updateExtensions();
       this.invokeListeners(PluginEventType.FeatureFlagsChanged);
     }
-  };
+  }
 
-  getFeatureFlag(name: string) {
-    return this.featureFlags[name];
+  getFeatureFlags() {
+    return { ...this.featureFlags };
   }
 
   /**

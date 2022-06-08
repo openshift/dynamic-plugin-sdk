@@ -22,9 +22,9 @@ export enum PluginEventType {
   PluginInfoChanged = 'PluginInfoChanged',
 
   /**
-   * Triggers when a feature flag value is changed.
+   * Triggers when feature flags have changed.
    *
-   * Associated data getter: {@link PluginManager.getFeatureFlag}
+   * Associated data getter: {@link PluginManager.getFeatureFlags}
    */
   FeatureFlagsChanged = 'FeatureFlagsChanged',
 }
@@ -43,6 +43,7 @@ export type PluginInfoEntry =
 
 export type FeatureFlags = { [key: string]: boolean };
 
+// TODO: PluginConsumer and PluginManager should be unified into a single interface
 /**
  * Interface for consuming plugin information and extensions.
  */
@@ -71,6 +72,16 @@ export type PluginConsumer = {
    * Always returns a new array instance.
    */
   getPluginInfo: () => PluginInfoEntry[];
+
+  /**
+   * Set feature flags in the PluginStore (non-boolean values will be discarded)
+   */
+  setFeatureFlags: (newFlags: FeatureFlags) => void;
+
+  /**
+   * Get feature flags from the PluginStore
+   */
+  getFeatureFlags: () => FeatureFlags;
 };
 
 /**
@@ -90,14 +101,4 @@ export type PluginManager = {
    * Enabling a plugin puts all of its extensions into use. Disabling it does the opposite.
    */
   setPluginsEnabled: (config: { pluginName: string; enabled: boolean }[]) => void;
-
-  /**
-   * Set a single feature flag in the PluginStore
-   */
-  setFeatureFlag: (name: string, value: boolean) => void;
-
-  /**
-   * Get a single feature flag from the PluginStore
-   */
-  getFeatureFlag: (name: string) => boolean;
 };
