@@ -1,6 +1,6 @@
 {
   "name": "@openshift/dynamic-plugin-sdk-webpack",
-  "version": "1.0.0-alpha4",
+  "version": "1.0.0-alpha5",
   "description": "Allows building dynamic plugin assets with webpack",
   "license": "Apache-2.0",
   "repository": {
@@ -19,7 +19,7 @@
     "prepublishOnly": "yarn test",
     "build": "rm -rf dist && yarn run -T rollup -c",
     "lint": "yarn run -T eslint $INIT_CWD",
-    "test": "yarn run -T test $INIT_CWD"
+    "test": "yarn run -T test $INIT_CWD --passWithNoTests"
   },
   "peerDependencies": {
     "webpack": "^5.69.1"
