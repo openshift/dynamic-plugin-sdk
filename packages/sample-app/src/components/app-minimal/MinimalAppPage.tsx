@@ -3,7 +3,6 @@ import {
   useResolvedExtensions,
   isModelFeatureFlag,
   isTelemetryListener,
-  useFeatureFlag,
 } from '@openshift/dynamic-plugin-sdk';
 import type { LoadedExtension } from '@openshift/dynamic-plugin-sdk';
 import {
@@ -55,9 +54,6 @@ const TestExtensions: React.FC = () => {
 };
 
 const MinimalAppPage: React.FC = () => {
-  const [, setFlag] = useFeatureFlag('TELEMETRY_FLAG'); // Setting sample feature flag for the application
-  setFlag(true);
-
   return (
     <Flex direction={{ default: 'column' }}>
       <FlexItem>

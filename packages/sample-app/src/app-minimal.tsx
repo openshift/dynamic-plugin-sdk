@@ -25,6 +25,10 @@ initSharedScope().then(() => {
 
   pluginLoader.registerPluginEntryCallback();
   pluginStore.setLoader(pluginLoader);
+  pluginStore.setFeatureFlags({
+    // Setting sample feature flag for the application
+    TELEMETRY_FLAG: true,
+  });
 
   render(
     <PluginStoreProvider store={pluginStore}>
