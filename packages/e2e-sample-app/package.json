@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "yarn run -T eslint $INIT_CWD",
     "test": "yarn run -T test $INIT_CWD",
-    "test-e2e": "../../node_modules/.bin/cypress run",
-    "test-e2e-open": "../../node_modules/.bin/cypress open"
+    "test-e2e": "yarn run -T cypress run",
+    "test-e2e-open": "yarn run -T cypress open"
   }
 }
