@@ -1,0 +1,10 @@
+{
+  "name": "@monorepo/e2e-common",
+  "version": "0.0.0-fixed",
+  "description": "Common utils and configuration for E2E tests",
+  "private": true,
+  "scripts": {
+    "lint": "yarn run -T eslint $INIT_CWD",
+    "test": "yarn run -T test $INIT_CWD"
+  }
+}
