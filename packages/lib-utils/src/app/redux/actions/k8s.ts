@@ -120,12 +120,11 @@ export const watchK8sList =
           }
         : {};
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { ns, ...queryParameters } = queryWithCluster; // Omit ns from query parameters
+      const queryParameters = _.omit(queryWithCluster, 'ns');
 
       const { labelSelector } = queryParameters;
       if (labelSelector) {
-        const encodedSelector = selectorToString(<Selector>labelSelector);
+        const encodedSelector = selectorToString(labelSelector as Selector);
         if (encodedSelector) {
           queryParameters.labelSelector = encodedSelector;
         }
