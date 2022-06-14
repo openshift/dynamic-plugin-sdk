@@ -1,6 +1,6 @@
 {
   "name": "@openshift/dynamic-plugin-sdk",
-  "version": "1.0.0-alpha8",
+  "version": "1.0.0-alpha9",
   "description": "Allows loading, managing and interpreting dynamic plugins",
   "license": "Apache-2.0",
   "repository": {
@@ -19,7 +19,7 @@
     "prepublishOnly": "yarn test",
     "build": "rm -rf dist && yarn run -T rollup -c",
     "lint": "yarn run -T eslint $INIT_CWD",
-    "test": "yarn run -T test $INIT_CWD"
+    "test": "yarn run -T test $INIT_CWD --passWithNoTests"
   },
   "peerDependencies": {
     "react": "^17.0.2",
