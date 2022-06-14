@@ -4,5 +4,6 @@
   "supportFile": "../e2e-common/support/index.ts",
   "pluginsFile": "../e2e-common/plugins/index.ts",
   "screenshotsFolder": "screenshots",
+  "fixturesFolder": false,
   "video": false
 }
