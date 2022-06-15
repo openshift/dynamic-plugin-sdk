@@ -11,6 +11,8 @@ import {
 import { FilterIcon } from '@patternfly/react-icons';
 import { omit } from 'lodash';
 import * as React from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+import { parseFiltersFromURL, setFiltersToURL } from '../../utils/url-sync';
 import type { VirtualizedTableProps } from '../table/VirtualizedTable';
 import VirtualizedTable from '../table/VirtualizedTable';
 import FilterChips from './FilterChips';
@@ -25,7 +27,7 @@ export type FilterItem = {
 
 export type TableViewProps<D> = VirtualizedTableProps<D> & {
   /** Optional custom onFilter callback. */
-  onFilter?: (filterValues: Record<string, string>, activeFilter?: FilterItem) => D[];
+  onFilter?: (filterValues: Record<string, string[]>, activeFilter?: FilterItem) => D[];
   /** Optional array of filterBy options. */
   filters?: FilterItem[];
 };
@@ -46,24 +48,38 @@ const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
   CustomNoDataEmptyState,
   'aria-label': ariaLabel,
 }) => {
+  const history = useHistory();
+  const location = useLocation();
   const [activeFilter, setActiveFilter] = React.useState<FilterItem | undefined>(filters?.[0]);
-  const [filterValues, setFilterValues] = React.useState<Record<string, string>>({});
   const [filteredData, setFilteredData] = React.useState(data);
   const [isFilterSelectExpanded, setFilterSelectExpanded] = React.useState(false);
+  const filterValues = React.useRef<Record<string, string[]>>({});
 
   React.useEffect(() => {
+    filterValues.current = parseFiltersFromURL(
+      new URLSearchParams(location.search),
+      filters.map((filter) => filter.id),
+    );
     if (filters) {
       setFilteredData(
         onFilter
-          ? onFilter(filterValues, activeFilter)
-          : [...data].filter((item) =>
-              Object.keys(filterValues).every((key) =>
-                (item[key] as string)?.toLowerCase()?.includes(filterValues[key]?.toLowerCase()),
-              ),
-            ),
+          ? onFilter(filterValues.current, activeFilter)
+          : [...data].filter((item) => {
+              let isRelevant = true;
+              Object.keys(filterValues.current).forEach((key) => {
+                if (
+                  filterValues.current[key].some(
+                    (filterValue) => !(item[key] as string)?.toLowerCase()?.includes(filterValue),
+                  )
+                ) {
+                  isRelevant = false;
+                }
+              });
+              return isRelevant;
+            }),
       );
     }
-  }, [activeFilter, data, filterValues, filters, onFilter]);
+  }, [location, activeFilter, data, filters, onFilter]);
 
   return (
     <>
@@ -95,27 +111,36 @@ const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
                   className="dps-table-view__search"
                   onChange={(value) => {
                     if (activeFilter) {
-                      setFilterValues({
-                        ...filterValues,
-                        [activeFilter.id]: value,
-                      });
+                      const newValues =
+                        value?.length > 0
+                          ? { ...filterValues.current, [activeFilter.id]: [value] }
+                          : omit(filterValues.current, activeFilter.id);
+                      setFiltersToURL(
+                        history,
+                        filters.map((filter) => filter.id),
+                        newValues,
+                      );
                     }
                   }}
-                  value={activeFilter ? filterValues[activeFilter.id] : ''}
+                  value={activeFilter ? filterValues.current[activeFilter.id]?.[0] : ''}
                   placeholder={`Filter by ${activeFilter?.label}`}
                 />
               </ToolbarItem>
             </>
           ) : null}
         </ToolbarContent>
-        {Object.keys(filterValues)?.length > 0 && (
+        {Object.keys(filterValues.current)?.length > 0 && (
           <ToolbarContent className="dps-table-view__filters">
             <ToolbarItem>
               <FilterChips
                 filters={filters}
-                filterValues={filterValues}
+                filterValues={filterValues.current}
                 onDelete={(key) => {
-                  setFilterValues(key ? omit(filterValues, key) : {});
+                  setFiltersToURL(
+                    history,
+                    filters.map((filter) => filter.id),
+                    key ? omit(filterValues.current, key) : {},
+                  );
                 }}
               />
             </ToolbarItem>
@@ -124,7 +149,7 @@ const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
       </Toolbar>
       <VirtualizedTable
         aria-label={ariaLabel}
-        areFiltersApplied={Object.values(filterValues).some((value) => value?.length > 0)}
+        areFiltersApplied={Object.values(filterValues.current).some((value) => value?.length > 0)}
         data={filters ? filteredData : data}
         loaded={loaded}
         columns={columns}
