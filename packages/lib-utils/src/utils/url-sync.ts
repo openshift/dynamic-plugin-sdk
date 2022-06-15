@@ -1,7 +1,6 @@
 import type { History } from 'history';
-import * as _ from 'lodash';
 
-export const applyFiltersToURL = (
+export const setFiltersToURL = (
   history: History,
   keys: string[],
   filterValues: Record<string, string[]>,
@@ -20,27 +19,14 @@ export const applyFiltersToURL = (
   });
 };
 
-export const syncFiltersWithURL = (
-  history,
+export const parseFiltersFromURL = (
+  searchParams: URLSearchParams,
   keys: string[],
-  defaults: Record<string, string[]> = {},
-) => {
-  const searchParams = new URLSearchParams(history.location.search);
-
-  let filters: Record<string, string[]> = keys.reduce((acc, key) => {
+): Record<string, string[]> =>
+  keys.reduce((acc, key) => {
     const values = searchParams.getAll(key);
     return {
       ...acc,
       [key]: values,
     };
   }, {});
-
-  filters = _.merge(filters, defaults);
-
-  Object.keys(filters).forEach((key) => filters[key]?.length > 0 || delete filters[key]);
-  history.replace({
-    pathname: history.location.pathname,
-    search: searchParams.toString(),
-  });
-  return filters;
-};
