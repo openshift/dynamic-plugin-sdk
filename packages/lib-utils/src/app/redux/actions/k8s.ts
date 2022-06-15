@@ -5,9 +5,9 @@ import type { ActionType as Action } from 'typesafe-actions';
 import { action } from 'typesafe-actions';
 import type { Query } from '../../../k8s/hooks/k8s-watch-types';
 import { k8sListResource, k8sGetResource } from '../../../k8s/k8s-resource';
-import { k8sWatch } from '../../../k8s/k8s-utils';
+import { k8sWatch, selectorToString } from '../../../k8s/k8s-utils';
 import type { DiscoveryResources } from '../../../types/api-discovery';
-import type { K8sModelCommon, K8sResourceCommon, FilterValue } from '../../../types/k8s';
+import type { K8sModelCommon, K8sResourceCommon, FilterValue, Selector } from '../../../types/k8s';
 import type { ThunkDispatchFunction } from '../../../types/redux';
 import type { MessageDataType } from '../../../web-socket/types';
 import type { WebSocketFactory } from '../../../web-socket/WebSocketFactory';
@@ -120,11 +120,22 @@ export const watchK8sList =
           }
         : {};
 
+      const queryParameters = _.omit(queryWithCluster, 'ns');
+
+      const { labelSelector } = queryParameters;
+      if (labelSelector) {
+        const encodedSelector = selectorToString(labelSelector as Selector);
+        if (encodedSelector) {
+          queryParameters.labelSelector = encodedSelector;
+        }
+      }
+
       const response = await k8sListResource({
         model: k8skind,
         queryOptions: {
           ...queryWithCluster,
           queryParams: {
+            ...queryParameters,
             limit: `${PAGINATION_LIMIT}`,
             ...(continueToken ? { continue: continueToken } : {}),
           },
