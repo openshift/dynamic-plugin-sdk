@@ -1,6 +1,6 @@
 {
   "name": "@openshift/dynamic-plugin-sdk-utils",
-  "version": "1.0.0-alpha11",
+  "version": "1.0.0-alpha12",
   "description": "Provides React focused plugin SDK initialization and utilities",
   "license": "Apache-2.0",
   "repository": {
@@ -28,8 +28,8 @@
     "@patternfly/react-virtualized-extension": "^4.53.2",
     "react": "^17.0.2",
     "react-redux": "^7.2.2",
-    "react-virtualized": "^9.22.3",
     "react-router-dom": "^5.3.3",
+    "react-virtualized": "^9.22.3",
     "redux": "^4.1.2",
     "redux-thunk": "^2.4.1"
   },
