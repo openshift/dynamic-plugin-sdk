@@ -3,7 +3,7 @@
   "integrationFolder": "tests",
   "supportFile": "../e2e-common/support/index.ts",
   "pluginsFile": "../e2e-common/plugins/index.ts",
-  "screenshotsFolder": "screenshots",
+  "screenshotsFolder": "../../screenshots",
   "fixturesFolder": false,
   "video": false
 }

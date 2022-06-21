@@ -13,5 +13,5 @@
 # Generated project artifacts
 **/dist
 /coverage
-**/screenshots
+/screenshots
 **/.DS_Store
