@@ -15,10 +15,12 @@ function copyArtifacts {
 trap copyArtifacts EXIT
 
 yarn install
+yarn build-libs
+yarn build-samples
 
 # Disable color codes in Cypress since they do not render well CI test logs.
 # https://docs.cypress.io/guides/guides/continuous-integration.html#Colors
 export NO_COLOR=1
 
 # Start servers for sample app and plugin on ports 9000 and 9001 respectively, run E2E tests and shut down the servers
-yarn run test-e2e-ci
+yarn test-e2e-ci
