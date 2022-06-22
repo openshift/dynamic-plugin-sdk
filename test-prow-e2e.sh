@@ -3,7 +3,7 @@
 set -exuo pipefail
 
 ARTIFACT_DIR=${ARTIFACT_DIR:=/tmp/artifacts}
-SCREENSHOTS_DIR=packages/e2e-sample-app/screenshots
+SCREENSHOTS_DIR=screenshots
 
 function copyArtifacts {
   if [ -d "$ARTIFACT_DIR" ] && [ -d "$SCREENSHOTS_DIR" ]; then
