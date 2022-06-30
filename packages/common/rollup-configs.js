@@ -4,6 +4,7 @@ import nodeResolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
 import analyzer from 'rollup-plugin-analyzer';
 import dts from 'rollup-plugin-dts';
+import css from 'rollup-plugin-import-css';
 
 // https://yarnpkg.com/advanced/lifecycle-scripts#environment-variables
 const rootDir = process.env.PROJECT_CWD;
@@ -65,6 +66,7 @@ export const tsLibConfig = (pkg, inputFile, format = 'esm') => ({
   plugins: [
     nodeResolve(),
     commonjs(),
+    css(),
     typescript({
       tsconfig: './tsconfig.json',
       include: ['src/**/*', '../common/src/**/*'],
