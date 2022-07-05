@@ -15,10 +15,9 @@ const getExternalModules = (pkg) => [
   ...('lodash' in pkg.dependencies ? ['lodash-es'] : []),
 ];
 
-const getExternalModuleTester = (pkg) => {
+const getExternalModuleRegExps = (pkg) => {
   const externalModules = getExternalModules(pkg);
-  const externalModuleTests = externalModules.map((module) => new RegExp(`^${module}(\\/.+)*$`));
-  return (moduleID) => externalModuleTests.some((regexp) => regexp.test(moduleID));
+  return externalModules.map((module) => new RegExp(`^${module}(\\/.+)*$`));
 };
 
 const getBanner = (pkg) => {
@@ -62,11 +61,13 @@ export const tsLibConfig = (pkg, inputFile, format = 'esm') => ({
     format,
     banner: getBanner(pkg),
   },
-  external: getExternalModuleTester(pkg),
+  external: getExternalModuleRegExps(pkg),
   plugins: [
     nodeResolve(),
     commonjs(),
-    css(),
+    css({
+      output: 'dist/index.css',
+    }),
     typescript({
       tsconfig: './tsconfig.json',
       include: ['src/**/*', '../common/src/**/*'],
@@ -90,7 +91,7 @@ export const dtsLibConfig = (pkg, inputFile) => ({
   output: {
     file: 'dist/index.d.ts',
   },
-  external: getExternalModuleTester(pkg),
+  external: [...getExternalModuleRegExps(pkg), /\.css$/],
   plugins: [
     dts({
       respectExternal: true,
