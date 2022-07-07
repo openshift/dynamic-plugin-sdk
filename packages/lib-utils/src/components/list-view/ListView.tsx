@@ -87,25 +87,27 @@ const ListView: React.FC<ListViewProps<Record<string, unknown>>> = ({
         <ToolbarContent>
           {filters ? (
             <>
-              <ToolbarItem key="filter-select">
-                <Select
-                  toggleIcon={<FilterIcon />}
-                  variant={SelectVariant.single}
-                  onToggle={(value) => setFilterSelectExpanded(value)}
-                  onSelect={(e, selection) => {
-                    setActiveFilter(filters.find((item) => item.id === selection));
-                    setFilterSelectExpanded(false);
-                  }}
-                  placeholderText={activeFilter?.label}
-                  isOpen={isFilterSelectExpanded}
-                >
-                  {filters.map((option) => (
-                    <SelectOption key={option.id} value={option.id}>
-                      {option.label}
-                    </SelectOption>
-                  ))}
-                </Select>
-              </ToolbarItem>
+              {filters.length > 1 && (
+                <ToolbarItem key="filter-select">
+                  <Select
+                    toggleIcon={<FilterIcon />}
+                    variant={SelectVariant.single}
+                    onToggle={(value) => setFilterSelectExpanded(value)}
+                    onSelect={(e, selection) => {
+                      setActiveFilter(filters.find((item) => item.id === selection));
+                      setFilterSelectExpanded(false);
+                    }}
+                    placeholderText={activeFilter?.label}
+                    isOpen={isFilterSelectExpanded}
+                  >
+                    {filters.map((option) => (
+                      <SelectOption key={option.id} value={option.id}>
+                        {option.label}
+                      </SelectOption>
+                    ))}
+                  </Select>
+                </ToolbarItem>
+              )}
               <ToolbarItem variant={ToolbarItemVariant['search-filter']} key="search-filter">
                 <SearchInput
                   className="dps-list-view__search"
@@ -124,7 +126,7 @@ const ListView: React.FC<ListViewProps<Record<string, unknown>>> = ({
                     }
                   }}
                   value={activeFilter ? filterValues.current[activeFilter.id]?.[0] : ''}
-                  placeholder={`Filter by ${activeFilter?.label}`}
+                  placeholder={`Search by ${activeFilter?.label}`}
                 />
               </ToolbarItem>
             </>
