@@ -3,7 +3,7 @@ export { SDKReducers } from './app/redux/reducers';
 export { default as ReduxExtensionProvider } from './app/redux/ReduxExtensionProvider';
 export { UtilsConfig, isUtilsConfigSet, setUtilsConfig, getUtilsConfig } from './config';
 export { commonFetch, commonFetchText, commonFetchJSON } from './utils/common-fetch';
-export { useK8sWatchResource, useK8sWatchResources } from './k8s/hooks';
+export { useK8sWatchResource, useK8sWatchResources, useK8sModel, useK8sModels } from './k8s/hooks';
 export {
   WatchK8sResource,
   WatchK8sResources,
@@ -11,6 +11,7 @@ export {
   WatchK8sResult,
   WatchK8sResultsObject,
 } from './k8s/hooks/watch-resource-types';
+export { UseK8sModel, UseK8sModels } from './k8s/hooks/use-model-types';
 export {
   k8sGetResource,
   k8sCreateResource,
