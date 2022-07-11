@@ -11,7 +11,7 @@ import {
 import { FilterIcon } from '@patternfly/react-icons';
 import { omit } from 'lodash';
 import * as React from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import { parseFiltersFromURL, setFiltersToURL } from '../../utils/url-sync';
 import type { VirtualizedTableProps } from '../table/VirtualizedTable';
 import VirtualizedTable from '../table/VirtualizedTable';
@@ -48,11 +48,11 @@ const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
   CustomNoDataEmptyState,
   'aria-label': ariaLabel,
 }) => {
-  const history = useHistory();
   const location = useLocation();
   const [activeFilter, setActiveFilter] = React.useState<FilterItem | undefined>(filters?.[0]);
   const [filteredData, setFilteredData] = React.useState(data);
   const [isFilterSelectExpanded, setFilterSelectExpanded] = React.useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
   const filterValues = React.useRef<Record<string, string[]>>({});
 
   React.useEffect(() => {
@@ -116,7 +116,8 @@ const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
                           ? { ...filterValues.current, [activeFilter.id]: [value] }
                           : omit(filterValues.current, activeFilter.id);
                       setFiltersToURL(
-                        history,
+                        searchParams,
+                        setSearchParams,
                         filters.map((filter) => filter.id),
                         newValues,
                       );
@@ -137,7 +138,8 @@ const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
                 filterValues={filterValues.current}
                 onDelete={(key) => {
                   setFiltersToURL(
-                    history,
+                    searchParams,
+                    setSearchParams,
                     filters.map((filter) => filter.id),
                     key ? omit(filterValues.current, key) : {},
                   );

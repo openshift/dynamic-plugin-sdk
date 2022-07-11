@@ -1,11 +1,19 @@
-import type { History } from 'history';
+import type { URLSearchParamsInit } from 'react-router-dom';
 
 export const setFiltersToURL = (
-  history: History,
+  searchParams: URLSearchParams,
+  setSearchParams: (
+    nextInit: URLSearchParamsInit,
+    navigateOptions?:
+      | {
+          replace?: boolean | undefined;
+          state?: unknown;
+        }
+      | undefined,
+  ) => void,
   keys: string[],
   filterValues: Record<string, string[]>,
 ) => {
-  const searchParams = new URLSearchParams(history.location.search);
   keys.forEach((key: string) => {
     searchParams.delete(key);
     if (filterValues[key]) {
@@ -13,10 +21,7 @@ export const setFiltersToURL = (
     }
   });
 
-  history.replace({
-    pathname: history.location.pathname,
-    search: searchParams.toString(),
-  });
+  setSearchParams(searchParams);
 };
 
 export const parseFiltersFromURL = (
