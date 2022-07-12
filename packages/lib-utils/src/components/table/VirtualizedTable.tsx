@@ -1,7 +1,7 @@
 import type { AnyObject } from '@monorepo/common';
 import { Th, Thead, Tr, TableComposable } from '@patternfly/react-table';
 import { AutoSizer, WindowScroller } from '@patternfly/react-virtualized-extension';
-import * as _ from 'lodash';
+import * as _ from 'lodash-es';
 import * as React from 'react';
 import type { Size, WindowScrollerChildProps } from 'react-virtualized';
 import type { LoadError } from '../status/StatusBox';

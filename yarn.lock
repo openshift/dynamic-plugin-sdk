@@ -924,6 +924,7 @@ __metadata:
     "@types/react": ^17.0.43
     "@types/react-dom": ^17.0.14
     "@types/react-router": ^5.1.17
+    "@types/react-router-dom": ^5.3.3
     "@types/react-virtualized": ^9.21.21
     "@typescript-eslint/eslint-plugin": ^5.3.1
     "@typescript-eslint/parser": ^5.3.1
@@ -956,6 +957,7 @@ __metadata:
     rollup: ^2.61.1
     rollup-plugin-analyzer: ^4.0.0
     rollup-plugin-dts: ^4.0.1
+    rollup-plugin-import-css: ^3.0.3
     start-server-and-test: ^1.14.0
     ts-jest: ^27.1.4
     ts-node: ^10.7.0
@@ -1346,6 +1348,16 @@ __metadata:
   peerDependencies:
     rollup: ^1.20.0||^2.0.0
   checksum: 8be16e27863c219edbb25a4e6ec2fe0e1e451d9e917b6a43cf2ae5bc025a6b8faaa40f82a6e53b66d0de37b58ff472c6c3d57a83037ae635041f8df959d6d9aa
+  languageName: node
+  linkType: hard
+
+"@rollup/pluginutils@npm:^4.2.0":
+  version: 4.2.1
+  resolution: "@rollup/pluginutils@npm:4.2.1"
+  dependencies:
+    estree-walker: ^2.0.1
+    picomatch: ^2.2.2
+  checksum: 6bc41f22b1a0f1efec3043899e4d3b6b1497b3dea4d94292d8f83b4cf07a1073ecbaedd562a22d11913ff7659f459677b01b09e9598a98936e746780ecc93a12
   languageName: node
   linkType: hard
 
@@ -1770,7 +1782,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-router@npm:^5.1.17":
+"@types/react-router-dom@npm:^5.3.3":
+  version: 5.3.3
+  resolution: "@types/react-router-dom@npm:5.3.3"
+  dependencies:
+    "@types/history": ^4.7.11
+    "@types/react": "*"
+    "@types/react-router": "*"
+  checksum: 28c4ea48909803c414bf5a08502acbb8ba414669b4b43bb51297c05fe5addc4df0b8fd00e0a9d1e3535ec4073ef38aaafac2c4a2b95b787167d113bc059beff3
+  languageName: node
+  linkType: hard
+
+"@types/react-router@npm:*, @types/react-router@npm:^5.1.17":
   version: 5.1.18
   resolution: "@types/react-router@npm:5.1.18"
   dependencies:
@@ -8724,6 +8747,17 @@ __metadata:
     "@babel/code-frame":
       optional: true
   checksum: e18165c7722909af0227ba0752062eea4fc26e5a465d95c2ad52426e376de57dcf3a966b1e4395a7e8d4f203cb148cd88da85d515332eb87b0f6fbd0f3feb2b7
+  languageName: node
+  linkType: hard
+
+"rollup-plugin-import-css@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "rollup-plugin-import-css@npm:3.0.3"
+  dependencies:
+    "@rollup/pluginutils": ^4.2.0
+  peerDependencies:
+    rollup: ^2.x.x
+  checksum: 73e7308054dd5564be6a370b5643b82ddf4b60ae2c4e27edce94ae057ef86e2a5474b7fb63d89f34b973416e2aae219917b189e5556958e2131302a28c6018d1
   languageName: node
   linkType: hard
 
