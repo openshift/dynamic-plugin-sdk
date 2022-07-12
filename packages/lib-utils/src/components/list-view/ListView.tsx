@@ -16,7 +16,7 @@ import { parseFiltersFromURL, setFiltersToURL } from '../../utils/url-sync';
 import type { VirtualizedTableProps } from '../table/VirtualizedTable';
 import VirtualizedTable from '../table/VirtualizedTable';
 import FilterChips from './FilterChips';
-import './table-view.css';
+import './list-view.css';
 
 export type FilterItem = {
   /** Label of a parameter used for filtering. */
@@ -25,14 +25,14 @@ export type FilterItem = {
   id: string;
 };
 
-export type TableViewProps<D> = VirtualizedTableProps<D> & {
+export type ListViewProps<D> = VirtualizedTableProps<D> & {
   /** Optional custom onFilter callback. */
   onFilter?: (filterValues: Record<string, string[]>, activeFilter?: FilterItem) => D[];
   /** Optional array of filterBy options. */
   filters?: FilterItem[];
 };
 
-const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
+const ListView: React.FC<ListViewProps<Record<string, unknown>>> = ({
   columns,
   data,
   filters = [],
@@ -108,7 +108,7 @@ const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
               </ToolbarItem>
               <ToolbarItem variant={ToolbarItemVariant['search-filter']} key="search-filter">
                 <SearchInput
-                  className="dps-table-view__search"
+                  className="dps-list-view__search"
                   onChange={(value) => {
                     if (activeFilter) {
                       const newValues =
@@ -131,7 +131,7 @@ const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
           ) : null}
         </ToolbarContent>
         {Object.keys(filterValues.current)?.length > 0 && (
-          <ToolbarContent className="dps-table-view__filters">
+          <ToolbarContent className="dps-list-view__filters">
             <ToolbarItem>
               <FilterChips
                 filters={filters}
@@ -168,4 +168,4 @@ const TableView: React.FC<TableViewProps<Record<string, unknown>>> = ({
   );
 };
 
-export default TableView;
+export default ListView;
