@@ -126,7 +126,7 @@ const ListView: React.FC<ListViewProps<Record<string, unknown>>> = ({
                     }
                   }}
                   value={activeFilter ? filterValues.current[activeFilter.id]?.[0] : ''}
-                  placeholder={`Search by ${activeFilter?.label}`}
+                  placeholder={activeFilter?.label ? `Search by ${activeFilter.label}` : 'Search'}
                 />
               </ToolbarItem>
             </>
