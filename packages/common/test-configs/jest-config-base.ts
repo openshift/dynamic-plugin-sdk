@@ -10,6 +10,7 @@ const config: InitialOptionsTsJest = {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   moduleNameMapper: {
     'lodash-es': 'lodash',
+    '\\.(css|scss)$': 'identity-obj-proxy',
   },
 
   clearMocks: true,

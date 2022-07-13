@@ -22,8 +22,6 @@ export type VirtualizedTableProps<D> = {
   columns: TableColumn<D>[];
   /** Table row component. */
   Row: React.FC<RowProps<D>>;
-  /** Optional load error default text. */
-  loadErrorDefaultText?: string;
   /** Optional isSelected row callback */
   isRowSelected?: (item: D) => boolean;
   /** Optional onSelect row callback */
@@ -75,14 +73,22 @@ export const WithScrollContainer: React.FC<WithScrollContainerProps> = ({ childr
   return scrollContainer ? children(scrollContainer) : <span ref={ref} />;
 };
 
-const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
+export const sortData = (a: unknown, b: unknown, direction: string): number => {
+  if (typeof a === 'number' && typeof b === 'number') {
+    return direction === 'asc' ? a - b : b - a;
+  }
+  return direction === 'asc'
+    ? String(a).localeCompare(String(b))
+    : String(b).localeCompare(String(a));
+};
+
+const VirtualizedTable = <D extends AnyObject>({
   areFiltersApplied,
   data: initialData,
   loaded,
   loadError,
   columns,
   Row,
-  loadErrorDefaultText,
   CustomNoDataEmptyState,
   CustomEmptyState,
   emptyStateDescription,
@@ -90,30 +96,23 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
   isRowSelected,
   scrollNode,
   'aria-label': ariaLabel,
-}) => {
+}: VirtualizedTableProps<D>) => {
   const [activeSortDirection, setActiveSortDirection] = React.useState('none');
   const [activeSortIndex, setActiveSortIndex] = React.useState(-1);
   const [data, setData] = React.useState(initialData);
-
-  React.useEffect(() => {
-    setData(initialData);
-  }, [initialData]);
 
   const onSort = (event: React.FormEvent, index: number, direction: string) => {
     setActiveSortIndex(index);
     setActiveSortDirection(direction);
     // back compatibility with sort column attribute defined as a string + transforms: [sortable]
     const columnSort = _.isString(columns[index].sort) ? columns[index].sort : undefined;
-    const updatedRows = data.sort((objA, objB) => {
-      const a = columnSort ? _.get(objA, String(columnSort)) : Object.values(objA)[index];
-      const b = columnSort ? _.get(objB, String(columnSort)) : Object.values(objB)[index];
-      if (typeof a === 'number' && typeof b === 'number') {
-        return direction === 'asc' ? a - b : b - a;
-      }
-      return direction === 'asc'
-        ? String(a).localeCompare(String(b))
-        : String(b).localeCompare(String(a));
-    });
+    const updatedRows = data.sort((objA, objB) =>
+      sortData(
+        columnSort ? _.get(objA, String(columnSort)) : Object.values(objA)[index],
+        columnSort ? _.get(objB, String(columnSort)) : Object.values(objB)[index],
+        direction,
+      ),
+    );
     setData(updatedRows);
   };
 
@@ -133,7 +132,8 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
             <div ref={registerChild}>
               <VirtualizedTableBody
                 Row={Row}
-                height={height}
+                height={process.env.NODE_ENV === 'test' ? 1000 : height}
+                width={process.env.NODE_ENV === 'test' ? 1000 : width}
                 isRowSelected={isRowSelected}
                 isScrolling={isScrolling}
                 onChildScroll={onChildScroll}
@@ -141,7 +141,6 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
                 data={data}
                 columns={columns}
                 scrollTop={scrollTop}
-                width={width}
               />
             </div>
           )}
@@ -157,7 +156,6 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
       CustomEmptyState={CustomEmptyState}
       loaded={loaded}
       loadError={loadError}
-      loadErrorDefaultText={loadErrorDefaultText}
       noData={!data || _.isEmpty(data)}
       CustomNoDataEmptyState={CustomNoDataEmptyState}
     >
@@ -165,12 +163,15 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
         <TableComposable aria-label={ariaLabel} role="presentation">
           <Thead>
             <Tr>
-              <Th
-                select={{
-                  onSelect: (event, rowSelected) => onSelect?.(event, rowSelected, data),
-                  isSelected: data.every((item) => isRowSelected?.(item)),
-                }}
-              />
+              {onSelect && (
+                <Th
+                  data-testid="check-all-rows"
+                  select={{
+                    onSelect: (event, rowSelected) => onSelect?.(event, rowSelected, data),
+                    isSelected: data.every((item) => isRowSelected?.(item)),
+                  }}
+                />
+              )}
               {columns.map(
                 ({ title, props: properties, sort, transforms, visibility, id }, columnIndex) => {
                   const isSortable = !!transforms?.find((item) => item?.name === 'sortable');
