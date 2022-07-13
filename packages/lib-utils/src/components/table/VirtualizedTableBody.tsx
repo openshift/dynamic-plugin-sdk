@@ -9,6 +9,8 @@ import type { MeasuredCellParent } from 'react-virtualized/dist/es/CellMeasurer'
 export type RowProps<D> = {
   /** Row data object. */
   obj: D;
+  /** Row index */
+  index: number;
 };
 
 type RowMemoProps<D> = RowProps<D> & { Row: React.ComponentType<RowProps<D>> };
@@ -85,8 +87,8 @@ const VirtualizedTableBody = <D,>({
   });
 
   // eslint-disable-next-line react/prop-types -- this rule has issues with React.memo
-  const RowMemo: React.FC<RowMemoProps<D>> = React.memo(({ Row: RowComponent, obj }) => (
-    <RowComponent obj={obj} />
+  const RowMemo: React.FC<RowMemoProps<D>> = React.memo(({ Row: RowComponent, obj, index }) => (
+    <RowComponent obj={obj} index={index} />
   ));
 
   type RowRendererParams = {
@@ -101,6 +103,7 @@ const VirtualizedTableBody = <D,>({
   const rowRenderer = ({ index, isVisible, key, parent, style }: RowRendererParams) => {
     const rowArgs: RowProps<D> = {
       obj: data[index],
+      index,
     };
 
     // do not render non visible elements (this excludes overscan)
@@ -119,6 +122,7 @@ const VirtualizedTableBody = <D,>({
         <TableRow id={key} index={index} trKey={key} style={style}>
           {onSelect && (
             <Td
+              data-testid={`check-row-${index}`}
               select={{
                 rowIndex: index,
                 onSelect: (event, isSelected) => onSelect?.(event, isSelected, [rowArgs.obj]),
@@ -127,7 +131,7 @@ const VirtualizedTableBody = <D,>({
               }}
             />
           )}
-          <RowMemo Row={Row} obj={rowArgs.obj} />
+          <RowMemo Row={Row} obj={rowArgs.obj} index={index} />
         </TableRow>
       </CellMeasurer>
     );
