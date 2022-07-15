@@ -1,17 +1,17 @@
 import * as React from 'react';
-import type { PluginEventType, PluginConsumer } from '../types/store';
+import type { PluginEventType, PluginStoreInterface } from '../types/store';
 import { usePluginStore } from './PluginStoreContext';
 
 const isSameReference = (a: unknown, b: unknown) => a === b;
 
 /**
- * React hook for subscribing to `PluginStore` events via the {@link PluginConsumer} interface.
+ * React hook for subscribing to `PluginStore` events.
  *
- * This hook implements the common {@link PluginConsumer} usage pattern:
+ * This hook implements the common `PluginStore` usage pattern:
  *
  * ```
- * pluginConsumer.subscribe(eventTypes, () => {
- *   // get current data from pluginConsumer
+ * pluginStore.subscribe(eventTypes, () => {
+ *   // get current data from plugin store
  *   // compare current data with previous data
  *   // re-render the component on data change
  * });
@@ -29,7 +29,7 @@ const isSameReference = (a: unknown, b: unknown) => a === b;
  */
 export const usePluginSubscription = <TPluginData>(
   eventTypes: PluginEventType[],
-  getData: (pluginConsumer: PluginConsumer) => TPluginData,
+  getData: (pluginStore: PluginStoreInterface) => TPluginData,
   isSameData: (prevData: TPluginData, nextData: TPluginData) => boolean = isSameReference,
 ): TPluginData => {
   const pluginStore = usePluginStore();

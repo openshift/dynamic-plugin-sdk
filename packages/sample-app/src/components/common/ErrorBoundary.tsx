@@ -7,7 +7,7 @@ export type ErrorBoundaryFallbackProps = {
   errorInfo: React.ErrorInfo;
 };
 
-type ErrorBoundaryProps = AnyObject;
+type ErrorBoundaryProps = React.PropsWithChildren<AnyObject>;
 
 type ErrorBoundaryState =
   | {

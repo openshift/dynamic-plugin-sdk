@@ -1,11 +1,11 @@
 import type { LoadedExtension } from './extension';
-import type { LoadedPlugin } from './plugin';
+import type { LoadedPlugin, FailedPlugin } from './plugin';
 
 export enum PluginEventType {
   /**
    * Triggers when the list of extensions, which are currently in use, changes.
    *
-   * Associated data getter: {@link PluginConsumer.getExtensions}
+   * Associated data getter: {@link PluginStoreInterface.getExtensions}
    */
   ExtensionsChanged = 'ExtensionsChanged',
 
@@ -15,39 +15,35 @@ export enum PluginEventType {
    * - plugin failed to load, or there was an error while processing its extensions
    * - plugin was enabled or disabled (*)
    *
-   * (*) this triggers event {@link PluginEventType.ExtensionsChanged}
+   * (*) this may trigger event {@link PluginEventType.ExtensionsChanged}
    *
-   * Associated data getter: {@link PluginConsumer.getPluginInfo}
+   * Associated data getter: {@link PluginStoreInterface.getPluginInfo}
    */
   PluginInfoChanged = 'PluginInfoChanged',
 
   /**
    * Triggers when feature flags have changed.
    *
-   * Associated data getter: {@link PluginConsumer.getFeatureFlags}
+   * Associated data getter: {@link PluginStoreInterface.getFeatureFlags}
    */
   FeatureFlagsChanged = 'FeatureFlagsChanged',
 }
 
-export type PluginInfoEntry =
-  | {
-      pluginName: string;
-      status: 'loaded';
-      metadata: LoadedPlugin['metadata'];
-      enabled: boolean;
-    }
-  | {
-      pluginName: string;
-      status: 'pending' | 'failed';
-    };
+export type LoadedPluginInfoEntry = {
+  pluginName: string;
+  status: 'loaded';
+} & Pick<LoadedPlugin, 'metadata' | 'enabled' | 'disableReason'>;
+
+export type FailedPluginInfoEntry = {
+  pluginName: string;
+  status: 'failed';
+} & Pick<FailedPlugin, 'errorMessage' | 'errorCause'>;
+
+export type PluginInfoEntry = LoadedPluginInfoEntry | FailedPluginInfoEntry;
 
 export type FeatureFlags = { [key: string]: boolean };
 
-// TODO: PluginConsumer and PluginManager should be unified into a single interface
-/**
- * Interface for consuming plugin information and extensions.
- */
-export type PluginConsumer = {
+export type PluginStoreInterface = {
   /**
    * Subscribe to events emitted by the `PluginStore`.
    *
@@ -74,31 +70,33 @@ export type PluginConsumer = {
   getPluginInfo: () => PluginInfoEntry[];
 
   /**
-   * Set feature flags in the PluginStore (non-boolean values will be discarded)
+   * Set new feature flags (non-boolean values will be discarded).
    */
   setFeatureFlags: (newFlags: FeatureFlags) => void;
 
   /**
-   * Get feature flags from the PluginStore
+   * Get current feature flags.
    */
   getFeatureFlags: () => FeatureFlags;
-};
 
-/**
- * Interface for managing plugins.
- */
-export type PluginManager = {
   /**
    * Start loading a plugin from the specified URL.
    *
-   * Use {@link PluginConsumer.subscribe} to respond to relevant events.
+   * Use `subscribe` method to respond to events emitted by the `PluginStore`.
    */
   loadPlugin: (baseURL: string) => void;
 
   /**
-   * Enable or disable the given plugins.
+   * Enable the given plugin(s).
    *
-   * Enabling a plugin puts all of its extensions into use. Disabling it does the opposite.
+   * Enabling a plugin puts all of its extensions into use.
    */
-  setPluginsEnabled: (config: { pluginName: string; enabled: boolean }[]) => void;
+  enablePlugins: (pluginNames: string[]) => void;
+
+  /**
+   * Disable the given plugin(s) with an optional reason.
+   *
+   * Disabling a plugin puts all of its extensions out of use.
+   */
+  disablePlugins: (pluginNames: string[], disableReason?: string) => void;
 };

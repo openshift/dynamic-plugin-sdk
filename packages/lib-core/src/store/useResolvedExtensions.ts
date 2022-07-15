@@ -64,11 +64,7 @@ export const useResolvedExtensions = <TExtension extends Extension>(
               .map((e) => e.extension.pluginName),
           );
 
-          // TODO(vojtech): provide a way to inform consumers about plugin(s) being disabled
-          // due to code reference resolution errors
-          pluginStore.setPluginsEnabled(
-            failedPluginNames.map((pluginName) => ({ pluginName, enabled: false })),
-          );
+          pluginStore.disablePlugins(failedPluginNames, 'Code reference resolution errors');
         }
 
         setResolved(true);

@@ -1,14 +1,20 @@
 import { usePluginStore, usePluginInfo } from '@openshift/dynamic-plugin-sdk';
+import type { LoadedPluginInfoEntry } from '@openshift/dynamic-plugin-sdk';
 import {
   Bullseye,
   Button,
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
+  Flex,
+  FlexItem,
   Title,
+  Tooltip,
 } from '@patternfly/react-core';
-import { ModuleIcon } from '@patternfly/react-icons';
-import { TableComposable, TableText, Thead, Tbody, Tr, Th, Td } from '@patternfly/react-table';
+import { ModuleIcon, InfoCircleIcon } from '@patternfly/react-icons';
+import { TableComposable, Thead, Tbody, Tr, Th, Td } from '@patternfly/react-table';
+// eslint-disable-next-line camelcase
+import { global_info_color_100 } from '@patternfly/react-tokens';
 import * as React from 'react';
 
 const columnNames = {
@@ -28,7 +34,22 @@ const actionButtonLabels = {
   disable: 'Disable',
 };
 
-const enabledText = (value: boolean) => (value ? 'Yes' : 'No');
+type PluginEnabledStatusProps = {
+  infoEntry: LoadedPluginInfoEntry;
+};
+
+const PluginEnabledStatus: React.FC<PluginEnabledStatusProps> = ({ infoEntry }) => (
+  <Flex direction={{ default: 'row' }} spaceItems={{ default: 'spaceItemsSm' }}>
+    <FlexItem>{infoEntry.enabled ? 'Yes' : 'No'}</FlexItem>
+    {!infoEntry.enabled && infoEntry.disableReason && (
+      <FlexItem>
+        <Tooltip content={infoEntry.disableReason}>
+          <InfoCircleIcon color={global_info_color_100.var} />
+        </Tooltip>
+      </FlexItem>
+    )}
+  </Flex>
+);
 
 const PluginInfoTable: React.FC = () => {
   const pluginStore = usePluginStore();
@@ -42,7 +63,7 @@ const PluginInfoTable: React.FC = () => {
           <Th>{columnNames.status}</Th>
           <Th>{columnNames.version}</Th>
           <Th info={{ tooltip: columnTooltips.enabled }}>{columnNames.enabled}</Th>
-          <Th>{columnNames.actions}</Th>
+          <Th width={20}>{columnNames.actions}</Th>
           <Td />
         </Tr>
       </Thead>
@@ -72,25 +93,20 @@ const PluginInfoTable: React.FC = () => {
                 {entry.status === 'loaded' ? entry.metadata.version : '-'}
               </Td>
               <Td dataLabel={columnNames.enabled}>
-                {entry.status === 'loaded' ? enabledText(entry.enabled) : '-'}
+                {entry.status === 'loaded' ? <PluginEnabledStatus infoEntry={entry} /> : '-'}
               </Td>
               <Td dataLabel={columnNames.actions}>
                 {entry.status === 'loaded' ? (
-                  <TableText>
-                    <Button
-                      variant="secondary"
-                      onClick={() =>
-                        pluginStore.setPluginsEnabled([
-                          {
-                            pluginName: entry.pluginName,
-                            enabled: !entry.enabled,
-                          },
-                        ])
-                      }
-                    >
-                      {entry.enabled ? actionButtonLabels.disable : actionButtonLabels.enable}
-                    </Button>
-                  </TableText>
+                  <Button
+                    variant="secondary"
+                    onClick={() =>
+                      entry.enabled
+                        ? pluginStore.disablePlugins([entry.pluginName], 'Disabled by user')
+                        : pluginStore.enablePlugins([entry.pluginName])
+                    }
+                  >
+                    {entry.enabled ? actionButtonLabels.disable : actionButtonLabels.enable}
+                  </Button>
                 ) : null}
               </Td>
             </Tr>
