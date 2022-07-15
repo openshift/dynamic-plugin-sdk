@@ -1,5 +1,4 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import '@patternfly/react-core/dist/styles/base.css';
 import { Td } from '@patternfly/react-table';
 import type { ComponentStory, ComponentMeta } from '@storybook/react';
 import React from 'react';
@@ -7,13 +6,13 @@ import { BrowserRouter } from 'react-router-dom';
 
 import ListView from './ListView';
 
-export default {
+const meta: ComponentMeta<typeof ListView> = {
   title: 'ListView',
   component: ListView,
-  argTypes: {
-    backgroundColor: { control: 'color' },
-  },
-} as ComponentMeta<typeof ListView>;
+  argTypes: {},
+};
+
+export default meta;
 
 const Template: ComponentStory<typeof ListView> = (args) => {
   return (
