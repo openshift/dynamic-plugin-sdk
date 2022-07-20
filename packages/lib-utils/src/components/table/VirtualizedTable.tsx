@@ -172,7 +172,10 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
                 }}
               />
               {columns.map(
-                ({ title, props: properties, sort, transforms, visibility, id }, columnIndex) => {
+                (
+                  { title, props: properties, sort, transforms, visibility, id, info },
+                  columnIndex,
+                ) => {
                   const isSortable = !!transforms?.find((item) => item?.name === 'sortable');
                   const defaultSort = {
                     sortBy: {
@@ -186,6 +189,7 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
                     <Th
                       // eslint-disable-next-line react/no-array-index-key
                       key={`column-${columnIndex}-${id}`}
+                      info={info}
                       sort={isSortable ? defaultSort : sort}
                       visibility={visibility}
                       // eslint-disable-next-line react/jsx-props-no-spreading
