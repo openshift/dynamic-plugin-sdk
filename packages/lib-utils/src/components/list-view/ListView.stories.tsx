@@ -67,6 +67,12 @@ Primary.args = {
       props: {
         className: '',
       },
+      info: {
+        tooltip: 'More information about Kind',
+        tooltipProps: {
+          isContentLeftAligned: true,
+        },
+      },
     },
     {
       title: 'Labels',

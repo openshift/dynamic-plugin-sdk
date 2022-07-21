@@ -1,5 +1,6 @@
 import { Td } from '@patternfly/react-table';
 import type { ICell, SortByDirection, ThProps } from '@patternfly/react-table';
+import type { ThInfoType } from '@patternfly/react-table/dist/esm/components/Table/base';
 import { VirtualTableBody } from '@patternfly/react-virtualized-extension';
 import type { Scroll } from '@patternfly/react-virtualized-extension/dist/js/components/Virtualized/types';
 import * as React from 'react';
@@ -20,6 +21,8 @@ export type TableColumn<D> = ICell & {
   sort?: ((data: D[], sortDirection: SortByDirection) => D[]) | ThProps['sort'] | string;
   /** Optional visibility. */
   visibility?: string[];
+  /** Optional info tooltip or popover. */
+  info?: ThInfoType;
 };
 
 export type TableRowProps = {
