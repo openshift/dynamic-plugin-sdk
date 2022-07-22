@@ -1,4 +1,5 @@
 import type { AnyObject } from '@monorepo/common';
+import type { IAction } from '@patternfly/react-table';
 import { Th, Thead, Tr, TableComposable } from '@patternfly/react-table';
 import { AutoSizer, WindowScroller } from '@patternfly/react-virtualized-extension';
 import * as _ from 'lodash-es';
@@ -12,6 +13,8 @@ import VirtualizedTableBody from './VirtualizedTableBody';
 export type VirtualizedTableProps<D> = {
   /** Optional flag indicating that filters are applied to data. */
   areFiltersApplied?: boolean;
+  /** Optional actions for each row. */
+  rowActions?: IAction[];
   /** Data array. */
   data: D[];
   /** Flag indicating data has been loaded. */
@@ -77,6 +80,7 @@ export const WithScrollContainer: React.FC<WithScrollContainerProps> = ({ childr
 
 const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
   areFiltersApplied,
+  rowActions = [],
   data: initialData,
   loaded,
   loadError,
@@ -132,12 +136,13 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
           {({ width }: Size) => (
             <div ref={registerChild}>
               <VirtualizedTableBody
-                Row={Row}
+                rowActions={rowActions}
                 height={height}
                 isRowSelected={isRowSelected}
                 isScrolling={isScrolling}
                 onChildScroll={onChildScroll}
                 onSelect={onSelect}
+                Row={Row}
                 data={data}
                 columns={columns}
                 scrollTop={scrollTop}
@@ -200,6 +205,7 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
                   );
                 },
               )}
+              {rowActions?.length > 0 && <Th />}
             </Tr>
           </Thead>
         </TableComposable>

@@ -1,5 +1,5 @@
-import { Td } from '@patternfly/react-table';
-import type { ICell, SortByDirection, ThProps } from '@patternfly/react-table';
+import { ActionsColumn, Td } from '@patternfly/react-table';
+import type { ICell, SortByDirection, ThProps, IAction } from '@patternfly/react-table';
 import type { ThInfoType } from '@patternfly/react-table/dist/esm/components/Table/base';
 import { VirtualTableBody } from '@patternfly/react-virtualized-extension';
 import type { Scroll } from '@patternfly/react-virtualized-extension/dist/js/components/Virtualized/types';
@@ -49,6 +49,8 @@ type VirtualizedTableBodyProps<D> = {
   columns: TableColumn<D>[];
   /** Data to be rendered. */
   data: D[];
+  /** Optional actions for each row. */
+  rowActions?: IAction[];
   /** Table body height. */
   height: number;
   /** isScrolling flag. */
@@ -76,6 +78,7 @@ const VirtualizedTableBody = <D,>({
   Row,
   isRowSelected,
   onSelect,
+  rowActions,
   scrollTop,
   width,
 }: VirtualizedTableBodyProps<D>) => {
@@ -131,6 +134,11 @@ const VirtualizedTableBody = <D,>({
             />
           )}
           <RowMemo Row={Row} obj={rowArgs.obj} />
+          {rowActions && (
+            <Td isActionCell>
+              <ActionsColumn items={rowActions} />
+            </Td>
+          )}
         </TableRow>
       </CellMeasurer>
     );
