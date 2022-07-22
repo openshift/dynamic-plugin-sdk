@@ -153,6 +153,8 @@ const getResources = async (
       allResources.push(resource);
       dispatch(receivedResources(resource));
     });
+    // // Cache the resources whenever discovery completes to improve console load times.
+    cacheResources(resources);
   }
   // Dispatch action to indicate all batches were loaded
   dispatch(setBatchesInFlight(false));
@@ -166,8 +168,6 @@ const updateResources =
     dispatch(setBatchesInFlight(true));
 
     const resources = await getResources(preferenceList, dispatch);
-    // // Cache the resources whenever discovery completes to improve console load times.
-    cacheResources(resources);
 
     return resources;
   };
@@ -182,21 +182,13 @@ const startAPIDiscovery = (preferenceList: string[]) => (dispatch: DispatchWithT
 };
 
 export const initAPIDiscovery: InitAPIDiscovery = (storeInstance, preferenceList = []) => {
+  const resources = getCachedResources();
+  if (resources) {
+    storeInstance.dispatch(receivedResources(resources));
+  }
+
   consoleLogger.info(`API discovery waiting ${API_DISCOVERY_INIT_DELAY} ms before initializing`);
-  const initDelay = new Promise((resolve) => {
-    window.setTimeout(resolve, API_DISCOVERY_INIT_DELAY);
-  });
-  initDelay
-    .then(() => {
-      return getCachedResources();
-    })
-    .then((resources) => {
-      if (resources) {
-        storeInstance.dispatch(receivedResources(resources));
-      }
-      // Still perform discovery to refresh the cache.
-      storeInstance.dispatch(startAPIDiscovery(preferenceList));
-      return resources;
-    })
-    .catch(() => storeInstance.dispatch(startAPIDiscovery(preferenceList)));
+  window.setTimeout(() => {
+    storeInstance.dispatch(startAPIDiscovery(preferenceList));
+  }, API_DISCOVERY_INIT_DELAY);
 };
