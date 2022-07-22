@@ -41,6 +41,7 @@ const ListView: React.FC<ListViewProps<Record<string, unknown>>> = ({
   onFilter,
   loadError,
   loaded,
+  rowActions,
   Row,
   CustomEmptyState,
   emptyStateDescription,
@@ -157,6 +158,7 @@ const ListView: React.FC<ListViewProps<Record<string, unknown>>> = ({
         columns={columns}
         isRowSelected={isRowSelected}
         onSelect={onSelect}
+        rowActions={rowActions}
         Row={Row}
         emptyStateDescription={emptyStateDescription}
         CustomEmptyState={CustomEmptyState}
