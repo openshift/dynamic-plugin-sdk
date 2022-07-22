@@ -1,23 +1,51 @@
 import { consoleLogger } from '@monorepo/common';
+import * as _ from 'lodash-es';
+import { getReferenceForModel } from '../../k8s/k8s-utils';
 import type { DiscoveryResources } from '../../types/api-discovery';
+import type { K8sModelCommon } from '../../types/k8s';
 
 const SDK_API_DISCOVERY_RESOURCES_LOCAL_STORAGE_KEY = 'sdk/api-discovery-resources';
 
-export const cacheResources = (resources: DiscoveryResources) => {
+const mergeByKey = (prev: K8sModelCommon[], next: K8sModelCommon[]) =>
+  Object.values(_.merge(_.keyBy(prev, getReferenceForModel), _.keyBy(next, getReferenceForModel)));
+
+export const cacheResources = (resources: DiscoveryResources[]) => {
+  let allResources;
   try {
-    localStorage.setItem(SDK_API_DISCOVERY_RESOURCES_LOCAL_STORAGE_KEY, JSON.stringify(resources));
+    allResources = [
+      ...[JSON.parse(localStorage.getItem(SDK_API_DISCOVERY_RESOURCES_LOCAL_STORAGE_KEY) || '{}')],
+      ...resources,
+    ].reduce((acc, curr) => {
+      const { models, configResources, clusterOperatorConfigResources, ...rest } = curr || {};
+      return {
+        ..._.merge(acc, rest),
+        configResources: mergeByKey(acc?.configResources, configResources || []),
+        models: mergeByKey(acc?.models, models || []),
+        clusterOperatorConfigResources: mergeByKey(
+          acc?.clusterOperatorConfigResources,
+          clusterOperatorConfigResources || [],
+        ),
+      };
+    }, {});
+  } catch (e) {
+    consoleLogger.error('Error caching API resources in localStorage', e);
+    throw e;
+  }
+  try {
+    localStorage.setItem(
+      SDK_API_DISCOVERY_RESOURCES_LOCAL_STORAGE_KEY,
+      JSON.stringify(allResources),
+    );
   } catch (e) {
     consoleLogger.error('Error caching API resources in localStorage', e);
     throw e;
   }
 };
 
-export const getCachedResources = async () => {
+export const getCachedResources = () => {
   const resourcesJSON = localStorage.getItem(SDK_API_DISCOVERY_RESOURCES_LOCAL_STORAGE_KEY);
   if (!resourcesJSON) {
-    throw new Error(
-      `No API resources found in localStorage for key ${SDK_API_DISCOVERY_RESOURCES_LOCAL_STORAGE_KEY}`,
-    );
+    return null;
   }
 
   // Clear cached resources after load as a safeguard. If there's any errors
