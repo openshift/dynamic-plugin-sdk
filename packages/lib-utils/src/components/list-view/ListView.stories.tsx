@@ -97,6 +97,16 @@ Primary.args = {
       label: 'Labels',
     },
   ],
+  rowActions: [
+    {
+      title: 'Edit',
+      onClick: () => null,
+    },
+    {
+      title: 'Delete',
+      onClick: () => null,
+    },
+  ],
   onFilter: undefined,
   scrollNode: undefined,
 };
