@@ -1,0 +1,17 @@
+:8000 {
+    log
+    @app_match {
+        path_regexp ^{$PLUGIN_URL}(.*)
+    }
+    handle @app_match {
+        # Substitution for alias from nginx
+        uri strip_prefix {$PLUGIN_URL}
+        file_server * {
+            root /opt/app-root/src/dist 
+            browse
+        }
+    }
+    handle / {
+        redir {$FALLBACK_URL}index.html permanent
+    }
+}
