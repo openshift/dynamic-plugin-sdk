@@ -30,9 +30,7 @@ const pluralizeKind = (kind: string): string => {
 
 const defineModels = (list: APIResourceList): K8sModelCommon[] => {
   const { groupVersion } = list;
-  const [apiGroup, apiVersion] = `${groupVersion.includes('/') ? '' : '/'}${groupVersion}`.split(
-    '/',
-  );
+  const [apiVersion, apiGroup] = groupVersion.split('/').reverse();
   if (!list.resources || list.resources.length < 1) {
     return [];
   }
