@@ -9,7 +9,7 @@ import {
   ToolbarItemVariant,
 } from '@patternfly/react-core';
 import { FilterIcon } from '@patternfly/react-icons';
-import { omit } from 'lodash-es';
+import { debounce, omit } from 'lodash-es';
 import * as React from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { parseFiltersFromURL, setFiltersToURL } from '../../utils/url-sync';
@@ -32,6 +32,19 @@ export type ListViewProps<D> = VirtualizedTableProps<D> & {
   filters?: FilterItem[];
 };
 
+export function filterDefault<D extends Record<string, unknown>>(
+  data: D[],
+  filterValues: Record<string, string[]>,
+): D[] {
+  return data.filter((item) =>
+    Object.entries(filterValues).every(
+      ([key, values]) =>
+        typeof item[key] === 'string' &&
+        values.every((v) => (item[key] as string).toLowerCase().includes(v)),
+    ),
+  );
+}
+
 const ListView: React.FC<ListViewProps<Record<string, unknown>>> = ({
   columns,
   data,
@@ -53,33 +66,45 @@ const ListView: React.FC<ListViewProps<Record<string, unknown>>> = ({
   const [filteredData, setFilteredData] = React.useState(data);
   const [isFilterSelectExpanded, setFilterSelectExpanded] = React.useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [useURL, setUseURL] = React.useState(true);
   const filterValues = React.useRef<Record<string, string[]>>({});
+  const inputValue = React.useRef<string>('');
 
   React.useEffect(() => {
-    filterValues.current = parseFiltersFromURL(
-      new URLSearchParams(location.search),
-      filters.map((filter) => filter.id),
-    );
+    if (useURL) {
+      filterValues.current = parseFiltersFromURL(
+        new URLSearchParams(location.search),
+        filters.map((filter) => filter.id),
+      );
+    }
     if (filters) {
       setFilteredData(
         onFilter
           ? onFilter(filterValues.current, activeFilter)
-          : [...data].filter((item) => {
-              let isRelevant = true;
-              Object.keys(filterValues.current).forEach((key) => {
-                if (
-                  filterValues.current[key].some(
-                    (filterValue) => !(item[key] as string)?.toLowerCase()?.includes(filterValue),
-                  )
-                ) {
-                  isRelevant = false;
-                }
-              });
-              return isRelevant;
-            }),
+          : filterDefault([...data], filterValues.current),
       );
     }
-  }, [location, activeFilter, data, filters, onFilter]);
+  }, [location, activeFilter, data, filters, onFilter, useURL]);
+
+  React.useEffect(() => {
+    inputValue.current = activeFilter ? filterValues.current[activeFilter.id]?.[0] : '';
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const debouncedChangeFilters = debounce(() => {
+    if (activeFilter) {
+      setFiltersToURL(
+        searchParams,
+        setSearchParams,
+        filters.map((filter) => filter.id),
+        inputValue.current?.length > 0
+          ? { ...filterValues.current, [activeFilter.id]: [inputValue.current] }
+          : omit(filterValues.current, activeFilter.id),
+      );
+    }
+
+    setUseURL(true);
+  }, 2000);
 
   return (
     <>
@@ -96,6 +121,9 @@ const ListView: React.FC<ListViewProps<Record<string, unknown>>> = ({
                     onSelect={(e, selection) => {
                       setActiveFilter(filters.find((item) => item.id === selection));
                       setFilterSelectExpanded(false);
+                      inputValue.current = activeFilter
+                        ? filterValues.current[selection as string]?.[0]
+                        : '';
                     }}
                     placeholderText={activeFilter?.label}
                     isOpen={isFilterSelectExpanded}
@@ -112,20 +140,13 @@ const ListView: React.FC<ListViewProps<Record<string, unknown>>> = ({
                 <SearchInput
                   className="dps-list-view__search"
                   onChange={(value) => {
-                    if (activeFilter) {
-                      const newValues =
-                        value?.length > 0
-                          ? { ...filterValues.current, [activeFilter.id]: [value] }
-                          : omit(filterValues.current, activeFilter.id);
-                      setFiltersToURL(
-                        searchParams,
-                        setSearchParams,
-                        filters.map((filter) => filter.id),
-                        newValues,
-                      );
+                    if (useURL) {
+                      setUseURL(false);
                     }
+                    inputValue.current = value;
+                    debouncedChangeFilters();
                   }}
-                  value={activeFilter ? filterValues.current[activeFilter.id]?.[0] : ''}
+                  value={inputValue.current}
                   placeholder={activeFilter?.label ? `Search by ${activeFilter.label}` : 'Search'}
                 />
               </ToolbarItem>
@@ -145,6 +166,9 @@ const ListView: React.FC<ListViewProps<Record<string, unknown>>> = ({
                     filters.map((filter) => filter.id),
                     key ? omit(filterValues.current, key) : {},
                   );
+                  if (activeFilter?.id === key || !key) {
+                    inputValue.current = '';
+                  }
                 }}
               />
             </ToolbarItem>
