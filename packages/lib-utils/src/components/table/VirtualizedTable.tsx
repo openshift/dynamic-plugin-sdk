@@ -170,12 +170,14 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
         <TableComposable aria-label={ariaLabel} role="presentation">
           <Thead>
             <Tr>
-              <Th
-                select={{
-                  onSelect: (event, rowSelected) => onSelect?.(event, rowSelected, data),
-                  isSelected: data.every((item) => isRowSelected?.(item)),
-                }}
-              />
+              {onSelect && (
+                <Th
+                  select={{
+                    onSelect: (event, rowSelected) => onSelect?.(event, rowSelected, data),
+                    isSelected: data.every((item) => isRowSelected?.(item)),
+                  }}
+                />
+              )}
               {columns.map(
                 (
                   { title, props: properties, sort, transforms, visibility, id, info },

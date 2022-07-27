@@ -108,5 +108,6 @@ Primary.args = {
     },
   ],
   onFilter: undefined,
+  onSelect: undefined,
   scrollNode: undefined,
 };
