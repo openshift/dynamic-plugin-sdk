@@ -153,7 +153,7 @@ const getResources = async (
       allResources.push(resource);
       dispatch(receivedResources(resource));
     });
-    // // Cache the resources whenever discovery completes to improve console load times.
+    // Cache the resources whenever discovery completes to improve console load times.
     cacheResources(resources);
   }
   // Dispatch action to indicate all batches were loaded
