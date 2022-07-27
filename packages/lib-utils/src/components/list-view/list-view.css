@@ -2,6 +2,10 @@
   margin-right: var(--pf-global--spacer--sm);
 }
 
+.pf-c-search-input__text-input {
+  outline: none;
+}
+
 .pf-c-toolbar__item.dps-list-view__top-pagination {
   margin-left: auto;
 }
