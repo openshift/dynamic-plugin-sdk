@@ -30,7 +30,7 @@ const pluralizeKind = (kind: string): string => {
 
 const defineModels = (list: APIResourceList): K8sModelCommon[] => {
   const { groupVersion } = list;
-  const [apiGroup, apiVersion] = groupVersion.split('/');
+  const [apiVersion, apiGroup] = groupVersion.split('/').reverse();
   if (!list.resources || list.resources.length < 1) {
     return [];
   }
@@ -134,13 +134,13 @@ const getResources = async (
     },
     {},
   );
-  const all = _.flatten(
-    apiResourceData.groups.map<string[]>((group) =>
-      group.versions.map<string>((version) => `/apis/${version.groupVersion}`),
-    ),
-  )
-    .concat(['/api/v1'])
-    .sort((api) => (preferenceList.find((item) => api.includes(`/apis/${item}`)) ? -1 : 0));
+  const all = ['/api/v1'].concat(
+    _.flatten(
+      apiResourceData.groups.map<string[]>((group) =>
+        group.versions.map<string>((version) => `/apis/${version.groupVersion}`),
+      ),
+    ).sort((api) => (preferenceList.find((item) => api.includes(`/apis/${item}`)) ? -1 : 0)),
+  );
 
   // let batchedData: APIResourceList[] = [];
   const batches = _.chunk(all, API_DISCOVERY_REQUEST_BATCH_SIZE);
