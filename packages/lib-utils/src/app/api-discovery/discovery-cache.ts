@@ -1,9 +1,24 @@
 import { consoleLogger } from '@monorepo/common';
+import * as _ from 'lodash-es';
+import { getReferenceForModel } from '../../k8s/k8s-utils';
 import type { DiscoveryResources } from '../../types/api-discovery';
+import type { K8sModelCommon } from '../../types/k8s';
 
 const SDK_API_DISCOVERY_RESOURCES_LOCAL_STORAGE_KEY = 'sdk/api-discovery-resources';
 
-export const cacheResources = (resources: DiscoveryResources) => {
+const mergeByKey = (prev: K8sModelCommon[], next: K8sModelCommon[]) =>
+  Object.values(_.merge(_.keyBy(prev, getReferenceForModel), _.keyBy(next, getReferenceForModel)));
+
+const getLocalResources = () => {
+  try {
+    return JSON.parse(localStorage.getItem(SDK_API_DISCOVERY_RESOURCES_LOCAL_STORAGE_KEY) || '{}');
+  } catch (e) {
+    consoleLogger.error('Cannot load cached API resources', e);
+    throw e;
+  }
+};
+
+const setLocalResources = (resources: DiscoveryResources[]) => {
   try {
     localStorage.setItem(SDK_API_DISCOVERY_RESOURCES_LOCAL_STORAGE_KEY, JSON.stringify(resources));
   } catch (e) {
@@ -11,13 +26,28 @@ export const cacheResources = (resources: DiscoveryResources) => {
     throw e;
   }
 };
+export const cacheResources = (resources: DiscoveryResources[]) => {
+  const allResources = [...[getLocalResources()], ...resources].reduce(
+    (acc, curr) =>
+      _.mergeWith(acc, curr, (first, second) => {
+        if (Array.isArray(first) && first[0]?.constructor?.name === 'Object') {
+          return mergeByKey(first, second);
+        }
 
-export const getCachedResources = async () => {
+        return undefined;
+      }),
+    {},
+  );
+  setLocalResources(allResources);
+};
+
+export const getCachedResources = () => {
   const resourcesJSON = localStorage.getItem(SDK_API_DISCOVERY_RESOURCES_LOCAL_STORAGE_KEY);
   if (!resourcesJSON) {
-    throw new Error(
+    consoleLogger.error(
       `No API resources found in localStorage for key ${SDK_API_DISCOVERY_RESOURCES_LOCAL_STORAGE_KEY}`,
     );
+    return null;
   }
 
   // Clear cached resources after load as a safeguard. If there's any errors
