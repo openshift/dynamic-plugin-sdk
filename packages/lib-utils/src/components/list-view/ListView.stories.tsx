@@ -1,10 +1,18 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { Td } from '@patternfly/react-table';
+import type { AnyObject } from '@monorepo/common';
+import { Button, Tooltip } from '@patternfly/react-core';
+import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
+import { sortable, Td } from '@patternfly/react-table';
 import type { ComponentStory, ComponentMeta } from '@storybook/react';
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-
 import ListView from './ListView';
+
+export type TableItem = {
+  name: string;
+  kind: string;
+  labels: string;
+};
 
 const meta: ComponentMeta<typeof ListView> = {
   title: 'ListView',
@@ -15,10 +23,22 @@ const meta: ComponentMeta<typeof ListView> = {
 export default meta;
 
 const Template: ComponentStory<typeof ListView> = (args) => {
+  const [selected, setSelected] = React.useState<string[]>([]);
+
   return (
     <BrowserRouter>
       <div style={{ overflowY: 'auto' }}>
-        <ListView {...args} />
+        <ListView
+          {...args}
+          onSelect={(e, isRowSelected, selectedData) =>
+            isRowSelected
+              ? setSelected([...new Set([...selected, ...selectedData.map((i) => String(i.name))])])
+              : setSelected(
+                  selected.filter((i) => !selectedData.map((item) => item.name).includes(i)),
+                )
+          }
+          isRowSelected={(i) => selected.includes(i.name as string)}
+        />
       </div>
     </BrowserRouter>
   );
@@ -39,20 +59,22 @@ const Row: React.FunctionComponent<RowProps<Record<string, unknown>>> = ({ obj }
 };
 
 export const Primary = Template.bind({});
+let data: AnyObject[] = [];
+// eslint-disable-next-line no-plusplus
+for (let index = 0; index < 100; index++) {
+  const idx = String(index).padStart(3, '0');
+  data = [
+    ...data,
+    {
+      name: `name-${idx}`,
+      kind: `kind-${idx}`,
+      labels: `labels-${idx}`,
+    },
+  ];
+}
 Primary.args = {
   loaded: true,
-  data: [
-    {
-      name: 'foo',
-      kind: 'bar',
-      labels: 'label1',
-    },
-    {
-      name: 'foo2',
-      kind: 'bar2',
-      labels: 'label2',
-    },
-  ],
+  data,
   columns: [
     {
       title: 'Name',
@@ -62,21 +84,25 @@ Primary.args = {
       },
     },
     {
-      title: 'Kind',
+      title: (
+        <>
+          Kind{' '}
+          <Tooltip content="More information about Kind">
+            <Button variant="plain">
+              <HelpIcon />
+            </Button>
+          </Tooltip>
+        </>
+      ),
       id: 'kind',
       props: {
         className: '',
-      },
-      info: {
-        tooltip: 'More information about Kind',
-        tooltipProps: {
-          isContentLeftAligned: true,
-        },
       },
     },
     {
       title: 'Labels',
       id: 'labels',
+      transforms: [sortable],
       props: {
         className: '',
       },
@@ -110,4 +136,6 @@ Primary.args = {
   onFilter: undefined,
   onSelect: undefined,
   scrollNode: undefined,
+  emptyStateDescription: 'No matching data found...',
+  virtualized: false,
 };

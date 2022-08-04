@@ -1,4 +1,6 @@
 import {
+  Pagination,
+  PaginationVariant,
   SearchInput,
   Select,
   SelectOption,
@@ -45,6 +47,9 @@ export function filterDefault<D extends Record<string, unknown>>(
   );
 }
 
+const calculatePage = (limit = 10, offset = 0) => Math.floor(offset / limit) + 1;
+const calculateOffset = (page = 1, limit = 10) => (page - 1) * limit;
+
 const ListView: React.FC<ListViewProps<Record<string, unknown>>> = ({
   columns,
   data,
@@ -56,6 +61,7 @@ const ListView: React.FC<ListViewProps<Record<string, unknown>>> = ({
   loaded,
   rowActions,
   Row,
+  virtualized,
   CustomEmptyState,
   emptyStateDescription,
   loadErrorDefaultText,
@@ -68,6 +74,10 @@ const ListView: React.FC<ListViewProps<Record<string, unknown>>> = ({
   const [isFilterSelectExpanded, setFilterSelectExpanded] = React.useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [useURL, setUseURL] = React.useState(true);
+  const [pagination, setPagination] = React.useState({
+    limit: 10,
+    offset: 0,
+  });
   const filterValues = React.useRef<Record<string, string[]>>({});
   const inputValue = React.useRef<string>('');
 
@@ -85,7 +95,16 @@ const ListView: React.FC<ListViewProps<Record<string, unknown>>> = ({
           : filterDefault([...data], filterValues.current),
       );
     }
-  }, [location, activeFilter, data, filters, onFilter, useURL]);
+  }, [
+    location,
+    activeFilter,
+    data,
+    filters,
+    onFilter,
+    useURL,
+    pagination.limit,
+    pagination.offset,
+  ]);
 
   React.useEffect(() => {
     inputValue.current = activeFilter ? filterValues.current[activeFilter.id]?.[0] : '';
@@ -102,6 +121,9 @@ const ListView: React.FC<ListViewProps<Record<string, unknown>>> = ({
           ? { ...filterValues.current, [activeFilter.id]: [inputValue.current] }
           : omit(filterValues.current, activeFilter.id),
       );
+      if (!virtualized) {
+        setPagination({ ...pagination, offset: 0 });
+      }
     }
 
     setUseURL(true);
@@ -111,7 +133,7 @@ const ListView: React.FC<ListViewProps<Record<string, unknown>>> = ({
     <>
       <Toolbar>
         <ToolbarContent>
-          {filters ? (
+          {filters && (
             <>
               {filters.length > 1 && (
                 <ToolbarItem key="filter-select">
@@ -152,7 +174,20 @@ const ListView: React.FC<ListViewProps<Record<string, unknown>>> = ({
                 />
               </ToolbarItem>
             </>
-          ) : null}
+          )}
+          {!virtualized && (
+            <ToolbarItem className="dps-table-view-top-pagination">
+              <Pagination
+                itemCount={(filters ? filteredData : data).length}
+                perPage={pagination.limit}
+                page={calculatePage(pagination.limit, pagination.offset)}
+                onSetPage={(e, page) =>
+                  setPagination({ ...pagination, offset: calculateOffset(page, pagination.limit) })
+                }
+                onPerPageSelect={(e, value) => setPagination({ ...pagination, limit: value })}
+              />
+            </ToolbarItem>
+          )}
         </ToolbarContent>
         {Object.keys(filterValues.current)?.length > 0 && (
           <ToolbarContent className="dps-list-view__filters">
@@ -170,6 +205,9 @@ const ListView: React.FC<ListViewProps<Record<string, unknown>>> = ({
                   if (activeFilter?.id === key || !key) {
                     inputValue.current = '';
                   }
+                  if (!virtualized) {
+                    setPagination({ ...pagination, offset: 0 });
+                  }
                 }}
               />
             </ToolbarItem>
@@ -185,13 +223,27 @@ const ListView: React.FC<ListViewProps<Record<string, unknown>>> = ({
         isRowSelected={isRowSelected}
         onSelect={onSelect}
         rowActions={rowActions}
+        pagination={pagination}
         Row={Row}
+        virtualized={virtualized}
         emptyStateDescription={emptyStateDescription}
         CustomEmptyState={CustomEmptyState}
         loadError={loadError}
         loadErrorDefaultText={loadErrorDefaultText}
         CustomNoDataEmptyState={CustomNoDataEmptyState}
       />
+      {!virtualized && (
+        <Pagination
+          variant={PaginationVariant.bottom}
+          itemCount={(filters ? filteredData : data).length}
+          perPage={pagination.limit}
+          page={calculatePage(pagination.limit, pagination.offset)}
+          onSetPage={(e, page) =>
+            setPagination({ ...pagination, offset: calculateOffset(page, pagination.limit) })
+          }
+          onPerPageSelect={(e, value) => setPagination({ ...pagination, limit: value })}
+        />
+      )}
     </>
   );
 };
