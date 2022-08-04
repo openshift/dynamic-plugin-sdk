@@ -13,7 +13,7 @@ export interface FilterChipsProps {
   /** Optional available filters */
   filters?: FilterChipItem[];
   /** Optional applied filter values. */
-  filterValues?: Record<string, string>;
+  filterValues?: Record<string, string[]>;
   /** Optional callback for on chip delete. */
   onDelete?: (key?: string) => void;
 }
@@ -29,16 +29,19 @@ const FilterChips: React.FunctionComponent<FilterChipsProps> = ({
       key={`group-${key}`}
       categoryName={filters.find((item) => item.id === key)?.label}
     >
-      <Chip
-        key={filterValues[key]}
-        onClick={(event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          onDelete(key);
-        }}
-      >
-        {filterValues[key]}
-      </Chip>
+      {filterValues[key].map((value, index) => (
+        <Chip
+          // eslint-disable-next-line react/no-array-index-key
+          key={`${key}-chip-${index}`}
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            onDelete(key);
+          }}
+        >
+          {value}
+        </Chip>
+      ))}
     </ChipGroup>
   ));
 

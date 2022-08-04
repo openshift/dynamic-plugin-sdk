@@ -1,0 +1,3 @@
+{
+  "extends": "@monorepo/e2e-common/tsconfig.json"
+}

@@ -12,12 +12,9 @@ import type {
 import type { K8sModelCommon } from '../../types/k8s';
 import type { DispatchWithThunk } from '../../types/redux';
 import { commonFetchJSON } from '../../utils/common-fetch';
-import { getResourcesInFlight, receivedResources } from '../redux/actions/k8s';
+import { setResourcesInFlight, setBatchesInFlight, receivedResources } from '../redux/actions/k8s';
 import { cacheResources, getCachedResources } from './discovery-cache';
 
-const POLLs: { [id: string]: number } = {};
-const apiDiscovery = 'apiDiscovery';
-const API_DISCOVERY_POLL_INTERVAL = 60_000;
 const API_DISCOVERY_INIT_DELAY = 5_000;
 const API_DISCOVERY_REQUEST_BATCH_SIZE = 5;
 
@@ -33,7 +30,7 @@ const pluralizeKind = (kind: string): string => {
 
 const defineModels = (list: APIResourceList): K8sModelCommon[] => {
   const { groupVersion } = list;
-  const [apiGroup, apiVersion] = groupVersion.split('/');
+  const [apiVersion, apiGroup] = groupVersion.split('/').reverse();
   if (!list.resources || list.resources.length < 1) {
     return [];
   }
@@ -137,13 +134,13 @@ const getResources = async (
     },
     {},
   );
-  const all = _.flatten(
-    apiResourceData.groups.map<string[]>((group) =>
-      group.versions.map<string>((version) => `/apis/${version.groupVersion}`),
-    ),
-  )
-    .concat(['/api/v1'])
-    .sort((api) => (preferenceList.find((item) => api.includes(`/apis/${item}`)) ? -1 : 0));
+  const all = ['/api/v1'].concat(
+    _.flatten(
+      apiResourceData.groups.map<string[]>((group) =>
+        group.versions.map<string>((version) => `/apis/${version.groupVersion}`),
+      ),
+    ).sort((api) => (preferenceList.find((item) => api.includes(`/apis/${item}`)) ? -1 : 0)),
+  );
 
   // let batchedData: APIResourceList[] = [];
   const batches = _.chunk(all, API_DISCOVERY_REQUEST_BATCH_SIZE);
@@ -156,59 +153,42 @@ const getResources = async (
       allResources.push(resource);
       dispatch(receivedResources(resource));
     });
+    // Cache the resources whenever discovery completes to improve console load times.
+    cacheResources(resources);
   }
+  // Dispatch action to indicate all batches were loaded
+  dispatch(setBatchesInFlight(false));
   return allResources.reduce((acc, curr) => _.merge(acc, curr));
 };
 
 const updateResources =
   (preferenceList: string[]) =>
   async (dispatch: Dispatch): Promise<DiscoveryResources> => {
-    dispatch(getResourcesInFlight());
+    dispatch(setResourcesInFlight(true));
+    dispatch(setBatchesInFlight(true));
 
     const resources = await getResources(preferenceList, dispatch);
-    // // Cache the resources whenever discovery completes to improve console load times.
-    cacheResources(resources);
 
     return resources;
   };
 
 const startAPIDiscovery = (preferenceList: string[]) => (dispatch: DispatchWithThunk) => {
-  consoleLogger.info(
-    `API discovery startAPIDiscovery: Polling every ${API_DISCOVERY_POLL_INTERVAL} ms`,
-  );
-  // Poll API discovery since we can't watch CRDs
   dispatch(updateResources(preferenceList))
     .then((resources) => {
-      if (POLLs[apiDiscovery]) {
-        clearTimeout(POLLs[apiDiscovery]);
-        delete POLLs[apiDiscovery];
-      }
-      POLLs[apiDiscovery] = window.setTimeout(
-        () => dispatch(startAPIDiscovery(preferenceList)),
-        API_DISCOVERY_POLL_INTERVAL,
-      );
       return resources;
     })
     // TODO handle failures - retry if error is recoverable
-    .catch((err) => consoleLogger.error('API discovery startAPIDiscovery polling failed:', err));
+    .catch((err) => consoleLogger.error('API discovery startAPIDiscovery failed:', err));
 };
 
 export const initAPIDiscovery: InitAPIDiscovery = (storeInstance, preferenceList = []) => {
+  const resources = getCachedResources();
+  if (resources) {
+    storeInstance.dispatch(receivedResources(resources));
+  }
+
   consoleLogger.info(`API discovery waiting ${API_DISCOVERY_INIT_DELAY} ms before initializing`);
-  const initDelay = new Promise((resolve) => {
-    window.setTimeout(resolve, API_DISCOVERY_INIT_DELAY);
-  });
-  initDelay
-    .then(() => {
-      return getCachedResources();
-    })
-    .then((resources) => {
-      if (resources) {
-        storeInstance.dispatch(receivedResources(resources));
-      }
-      // Still perform discovery to refresh the cache.
-      storeInstance.dispatch(startAPIDiscovery(preferenceList));
-      return resources;
-    })
-    .catch(() => storeInstance.dispatch(startAPIDiscovery(preferenceList)));
+  window.setTimeout(() => {
+    storeInstance.dispatch(startAPIDiscovery(preferenceList));
+  }, API_DISCOVERY_INIT_DELAY);
 };

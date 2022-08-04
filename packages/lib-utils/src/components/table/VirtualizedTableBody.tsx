@@ -1,14 +1,18 @@
-import type { AnyObject } from '@monorepo/common';
-import type { ICell, SortByDirection, ThProps } from '@patternfly/react-table';
+import { ActionsColumn, Td } from '@patternfly/react-table';
+import type { ICell, SortByDirection, ThProps, IAction } from '@patternfly/react-table';
+import type { ThInfoType } from '@patternfly/react-table/dist/esm/components/Table/base';
 import { VirtualTableBody } from '@patternfly/react-virtualized-extension';
 import type { Scroll } from '@patternfly/react-virtualized-extension/dist/js/components/Virtualized/types';
 import * as React from 'react';
 import { CellMeasurerCache, CellMeasurer } from 'react-virtualized';
+import type { MeasuredCellParent } from 'react-virtualized/dist/es/CellMeasurer';
 
 export type RowProps<D> = {
   /** Row data object. */
   obj: D;
 };
+
+type RowMemoProps<D> = RowProps<D> & { Row: React.ComponentType<RowProps<D>> };
 
 export type TableColumn<D> = ICell & {
   /** Column ID. */
@@ -17,6 +21,8 @@ export type TableColumn<D> = ICell & {
   sort?: ((data: D[], sortDirection: SortByDirection) => D[]) | ThProps['sort'] | string;
   /** Optional visibility. */
   visibility?: string[];
+  /** Optional info tooltip or popover. */
+  info?: ThInfoType;
 };
 
 export type TableRowProps = {
@@ -32,15 +38,19 @@ export type TableRowProps = {
   className?: string;
 };
 
-export const TableRow: React.FC<TableRowProps> = ({ id, style, trKey, className }) => {
-  return <tr id={id} style={style} key={trKey} className={className} role="row" />;
-};
+export const TableRow: React.FC<TableRowProps> = ({ id, children, style, trKey, className }) => (
+  <tr id={id} style={style} key={trKey} className={className} role="row">
+    {children}
+  </tr>
+);
 
 type VirtualizedTableBodyProps<D> = {
   /** Table columns. */
   columns: TableColumn<D>[];
   /** Data to be rendered. */
   data: D[];
+  /** Optional actions for each row. */
+  rowActions?: IAction[];
   /** Table body height. */
   height: number;
   /** isScrolling flag. */
@@ -49,15 +59,15 @@ type VirtualizedTableBodyProps<D> = {
   onChildScroll: (params: Scroll) => void;
   /** Row component. */
   Row: React.ComponentType<RowProps<D>>;
+  /** Optional isSelected row callback */
+  isRowSelected?: (item: D) => boolean;
+  /** Optional onSelect row callback */
+  onSelect?: (event: React.FormEvent<HTMLInputElement>, isRowSelected: boolean, data: D[]) => void;
   /** Scroll top number. */
   scrollTop: number;
   /** Table body width. */
   width: number;
 };
-
-const RowMemo = React.memo<RowProps<any> & { Row: React.ComponentType<RowProps<any>> }>(
-  ({ Row, obj }: RowProps<any> & { Row: React.ComponentType<RowProps<any>> }) => <Row obj={obj} />,
-);
 
 const VirtualizedTableBody = <D,>({
   columns,
@@ -66,6 +76,9 @@ const VirtualizedTableBody = <D,>({
   isScrolling,
   onChildScroll,
   Row,
+  isRowSelected,
+  onSelect,
+  rowActions,
   scrollTop,
   width,
 }: VirtualizedTableBodyProps<D>) => {
@@ -77,15 +90,30 @@ const VirtualizedTableBody = <D,>({
       rowIndex,
   });
 
-  const rowRenderer = ({ index, isVisible, key, parent, style }: AnyObject) => {
+  // eslint-disable-next-line react/prop-types -- this rule has issues with React.memo
+  const RowMemo: React.FC<RowMemoProps<D>> = React.memo(({ Row: RowComponent, obj }) => (
+    <RowComponent obj={obj} />
+  ));
+
+  type RowRendererParams = {
+    index: number;
+    key: string;
+    parent: MeasuredCellParent;
+    style: object;
+    isScrolling: boolean;
+    isVisible: boolean;
+  };
+
+  const rowRenderer = ({ index, isVisible, key, parent, style }: RowRendererParams) => {
     const rowArgs: RowProps<D> = {
-      obj: data[index as number],
+      obj: data[index],
     };
 
     // do not render non visible elements (this excludes overscan)
     if (!isVisible) {
       return null;
     }
+
     return (
       <CellMeasurer
         cache={cellMeasurementCache}
@@ -94,13 +122,23 @@ const VirtualizedTableBody = <D,>({
         parent={parent}
         rowIndex={index}
       >
-        <TableRow
-          id={key as string}
-          index={index as number}
-          trKey={key as string}
-          style={style as object}
-        >
+        <TableRow id={key} index={index} trKey={key} style={style}>
+          {onSelect && (
+            <Td
+              select={{
+                rowIndex: index,
+                onSelect: (event, isSelected) => onSelect?.(event, isSelected, [rowArgs.obj]),
+                isSelected: isRowSelected?.(rowArgs.obj) || false,
+                disable: !!(rowArgs?.obj as Record<string, unknown>)?.disable,
+              }}
+            />
+          )}
           <RowMemo Row={Row} obj={rowArgs.obj} />
+          {rowActions && (
+            <Td isActionCell>
+              <ActionsColumn items={rowActions} />
+            </Td>
+          )}
         </TableRow>
       </CellMeasurer>
     );

@@ -42,6 +42,7 @@ const PluginInfoTable: React.FC = () => {
           <Th>{columnNames.status}</Th>
           <Th>{columnNames.version}</Th>
           <Th info={{ tooltip: columnTooltips.enabled }}>{columnNames.enabled}</Th>
+          <Th>{columnNames.actions}</Th>
           <Td />
         </Tr>
       </Thead>
@@ -73,7 +74,7 @@ const PluginInfoTable: React.FC = () => {
               <Td dataLabel={columnNames.enabled}>
                 {entry.status === 'loaded' ? enabledText(entry.enabled) : '-'}
               </Td>
-              <Td dataLabel={columnNames.actions} modifier="fitContent">
+              <Td dataLabel={columnNames.actions}>
                 {entry.status === 'loaded' ? (
                   <TableText>
                     <Button

@@ -23,6 +23,10 @@ const e2: EncodedExtension<TelemetryListener> = {
   properties: {
     listener: { $codeRef: 'telemetryListener' },
   },
+  flags: {
+    required: ['TELEMETRY_FLAG'],
+    disallowed: [],
+  },
 };
 
 export default [e1, e2];

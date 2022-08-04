@@ -3,7 +3,7 @@ import * as _ from 'lodash-es';
 import type { Extension, LoadedExtension, CodeRef } from '../types/extension';
 import type { PluginRuntimeMetadata, PluginManifest, LoadedPlugin } from '../types/plugin';
 import type { PluginEntryModule } from '../types/runtime';
-import type { PluginInfoEntry, PluginConsumer, PluginManager } from '../types/store';
+import type { PluginInfoEntry, PluginConsumer, PluginManager, FeatureFlags } from '../types/store';
 import { PluginEventType } from '../types/store';
 import { decodeCodeRefs } from './coderefs';
 import type { PluginLoader } from './PluginLoader';
@@ -36,6 +36,9 @@ export class PluginStore implements PluginConsumer, PluginManager {
 
   /** Subscribed event listeners. */
   private readonly listeners = new Map<PluginEventType, Set<VoidFunction>>();
+
+  /** Feature flags used to determine the availability of extensions. */
+  private featureFlags: FeatureFlags = {};
 
   constructor(options: PluginStoreOptions = {}) {
     this.options = {
@@ -114,11 +117,9 @@ export class PluginStore implements PluginConsumer, PluginManager {
     };
   }
 
-  private invokeListeners(eventTypes: PluginEventType[]) {
-    eventTypes.forEach((t) => {
-      this.listeners.get(t)?.forEach((listener) => {
-        listener();
-      });
+  private invokeListeners(eventType: PluginEventType) {
+    this.listeners.get(eventType)?.forEach((listener) => {
+      listener();
     });
   }
 
@@ -177,7 +178,7 @@ export class PluginStore implements PluginConsumer, PluginManager {
   }
 
   setPluginsEnabled(config: { pluginName: string; enabled: boolean }[]) {
-    let updateExtensions = false;
+    let update = false;
 
     config.forEach(({ pluginName, enabled }) => {
       if (!this.loadedPlugins.has(pluginName)) {
@@ -195,18 +196,56 @@ export class PluginStore implements PluginConsumer, PluginManager {
       if (plugin.enabled !== enabled) {
         plugin.enabled = enabled;
         consoleLogger.info(`Plugin ${pluginName} will be ${enabled ? 'enabled' : 'disabled'}`);
-        updateExtensions = true;
+        update = true;
       }
     });
 
-    if (updateExtensions) {
-      this.extensions = Array.from(this.loadedPlugins.values()).reduce(
-        (acc, p) => (p.enabled ? [...acc, ...p.extensions] : acc),
-        [] as LoadedExtension[],
-      );
-
-      this.invokeListeners([PluginEventType.PluginInfoChanged, PluginEventType.ExtensionsChanged]);
+    if (update) {
+      this.invokeListeners(PluginEventType.PluginInfoChanged);
+      this.updateExtensions();
     }
+  }
+
+  updateExtensions() {
+    const prevExtensions = this.extensions;
+
+    this.extensions = Array.from(this.loadedPlugins.values()).reduce(
+      (acc, p) =>
+        p.enabled ? [...acc, ...p.extensions.filter((e) => this.isExtensionInUse(e))] : acc,
+      [] as LoadedExtension[],
+    );
+
+    if (!_.isEqual(prevExtensions, this.extensions)) {
+      this.invokeListeners(PluginEventType.ExtensionsChanged);
+    }
+  }
+
+  /**
+   * Checks whether an extension is in use based on the values of required and disallowed feature flags
+   * @param {Extension} extension The extension to check for
+   * @returns {boolean} returns `true` if the extension is in use, and `false` if it is not in use
+   */
+  private isExtensionInUse(extension: Extension) {
+    return (
+      (extension.flags?.required?.every((f) => this.featureFlags[f] === true) ?? true) &&
+      (extension.flags?.disallowed?.every((f) => this.featureFlags[f] === false) ?? true)
+    );
+  }
+
+  setFeatureFlags(newFlags: FeatureFlags): void {
+    const prevFeatureFlags = this.featureFlags;
+    const nextFeatureFlags = _.pickBy(newFlags, (value) => typeof value === 'boolean');
+
+    this.featureFlags = { ...this.featureFlags, ...nextFeatureFlags };
+
+    if (!_.isEqual(prevFeatureFlags, this.featureFlags)) {
+      this.updateExtensions();
+      this.invokeListeners(PluginEventType.FeatureFlagsChanged);
+    }
+  }
+
+  getFeatureFlags() {
+    return { ...this.featureFlags };
   }
 
   /**
@@ -232,7 +271,7 @@ export class PluginStore implements PluginConsumer, PluginManager {
     });
 
     this.failedPlugins.delete(pluginName);
-    this.invokeListeners([PluginEventType.PluginInfoChanged]);
+    this.invokeListeners(PluginEventType.PluginInfoChanged);
 
     consoleLogger.info(`Added plugin ${pluginName} version ${pluginVersion}`);
 
@@ -246,7 +285,7 @@ export class PluginStore implements PluginConsumer, PluginManager {
     }
 
     this.failedPlugins.add(pluginName);
-    this.invokeListeners([PluginEventType.PluginInfoChanged]);
+    this.invokeListeners(PluginEventType.PluginInfoChanged);
   }
 
   /**

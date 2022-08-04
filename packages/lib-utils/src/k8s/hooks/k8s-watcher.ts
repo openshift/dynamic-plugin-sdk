@@ -77,7 +77,7 @@ export const getReduxData = (immutableData, resource: WatchK8sResource) => {
 };
 
 export const getWatchData: GetWatchData = (resource, k8sModel) => {
-  if (!k8sModel || !resource?.namespace) {
+  if (!k8sModel || !resource) {
     return null;
   }
   const query = makeQuery(

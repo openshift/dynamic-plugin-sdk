@@ -46,7 +46,7 @@ export const useReduxStore = (): UseReduxStoreResult => {
         {},
         compose(applyMiddleware(thunk)),
       );
-      setReduxStore(storeInstance);
+      setReduxStore(storeInstance as unknown as Store);
     }
     return getReduxStore();
   }, [storeContext]);

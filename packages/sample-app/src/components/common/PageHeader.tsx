@@ -45,7 +45,11 @@ const PageHeader: React.FC = () => {
             </ToolbarGroup>
             <ToolbarGroup variant="button-group" alignment={{ default: 'alignRight' }}>
               <ToolbarItem>
-                <Button variant="primary" onClick={openLoadPluginModal}>
+                <Button
+                  variant="primary"
+                  onClick={openLoadPluginModal}
+                  data-test-id="load-plugin-button"
+                >
                   Load plugin
                 </Button>
               </ToolbarItem>

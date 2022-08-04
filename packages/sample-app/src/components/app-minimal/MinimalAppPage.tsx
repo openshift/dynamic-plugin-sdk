@@ -15,6 +15,7 @@ import {
   GalleryItem,
 } from '@patternfly/react-core';
 import * as React from 'react';
+import FeatureFlagTable from '../common/FeatureFlagTable';
 import PluginInfoTable from '../common/PluginInfoTable';
 
 type ExtensionGalleryProps = {
@@ -52,15 +53,20 @@ const TestExtensions: React.FC = () => {
   return resolved ? <ExtensionGallery extensions={[...extensions, ...resolvedExtensions]} /> : null;
 };
 
-const MinimalAppPage: React.FC = () => (
-  <Flex direction={{ default: 'column' }}>
-    <FlexItem>
-      <PluginInfoTable />
-    </FlexItem>
-    <FlexItem>
-      <TestExtensions />
-    </FlexItem>
-  </Flex>
-);
+const MinimalAppPage: React.FC = () => {
+  return (
+    <Flex direction={{ default: 'column' }}>
+      <FlexItem>
+        <PluginInfoTable />
+      </FlexItem>
+      <FlexItem>
+        <FeatureFlagTable />
+      </FlexItem>
+      <FlexItem>
+        <TestExtensions />
+      </FlexItem>
+    </Flex>
+  );
+};
 
 export default MinimalAppPage;

@@ -1,8 +1,10 @@
 import type { AnyObject } from '@monorepo/common';
+import type { IAction } from '@patternfly/react-table';
 import { Th, Thead, Tr, TableComposable } from '@patternfly/react-table';
 import { AutoSizer, WindowScroller } from '@patternfly/react-virtualized-extension';
-import * as _ from 'lodash';
+import * as _ from 'lodash-es';
 import * as React from 'react';
+import type { Size, WindowScrollerChildProps } from 'react-virtualized';
 import type { LoadError } from '../status/StatusBox';
 import { StatusBox } from '../status/StatusBox';
 import type { RowProps, TableColumn } from './VirtualizedTableBody';
@@ -11,6 +13,8 @@ import VirtualizedTableBody from './VirtualizedTableBody';
 export type VirtualizedTableProps<D> = {
   /** Optional flag indicating that filters are applied to data. */
   areFiltersApplied?: boolean;
+  /** Optional actions for each row. */
+  rowActions?: IAction[];
   /** Data array. */
   data: D[];
   /** Flag indicating data has been loaded. */
@@ -23,6 +27,10 @@ export type VirtualizedTableProps<D> = {
   Row: React.FC<RowProps<D>>;
   /** Optional load error default text. */
   loadErrorDefaultText?: string;
+  /** Optional isSelected row callback */
+  isRowSelected?: (item: D) => boolean;
+  /** Optional onSelect row callback */
+  onSelect?: (event: React.FormEvent<HTMLInputElement>, isRowSelected: boolean, data: D[]) => void;
   /** Optional no data empty state component. */
   CustomNoDataEmptyState?: React.ComponentType;
   /** Optional no applicable data empty state component. */
@@ -32,7 +40,7 @@ export type VirtualizedTableProps<D> = {
   /** Optional aria label. */
   'aria-label'?: string;
   /** Optional scroll node. */
-  scrollNode?: () => HTMLElement;
+  scrollNode?: HTMLElement;
 };
 
 const isHTMLElement = (n: Node): n is HTMLElement => {
@@ -72,6 +80,7 @@ export const WithScrollContainer: React.FC<WithScrollContainerProps> = ({ childr
 
 const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
   areFiltersApplied,
+  rowActions = [],
   data: initialData,
   loaded,
   loadError,
@@ -81,6 +90,8 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
   CustomNoDataEmptyState,
   CustomEmptyState,
   emptyStateDescription,
+  onSelect,
+  isRowSelected,
   scrollNode,
   'aria-label': ariaLabel,
 }) => {
@@ -111,20 +122,31 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
   };
 
   const renderVirtualizedTable = (scrollContainer: (() => HTMLElement) | HTMLElement) => (
-    <WindowScroller scrollElement={scrollContainer}>
-      {({ height, isScrolling, registerChild, onChildScroll, scrollTop }: AnyObject) => (
+    <WindowScroller
+      scrollElement={typeof scrollContainer === 'function' ? scrollContainer() : scrollContainer}
+    >
+      {({
+        height,
+        isScrolling,
+        registerChild,
+        onChildScroll,
+        scrollTop,
+      }: WindowScrollerChildProps) => (
         <AutoSizer disableHeight>
-          {({ width }: AnyObject) => (
-            <div ref={registerChild as React.LegacyRef<HTMLDivElement> | undefined}>
+          {({ width }: Size) => (
+            <div ref={registerChild}>
               <VirtualizedTableBody
+                rowActions={rowActions}
+                height={height}
+                isRowSelected={isRowSelected}
+                isScrolling={isScrolling}
+                onChildScroll={onChildScroll}
+                onSelect={onSelect}
                 Row={Row}
-                height={height as number}
-                isScrolling={isScrolling as boolean}
-                onChildScroll={onChildScroll as () => unknown}
                 data={data}
                 columns={columns}
-                scrollTop={scrollTop as number}
-                width={width as number}
+                scrollTop={scrollTop}
+                width={width}
               />
             </div>
           )}
@@ -148,8 +170,19 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
         <TableComposable aria-label={ariaLabel} role="presentation">
           <Thead>
             <Tr>
+              {onSelect && (
+                <Th
+                  select={{
+                    onSelect: (event, rowSelected) => onSelect?.(event, rowSelected, data),
+                    isSelected: data.every((item) => isRowSelected?.(item)),
+                  }}
+                />
+              )}
               {columns.map(
-                ({ title, props: properties, sort, transforms, visibility, id }, columnIndex) => {
+                (
+                  { title, props: properties, sort, transforms, visibility, id, info },
+                  columnIndex,
+                ) => {
                   const isSortable = !!transforms?.find((item) => item?.name === 'sortable');
                   const defaultSort = {
                     sortBy: {
@@ -163,6 +196,7 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
                     <Th
                       // eslint-disable-next-line react/no-array-index-key
                       key={`column-${columnIndex}-${id}`}
+                      info={info}
                       sort={isSortable ? defaultSort : sort}
                       visibility={visibility}
                       // eslint-disable-next-line react/jsx-props-no-spreading
@@ -173,6 +207,7 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
                   );
                 },
               )}
+              {rowActions?.length > 0 && <Th />}
             </Tr>
           </Thead>
         </TableComposable>

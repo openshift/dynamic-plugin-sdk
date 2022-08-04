@@ -1,8 +1,14 @@
 import type { AnyObject, ReplaceProperties } from '@monorepo/common';
 
+type ExtensionFlags = Partial<{
+  required: string[];
+  disallowed: string[];
+}>;
+
 export type Extension<TType extends string = string, TProperties extends AnyObject = AnyObject> = {
   type: TType;
   properties: TProperties;
+  flags?: ExtensionFlags;
   [customProperty: string]: unknown;
 };
 

@@ -95,8 +95,11 @@ export const sdkK8sReducer = (state: K8sState, action: K8sAction): K8sState => {
 
   let newList;
   switch (action.type) {
-    case ActionType.GetResourcesInFlight:
-      return state.setIn(['RESOURCES', 'inFlight'], true);
+    case ActionType.SetResourcesInFlight:
+      return state.setIn(['RESOURCES', 'inFlight'], action.payload.isInFlight);
+
+    case ActionType.SetBatchesInFlight:
+      return state.setIn(['RESOURCES', 'batchesInFlight'], action.payload.isInFlight);
 
     case ActionType.ReceivedResources:
       return (

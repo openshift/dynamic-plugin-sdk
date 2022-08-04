@@ -267,7 +267,9 @@ export const getGroupVersionKindForReference = (
   reference: K8sResourceKindReference,
 ): K8sGroupVersionKind => {
   const referenceSplit = reference.split('~');
-  if (referenceSplit.length > 3) throw new Error('Provided reference is invalid.');
+  if (referenceSplit.length > 3) {
+    throw new Error('Provided reference is invalid.');
+  }
 
   const [group, version, kind] = referenceSplit;
   return {
