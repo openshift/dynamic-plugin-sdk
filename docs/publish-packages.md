@@ -61,7 +61,7 @@ Make sure the `version` field in the relevant `package.json` file(s) has the rig
 
 ```sh
 npm pkg get version -workspace ./packages/PKG_DIR | jq -r .[]
-npm pkg set version='NEW_VERSION' -workspace ./packages/PKG_DIR
+npm pkg set version=NEW_VERSION -workspace ./packages/PKG_DIR
 ```
 
 To verify the package before publishing:
