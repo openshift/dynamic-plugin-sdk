@@ -1,7 +1,16 @@
 import { getUtilsConfig } from '../config';
+import type { WebSocketOptions } from './types';
 
-export const createURL = async (host: string, path: string): Promise<string> => {
+export const applyConfigHost = async (
+  options: WebSocketOptions & { wsPrefix?: string; pathPrefix?: string },
+): Promise<string> => {
+  return options.host ?? (await getUtilsConfig().wsAppSettings(options)).host;
+};
+
+export const createURL = async (options: WebSocketOptions): Promise<string> => {
   let url;
+
+  const host = await applyConfigHost(options);
 
   if (host === 'auto') {
     if (window.location.protocol === 'https:') {
@@ -14,21 +23,20 @@ export const createURL = async (host: string, path: string): Promise<string> => 
     url = host;
   }
 
-  if (path) {
-    url += path;
+  if (options.path) {
+    url += options.path;
   }
 
-  const { urlAugment } = await getUtilsConfig().wsAppSettings();
+  const { urlAugment } = await getUtilsConfig().wsAppSettings(options);
 
   return urlAugment ? urlAugment(url) : url;
 };
 
-export const applyConfigHost = async (overrideHost?: string): Promise<string> => {
-  return overrideHost ?? (await getUtilsConfig().wsAppSettings()).host;
-};
-
 export const applyConfigSubProtocols = async (
-  overridableProtocols?: string[],
+  options: WebSocketOptions & { wsPrefix?: string; pathPrefix?: string },
 ): Promise<string[]> => {
-  return overridableProtocols ?? (await getUtilsConfig().wsAppSettings()).subProtocols;
+  return (
+    (options.host ? options.subProtocols : undefined) ??
+    (await getUtilsConfig().wsAppSettings(options)).subProtocols
+  );
 };

@@ -2,6 +2,7 @@ import { CustomError } from '@monorepo/common';
 import * as _ from 'lodash-es';
 import * as k8sActions from '../../app/redux/actions/k8s';
 import type { K8sModelCommon } from '../../types/k8s';
+import type { WebSocketOptions } from '../../web-socket/types';
 import { getReferenceForModel } from '../k8s-utils';
 import type { GetWatchData, MakeQuery, Query } from './k8s-watch-types';
 import type { WatchK8sResource } from './watch-resource-types';
@@ -76,7 +77,13 @@ export const getReduxData = (immutableData, resource: WatchK8sResource) => {
   return null;
 };
 
-export const getWatchData: GetWatchData = (resource, k8sModel) => {
+export const getWatchData: GetWatchData = (
+  resource,
+  k8sModel,
+  options: Partial<
+    WebSocketOptions & RequestInit & { wsPrefix?: string; pathPrefix?: string }
+  > = {},
+) => {
   if (!k8sModel || !resource) {
     return null;
   }
@@ -97,15 +104,17 @@ export const getWatchData: GetWatchData = (resource, k8sModel) => {
       k8sModel,
       undefined,
       resource.partialMetadata,
+      options,
     );
   } else if (resource.name) {
     action = k8sActions.watchK8sObject(
       id,
       resource.name,
-      resource.namespace,
+      resource.namespace || '',
       { ...query },
       k8sModel,
       resource.partialMetadata,
+      options,
     );
   } else {
     return null;

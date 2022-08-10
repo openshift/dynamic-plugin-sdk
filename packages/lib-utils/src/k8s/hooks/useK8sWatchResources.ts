@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import * as k8sActions from '../../app/redux/actions/k8s';
 import type { K8sModelCommon } from '../../types/k8s';
 import type { K8sState, SDKStoreState } from '../../types/redux';
+import type { WebSocketOptions } from '../../web-socket/types';
 import {
   transformGroupVersionKindToReference,
   getReferenceForModel,
@@ -24,6 +25,7 @@ import type {
 /**
  * Hook that retrieves the k8s resources along with their respective status for loaded and error.
  * @param initResources resources need to be watched as key-value pair, wherein key will be unique to resource and value will be options needed to watch for the respective resource.
+ * @param options WS and fetch options passed down to WSFactory @see {@link WebSocketFactory} and when pulling the first item.
  * @return A map where keys are as provided in initResouces and value has three properties data, loaded and error.
  * @example
  * ```ts
@@ -33,13 +35,14 @@ import type {
         'pod': {...}
         ...
       }
- *   const {deployment, pod} = useK8sWatchResources(watchResources)
+ *   const {deployment, pod} = useK8sWatchResources(watchResources, { wsPrefix: 'wss://localhost:1337/foo' })
  *   return ...
  * }
  * ```
  */
 export const useK8sWatchResources = <R extends ResourcesObject>(
   initResources: WatchK8sResources<R>,
+  options?: Partial<WebSocketOptions & RequestInit & { wsPrefix?: string; pathPrefix?: string }>,
 ): WatchK8sResults<R> => {
   const resources = useDeepCompareMemoize(initResources, true);
   const modelsLoaded = useModelsLoaded();
@@ -106,7 +109,7 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
             noModel: true,
           } as WatchModel;
         } else if (ids) {
-          const watchData = getWatchData(resources[key], resourceModel);
+          const watchData = getWatchData(resources[key], resourceModel, options);
           if (watchData) {
             // eslint-disable-next-line no-param-reassign
             ids[key] = watchData as WatchModel;
@@ -117,7 +120,7 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
       {},
     );
     return modelsLoaded ? watchDataForResources : null;
-  }, [k8sModels, modelsLoaded, resources]);
+  }, [k8sModels, modelsLoaded, resources, options]);
 
   // Dispatch action to watchResource (with cleanup for stopping the watch) for each resource in "resources"
   const dispatch = useDispatch();

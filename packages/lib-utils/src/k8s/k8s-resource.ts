@@ -7,7 +7,7 @@ type K8sResourceBaseOptions<TQueryOptions = QueryOptions> = {
   model: K8sModelCommon;
   queryOptions?: TQueryOptions;
   fetchOptions?: Partial<{
-    requestInit: RequestInit;
+    requestInit: RequestInit & { wsPrefix?: string; pathPrefix?: string };
     timeout: number;
   }>;
 };

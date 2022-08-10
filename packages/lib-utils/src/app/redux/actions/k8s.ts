@@ -9,7 +9,7 @@ import { k8sWatch, selectorToString } from '../../../k8s/k8s-utils';
 import type { DiscoveryResources } from '../../../types/api-discovery';
 import type { K8sModelCommon, K8sResourceCommon, FilterValue, Selector } from '../../../types/k8s';
 import type { ThunkDispatchFunction } from '../../../types/redux';
-import type { MessageDataType } from '../../../web-socket/types';
+import type { MessageDataType, WebSocketOptions } from '../../../web-socket/types';
 import type { WebSocketFactory } from '../../../web-socket/WebSocketFactory';
 
 export enum ActionType {
@@ -94,6 +94,9 @@ export const watchK8sList =
     k8skind: K8sModelCommon,
     extraAction?: LoadedAction,
     partialMetadata = false,
+    options: Partial<
+      WebSocketOptions & RequestInit & { wsPrefix?: string; pathPrefix?: string }
+    > = {},
   ): ThunkDispatchFunction =>
   (dispatch) => {
     // Only one watch per unique list ID
@@ -116,7 +119,10 @@ export const watchK8sList =
 
       const requestOptions: RequestInit = partialMetadata
         ? {
-            headers: partialObjectMetadataListHeader,
+            headers: {
+              ...(options.headers || {}),
+              ...partialObjectMetadataListHeader,
+            },
           }
         : {};
 
@@ -141,7 +147,10 @@ export const watchK8sList =
           },
         },
         fetchOptions: {
-          requestInit: requestOptions,
+          requestInit: {
+            ...options,
+            ...requestOptions,
+          },
         },
       });
 
@@ -199,7 +208,7 @@ export const watchK8sList =
         WS[id] = k8sWatch(
           k8skind,
           { ...queryWithCluster, resourceVersion },
-          { timeout: WS_TIMEOUT },
+          { ...options, timeout: WS_TIMEOUT },
         );
       } catch (e) {
         if (!REF_COUNTS[id]) {
@@ -267,6 +276,9 @@ export const watchK8sObject =
     query: Query,
     k8sType: K8sModelCommon,
     partialMetadata = false,
+    options: Partial<
+      WebSocketOptions & RequestInit & { wsPrefix?: string; pathPrefix?: string }
+    > = {},
   ): ThunkDispatchFunction =>
   (dispatch) => {
     if (id in REF_COUNTS) {
@@ -285,7 +297,10 @@ export const watchK8sObject =
 
     const requestOptions: RequestInit = partialMetadata
       ? {
-          headers: partialObjectMetadataHeader,
+          headers: {
+            ...(options?.headers || {}),
+            ...partialObjectMetadataHeader,
+          },
         }
       : {};
 
@@ -297,7 +312,10 @@ export const watchK8sObject =
           ns: namespace,
         },
         fetchOptions: {
-          requestInit: requestOptions,
+          requestInit: {
+            ...options,
+            ...requestOptions,
+          },
         },
       })
         .then(
@@ -316,13 +334,14 @@ export const watchK8sObject =
       return;
     }
 
-    WS[id] = k8sWatch(k8sType, queryWithCluster).onBulkMessage((events: MessageDataType[]) =>
-      events.forEach((e: MessageDataType) => {
-        if (typeof e === 'string') {
-          return;
-        }
-        dispatch(modifyObject(id, e.object as K8sResourceCommon));
-      }),
+    WS[id] = k8sWatch(k8sType, queryWithCluster, options).onBulkMessage(
+      (events: MessageDataType[]) =>
+        events.forEach((e: MessageDataType) => {
+          if (typeof e === 'string') {
+            return;
+          }
+          dispatch(modifyObject(id, e.object as K8sResourceCommon));
+        }),
     );
   };
 

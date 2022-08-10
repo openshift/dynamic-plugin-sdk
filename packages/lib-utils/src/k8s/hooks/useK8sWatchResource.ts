@@ -5,6 +5,7 @@ import * as k8sActions from '../../app/redux/actions/k8s';
 import { getReduxIdPayload } from '../../app/redux/reducers/k8s/selector';
 import type { K8sResourceCommon } from '../../types/k8s';
 import type { SDKStoreState } from '../../types/redux';
+import type { WebSocketOptions } from '../../web-socket/types';
 import { getWatchData, getReduxData, NoModelError } from './k8s-watcher';
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 import { useK8sModel } from './useK8sModel';
@@ -16,6 +17,7 @@ const NOT_A_VALUE = '__not-a-value__';
 /**
  * Hook that retrieves the k8s resource along with status for loaded and error.
  * @param initResource options needed to watch for resource.
+ * @param options WS and fetch options passed down to WSFactory @see {@link WebSocketFactory} and when pulling the first item.
  * @return An array with first item as resource(s), second item as loaded status and third item as error state if any.
  * @example
  * ```ts
@@ -23,13 +25,14 @@ const NOT_A_VALUE = '__not-a-value__';
  *   const watchRes = {
         ...
       }
- *   const [data, loaded, error] = useK8sWatchResource(watchRes)
+ *   const [data, loaded, error] = useK8sWatchResource(watchRes, { wsPrefix: 'wss://localhost:1337/foo' })
  *   return ...
  * }
  * ```
  */
 export const useK8sWatchResource = <R extends K8sResourceCommon | K8sResourceCommon[]>(
   initResource: WatchK8sResource | null,
+  options?: Partial<WebSocketOptions & RequestInit & { wsPrefix?: string; pathPrefix?: string }>,
 ): WatchK8sResult<R> => {
   const withFallback: WatchK8sResource = initResource || { kind: NOT_A_VALUE };
   const resource = useDeepCompareMemoize(withFallback, true);
@@ -37,7 +40,10 @@ export const useK8sWatchResource = <R extends K8sResourceCommon | K8sResourceCom
 
   const [k8sModel] = useK8sModel(resource.groupVersionKind || resource.kind);
 
-  const watchData = React.useMemo(() => getWatchData(resource, k8sModel), [k8sModel, resource]);
+  const watchData = React.useMemo(
+    () => getWatchData(resource, k8sModel, options),
+    [k8sModel, resource, options],
+  );
 
   const dispatch = useDispatch();
 

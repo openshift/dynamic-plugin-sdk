@@ -1,6 +1,6 @@
 import type { ResourceFetch } from '@monorepo/common';
 import type { Store } from 'redux';
-import type { WebSocketAppSettings } from './web-socket/types';
+import type { WebSocketAppSettings, WebSocketOptions } from './web-socket/types';
 
 export type UtilsConfig = {
   /**
@@ -16,7 +16,9 @@ export type UtilsConfig = {
   /**
    * Configure the web socket settings for your application.
    */
-  wsAppSettings: () => Promise<WebSocketAppSettings>;
+  wsAppSettings: (
+    options: WebSocketOptions & { wsPrefix?: string; pathPrefix?: string },
+  ) => Promise<WebSocketAppSettings>;
 };
 
 let config: Readonly<UtilsConfig> | undefined;
