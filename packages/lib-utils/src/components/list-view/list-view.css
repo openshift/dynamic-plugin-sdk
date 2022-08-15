@@ -13,3 +13,7 @@
 .pf-c-toolbar__content.dps-list-view__filters {
   margin-top: calc(-1 * var(--pf-global--spacer--lg));
 }
+
+.pf-c-toolbar__item.dps-table-view-top-pagination {
+  margin-left: auto;
+}

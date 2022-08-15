@@ -1,3 +1,4 @@
+import type { AnyObject } from '@monorepo/common';
 import { ActionsColumn, Td } from '@patternfly/react-table';
 import type { ICell, SortByDirection, ThProps, IAction } from '@patternfly/react-table';
 import type { ThInfoType } from '@patternfly/react-table/dist/esm/components/Table/base';
@@ -12,7 +13,12 @@ export type RowProps<D> = {
   obj: D;
 };
 
-type RowMemoProps<D> = RowProps<D> & { Row: React.ComponentType<RowProps<D>> };
+export const RowMemo: React.FC<RowMemoProps<AnyObject>> = React.memo(
+  // eslint-disable-next-line react/prop-types -- this rule has issues with React.memo
+  ({ Row: RowComponent, obj }) => <RowComponent obj={obj} />,
+);
+
+export type RowMemoProps<D> = RowProps<D> & { Row: React.ComponentType<RowProps<D>> };
 
 export type TableColumn<D> = ICell & {
   /** Column ID. */
@@ -69,7 +75,7 @@ type VirtualizedTableBodyProps<D> = {
   width: number;
 };
 
-const VirtualizedTableBody = <D,>({
+const VirtualizedTableBody = ({
   columns,
   data,
   height,
@@ -81,7 +87,7 @@ const VirtualizedTableBody = <D,>({
   rowActions,
   scrollTop,
   width,
-}: VirtualizedTableBodyProps<D>) => {
+}: VirtualizedTableBodyProps<AnyObject>) => {
   const cellMeasurementCache = new CellMeasurerCache({
     fixedWidth: true,
     minHeight: 44,
@@ -89,11 +95,6 @@ const VirtualizedTableBody = <D,>({
       (data?.[rowIndex] as unknown as Record<string, Record<string, unknown>>)?.metadata?.uid ??
       rowIndex,
   });
-
-  // eslint-disable-next-line react/prop-types -- this rule has issues with React.memo
-  const RowMemo: React.FC<RowMemoProps<D>> = React.memo(({ Row: RowComponent, obj }) => (
-    <RowComponent obj={obj} />
-  ));
 
   type RowRendererParams = {
     index: number;
@@ -105,7 +106,7 @@ const VirtualizedTableBody = <D,>({
   };
 
   const rowRenderer = ({ index, isVisible, key, parent, style }: RowRendererParams) => {
-    const rowArgs: RowProps<D> = {
+    const rowArgs: RowProps<AnyObject> = {
       obj: data[index],
     };
 
