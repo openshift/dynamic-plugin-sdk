@@ -195,22 +195,20 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
       CustomNoDataEmptyState={CustomNoDataEmptyState}
     >
       <div role="grid" aria-label={ariaLabel} aria-rowcount={data?.length || 0}>
-        <TableComposable aria-label={ariaLabel} role="presentation">
+        <TableComposable aria-label={ariaLabel} role="presentation" gridBreakPoint="">
           <Thead>
             <Tr>
               {onSelect && (
                 <Th
+                  className="pf-m-truncate dps-list-view__table-text"
                   select={{
-                    onSelect: (event, rowSelected) => onSelect?.(event, rowSelected, data),
+                    onSelect: (event, rowSelected) => onSelect(event, rowSelected, data),
                     isSelected: data.every((item) => isRowSelected?.(item)),
                   }}
                 />
               )}
               {columns.map(
-                (
-                  { title, props: properties, sort, transforms, visibility, id, info },
-                  columnIndex,
-                ) => {
+                ({ title, props: properties, sort, transforms, visibility, id }, columnIndex) => {
                   const isSortable = !!transforms?.find((item) => item?.name === 'sortable');
                   const defaultSort = {
                     sortBy: {
@@ -224,11 +222,11 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
                     <Th
                       // eslint-disable-next-line react/no-array-index-key
                       key={`column-${columnIndex}-${id}`}
-                      info={info}
                       sort={isSortable ? defaultSort : sort}
                       visibility={visibility}
                       // eslint-disable-next-line react/jsx-props-no-spreading
                       {...properties}
+                      className="pf-m-truncate dps-list-view__table-text"
                     >
                       {title}
                     </Th>
