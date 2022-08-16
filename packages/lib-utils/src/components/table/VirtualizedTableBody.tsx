@@ -1,12 +1,12 @@
 import type { AnyObject } from '@monorepo/common';
-import { ActionsColumn, Td } from '@patternfly/react-table';
-import type { ICell, SortByDirection, ThProps, IAction } from '@patternfly/react-table';
-import type { ThInfoType } from '@patternfly/react-table/dist/esm/components/Table/base';
+import { ActionsColumn, Td as PFTd } from '@patternfly/react-table';
+import type { ICell, SortByDirection, ThProps, TdProps, IAction } from '@patternfly/react-table';
 import { VirtualTableBody } from '@patternfly/react-virtualized-extension';
 import type { Scroll } from '@patternfly/react-virtualized-extension/dist/js/components/Virtualized/types';
 import * as React from 'react';
 import { CellMeasurerCache, CellMeasurer } from 'react-virtualized';
 import type { MeasuredCellParent } from 'react-virtualized/dist/es/CellMeasurer';
+import './virtualized-table.css';
 
 export type RowProps<D> = {
   /** Row data object. */
@@ -27,8 +27,6 @@ export type TableColumn<D> = ICell & {
   sort?: ((data: D[], sortDirection: SortByDirection) => D[]) | ThProps['sort'] | string;
   /** Optional visibility. */
   visibility?: string[];
-  /** Optional info tooltip or popover. */
-  info?: ThInfoType;
 };
 
 export type TableRowProps = {
@@ -43,6 +41,18 @@ export type TableRowProps = {
   /** Optional className. */
   className?: string;
 };
+
+export const Td = React.forwardRef<
+  HTMLTableCellElement,
+  Omit<TdProps, 'ref'> & { className?: string }
+>(({ className, ...props }, ref: React.Ref<HTMLTableCellElement>) => (
+  <PFTd
+    ref={ref as React.Ref<HTMLTableCellElement>}
+    className={`${className ? `${className} ` : ''}pf-m-truncate dps-list-view__table-text`}
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    {...props}
+  />
+));
 
 export const TableRow: React.FC<TableRowProps> = ({ id, children, style, trKey, className }) => (
   <tr id={id} style={style} key={trKey} className={className} role="row">
@@ -84,7 +94,7 @@ const VirtualizedTableBody = ({
   Row,
   isRowSelected,
   onSelect,
-  rowActions,
+  rowActions = [],
   scrollTop,
   width,
 }: VirtualizedTableBodyProps<AnyObject>) => {
@@ -125,7 +135,8 @@ const VirtualizedTableBody = ({
       >
         <TableRow id={key} index={index} trKey={key} style={style}>
           {onSelect && (
-            <Td
+            <PFTd
+              className="pf-m-truncate dps-list-view__table-text"
               select={{
                 rowIndex: index,
                 onSelect: (event, isSelected) => onSelect?.(event, isSelected, [rowArgs.obj]),
@@ -135,10 +146,10 @@ const VirtualizedTableBody = ({
             />
           )}
           <RowMemo Row={Row} obj={rowArgs.obj} />
-          {rowActions && (
-            <Td isActionCell>
+          {rowActions?.length > 0 && (
+            <PFTd isActionCell>
               <ActionsColumn items={rowActions} />
-            </Td>
+            </PFTd>
           )}
         </TableRow>
       </CellMeasurer>

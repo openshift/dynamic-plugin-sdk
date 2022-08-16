@@ -1,0 +1,4 @@
+.pf-c-table .pf-c-virtualized .dps-list-view__table-text {
+  text-overflow: unset;
+  white-space: pre-wrap;
+}
