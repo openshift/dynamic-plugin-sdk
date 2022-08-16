@@ -19,6 +19,8 @@ export type HrefNavItem = Extension<
     namespaced?: boolean;
     /** if true, adds /k8s/ns/active-namespace to the begining */
     prefixNamespaced?: boolean;
+    /** if true, app should open new tab with the href */
+    isExternal?: boolean;
   }
 >;
 
