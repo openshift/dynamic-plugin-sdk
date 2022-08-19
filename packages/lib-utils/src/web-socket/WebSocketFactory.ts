@@ -12,7 +12,7 @@ import type {
   OpenHandler,
   WebSocketOptions,
 } from './types';
-import { applyConfigSubProtocols, applyConfigHost, createURL } from './utils';
+import { applyConfigSubProtocols, createURL } from './utils';
 
 /**
  * States the web socket can be in.
@@ -49,7 +49,7 @@ export class WebSocketFactory {
     /** Unique identifier for the web socket. */
     private readonly id: string,
     /** Options to configure the web socket with. */
-    private readonly options: WebSocketOptions,
+    private readonly options: WebSocketOptions & { wsPrefix?: string; pathPrefix?: string },
   ) {
     this.bufferMax = options.bufferMax || 0;
     this.handlers = {
@@ -103,10 +103,8 @@ export class WebSocketFactory {
     this.state = WebSocketState.INIT;
     this.messageBuffer = [];
 
-    const url = await createURL(await applyConfigHost(this.options.host), this.options.path);
-    const subProtocols = await applyConfigSubProtocols(
-      this.options.host ? this.options.subProtocols : undefined,
-    );
+    const url = await createURL(this.options);
+    const subProtocols = await applyConfigSubProtocols(this.options);
     try {
       this.ws = new WebSocket(url, subProtocols);
     } catch (e) {

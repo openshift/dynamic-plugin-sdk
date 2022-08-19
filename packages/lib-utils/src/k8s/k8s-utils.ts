@@ -153,7 +153,9 @@ export const k8sWatch = (
     ns?: string;
     fieldSelector?: string;
   } = {},
-  wsOptions: Partial<WebSocketOptions> = {},
+  options: Partial<
+    WebSocketOptions & RequestInit & { wsPrefix?: string; pathPrefix?: string }
+  > = {},
 ) => {
   const queryParams: QueryParams = { watch: 'true' };
   const opts: {
@@ -166,7 +168,7 @@ export const k8sWatch = (
     jsonParse: true,
     bufferFlushInterval: 500,
     bufferMax: 1000,
-    ...wsOptions,
+    ...options,
   };
 
   const { labelSelector } = query;
