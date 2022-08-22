@@ -10,16 +10,26 @@
   },
   "files": [
     "dist/index.js",
-    "dist/index.d.ts"
+    "dist/index.d.ts",
+    "dist/index.ts38.d.ts",
+    "dist/build-meta.json"
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "typesVersions": {
+    "<4.0": {
+      "index.d.ts": [
+        "dist/index.ts38.d.ts"
+      ]
+    }
+  },
   "scripts": {
     "prepack": "yarn build",
     "prepublishOnly": "yarn test",
-    "build": "rm -rf dist && yarn run -T rollup -c",
+    "build": "rm -rf dist && yarn run -T rollup -c && yarn process-dts",
     "lint": "yarn run -T eslint $INIT_CWD",
-    "test": "yarn run -T test $INIT_CWD --passWithNoTests"
+    "test": "yarn run -T test $INIT_CWD --passWithNoTests",
+    "process-dts": "yarn run -T downlevel-dts dist/index.d.ts dist/index.ts38.d.ts --to=3.8"
   },
   "peerDependencies": {
     "react": "^17.0.2",

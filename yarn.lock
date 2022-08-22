@@ -2560,6 +2560,7 @@ __metadata:
     "@typescript-eslint/parser": ^5.3.1
     babel-loader: ^8.2.5
     cypress: ^9.7.0
+    downlevel-dts: ^0.10.0
     eslint: ^7.32.0
     eslint-config-airbnb: ^19.0.0
     eslint-config-airbnb-base: ^15.0.0
@@ -2573,7 +2574,9 @@ __metadata:
     eslint-plugin-promise: ^5.1.1
     eslint-plugin-react: ^7.27.0
     eslint-plugin-react-hooks: ^4.3.0
+    fs-extra: ^10.1.0
     jest: ^27.5.1
+    lodash: ^4.17.21
     lodash-es: ^4.17.21
     prettier: ^2.4.1
     react: ^17.0.2
@@ -2593,6 +2596,7 @@ __metadata:
     ts-jest: ^27.1.4
     ts-node: ^10.7.0
     tslib: ^2.3.1
+    type-fest: ^2.18.0
     typescript: ~4.4.4
     webpack: ^5.69.1
   languageName: unknown
@@ -8773,6 +8777,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"downlevel-dts@npm:^0.10.0":
+  version: 0.10.0
+  resolution: "downlevel-dts@npm:0.10.0"
+  dependencies:
+    semver: ^7.3.2
+    shelljs: ^0.8.3
+    typescript: next
+  bin:
+    downlevel-dts: index.js
+  checksum: c0ac21a13a5060913a31ece1af8f817d50b7ad4875cd855b34f0560d46d78e0f02b93bdd8eb81735db9cbfaeef22f56c5be4e9d74b91ea44f63c5335c0d32bbf
+  languageName: node
+  linkType: hard
+
 "duplexer@npm:~0.1.1":
   version: 0.1.2
   resolution: "duplexer@npm:0.1.2"
@@ -10699,6 +10716,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"glob@npm:^7.0.0":
+  version: 7.2.3
+  resolution: "glob@npm:7.2.3"
+  dependencies:
+    fs.realpath: ^1.0.0
+    inflight: ^1.0.4
+    inherits: 2
+    minimatch: ^3.1.1
+    once: ^1.3.0
+    path-is-absolute: ^1.0.0
+  checksum: 29452e97b38fa704dabb1d1045350fb2467cf0277e155aa9ff7077e90ad81d1ea9d53d3ee63bd37c05b09a065e90f16aec4a65f5b8de401d1dac40bc5605d133
+  languageName: node
+  linkType: hard
+
 "glob@npm:^7.1.1, glob@npm:^7.1.2, glob@npm:^7.1.3, glob@npm:^7.1.4, glob@npm:^7.1.6, glob@npm:^7.1.7, glob@npm:^7.2.0":
   version: 7.2.0
   resolution: "glob@npm:7.2.0"
@@ -11570,6 +11601,13 @@ __metadata:
     has: ^1.0.3
     side-channel: ^1.0.4
   checksum: 1944f92e981e47aebc98a88ff0db579fd90543d937806104d0b96557b10c1f170c51fb777b97740a8b6ddeec585fca8c39ae99fd08a8e058dfc8ab70937238bf
+  languageName: node
+  linkType: hard
+
+"interpret@npm:^1.0.0":
+  version: 1.4.0
+  resolution: "interpret@npm:1.4.0"
+  checksum: 2e5f51268b5941e4a17e4ef0575bc91ed0ab5f8515e3cf77486f7c14d13f3010df9c0959f37063dcc96e78d12dc6b0bb1b9e111cdfe69771f4656d2993d36155
   languageName: node
   linkType: hard
 
@@ -13953,7 +13991,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^3.0.2":
+"minimatch@npm:^3.0.2, minimatch@npm:^3.1.1":
   version: 3.1.2
   resolution: "minimatch@npm:3.1.2"
   dependencies:
@@ -16564,6 +16602,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rechoir@npm:^0.6.2":
+  version: 0.6.2
+  resolution: "rechoir@npm:0.6.2"
+  dependencies:
+    resolve: ^1.1.6
+  checksum: fe76bf9c21875ac16e235defedd7cbd34f333c02a92546142b7911a0f7c7059d2e16f441fe6fb9ae203f459c05a31b2bcf26202896d89e390eda7514d5d2702b
+  languageName: node
+  linkType: hard
+
 "rechoir@npm:^0.7.0":
   version: 0.7.1
   resolution: "rechoir@npm:0.7.1"
@@ -16941,7 +16988,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@npm:^1.10.0, resolve@npm:^1.14.2, resolve@npm:^1.3.2":
+"resolve@npm:^1.1.6, resolve@npm:^1.10.0, resolve@npm:^1.14.2, resolve@npm:^1.3.2":
   version: 1.22.1
   resolution: "resolve@npm:1.22.1"
   dependencies:
@@ -16987,7 +17034,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.3.2#~builtin<compat/resolve>":
+"resolve@patch:resolve@^1.1.6#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.3.2#~builtin<compat/resolve>":
   version: 1.22.1
   resolution: "resolve@patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=07638b"
   dependencies:
@@ -17528,6 +17575,19 @@ __metadata:
   version: 3.0.0
   resolution: "shebang-regex@npm:3.0.0"
   checksum: 1a2bcae50de99034fcd92ad4212d8e01eedf52c7ec7830eedcf886622804fe36884278f2be8be0ea5fde3fd1c23911643a4e0f726c8685b61871c8908af01222
+  languageName: node
+  linkType: hard
+
+"shelljs@npm:^0.8.3":
+  version: 0.8.5
+  resolution: "shelljs@npm:0.8.5"
+  dependencies:
+    glob: ^7.0.0
+    interpret: ^1.0.0
+    rechoir: ^0.6.2
+  bin:
+    shjs: bin/shjs
+  checksum: 7babc46f732a98f4c054ec1f048b55b9149b98aa2da32f6cf9844c434b43c6251efebd6eec120937bd0999e13811ebd45efe17410edb3ca938f82f9381302748
   languageName: node
   linkType: hard
 
@@ -19019,6 +19079,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"type-fest@npm:^2.18.0":
+  version: 2.18.0
+  resolution: "type-fest@npm:2.18.0"
+  checksum: 0737128d9d77b93793c6ee443e304462a792f5b723a6be035d6cb488c5610a8baa00522805421341c04324c80efba9849885bbfbc5a9623d0672fe8712969f62
+  languageName: node
+  linkType: hard
+
 "type-is@npm:~1.6.18":
   version: 1.6.18
   resolution: "type-is@npm:1.6.18"
@@ -19052,6 +19119,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:next":
+  version: 4.8.0-dev.20220729
+  resolution: "typescript@npm:4.8.0-dev.20220729"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: c83d7998d9be1403425698b8ce748b771d6cb19fe0305a829313565173f7c3054eb33d96e4d3def2da9eaaa52de111ceaf6ba0da88b4eb2f5ae7690ec0ed02e2
+  languageName: node
+  linkType: hard
+
 "typescript@npm:~4.4.4":
   version: 4.4.4
   resolution: "typescript@npm:4.4.4"
@@ -19059,6 +19136,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 89ecb8436bb48ef5594d49289f5f89103071716b6e4844278f4fb3362856e31203e187a9c76d205c3f0b674d221a058fd28310dbcbcf5d95e9a57229bb5203f1
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@next#~builtin<compat/typescript>":
+  version: 4.8.0-dev.20220729
+  resolution: "typescript@patch:typescript@npm%3A4.8.0-dev.20220729#~builtin<compat/typescript>::version=4.8.0-dev.20220729&hash=bda367"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 0ca87f649ba10e402f73cb41a9c630be6865aa097ff0d51f1c5bedd201c808d6ffca64394cbd8b7a8543f6e4dc1735fd750a0b36e69babe83c4d76d8768da9c5
   languageName: node
   linkType: hard
 
