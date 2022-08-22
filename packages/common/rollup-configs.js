@@ -71,6 +71,7 @@ export const tsLibConfig = (pkg, inputFile, format = 'esm') => ({
     typescript({
       tsconfig: './tsconfig.json',
       include: ['src/**/*', '../common/src/**/*'],
+      noEmitOnError: true,
     }),
     ...(format === 'cjs' ? [replaceLodashEsRequire()] : []),
     analyzer({
