@@ -1,20 +1,56 @@
+import { execSync } from 'child_process';
 import commonjs from '@rollup/plugin-commonjs';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
 import analyzer from 'rollup-plugin-analyzer';
 import dts from 'rollup-plugin-dts';
 import css from 'rollup-plugin-import-css';
-import { removeFiles } from './rollup-plugins/removeFiles';
 import { replaceCode } from './rollup-plugins/replaceCode';
-import { writeBuildMetadata } from './rollup-plugins/writeBuildMetadata';
-
-/** @typedef {import("type-fest").PackageJson} PackageJson */
+import { writeJSONFile } from './rollup-plugins/writeJSONFile';
 
 // https://yarnpkg.com/advanced/lifecycle-scripts#environment-variables
 const rootDir = process.env.PROJECT_CWD;
 
 /**
- * @param {PackageJson} pkg
+ * @param {import('type-fest').PackageJson} pkg
+ */
+const getBuildMetadata = (pkg) => {
+  const now = new Date();
+
+  return {
+    packageName: pkg.name,
+    packageVersion: pkg.version,
+    buildDate: now.toLocaleString('en-US', { dateStyle: 'long' }),
+    buildTime: now.toLocaleString('en-US', { timeStyle: 'long' }),
+    gitCommit: execSync('git rev-parse HEAD').toString().trim(),
+    gitBranch: execSync('git rev-parse --abbrev-ref HEAD').toString().trim(),
+  };
+};
+
+/**
+ * @param {import('type-fest').PackageJson} pkg
+ * @param {Record<string, string>} buildMetadata
+ */
+const getBanner = (pkg, buildMetadata) => {
+  const padLength = Object.keys(buildMetadata).reduce(
+    (maxLength, key) => (key.length > maxLength ? key.length : maxLength),
+    0,
+  );
+
+  const text = `
+  OpenShift Dynamic Plugin SDK
+  ${pkg.repository.url.replace(/\.git$/, '')}
+
+  ${Object.entries(buildMetadata)
+    .map(([key, value]) => `${key.padEnd(padLength)} : ${value}`)
+    .join('\n  ')}
+  `.trim();
+
+  return `/**\n  ${text}\n */\n`;
+};
+
+/**
+ * @param {import('type-fest').PackageJson} pkg
  */
 const getExternalModules = (pkg) => [
   ...Object.keys(pkg.dependencies ?? {}),
@@ -23,7 +59,7 @@ const getExternalModules = (pkg) => [
 ];
 
 /**
- * @param {PackageJson} pkg
+ * @param {import('type-fest').PackageJson} pkg
  */
 const getExternalModuleRegExps = (pkg) => {
   const externalModules = getExternalModules(pkg);
@@ -31,11 +67,11 @@ const getExternalModuleRegExps = (pkg) => {
 };
 
 /**
- * @param {string} file
+ * @param {string} fileName
  */
-const replaceLodashEsRequire = (file) =>
+const replaceLodashEsRequire = (fileName) =>
   replaceCode({
-    file,
+    fileName,
     replacements: {
       "require('lodash-es')": "require('lodash')",
     },
@@ -44,45 +80,50 @@ const replaceLodashEsRequire = (file) =>
 /**
  * Rollup configuration for generating the library `.js` bundle.
  *
- * @param {PackageJson} pkg
+ * @param {import('type-fest').PackageJson} pkg
  * @param {string} inputFile
  * @param {'esm' | 'cjs'} format
  * @returns {import('rollup').RollupOptions}
  */
-export const tsLibConfig = (pkg, inputFile, format = 'esm') => ({
-  input: inputFile,
-  output: {
-    file: 'dist/index.js',
-    format,
-  },
-  external: getExternalModuleRegExps(pkg),
-  plugins: [
-    nodeResolve(),
-    commonjs(),
-    css({
-      output: 'dist/index.css',
-    }),
-    typescript({
-      tsconfig: './tsconfig.json',
-      include: ['src/**/*', '../common/src/**/*'],
-      noEmitOnError: true,
-    }),
-    ...(format === 'cjs' ? [replaceLodashEsRequire('index.js')] : []),
-    analyzer({
-      summaryOnly: true,
-      root: rootDir,
-    }),
-    writeBuildMetadata({
-      pkg,
-      outputDir: 'dist',
-    }),
-  ],
-});
+export const tsLibConfig = (pkg, inputFile, format = 'esm') => {
+  const buildMetadata = getBuildMetadata(pkg);
+
+  return {
+    input: inputFile,
+    output: {
+      file: 'dist/index.js',
+      format,
+      banner: getBanner(pkg, buildMetadata),
+    },
+    external: getExternalModuleRegExps(pkg),
+    plugins: [
+      nodeResolve(),
+      commonjs(),
+      css({
+        output: 'dist/index.css',
+      }),
+      typescript({
+        tsconfig: './tsconfig.json',
+        include: ['src/**/*', '../common/src/**/*'],
+        noEmitOnError: true,
+      }),
+      ...(format === 'cjs' ? [replaceLodashEsRequire('index.js')] : []),
+      writeJSONFile({
+        fileName: 'build-meta.json',
+        value: buildMetadata,
+      }),
+      analyzer({
+        summaryOnly: true,
+        root: rootDir,
+      }),
+    ],
+  };
+};
 
 /**
  * Rollup configuration for generating the library `.d.ts` bundle.
  *
- * @param {PackageJson} pkg
+ * @param {import('type-fest').PackageJson} pkg
  * @param {string} inputFile
  * @returns {import('rollup').RollupOptions}
  */
@@ -99,9 +140,6 @@ export const dtsLibConfig = (pkg, inputFile) => ({
     analyzer({
       summaryOnly: true,
       root: rootDir,
-    }),
-    removeFiles({
-      files: ['dist/types'],
     }),
   ],
 });
