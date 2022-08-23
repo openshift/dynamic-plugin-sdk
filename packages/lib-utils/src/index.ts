@@ -5,6 +5,7 @@ export { UtilsConfig, isUtilsConfigSet, setUtilsConfig, getUtilsConfig } from '.
 export { commonFetch, commonFetchText, commonFetchJSON } from './utils/common-fetch';
 export { useK8sWatchResource, useK8sWatchResources, useK8sModel, useK8sModels } from './k8s/hooks';
 export { ListView, FilterItem, ListViewProps } from './components/list-view';
+export { HorizontalNav, Tab, HorizontalNavProps } from './components/horizontal-nav';
 export { Td } from './components/table';
 export {
   WatchK8sResource,
