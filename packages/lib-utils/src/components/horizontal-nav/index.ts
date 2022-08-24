@@ -1,1 +1,1 @@
-export { default as HorizontalNav, Tab, HorizontalNavProps } from './HorizontalNav';
+export { HorizontalNav, HorizontalNavTabs, Tab, HorizontalNavProps } from './HorizontalNav';

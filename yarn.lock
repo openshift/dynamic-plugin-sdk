@@ -2594,6 +2594,7 @@ __metadata:
     rollup-plugin-dts: ^4.0.1
     rollup-plugin-import-css: ^3.0.3
     start-server-and-test: ^1.14.0
+    storybook-addon-react-router-v6: ^0.1.14
     ts-jest: ^27.1.4
     ts-node: ^10.7.0
     tslib: ^2.3.1
@@ -16341,7 +16342,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-inspector@npm:^5.1.0":
+"react-inspector@npm:^5.1.0, react-inspector@npm:^5.1.1":
   version: 5.1.1
   resolution: "react-inspector@npm:5.1.1"
   dependencies:
@@ -18013,6 +18014,30 @@ __metadata:
   version: 2.13.2
   resolution: "store2@npm:2.13.2"
   checksum: 9e760ea2a7f56eae47d5bafe507511b25ad983bba901e1e0c5f65713e631c15aafb8e031c658047af53c2008a5d21cb6c43f2383673b3493144e8e1ead5c8f91
+  languageName: node
+  linkType: hard
+
+"storybook-addon-react-router-v6@npm:^0.1.14":
+  version: 0.1.14
+  resolution: "storybook-addon-react-router-v6@npm:0.1.14"
+  dependencies:
+    react-inspector: ^5.1.1
+  peerDependencies:
+    "@storybook/addons": ^6.4.0
+    "@storybook/api": ^6.4.0
+    "@storybook/components": ^6.4.0
+    "@storybook/core-events": ^6.4.0
+    "@storybook/theming": ^6.4.0
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-router: ^6.3.0
+    react-router-dom: ^6.3.0
+  peerDependenciesMeta:
+    react:
+      optional: true
+    react-dom:
+      optional: true
+  checksum: f369d77c9703fa32de45a6753a62547614fb61fd4bd20d181b39cfa07a92139f2f8f6abbc1a33d2f632cc3c9f646bbafaaaf439359b389ad223b6ff9a9f33a47
   languageName: node
   linkType: hard
 

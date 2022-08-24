@@ -1,7 +1,8 @@
 import { Tabs, Tab, TabTitleText } from '@patternfly/react-core';
 import React from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 
-export type Tab = {
+type Tab = {
   /** Key for individual tab */
   key: string | number;
   /** Title for individual tab */
@@ -12,23 +13,50 @@ export type Tab = {
   ariaLabel: string;
 };
 
-export type HorizontalNavProps = {
+type WithRouterProps = {
+  /** URL parameters */
+  params?: Record<string, string>;
+  /** Navigate function */
+  navigate?: ReturnType<typeof useNavigate>;
+  /** Current location */
+  location?: ReturnType<typeof useLocation>;
+};
+
+type HorizontalNavProps = {
   /** aria-label for all tabs */
   ariaLabel?: string;
   /** Properties for tabs */
   tabs: Tab[];
-};
+} & WithRouterProps;
 
-const HorizontalNav: React.FC<HorizontalNavProps> = ({ ariaLabel, tabs }) => {
-  const activeTab = tabs && tabs[0] ? tabs[0].key : 0;
+const HorizontalNavTabs: React.FC<HorizontalNavProps> = ({
+  ariaLabel,
+  tabs,
+  params,
+  navigate,
+  location,
+}) => {
+  const defaultActiveTab = tabs && tabs[0] ? tabs[0].key : 0; // Set first tab as the default active tab
+
+  const activeTabFromUrlParam = params?.selectedTab;
+  const isValidTabFromUrl =
+    activeTabFromUrlParam && tabs?.some((tab) => tab.key === activeTabFromUrlParam);
+  const activeTab = isValidTabFromUrl ? activeTabFromUrlParam : defaultActiveTab;
+
   const [activeTabKey, setActiveTabKey] = React.useState<string | number>(activeTab);
 
   return (
     <Tabs
       mountOnEnter
       activeKey={activeTabKey}
-      onSelect={(e, tabIndex) => {
-        setActiveTabKey(tabIndex);
+      onSelect={(e, eventKey) => {
+        setActiveTabKey(eventKey);
+        if (params?.selectedTab && location?.pathname && navigate) {
+          const currentPathName = location.pathname;
+          navigate(currentPathName.replace(params.selectedTab, eventKey as string), {
+            replace: true,
+          });
+        }
       }}
       aria-label={ariaLabel}
       role="region"
@@ -49,4 +77,17 @@ const HorizontalNav: React.FC<HorizontalNavProps> = ({ ariaLabel, tabs }) => {
   );
 };
 
-export default HorizontalNav;
+const withRouter = <T extends WithRouterProps>(Component: React.ComponentType<T>) => {
+  return (props: Omit<T, keyof WithRouterProps>) => {
+    const params = useParams();
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    return <Component {...(props as T)} params={params} navigate={navigate} location={location} />;
+  };
+};
+
+const HorizontalNav = withRouter(HorizontalNavTabs as React.ComponentType<HorizontalNavProps>);
+
+export { HorizontalNav, HorizontalNavTabs, Tab, HorizontalNavProps };

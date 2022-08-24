@@ -2,22 +2,30 @@
 import { Card, CardTitle, CardBody } from '@patternfly/react-core';
 import type { ComponentStory, ComponentMeta } from '@storybook/react';
 import React from 'react';
+import { withRouter } from 'storybook-addon-react-router-v6';
 import type { Tab } from './HorizontalNav';
-import HorizontalNav from './HorizontalNav';
+import { HorizontalNav } from './HorizontalNav';
 
 const meta: ComponentMeta<typeof HorizontalNav> = {
   title: 'HorizontalNav',
   component: HorizontalNav,
+  decorators: [withRouter],
+  parameters: {
+    reactRouter: {
+      routePath: '/testNav/:selectedTab',
+      routeParams: { selectedTab: 'Containers' },
+    },
+  },
   argTypes: {},
 };
 
 export default meta;
 
-const Template: ComponentStory<typeof HorizontalNav> = (args) => {
+const TemplateWithRouter: ComponentStory<typeof HorizontalNav> = (args) => {
   return <HorizontalNav {...args} />;
 };
 
-export const Primary = Template.bind({});
+export const Primary = TemplateWithRouter.bind({});
 
 // Sample content components for tabs
 const BaseContent: React.FC<{ content: string }> = ({ content }) => {
