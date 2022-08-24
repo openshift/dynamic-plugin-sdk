@@ -4,15 +4,15 @@ import * as _ from 'lodash';
  * Allows replacing code within the given file.
  *
  * @param {object} options
- * @param {string} options.file
+ * @param {string} options.fileName
  * @param {Record<string, string>} options.replacements
  * @returns {import('rollup').Plugin}
  */
-export const replaceCode = ({ file, replacements }) => ({
+export const replaceCode = ({ fileName, replacements }) => ({
   name: 'replace-code',
 
   renderChunk(code, chunk) {
-    if (chunk.fileName !== file) {
+    if (chunk.fileName !== fileName) {
       return null;
     }
 
