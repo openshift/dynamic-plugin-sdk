@@ -18,7 +18,7 @@
   "types": "dist/index.d.ts",
   "typesVersions": {
     ">=3.8 <4.0": {
-      "index.d.ts": [
+      "dist/index.d.ts": [
         "dist/index.ts38.d.ts"
       ]
     }
