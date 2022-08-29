@@ -244,7 +244,7 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
             ))) || (
             <Tbody>
               {data.map((item, index) => (
-                <Tr>
+                <Tr key={`row-${item.id}`}>
                   {onSelect && (
                     <Td
                       select={{
