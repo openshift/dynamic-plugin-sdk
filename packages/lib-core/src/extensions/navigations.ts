@@ -49,6 +49,15 @@ export type NavSection = Extension<
   }
 >;
 
+export type NavGroup = Extension<
+  'core.navigation/group',
+  NavItemProperties & {
+    name: string;
+    /** Patternfly icon name in dashed type. */
+    icon?: string;
+  }
+>;
+
 // Type guards
 
 export const isHrefNavItem = (e: Extension): e is HrefNavItem => e.type === 'core.navigation/href';
@@ -56,6 +65,7 @@ export const isResourceNSNavItem = (e: Extension): e is ResourceNSNavItem =>
   e.type === 'core.navigation/resource-ns';
 export const isSeparator = (e: Extension): e is Separator => e.type === 'core.navigation/separator';
 export const isNavSection = (e: Extension): e is NavSection => e.type === 'core.navigation/section';
+export const isNavGroup = (e: Extension): e is NavGroup => e.type === 'core.navigation/group';
 
 // Arbitrary types
 
@@ -68,6 +78,8 @@ export type NavItemProperties = {
   perspective?: string;
   /** Navigation section to which this item belongs to. If not specified, render this item as a top level link. */
   section?: string;
+  /** Navigation group to which this item belongs to. If not specified, render this item as a top level link. */
+  groupId?: string;
   /** Adds data attributes to the DOM. */
   dataAttributes?: { [key: string]: string };
   /** Mark this item as active when the URL starts with one of these paths. */
