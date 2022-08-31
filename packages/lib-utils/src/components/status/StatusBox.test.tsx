@@ -79,7 +79,7 @@ describe('StatusBox', () => {
     expect(screen.queryByText('Content')).toEqual(null);
   });
 
-  it('should render correctly with with data', () => {
+  it('should render correctly with data', () => {
     render(
       <StatusBox loaded noData={false}>
         <span>Content</span>

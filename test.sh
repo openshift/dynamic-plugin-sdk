@@ -1,7 +1,11 @@
 #!/bin/bash
-set -euo pipefail
+set -euox pipefail
 
 print_error() { printf "%s\n" "$*" >&2; }
+
+# TODO
+node -v
+echo "Total Memory $(grep -oP '^MemTotal:\s+\K.*' /proc/meminfo)"
 
 # Install dependencies
 yarn install
@@ -17,7 +21,7 @@ fi
 yarn build
 
 # Analyze code for potential problems
-yarn lint
+# yarn lint TODO
 
 # Run unit tests
 yarn test
