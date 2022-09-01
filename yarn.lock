@@ -2556,6 +2556,7 @@ __metadata:
     "@types/react-router": ^5.1.17
     "@types/react-router-dom": ^5.3.3
     "@types/react-virtualized": ^9.21.21
+    "@types/uuid": ^8.3.4
     "@typescript-eslint/eslint-plugin": ^5.3.1
     "@typescript-eslint/parser": ^5.3.1
     babel-loader: ^8.2.5
@@ -2597,6 +2598,7 @@ __metadata:
     tslib: ^2.3.1
     type-fest: ^2.18.0
     typescript: ~4.4.4
+    uuid: ^8.3.2
     webpack: ^5.69.1
   languageName: unknown
   linkType: soft
@@ -2720,6 +2722,7 @@ __metadata:
     lodash-es: ^4.17.21
     pluralize: ^8.0.0
     typesafe-actions: ^4.4.2
+    uuid: ^8.3.2
   peerDependencies:
     "@openshift/dynamic-plugin-sdk": ^1.0.0
     "@patternfly/react-core": ^4.202.16
@@ -5011,6 +5014,13 @@ __metadata:
   version: 2.0.6
   resolution: "@types/unist@npm:2.0.6"
   checksum: 25cb860ff10dde48b54622d58b23e66214211a61c84c0f15f88d38b61aa1b53d4d46e42b557924a93178c501c166aa37e28d7f6d994aba13d24685326272d5db
+  languageName: node
+  linkType: hard
+
+"@types/uuid@npm:^8.3.4":
+  version: 8.3.4
+  resolution: "@types/uuid@npm:8.3.4"
+  checksum: 6f11f3ff70f30210edaa8071422d405e9c1d4e53abbe50fdce365150d3c698fe7bbff65c1e71ae080cbfb8fded860dbb5e174da96fdbbdfcaa3fb3daa474d20f
   languageName: node
   linkType: hard
 

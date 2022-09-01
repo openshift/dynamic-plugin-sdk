@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import type { AnyObject } from '@monorepo/common';
 import type { IAction } from '@patternfly/react-table';
 import { ActionsColumn, Tbody, Td, Th, Thead, Tr, TableComposable } from '@patternfly/react-table';
@@ -108,7 +109,11 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
 }) => {
   const [activeSortDirection, setActiveSortDirection] = React.useState('none');
   const [activeSortIndex, setActiveSortIndex] = React.useState(-1);
-  const [data, setData] = React.useState(initialData);
+  const [data, setData] = React.useState<AnyObject[]>([]);
+
+  const addUUID = (allData: AnyObject[]) => {
+    return allData.map((item) => ({ ...item, uuid: item.uuid || item.id || uuidv4() }));
+  };
 
   const paginateData = (allData: AnyObject[]) => {
     const end =
@@ -138,7 +143,7 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
   };
 
   React.useEffect(() => {
-    setData(paginateData(sortData()));
+    setData(paginateData(addUUID(sortData())));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialData]);
 
@@ -220,8 +225,7 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
                   };
                   return (
                     <Th
-                      // eslint-disable-next-line react/no-array-index-key
-                      key={`column-${columnIndex}-${id}`}
+                      key={`column-${id}`}
                       sort={isSortable ? defaultSort : sort}
                       visibility={visibility}
                       // eslint-disable-next-line react/jsx-props-no-spreading
@@ -244,7 +248,7 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
             ))) || (
             <Tbody>
               {data.map((item, index) => (
-                <Tr key={`row-${item.id}`}>
+                <Tr key={`row-${item.uuid}`}>
                   {onSelect && (
                     <Td
                       select={{
