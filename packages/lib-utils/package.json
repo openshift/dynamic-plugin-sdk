@@ -39,6 +39,7 @@
     "immutable": "^3.8.2",
     "lodash-es": "^4.17.21",
     "pluralize": "^8.0.0",
-    "typesafe-actions": "^4.4.2"
+    "typesafe-actions": "^4.4.2",
+    "uuid": "^8.3.2"
   }
 }
