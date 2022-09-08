@@ -2575,6 +2575,7 @@ __metadata:
     eslint-plugin-promise: ^5.1.1
     eslint-plugin-react: ^7.27.0
     eslint-plugin-react-hooks: ^4.3.0
+    identity-obj-proxy: ^3.0.0
     jest: ^27.5.1
     lodash: ^4.17.21
     lodash-es: ^4.17.21
@@ -2593,6 +2594,7 @@ __metadata:
     rollup-plugin-dts: ^4.0.1
     rollup-plugin-import-css: ^3.0.3
     start-server-and-test: ^1.14.0
+    storybook-addon-react-router-v6: ^0.1.14
     ts-jest: ^27.1.4
     ts-node: ^10.7.0
     tslib: ^2.3.1
@@ -10894,6 +10896,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"harmony-reflect@npm:^1.4.6":
+  version: 1.6.2
+  resolution: "harmony-reflect@npm:1.6.2"
+  checksum: 2e5bae414cd2bfae5476147f9935dc69ee9b9a413206994dcb94c5b3208d4555da3d4313aff6fd14bd9991c1e3ef69cdda5c8fac1eb1d7afc064925839339b8c
+  languageName: node
+  linkType: hard
+
 "has-bigints@npm:^1.0.1":
   version: 1.0.1
   resolution: "has-bigints@npm:1.0.1"
@@ -11460,6 +11469,15 @@ __metadata:
   peerDependencies:
     postcss: ^8.1.0
   checksum: 5c324d283552b1269cfc13a503aaaa172a280f914e5b81544f3803bc6f06a3b585fb79f66f7c771a2c052db7982c18bf92d001e3b47282e3abbbb4c4cc488d68
+  languageName: node
+  linkType: hard
+
+"identity-obj-proxy@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "identity-obj-proxy@npm:3.0.0"
+  dependencies:
+    harmony-reflect: ^1.4.6
+  checksum: 97559f8ea2aeaa1a880d279d8c49550dce01148321e00a2102cda5ddf9ce622fa1d7f3efc7bed63458af78889de888fdaebaf31c816312298bb3fdd0ef8aaf2c
   languageName: node
   linkType: hard
 
@@ -16333,7 +16351,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-inspector@npm:^5.1.0":
+"react-inspector@npm:^5.1.0, react-inspector@npm:^5.1.1":
   version: 5.1.1
   resolution: "react-inspector@npm:5.1.1"
   dependencies:
@@ -18005,6 +18023,30 @@ __metadata:
   version: 2.13.2
   resolution: "store2@npm:2.13.2"
   checksum: 9e760ea2a7f56eae47d5bafe507511b25ad983bba901e1e0c5f65713e631c15aafb8e031c658047af53c2008a5d21cb6c43f2383673b3493144e8e1ead5c8f91
+  languageName: node
+  linkType: hard
+
+"storybook-addon-react-router-v6@npm:^0.1.14":
+  version: 0.1.14
+  resolution: "storybook-addon-react-router-v6@npm:0.1.14"
+  dependencies:
+    react-inspector: ^5.1.1
+  peerDependencies:
+    "@storybook/addons": ^6.4.0
+    "@storybook/api": ^6.4.0
+    "@storybook/components": ^6.4.0
+    "@storybook/core-events": ^6.4.0
+    "@storybook/theming": ^6.4.0
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-router: ^6.3.0
+    react-router-dom: ^6.3.0
+  peerDependenciesMeta:
+    react:
+      optional: true
+    react-dom:
+      optional: true
+  checksum: f369d77c9703fa32de45a6753a62547614fb61fd4bd20d181b39cfa07a92139f2f8f6abbc1a33d2f632cc3c9f646bbafaaaf439359b389ad223b6ff9a9f33a47
   languageName: node
   linkType: hard
 
