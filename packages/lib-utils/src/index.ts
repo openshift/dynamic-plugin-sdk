@@ -11,7 +11,6 @@ export {
   Tab,
   HorizontalNavProps,
 } from './components/horizontal-nav';
-export { DetailsItem, DetailsItemProps } from './components/details-item';
 export { LabelList, LabelListProps } from './components/label-list';
 export { Td } from './components/table';
 export {
