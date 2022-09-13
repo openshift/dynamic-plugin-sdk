@@ -113,14 +113,17 @@ Primary.args = {
   filters: [
     {
       id: 'name',
+      type: 'text',
       label: 'Name',
     },
     {
       id: 'kind',
+      type: 'text',
       label: 'Kind',
     },
     {
       id: 'labels',
+      type: 'text',
       label: 'Labels',
     },
   ],
@@ -134,22 +137,21 @@ Primary.args = {
       onClick: () => null,
     },
   ],
+  globalActions: {
+    actions: [
+      <Button key="first" onClick={() => 'Some action'}>
+        Some action
+      </Button>,
+      {
+        label: 'Or objects',
+        onClick: () => 'Another action',
+      },
+      'or plain string',
+    ],
+  },
   onFilter: undefined,
   onSelect: () => null,
   scrollNode: undefined,
   emptyStateDescription: 'No matching data found...',
   virtualized: false,
-  actionButtons: [
-    {
-      label: 'Add',
-      // eslint-disable-next-line no-console
-      callback: () => console.log('Adding workspace'),
-      tooltip: 'Add a workspace by clicking on the button',
-    },
-    {
-      label: 'Delete',
-      callback: () => null,
-      isDisabled: true,
-    },
-  ],
 };

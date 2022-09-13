@@ -1,1 +1,1 @@
-export { default as ListView, FilterItem, ListViewProps } from './ListView';
+export { default as ListView, ListViewProps } from './ListView';

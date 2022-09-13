@@ -1,4 +1,5 @@
-import { screen, render, fireEvent, waitFor } from '@testing-library/react';
+/* eslint-disable react/jsx-props-no-spreading */
+import { screen, render, fireEvent } from '@testing-library/react';
 import * as React from 'react';
 // import { axe } from 'jest-axe';
 import { act } from 'react-dom/test-utils';
@@ -13,24 +14,18 @@ import {
 import ListView, { filterDefault } from './ListView';
 
 describe('TableView - non-virtualized', () => {
+  const initialValues = {
+    data,
+    columns,
+    Row,
+    filters: testFilters,
+    loaded: true,
+  };
+
   it('should render with data', () => {
     render(
       <MemoryRouter initialEntries={[{ pathname: '/hac' }]}>
-        <ListView
-          data={data}
-          columns={columns}
-          Row={Row}
-          filters={testFilters}
-          loaded
-          isRowSelected={undefined}
-          onSelect={undefined}
-          onFilter={undefined}
-          loadError={undefined}
-          CustomEmptyState={undefined}
-          emptyStateDescription={undefined}
-          CustomNoDataEmptyState={undefined}
-          aria-label={undefined}
-        />
+        <ListView {...initialValues} />
       </MemoryRouter>,
     );
     data.forEach((item, index) => {
@@ -86,21 +81,7 @@ describe('TableView - non-virtualized', () => {
     await act(async () => {
       render(
         <MemoryRouter initialEntries={[{ pathname: '/hac' }]}>
-          <ListView
-            data={data}
-            columns={columns}
-            Row={Row}
-            filters={testFilters}
-            loaded
-            isRowSelected={undefined}
-            onSelect={undefined}
-            onFilter={undefined}
-            loadError={undefined}
-            CustomEmptyState={undefined}
-            emptyStateDescription={undefined}
-            CustomNoDataEmptyState={undefined}
-            aria-label={undefined}
-          />
+          <ListView {...initialValues} />
         </MemoryRouter>,
       );
     });
@@ -112,7 +93,7 @@ describe('TableView - non-virtualized', () => {
       );
       expect(screen.getByTestId(`col-branches-${index}`).textContent).toEqual(item.branches);
     });
-    expect(screen.queryByText('X')).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue('X')).not.toBeInTheDocument();
     expect(screen.queryByText('Clear filters')).not.toBeInTheDocument();
     fireEvent.change(screen.getByPlaceholderText('Search by Name'), {
       target: { value: 'X' },
@@ -120,10 +101,10 @@ describe('TableView - non-virtualized', () => {
     await act(async () => {
       jest.runAllTimers();
     });
-    expect(screen.getByText('X')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('X')).toBeInTheDocument();
     expect(screen.getByText('Clear filters')).toBeInTheDocument();
     fireEvent.click(screen.getByText('Clear filters'));
-    expect(screen.queryByText('X')).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue('X')).not.toBeInTheDocument();
     expect(screen.queryByText('Clear filters')).not.toBeInTheDocument();
   });
 
@@ -131,21 +112,7 @@ describe('TableView - non-virtualized', () => {
     const onFilter = jest.fn(() => data);
     render(
       <MemoryRouter initialEntries={[{ pathname: '/hac' }]}>
-        <ListView
-          data={data}
-          columns={columns}
-          Row={Row}
-          filters={testFilters}
-          onFilter={onFilter}
-          loaded
-          isRowSelected={undefined}
-          onSelect={undefined}
-          loadError={undefined}
-          CustomEmptyState={undefined}
-          emptyStateDescription={undefined}
-          CustomNoDataEmptyState={undefined}
-          aria-label={undefined}
-        />
+        <ListView {...initialValues} onFilter={onFilter} />
       </MemoryRouter>,
     );
     expect(onFilter).toHaveBeenCalledTimes(1);
@@ -158,26 +125,12 @@ describe('TableView - non-virtualized', () => {
   it('should be able to toggle filters', () => {
     render(
       <MemoryRouter initialEntries={[{ pathname: '/hac' }]}>
-        <ListView
-          data={data}
-          columns={columns}
-          Row={Row}
-          filters={testFilters}
-          loaded
-          isRowSelected={undefined}
-          onSelect={undefined}
-          onFilter={undefined}
-          loadError={undefined}
-          CustomEmptyState={undefined}
-          emptyStateDescription={undefined}
-          CustomNoDataEmptyState={undefined}
-          aria-label={undefined}
-        />
+        <ListView {...initialValues} />
       </MemoryRouter>,
     );
     expect(screen.getByPlaceholderText('Search by Name')).toBeVisible();
     fireEvent.click(screen.getAllByRole('button')[0]);
-    fireEvent.click(screen.getAllByRole('option')[1]);
+    fireEvent.click(screen.getAllByRole('menuitem')[1]);
     expect(screen.queryByPlaceholderText('Search by Name')).not.toBeInTheDocument();
     expect(screen.getByPlaceholderText('Search by Branches')).toBeInTheDocument();
   });
@@ -217,21 +170,7 @@ describe('TableView - non-virtualized', () => {
 
     render(
       <MemoryRouter initialEntries={[{ pathname: '/hac' }]}>
-        <ListView
-          data={longData}
-          columns={columns}
-          Row={Row}
-          filters={testFilters}
-          loaded
-          isRowSelected={undefined}
-          onSelect={undefined}
-          onFilter={undefined}
-          loadError={undefined}
-          CustomEmptyState={undefined}
-          emptyStateDescription={undefined}
-          CustomNoDataEmptyState={undefined}
-          aria-label={undefined}
-        />
+        <ListView {...initialValues} data={longData} />
       </MemoryRouter>,
     );
     expect(screen.getByTestId('col-name-0').textContent).toEqual('name-000');
@@ -243,47 +182,5 @@ describe('TableView - non-virtualized', () => {
     expect(screen.getByTestId('col-name-0').textContent).toEqual('name-010');
     fireEvent.click(screen.getAllByRole('button')[3]);
     expect(screen.getByTestId('col-name-0').textContent).toEqual('name-000');
-  });
-
-  it('action buttons are rendered and functional', async () => {
-    const callbackMock = jest.fn();
-    render(
-      <MemoryRouter initialEntries={[{ pathname: '/hac' }]}>
-        <ListView
-          data={data}
-          columns={columns}
-          Row={Row}
-          filters={testFilters}
-          loaded
-          actionButtons={[
-            {
-              label: 'Add',
-              callback: callbackMock,
-              tooltip: 'Add a workspace by clicking on the button',
-            },
-            {
-              label: 'Delete',
-              callback: () => null,
-              isDisabled: true,
-            },
-          ]}
-        />
-      </MemoryRouter>,
-    );
-
-    // Patternfly doesn't add the proper disabled attribute, so need to check for aria fallback
-    //  expect(screen.getByText('Delete')).toBeDisabled(); /doesn't  work
-    expect(screen.getByText('Add').getAttribute('aria-disabled')).toEqual('false');
-    expect(screen.getByText('Delete').getAttribute('aria-disabled')).toEqual('true');
-
-    // Check that tooltip is rendered
-    expect(screen.queryByText('Add a workspace by clicking on the button')).not.toBeInTheDocument();
-    fireEvent.focus(screen.getByText('Add'));
-    expect(
-      await screen.findByText('Add a workspace by clicking on the button'),
-    ).toBeInTheDocument();
-
-    fireEvent.click(screen.getByText('Add'));
-    await waitFor(() => expect(callbackMock).toHaveBeenCalledTimes(1));
   });
 });

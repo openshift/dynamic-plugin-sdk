@@ -4,7 +4,7 @@ export { default as ReduxExtensionProvider } from './app/redux/ReduxExtensionPro
 export { UtilsConfig, isUtilsConfigSet, setUtilsConfig, getUtilsConfig } from './config';
 export { commonFetch, commonFetchText, commonFetchJSON } from './utils/common-fetch';
 export { useK8sWatchResource, useK8sWatchResources, useK8sModel, useK8sModels } from './k8s/hooks';
-export { ListView, FilterItem, ListViewProps } from './components/list-view';
+export { ListView, ListViewProps } from './components/list-view';
 export { GettingStartedCard } from './components/getting-started-card';
 export {
   HorizontalNav,

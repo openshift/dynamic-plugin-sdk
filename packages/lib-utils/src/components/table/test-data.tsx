@@ -1,6 +1,6 @@
 import { sortable, Td } from '@patternfly/react-table';
+import type { ConditionalFilterItem } from '@redhat-cloud-services/frontend-components';
 import * as React from 'react';
-import type { FilterItem } from '../list-view/ListView';
 import type { RowProps, TableColumn } from './VirtualizedTableBody';
 
 export const testData: TableTestItem[] = [
@@ -27,18 +27,21 @@ export const testData: TableTestItem[] = [
   },
 ];
 
-export const testFilters: FilterItem[] = [
+export const testFilters: ConditionalFilterItem[] = [
   {
     id: 'name',
     label: 'Name',
+    type: 'text',
   },
   {
     id: 'branches',
     label: 'Branches',
+    type: 'text',
   },
   {
     id: 'workspaces',
     label: 'Workspaces',
+    type: 'text',
   },
 ];
 

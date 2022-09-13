@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import { render, screen, fireEvent } from '@testing-library/react';
 import * as React from 'react';
 import type { TableTestItem } from './test-data';
@@ -6,9 +7,15 @@ import VirtualizedTable, { compareData } from './VirtualizedTable';
 
 describe('VirtualizedTable - non-virtualized', () => {
   const emptyData: TableTestItem[] = [];
+  const initialValues = {
+    data,
+    columns,
+    Row,
+    loaded: true,
+  };
 
   it('should render loading', () => {
-    render(<VirtualizedTable data={emptyData} columns={columns} Row={Row} loaded={false} />);
+    render(<VirtualizedTable {...initialValues} loaded={false} />);
     expect(screen.getByRole('progressbar')).toBeDefined();
   });
 
@@ -26,9 +33,7 @@ describe('VirtualizedTable - non-virtualized', () => {
   });
 
   it('should render with data, correct sort indicators and no checkboxes', () => {
-    const { container } = render(
-      <VirtualizedTable data={[...data]} columns={columns} Row={Row} loaded />,
-    );
+    const { container } = render(<VirtualizedTable {...initialValues} data={[...data]} />);
     data.forEach((item, index) => {
       expect(screen.getByTestId(`col-name-${index}`).textContent).toEqual(item.name);
       expect(screen.getByTestId(`col-prs-${index}`).textContent).toEqual(item.prs);
@@ -71,14 +76,7 @@ describe('VirtualizedTable - non-virtualized', () => {
   it('should render with checkboxes when onSelect passed and call isRowSelected', () => {
     const isRowSelected = jest.fn();
     render(
-      <VirtualizedTable
-        data={data}
-        columns={columns}
-        isRowSelected={isRowSelected}
-        onSelect={() => null}
-        Row={Row}
-        loaded
-      />,
+      <VirtualizedTable {...initialValues} isRowSelected={isRowSelected} onSelect={() => null} />,
     );
     data.forEach((item, index) => {
       expect(screen.getByTestId(`check-row-${index}`)).toBeInTheDocument();
@@ -89,16 +87,7 @@ describe('VirtualizedTable - non-virtualized', () => {
 
   it('should call onSelect on checkbox click', () => {
     const onSelect = jest.fn();
-    render(
-      <VirtualizedTable
-        data={data}
-        columns={columns}
-        isRowSelected={() => true}
-        onSelect={onSelect}
-        Row={Row}
-        loaded
-      />,
-    );
+    render(<VirtualizedTable {...initialValues} isRowSelected={() => true} onSelect={onSelect} />);
     expect(onSelect).toHaveBeenCalledTimes(0);
     fireEvent.click(screen.getAllByRole('checkbox')[0]);
     expect(onSelect).toHaveBeenCalledTimes(1);
@@ -108,14 +97,7 @@ describe('VirtualizedTable - non-virtualized', () => {
 
   it('should render all checkboxes checked correctly', () => {
     render(
-      <VirtualizedTable
-        data={data}
-        columns={columns}
-        isRowSelected={() => true}
-        onSelect={() => null}
-        Row={Row}
-        loaded
-      />,
+      <VirtualizedTable {...initialValues} isRowSelected={() => true} onSelect={() => null} />,
     );
     expect((screen.getAllByRole('checkbox')[0] as HTMLInputElement).checked).toEqual(true);
     data.forEach((value, index) => {
@@ -128,12 +110,9 @@ describe('VirtualizedTable - non-virtualized', () => {
   it('should render some checkboxes checked correctly', () => {
     render(
       <VirtualizedTable
-        data={data}
-        columns={columns}
+        {...initialValues}
         isRowSelected={(item) => item.name === data[0].name}
         onSelect={() => null}
-        Row={Row}
-        loaded
       />,
     );
     expect((screen.getAllByRole('checkbox')[0] as HTMLInputElement).checked).toEqual(false);
@@ -149,8 +128,7 @@ describe('VirtualizedTable - non-virtualized', () => {
     const onDelete = jest.fn();
     const { container } = render(
       <VirtualizedTable
-        data={data}
-        columns={columns}
+        {...initialValues}
         rowActions={[
           {
             title: 'Edit',
@@ -161,8 +139,6 @@ describe('VirtualizedTable - non-virtualized', () => {
             onClick: onDelete,
           },
         ]}
-        Row={Row}
-        loaded
       />,
     );
     expect(onEdit).toHaveBeenCalledTimes(0);
