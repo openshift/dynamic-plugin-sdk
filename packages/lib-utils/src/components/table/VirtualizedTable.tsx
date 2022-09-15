@@ -262,7 +262,14 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
                   <RowMemo Row={Row} obj={item} />
                   {rowActions && (
                     <Td isActionCell>
-                      <ActionsColumn items={rowActions} />
+                      <ActionsColumn
+                        items={rowActions}
+                        rowData={item}
+                        extraData={{
+                          rowIndex: index,
+                          id: (item.id || item.uuid) as string,
+                        }}
+                      />
                     </Td>
                   )}
                 </Tr>
