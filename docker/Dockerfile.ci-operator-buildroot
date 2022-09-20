@@ -1,0 +1,34 @@
+# This Docker image is used for testing via the OpenShift CI workflow.
+#
+# To build this image locally:
+#   docker build --progress=plain - < Dockerfile.ci-operator-buildroot
+
+FROM quay.io/fedora/fedora:36-x86_64
+
+# Update the system and install the necessary system packages.
+# Note that ci-operator requires git to be installed on the system.
+# https://docs.ci.openshift.org/docs/architecture/ci-operator/#build-root-image
+RUN dnf update -y && \
+    dnf install git jq -y && \
+    git config --system user.name origin-release-container && \
+    git config --system user.email origin-release@redhat.com && \
+    git config --global --add safe.directory '*'
+
+# Create /go directory and make it accessible to users in the root group.
+# Note that ci-operator requires /go directory to exist with write permission.
+# https://docs.openshift.com/container-platform/4.11/openshift_images/create-images.html#use-uid_create-images
+RUN mkdir /go && \
+    chgrp -R 0 /go && \
+    chmod -R g=u /go
+
+# Install additional build dependencies.
+# Node.js (and npm) is installed via the OS provided nodejs module stream.
+# npm is updated to latest version prior to installing any global npm packages.
+RUN dnf module enable nodejs:16 -y && \
+    dnf module install nodejs:16 -y && \
+    npm config -g set cache /go/.npm && \
+    npm install -g --no-update-notifier npm && \
+    npm install -g --no-update-notifier yarn
+
+# Clean up temporary files.
+RUN dnf clean all
