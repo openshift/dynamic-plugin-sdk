@@ -12,7 +12,7 @@ RUN dnf update -y && \
     dnf install git jq -y && \
     git config --system user.name origin-release-container && \
     git config --system user.email origin-release@redhat.com && \
-    git config --global --add safe.directory '*'
+    git config --system --add safe.directory '*'
 
 # Create /go directory and make it accessible to users in the root group.
 # Note that ci-operator requires /go directory to exist with write permission.
