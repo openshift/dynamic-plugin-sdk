@@ -2,12 +2,12 @@
 import { DropdownPosition } from '@patternfly/react-core';
 import type { ComponentStory, ComponentMeta } from '@storybook/react';
 import React from 'react';
-import { ActionMenu } from './ActionMenu';
+import { ActionMenu, ActionMenuVariant } from './ActionMenu';
 
 const meta: ComponentMeta<typeof ActionMenu> = {
   title: 'ActionMenu',
   component: ActionMenu,
-  argTypes: {},
+  argTypes: { groupedActions: { control: 'object' } },
 };
 
 export default meta;
@@ -102,9 +102,13 @@ GroupedActions.args = {
             external: false,
           },
           tooltip: 'Link',
+          description: 'Sample description',
         },
       ],
     },
   ],
+  variant: ActionMenuVariant.DROPDOWN,
+  label: 'Grouped Actions',
   position: DropdownPosition.left,
+  displayLabelBeforeIcon: true,
 };
