@@ -3,6 +3,10 @@ set -euo pipefail
 
 print_error() { printf "%s\n" "$*" >&2; }
 
+# Print system information
+echo "node $(node -v)"
+echo "npm $(npm -v)"
+
 # Install dependencies
 yarn install
 
