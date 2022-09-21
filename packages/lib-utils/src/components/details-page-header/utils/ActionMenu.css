@@ -1,0 +1,12 @@
+.menu-item-with-label-before-icon .pf-c-dropdown__menu-item-icon {
+  margin-left: var(--pf-c-dropdown__menu-item-icon--MarginRight);
+}
+
+.menu-item-with-label-before-icon.pf-c-dropdown__menu-item {
+  flex-direction: row-reverse;
+  justify-content: left;
+}
+
+.menu-item-with-label-before-icon .pf-c-dropdown__menu-item-main {
+  flex-direction: row-reverse;
+}

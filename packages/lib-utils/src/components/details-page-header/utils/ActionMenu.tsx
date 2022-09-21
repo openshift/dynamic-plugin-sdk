@@ -10,6 +10,7 @@ import {
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import * as _ from 'lodash-es';
 import React from 'react';
+import './ActionMenu.css';
 
 export type ActionCTA =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -21,17 +22,17 @@ export type Action = {
   id: string;
   /** The label to display in the UI. */
   label: React.ReactNode;
-  /** Subtext for the menu item */
+  /** Optional subtext for the menu item */
   description?: string;
   /** Executable callback or href.
    * External links should automatically provide an external link icon on action.
    * */
   cta: ActionCTA;
-  /** Whether the action is disabled. */
+  /** Optional flag to indicate whether the action is disabled. */
   isDisabled?: boolean;
-  /** The tooltip for this action. */
+  /** Optional tooltip for this action. */
   tooltip?: string;
-  /** The icon for this action. */
+  /** Optional icon for this action. */
   icon?: React.ReactNode;
 };
 
@@ -49,10 +50,7 @@ export enum ActionMenuVariant {
   DROPDOWN = 'default',
 }
 
-export type ActionMenuProps = EitherNotBoth<
-  { actions: Action[] },
-  { groupedActions: GroupedActions[] }
-> & {
+export type ActionMenuOptions = {
   /** Optional flag to indicate whether action menu should be disabled */
   isDisabled?: boolean;
   /** Optional variant for action menu: DROPDOWN vs KEBAB (defaults to dropdown) */
@@ -61,7 +59,15 @@ export type ActionMenuProps = EitherNotBoth<
   label?: string;
   /** Optional position (left/right) at which the action menu appears (defaults to right) */
   position?: DropdownPosition;
+  /** Optional flag to indicate whether labels should appear to the left of icons for the action menu items (icon appears after the label by default) */
+  displayLabelBeforeIcon?: boolean;
 };
+
+export type ActionMenuProps = EitherNotBoth<
+  { actions: Action[] },
+  { groupedActions: GroupedActions[] }
+> &
+  ActionMenuOptions;
 
 export const ActionMenu: React.FC<ActionMenuProps> = ({
   actions = [],
@@ -70,6 +76,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
   variant = ActionMenuVariant.DROPDOWN,
   label = 'Actions',
   position = DropdownPosition.right,
+  displayLabelBeforeIcon,
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [isGrouped, setIsGrouped] = React.useState(false);
@@ -100,28 +107,36 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
   };
 
   /** Returns a DropDownItem element corresponding to an action */
-  const dropdownActionItem = React.useCallback((action: Action) => {
-    const externalIcon =
-      'href' in action.cta && 'external' in action.cta && action.cta.href && action.cta.external ? (
-        <ExternalLinkAltIcon />
-      ) : null;
-    const icon = action.icon ?? externalIcon;
-    const href = 'href' in action.cta ? action.cta.href : undefined;
-    const onClick =
-      'callback' in action.cta && action.cta.callback ? action.cta.callback : undefined;
-    return (
-      <DropdownItem
-        key={action.id}
-        tooltip={action.tooltip}
-        icon={icon}
-        href={href}
-        isDisabled={action.isDisabled}
-        onClick={onClick}
-      >
-        {action.label}
-      </DropdownItem>
-    );
-  }, []);
+  const dropdownActionItem = React.useCallback(
+    (action: Action) => {
+      const externalIcon =
+        'href' in action.cta &&
+        'external' in action.cta &&
+        action.cta.href &&
+        action.cta.external ? (
+          <ExternalLinkAltIcon />
+        ) : null;
+      const icon = action.icon ?? externalIcon;
+      const href = 'href' in action.cta ? action.cta.href : undefined;
+      const onClick =
+        'callback' in action.cta && action.cta.callback ? action.cta.callback : undefined;
+      return (
+        <DropdownItem
+          className={displayLabelBeforeIcon ? 'menu-item-with-label-before-icon' : ''}
+          key={action.id}
+          tooltip={action.tooltip}
+          description={action.description}
+          icon={icon}
+          href={href}
+          isDisabled={action.isDisabled}
+          onClick={onClick}
+        >
+          {action.label}
+        </DropdownItem>
+      );
+    },
+    [displayLabelBeforeIcon],
+  );
 
   React.useEffect(() => {
     let ddActionItems: JSX.Element[] = [];
