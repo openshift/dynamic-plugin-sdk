@@ -1,1 +1,7 @@
-export { HorizontalNav, HorizontalNavTabs, Tab, HorizontalNavProps } from './HorizontalNav';
+export {
+  HorizontalNav,
+  HorizontalNavTabs,
+  Tab,
+  HorizontalNavProps,
+  withRouter,
+} from './HorizontalNav';

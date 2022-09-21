@@ -115,7 +115,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
         tooltip={action.tooltip}
         icon={icon}
         href={href}
-        isDisabled={action.isDisabled}
+        isAriaDisabled={action.isDisabled}
         onClick={onClick}
       >
         {action.label}

@@ -1,6 +1,7 @@
 import { Tabs, Tab, TabTitleText } from '@patternfly/react-core';
 import React from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import '@patternfly/react-styles/css/utilities/Spacing/spacing.css';
 
 type Tab = {
   /** Key for individual tab */
@@ -51,11 +52,15 @@ const HorizontalNavTabs: React.FC<HorizontalNavProps> = ({
       activeKey={activeTabKey}
       onSelect={(e, eventKey) => {
         setActiveTabKey(eventKey);
-        if (params?.selectedTab && location?.pathname && navigate) {
+        if (location?.pathname && navigate) {
           const currentPathName = location.pathname;
-          navigate(currentPathName.replace(params.selectedTab, eventKey as string), {
-            replace: true,
-          });
+          if (params?.selectedTab) {
+            navigate(currentPathName.replace(params.selectedTab, eventKey as string), {
+              replace: true,
+            });
+          } else {
+            navigate(`${currentPathName}/${eventKey as string}`);
+          }
         }
       }}
       aria-label={ariaLabel}
@@ -69,7 +74,7 @@ const HorizontalNavTabs: React.FC<HorizontalNavProps> = ({
             title={<TabTitleText>{tab.title}</TabTitleText>}
             aria-label={tab.ariaLabel}
           >
-            {tab.content}
+            <div className="pf-u-m-md">{tab.content}</div>
           </Tab>
         );
       })}
@@ -90,4 +95,4 @@ const withRouter = <T extends WithRouterProps>(Component: React.ComponentType<T>
 
 const HorizontalNav = withRouter(HorizontalNavTabs as React.ComponentType<HorizontalNavProps>);
 
-export { HorizontalNav, HorizontalNavTabs, Tab, HorizontalNavProps };
+export { HorizontalNav, HorizontalNavTabs, Tab, HorizontalNavProps, withRouter };
