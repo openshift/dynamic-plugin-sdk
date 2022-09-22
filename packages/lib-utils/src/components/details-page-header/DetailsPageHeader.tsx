@@ -14,18 +14,29 @@ import type { BreadcrumbProp, ActionButtonProp, ActionMenuProps } from './utils'
 import { Breadcrumbs, ActionButtons, ActionMenu } from './utils';
 import '@patternfly/react-styles/css/utilities/Spacing/spacing.css';
 
-export type DetailsPageHeaderProps = {
-  breadcrumbs: BreadcrumbProp[];
-  actionButtons?: ActionButtonProp[];
-  pageHeading?: string;
-  obj?: K8sResourceCommon;
-  pageHeadingLabel?: {
+export type PageHeading = {
+  /** Optional title for page heading */
+  title?: string;
+  /** Optional label for page heading */
+  label?: {
     name: string;
     key?: string;
     icon?: React.ReactNode;
     href?: string;
     color?: 'blue' | 'cyan' | 'green' | 'orange' | 'purple' | 'red' | 'grey';
   };
+  /** Optional icon for page heading (appears to the left of the page heading's title) */
+  iconBeforeTitle?: React.ReactNode;
+  /** Optional icon for page heading (appears to the right of the page heading's title) */
+  iconAfterTitle?: React.ReactNode;
+};
+
+export type DetailsPageHeaderProps = {
+  breadcrumbs: BreadcrumbProp[];
+  actionButtons?: ActionButtonProp[];
+  pageHeading?: PageHeading;
+  /** Optional resource object (if no title for the page heading is provided, the title can be taken from the resource's name) */
+  obj?: K8sResourceCommon;
   actionMenu?: ActionMenuProps;
 };
 
@@ -35,9 +46,8 @@ export const DetailsPageHeader: React.SFC<DetailsPageHeaderProps> = ({
   actionMenu,
   pageHeading,
   obj,
-  pageHeadingLabel,
 }) => {
-  const heading = pageHeading ?? obj?.metadata?.name;
+  const heading = pageHeading?.title ?? obj?.metadata?.name;
   return (
     <>
       <Split hasGutter className="pf-u-mb-sm">
@@ -48,6 +58,12 @@ export const DetailsPageHeader: React.SFC<DetailsPageHeaderProps> = ({
         <SplitItem isFilled />
       </Split>
       <Split hasGutter className="pf-u-mb-sm pf-u-mr-sm">
+        {/** Icon for details page heading (before title) */}
+        {pageHeading && !_.isEmpty(pageHeading?.iconBeforeTitle) && (
+          <SplitItem className="pf-u-mt-auto pf-u-mb-auto">
+            {pageHeading?.iconBeforeTitle}
+          </SplitItem>
+        )}
         {/* Details page heading */}
         {heading && (
           <SplitItem>
@@ -56,16 +72,20 @@ export const DetailsPageHeader: React.SFC<DetailsPageHeaderProps> = ({
             </TextContent>
           </SplitItem>
         )}
+        {/** Icon for details page heading (after title) */}
+        {pageHeading && !_.isEmpty(pageHeading?.iconAfterTitle) && (
+          <SplitItem className="pf-u-mt-auto pf-u-mb-auto">{pageHeading?.iconAfterTitle}</SplitItem>
+        )}
         {/* Optional details page heading label */}
-        {!_.isEmpty(pageHeadingLabel) && (
+        {!_.isEmpty(pageHeading) && !_.isEmpty(pageHeading?.label) && (
           <SplitItem>
             <Label
-              href={pageHeadingLabel?.href}
-              icon={pageHeadingLabel?.icon}
-              color={pageHeadingLabel?.color}
-              key={pageHeadingLabel?.key ?? pageHeadingLabel?.name}
+              href={pageHeading?.label?.href}
+              icon={pageHeading?.label?.icon}
+              color={pageHeading?.label?.color}
+              key={pageHeading?.label?.key ?? pageHeading?.label?.name}
             >
-              {pageHeadingLabel?.name}
+              {pageHeading?.label?.name}
             </Label>
           </SplitItem>
         )}

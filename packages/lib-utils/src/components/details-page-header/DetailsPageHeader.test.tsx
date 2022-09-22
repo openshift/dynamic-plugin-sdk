@@ -13,7 +13,9 @@ const mockProps: DetailsPageHeaderProps = {
     { name: 'Workspaces', path: '/workspaces' },
     { name: 'Workspace details', path: '/workspaces/demo-workspace' },
   ],
-  pageHeading: 'demo-workspace',
+  pageHeading: {
+    title: 'demo-workspace',
+  },
   actionButtons: [
     {
       label: 'Test Button',
