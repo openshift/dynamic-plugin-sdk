@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { CheckCircleIcon } from '@patternfly/react-icons';
+import { CheckCircleIcon, GithubIcon } from '@patternfly/react-icons';
 import type { ComponentStory, ComponentMeta } from '@storybook/react';
 import React from 'react';
 import { MemoryRouter, Routes, Route, Link } from 'react-router-dom';
@@ -56,9 +56,12 @@ Primary.args = {
     { name: 'Workspace details', path: '/workspaces/demo-workspace' },
   ],
   obj: mockWorkspace,
-  pageHeadingLabel: {
-    name: 'Ready',
-    icon: <CheckCircleIcon color="#3E8635" />,
+  pageHeading: {
+    label: {
+      name: 'Ready',
+      icon: <CheckCircleIcon color="#3E8635" />,
+    },
+    iconAfterTitle: <GithubIcon color="#0066CC" />,
   },
   actionButtons: [
     {
