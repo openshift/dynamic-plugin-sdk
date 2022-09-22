@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 set -exuo pipefail
 
 ARTIFACT_DIR=${ARTIFACT_DIR:=/tmp/artifacts}
@@ -18,9 +17,5 @@ yarn install
 yarn build-libs
 yarn build-samples
 
-# Disable color codes in Cypress since they do not render well CI test logs.
-# https://docs.cypress.io/guides/guides/continuous-integration.html#Colors
-export NO_COLOR=1
-
-# Start servers for sample app and plugin on ports 9000 and 9001 respectively, run E2E tests and shut down the servers
+# Start servers for sample app and sample plugin, run E2E tests and shut down the servers
 yarn test-e2e-ci

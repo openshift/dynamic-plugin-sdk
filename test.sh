@@ -1,11 +1,12 @@
 #!/bin/bash
-set -euo pipefail
+set -exuo pipefail
 
 print_error() { printf "%s\n" "$*" >&2; }
 
 # Print system information
 echo "node $(node -v)"
 echo "npm $(npm -v)"
+echo "yarn $(yarn -v)"
 
 # Install dependencies
 yarn install

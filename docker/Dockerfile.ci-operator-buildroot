@@ -5,13 +5,14 @@
 
 FROM quay.io/fedora/fedora:36-x86_64
 
+# Disable color output to make log files more readable.
+ENV NO_COLOR=1
+
 # Update the system and install the necessary system packages.
 # Note that ci-operator requires git to be installed on the system.
 # https://docs.ci.openshift.org/docs/architecture/ci-operator/#build-root-image
 RUN dnf update -y && \
-    dnf install git jq -y && \
-    git config --system user.name origin-release-container && \
-    git config --system user.email origin-release@redhat.com && \
+    dnf install -y git jq && \
     git config --system --add safe.directory '*'
 
 # Create /go directory and make it accessible to users in the root group.
@@ -21,14 +22,24 @@ RUN mkdir /go && \
     chgrp -R 0 /go && \
     chmod -R g=u /go
 
+# Configure npm package manager (installed below) via environment variables.
+# https://docs.npmjs.com/cli/v8/using-npm/config#environment-variables
+ENV npm_config_cache=/go/.npm \
+    npm_config_update_notifier=false
+
 # Install additional build dependencies.
 # Node.js (and npm) is installed via the OS provided nodejs module stream.
-# npm is updated to latest version prior to installing any global npm packages.
-RUN dnf module enable nodejs:16 -y && \
-    dnf module install nodejs:16 -y && \
-    npm config -g set cache /go/.npm && \
-    npm install -g --no-update-notifier npm && \
-    npm install -g --no-update-notifier yarn
+RUN dnf module enable -y nodejs:16 && \
+    dnf module install -y nodejs:16 && \
+    npm install -g yarn
+
+# https://docs.cypress.io/guides/continuous-integration/introduction.html#Dependencies
+RUN dnf install -y xorg-x11-server-Xvfb gtk2-devel gtk3-devel libnotify-devel GConf2 nss libXScrnSaver
 
 # Clean up temporary files.
 RUN dnf clean all
+
+# Print post-build system information.
+RUN echo "node $(node -v)" && \
+    echo "npm $(npm -v)" && \
+    echo "yarn $(yarn -v)"
