@@ -17,5 +17,12 @@ yarn install
 yarn build-libs
 yarn build-samples
 
+# Create a virtual X11 display via Xvfb for use with Cypress E2E testing
+Xvfb :99 -screen 0 1920x1080x24 &
+export DISPLAY=':99.0'
+
 # Start servers for sample app and sample plugin, run E2E tests and shut down the servers
 yarn test-e2e-ci
+
+# Kill the Xvfb background process
+pkill Xvfb
