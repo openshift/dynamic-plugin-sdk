@@ -33,6 +33,7 @@ RUN dnf module enable -y nodejs:16 && \
     dnf module install -y nodejs:16 && \
     npm install -g yarn
 
+# Install Cypress related dependencies.
 # https://docs.cypress.io/guides/continuous-integration/introduction.html#Dependencies
 RUN dnf install -y xorg-x11-server-Xvfb gtk2-devel gtk3-devel libnotify-devel GConf2 nss libXScrnSaver
 
