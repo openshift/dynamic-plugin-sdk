@@ -12,7 +12,7 @@ ENV NO_COLOR=1
 # Note that ci-operator requires git to be installed on the system.
 # https://docs.ci.openshift.org/docs/architecture/ci-operator/#build-root-image
 RUN dnf update -y && \
-    dnf install -y git jq && \
+    dnf install -y git jq openssl && \
     git config --system --add safe.directory '*'
 
 # Create /go directory and make it accessible to users in the root group.
@@ -27,11 +27,20 @@ RUN mkdir /go && \
 ENV npm_config_cache=/go/.npm \
     npm_config_update_notifier=false
 
-# Install additional build dependencies.
-# Node.js (and npm) is installed via the OS provided nodejs module stream.
-RUN dnf module enable -y nodejs:16 && \
-    dnf module install -y nodejs:16 && \
-    npm install -g yarn
+# Install Node.js via Node Version Manager.
+# This also updates npm package manager to the latest available version.
+# https://github.com/nvm-sh/nvm#manual-install
+ENV NVM_DIR=/go/.nvm \
+    NVM_VERSION=v0.39.1 \
+    NODE_VERSION=v18.9.1
+RUN git clone -b $NVM_VERSION --depth 1 https://github.com/nvm-sh/nvm.git $NVM_DIR && \
+    . $NVM_DIR/nvm.sh && \
+    nvm install $NODE_VERSION && \
+    npm install -g npm
+ENV PATH=$NVM_DIR/versions/node/$NODE_VERSION/bin:$PATH
+
+# Install global npm package dependencies.
+RUN npm install -g yarn
 
 # Install Cypress related dependencies.
 # https://docs.cypress.io/guides/continuous-integration/introduction.html#Dependencies
@@ -43,4 +52,5 @@ RUN dnf clean all
 # Print post-build system information.
 RUN echo "node $(node -v)" && \
     echo "npm $(npm -v)" && \
-    echo "yarn $(yarn -v)"
+    echo "yarn $(yarn -v)" && \
+    openssl version
