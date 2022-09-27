@@ -14,7 +14,7 @@
     "test-print-config": "jest --showConfig",
     "test-e2e": "yarn workspace @monorepo/e2e-sample-app run test-e2e",
     "test-e2e-open": "yarn workspace @monorepo/e2e-sample-app run test-e2e-open",
-    "test-e2e-ci": "start-server-and-test run-samples '9000|9001' test-e2e",
+    "test-e2e-ci": "start-server-and-test 'yarn run-samples' '9000|9001' 'yarn test-e2e'",
     "eslint": "eslint --max-warnings 0 --ext .js,.jsx,.ts,.tsx",
     "eslint-print-config": "eslint --print-config",
     "storybook": "start-storybook -p 6006",
