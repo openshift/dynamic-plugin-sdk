@@ -7,16 +7,7 @@ import { withRouter, HorizontalNav } from '../horizontal-nav';
 export type DetailsPageProps = HorizontalNavProps & DetailsPageHeaderProps;
 
 export const DetailsPage = withRouter<DetailsPageProps>(
-  ({
-    ariaLabel,
-    tabs,
-    breadcrumbs,
-    actionButtons,
-    actionMenu,
-    pageHeading,
-    obj,
-    pageHeadingLabel,
-  }) => {
+  ({ ariaLabel, tabs, breadcrumbs, actionButtons, actionMenu, pageHeading, obj }) => {
     return (
       <>
         <DetailsPageHeader
@@ -25,7 +16,6 @@ export const DetailsPage = withRouter<DetailsPageProps>(
           actionMenu={actionMenu}
           pageHeading={pageHeading}
           obj={obj}
-          pageHeadingLabel={pageHeadingLabel}
         />
         <HorizontalNav ariaLabel={ariaLabel} tabs={tabs} />
       </>

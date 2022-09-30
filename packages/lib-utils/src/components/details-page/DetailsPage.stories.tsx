@@ -138,9 +138,11 @@ Primary.args = {
     { name: 'Workspace details', path: '/workspaces/demo-workspace' },
   ],
   obj: mockWorkspace,
-  pageHeadingLabel: {
-    name: 'Ready',
-    icon: <CheckCircleIcon color="#3E8635" />,
+  pageHeading: {
+    label: {
+      name: 'Ready',
+      icon: <CheckCircleIcon color="#3E8635" />,
+    },
   },
   actionButtons: [
     {
