@@ -7,11 +7,8 @@
 !.yarn/sdks
 !.yarn/versions
 
-# Using Yarn node_modules linker strategy
-**/node_modules
-
-# Generated project artifacts
-**/dist
 /coverage
 /screenshots
+**/node_modules
+**/dist
 **/.DS_Store

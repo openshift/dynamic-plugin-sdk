@@ -1,0 +1,4 @@
+/coverage
+/screenshots
+**/node_modules
+**/dist

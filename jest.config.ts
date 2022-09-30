@@ -10,6 +10,7 @@ const config: InitialOptionsTsJest = {
     '<rootDir>/packages/lib-webpack',
   ],
 
+  collectCoverage: true,
   coverageDirectory: 'coverage',
   coverageReporters: ['json', 'lcov', 'text'],
   collectCoverageFrom: ['src/**/*.{js,jsx,ts,tsx}', '!**/(node_modules|dist)/**'],

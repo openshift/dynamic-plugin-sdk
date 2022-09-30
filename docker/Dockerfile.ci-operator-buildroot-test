@@ -1,0 +1,13 @@
+# This Docker image is used to verify the locally built ci-operator-buildroot image.
+#
+# To build this image, run the following command in project root directory:
+#   docker build -t ci-operator-buildroot-test --progress plain -f docker/Dockerfile.ci-operator-buildroot-test .
+
+FROM ci-operator-buildroot
+
+ARG TEST_SCRIPT='test.sh'
+
+COPY . /go/src/github.com/openshift/dynamic-plugin-sdk
+WORKDIR /go/src/github.com/openshift/dynamic-plugin-sdk
+
+RUN ./$TEST_SCRIPT

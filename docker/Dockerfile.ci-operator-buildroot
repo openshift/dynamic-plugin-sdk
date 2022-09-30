@@ -1,9 +1,9 @@
 # This Docker image is used for testing via the OpenShift CI workflow.
 #
-# To build this image locally:
-#   docker build --progress=plain - < Dockerfile.ci-operator-buildroot
+# To build this image, run the following command in project root directory:
+#   docker build -t ci-operator-buildroot --progress plain - < docker/Dockerfile.ci-operator-buildroot
 
-FROM quay.io/fedora/fedora:36-x86_64
+FROM quay.io/centos/centos:stream8
 
 # Disable color output to make log files more readable.
 ENV NO_COLOR=1
@@ -12,8 +12,9 @@ ENV NO_COLOR=1
 # Note that ci-operator requires git to be installed on the system.
 # https://docs.ci.openshift.org/docs/architecture/ci-operator/#build-root-image
 RUN dnf update -y && \
-    dnf install -y git jq openssl && \
-    git config --system --add safe.directory '*'
+    dnf install -y git jq openssl procps-ng && \
+    git config --system --add safe.directory '*' && \
+    git config --system advice.detachedHead false
 
 # Create /go directory and make it accessible to users in the root group.
 # Note that ci-operator requires /go directory to exist with write permission.
@@ -32,7 +33,7 @@ ENV npm_config_cache=/go/.npm \
 # https://github.com/nvm-sh/nvm#manual-install
 ENV NVM_DIR=/go/.nvm \
     NVM_VERSION=v0.39.1 \
-    NODE_VERSION=v18.9.1
+    NODE_VERSION=v16.17.1
 RUN git clone -b $NVM_VERSION --depth 1 https://github.com/nvm-sh/nvm.git $NVM_DIR && \
     . $NVM_DIR/nvm.sh && \
     nvm install $NODE_VERSION && \
@@ -44,7 +45,7 @@ RUN npm install -g yarn
 
 # Install Cypress related dependencies.
 # https://docs.cypress.io/guides/continuous-integration/introduction.html#Dependencies
-RUN dnf install -y xorg-x11-server-Xvfb gtk2-devel gtk3-devel libnotify-devel GConf2 nss libXScrnSaver
+RUN dnf install -y xorg-x11-server-Xvfb gtk2-devel gtk3-devel libnotify-devel GConf2 nss libXScrnSaver alsa-lib
 
 # Clean up temporary files.
 RUN dnf clean all
