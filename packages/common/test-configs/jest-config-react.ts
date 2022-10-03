@@ -7,10 +7,8 @@ const config: InitialOptionsTsJest = {
   testEnvironment: 'jsdom',
 
   // https://github.com/jsdom/jsdom#simple-options
-  // https://github.com/jsdom/jsdom#pretending-to-be-a-visual-browser
   testEnvironmentOptions: {
     url: 'http://localhost/',
-    pretendToBeVisual: true,
   },
 
   setupFilesAfterEnv: [path.resolve(__dirname, 'setup-react.ts')],
