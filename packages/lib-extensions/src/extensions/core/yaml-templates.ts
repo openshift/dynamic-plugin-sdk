@@ -1,5 +1,5 @@
-import type { ExtensionK8sResourceIdentifier } from '../types/common';
-import type { Extension, CodeRef } from '../types/extension';
+import type { Extension, CodeRef } from '@openshift/dynamic-plugin-sdk';
+import type { ExtensionK8sResourceIdentifier } from '../../types/common';
 
 /** YAML templates for editing resources via the yaml editor. */
 export type YAMLTemplate = Extension<

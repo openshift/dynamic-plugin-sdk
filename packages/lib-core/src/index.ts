@@ -1,4 +1,3 @@
-// Main APIs, to be consumed by plugins and host applications
 export { PluginLoader, PluginLoaderOptions } from './store/PluginLoader';
 export { PluginStore, PluginStoreOptions } from './store/PluginStore';
 export { PluginStoreProvider, usePluginStore } from './store/PluginStoreContext';
@@ -7,10 +6,11 @@ export { useExtensions } from './store/useExtensions';
 export { usePluginInfo } from './store/usePluginInfo';
 export { useResolvedExtensions } from './store/useResolvedExtensions';
 export {
+  CodeRef,
   Extension,
   ExtensionPredicate,
-  LoadedExtension,
   EncodedExtension,
+  LoadedExtension,
   ResolvedExtension,
 } from './types/extension';
 export {
@@ -22,6 +22,3 @@ export {
   PluginStoreInterface,
 } from './types/store';
 export { PluginManifest, PluginRuntimeMetadata, LoadedPlugin } from './types/plugin';
-
-// Core extension types, to be exported via lib-extensions package
-export * from './extensions';

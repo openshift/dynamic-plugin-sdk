@@ -1,6 +1,6 @@
+import type { CodeRef, Extension } from '@openshift/dynamic-plugin-sdk';
 import type { ComponentType } from 'react';
-import type { ExtensionK8sResourceIdentifier } from '../types/common';
-import type { CodeRef, Extension } from '../types/extension';
+import type { ExtensionK8sResourceIdentifier } from '../../types/common';
 
 export type CreateResource = Extension<
   'core.resource/create',

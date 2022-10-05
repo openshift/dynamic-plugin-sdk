@@ -1,4 +1,4 @@
-import type { TelemetryEventListener } from '@openshift/dynamic-plugin-sdk';
+import type { TelemetryEventListener } from '@openshift/dynamic-plugin-sdk-extensions';
 
 const telemetryListener: TelemetryEventListener = (eventType, properties) => {
   // eslint-disable-next-line no-console

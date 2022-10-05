@@ -14,12 +14,12 @@ const rootDir = process.env.PROJECT_CWD;
 /**
  * @param {import('type-fest').PackageJson} pkg
  */
-const getBuildMetadata = (pkg) => {
+const getBuildMetadata = ({ name, version }) => {
   const now = new Date();
 
   return {
-    packageName: pkg.name,
-    packageVersion: pkg.version,
+    packageName: name,
+    packageVersion: version,
     buildDate: now.toLocaleString('en-US', { dateStyle: 'long' }),
     buildTime: now.toLocaleString('en-US', { timeStyle: 'long' }),
     gitCommit: execSync('git rev-parse HEAD').toString().trim(),
@@ -31,7 +31,7 @@ const getBuildMetadata = (pkg) => {
  * @param {import('type-fest').PackageJson} pkg
  * @param {Record<string, string>} buildMetadata
  */
-const getBanner = (pkg, buildMetadata) => {
+const getBanner = ({ repository }, buildMetadata) => {
   const padLength = Object.keys(buildMetadata).reduce(
     (maxLength, key) => (key.length > maxLength ? key.length : maxLength),
     0,
@@ -39,7 +39,7 @@ const getBanner = (pkg, buildMetadata) => {
 
   const text = `
   OpenShift Dynamic Plugin SDK
-  ${pkg.repository.url.replace(/\.git$/, '')}
+  ${repository.url.replace(/\.git$/, '')}
 
   ${Object.entries(buildMetadata)
     .map(([key, value]) => `${key.padEnd(padLength)} : ${value}`)
@@ -52,11 +52,17 @@ const getBanner = (pkg, buildMetadata) => {
 /**
  * @param {import('type-fest').PackageJson} pkg
  */
-const getExternalModules = (pkg) => [
-  ...Object.keys(pkg.dependencies ?? {}),
-  ...Object.keys(pkg.peerDependencies ?? {}),
-  ...('lodash' in pkg.dependencies ? ['lodash-es'] : []),
-];
+const getExternalModules = ({ dependencies, peerDependencies }) => {
+  const modules = new Set([
+    ...Object.keys(dependencies ?? {}),
+    ...Object.keys(peerDependencies ?? {}),
+  ]);
+
+  modules.add('lodash-es');
+  modules.delete('lodash');
+
+  return Array.from(modules);
+};
 
 /**
  * @param {import('type-fest').PackageJson} pkg

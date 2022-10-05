@@ -1,6 +1,6 @@
+import type { CodeRef, Extension } from '@openshift/dynamic-plugin-sdk';
 import type { ReactNode } from 'react';
-import type { ExtensionK8sResourceIdentifier, ExtensionHook } from '../types/common';
-import type { CodeRef, Extension } from '../types/extension';
+import type { ExtensionK8sResourceIdentifier, ExtensionHook } from '../../types/common';
 
 /** ActionProvider contributes a hook that returns list of actions for specific context */
 export type ActionProvider = Extension<

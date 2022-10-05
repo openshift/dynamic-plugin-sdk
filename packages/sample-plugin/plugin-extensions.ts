@@ -1,8 +1,5 @@
-import type {
-  EncodedExtension,
-  ModelFeatureFlag,
-  TelemetryListener,
-} from '@openshift/dynamic-plugin-sdk';
+import type { EncodedExtension } from '@openshift/dynamic-plugin-sdk';
+import type { ModelFeatureFlag, TelemetryListener } from '@openshift/dynamic-plugin-sdk-extensions';
 
 // TODO(vojtech): make EncodedExtension type work with A | B type unions
 

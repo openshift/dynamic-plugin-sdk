@@ -28,25 +28,15 @@
     "prepublishOnly": "yarn test",
     "build": "rm -rf dist && yarn run -T rollup -c && yarn process-dts",
     "lint": "yarn run -T eslint $INIT_CWD",
-    "test": "yarn run -T test $INIT_CWD --passWithNoTests",
+    "test": "yarn run -T test $INIT_CWD",
     "process-dts": "yarn run -T downlevel-dts dist/index.d.ts dist/index.ts38.d.ts --to=3.8"
   },
   "peerDependencies": {
-    "react": "^17.0.2",
-    "react-router": "^5.2.1",
-    "redux": "^4.1.2"
+    "react": "^17.0.2"
   },
   "dependencies": {
     "lodash-es": "^4.17.21",
     "semver": "^7.3.7",
     "yup": "^0.32.11"
-  },
-  "peerDependenciesMeta": {
-    "react-router": {
-      "optional": true
-    },
-    "redux": {
-      "optional": true
-    }
   }
 }

@@ -1,12 +1,12 @@
 {
-  "name": "@openshift/dynamic-plugin-sdk-webpack",
-  "version": "1.0.0-alpha11",
-  "description": "Allows building dynamic plugin assets with webpack",
+  "name": "@openshift/dynamic-plugin-sdk-extensions",
+  "version": "1.0.0-alpha1",
+  "description": "Provides core extension types for dynamic plugins",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/openshift/dynamic-plugin-sdk.git",
-    "directory": "packages/lib-webpack"
+    "directory": "packages/lib-extensions"
   },
   "files": [
     "dist/index.js",
@@ -23,14 +23,10 @@
     "test": "yarn run -T test $INIT_CWD"
   },
   "peerDependencies": {
-    "webpack": "^5.69.1"
-  },
-  "dependencies": {
-    "glob": "^7.2.0",
-    "lodash": "^4.17.21",
-    "yup": "^0.32.11"
-  },
-  "engines": {
-    "node": ">=16"
+    "@openshift/dynamic-plugin-sdk": ">=1.0.0-alpha",
+    "react": "^17.0.2",
+    "react-redux": "^7.2.2",
+    "react-router": "^5.2.1",
+    "redux": "^4.1.2"
   }
 }

@@ -1,6 +1,6 @@
+import type { CodeRef, Extension } from '@openshift/dynamic-plugin-sdk';
 import type { ReactReduxContextValue } from 'react-redux';
 import type { Reducer, Store } from 'redux';
-import type { CodeRef, Extension } from '../types/extension';
 
 /**
  * Adds new reducer to host application's Redux store which operates on `plugins.<scope>` substate.

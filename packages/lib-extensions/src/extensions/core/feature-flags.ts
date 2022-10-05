@@ -1,5 +1,5 @@
-import type { ExtensionK8sResourceIdentifier } from '../types/common';
-import type { CodeRef, Extension } from '../types/extension';
+import type { CodeRef, Extension } from '@openshift/dynamic-plugin-sdk';
+import type { ExtensionK8sResourceIdentifier } from '../../types/common';
 
 /** Gives full control over host application's feature flags. */
 export type FeatureFlag = Extension<

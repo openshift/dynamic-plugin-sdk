@@ -1,5 +1,5 @@
-import type { ExtensionK8sResourceIdentifier } from '../types/common';
-import type { Extension } from '../types/extension';
+import type { Extension } from '@openshift/dynamic-plugin-sdk';
+import type { ExtensionK8sResourceIdentifier } from '../../types/common';
 
 export type NavItem = Extension<
   'core.navigation/href',

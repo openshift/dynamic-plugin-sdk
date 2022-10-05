@@ -1,9 +1,6 @@
-import type {
-  ReduxProvider,
-  ResolvedExtension,
-  LoadedExtension,
-} from '@openshift/dynamic-plugin-sdk';
+import type { ResolvedExtension, LoadedExtension } from '@openshift/dynamic-plugin-sdk';
 import { useResolvedExtensions } from '@openshift/dynamic-plugin-sdk';
+import type { ReduxProvider } from '@openshift/dynamic-plugin-sdk-extensions';
 import { render } from '@testing-library/react';
 import * as React from 'react';
 import type { ReactReduxContextValue } from 'react-redux';
