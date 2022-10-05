@@ -2,10 +2,8 @@
 // https://github.com/testing-library/jest-dom#custom-matchers
 import '@testing-library/jest-dom';
 
-import type { AnyObject } from '../src/types/common';
-
 jest.mock('react', () => ({
-  ...jest.requireActual<AnyObject>('react'),
+  ...jest.requireActual('react'),
   useLayoutEffect: jest.requireActual('react').useEffect,
 }));
 

@@ -2,7 +2,8 @@
 
 ## Check Node.js version
 
-Use the current [Active LTS](https://nodejs.org/en/about/releases/) release.
+Use the [Node.js](https://nodejs.org/) version used by
+[ci-operator-buildroot](../docker/Dockerfile.ci-operator-buildroot) image.
 
 ## Check npm version
 

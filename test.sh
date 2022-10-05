@@ -21,7 +21,5 @@ yarn lint
 # Run unit tests
 yarn test
 
-# Upload code coverage (CI environment only)
-if [[ -n "${CI:=}" ]]; then
-  ./prow-codecov.sh 2>/dev/null
-fi
+# Upload code coverage
+./prow-codecov.sh 2>/dev/null

@@ -2,7 +2,8 @@
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) current [Active LTS](https://nodejs.org/en/about/releases/) release
+- [Node.js](https://nodejs.org/) version used by
+  [ci-operator-buildroot](../docker/Dockerfile.ci-operator-buildroot) image
 - [Yarn](https://yarnpkg.com/getting-started/install) package manager
 
 ## GitHub repo setup
