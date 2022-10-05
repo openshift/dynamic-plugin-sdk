@@ -19,7 +19,10 @@ render(<Loading />, appContainer);
 
 // eslint-disable-next-line promise/catch-or-return, promise/always-return
 initSharedScope().then(() => {
-  const pluginLoader = new PluginLoader({ sharedScope: getSharedScope() });
+  const pluginLoader = new PluginLoader({
+    sharedScope: getSharedScope(),
+    fixedPluginDependencyResolutions: { 'sample-app': '1.0.0' },
+  });
 
   const pluginStore = new PluginStore();
 

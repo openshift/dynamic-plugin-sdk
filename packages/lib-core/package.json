@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "lodash-es": "^4.17.21",
+    "semver": "^7.3.7",
     "yup": "^0.32.11"
   },
   "peerDependenciesMeta": {

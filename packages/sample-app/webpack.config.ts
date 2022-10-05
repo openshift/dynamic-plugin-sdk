@@ -154,6 +154,7 @@ const config: Configuration = {
             '@patternfly/react-icons',
             '@patternfly/react-styles',
             '@patternfly/react-table',
+            '@patternfly/react-tokens',
           ]),
           name: 'vendor-patternfly',
           chunks: 'all',

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { PluginConsumer } from '../types/store';
+import type { PluginStoreInterface } from '../types/store';
 import { PluginEventType } from '../types/store';
 import { usePluginStore } from './PluginStoreContext';
 import { usePluginSubscription } from './usePluginSubscription';
@@ -26,7 +26,7 @@ type UseFeatureFlagResult = [currentValue: boolean, setValue: (newValue: boolean
  */
 export const useFeatureFlag = (name: string): UseFeatureFlagResult => {
   const getData = React.useCallback(
-    (pluginConsumer: PluginConsumer) => pluginConsumer.getFeatureFlags()[name],
+    (pluginStore: PluginStoreInterface) => pluginStore.getFeatureFlags()[name],
     [name],
   );
   const currentValue = usePluginSubscription(eventTypes, getData, isSameData);

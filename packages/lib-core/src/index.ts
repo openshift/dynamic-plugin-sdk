@@ -13,7 +13,14 @@ export {
   EncodedExtension,
   ResolvedExtension,
 } from './types/extension';
-export { PluginEventType, PluginInfoEntry, PluginConsumer, PluginManager } from './types/store';
+export {
+  PluginEventType,
+  PluginInfoEntry,
+  LoadedPluginInfoEntry,
+  FailedPluginInfoEntry,
+  FeatureFlags,
+  PluginStoreInterface,
+} from './types/store';
 export { PluginManifest, PluginRuntimeMetadata, LoadedPlugin } from './types/plugin';
 
 // Core extension types, to be exported via lib-extensions package

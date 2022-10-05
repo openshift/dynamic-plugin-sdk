@@ -2556,6 +2556,7 @@ __metadata:
     "@types/react-router": ^5.1.17
     "@types/react-router-dom": ^5.3.3
     "@types/react-virtualized": ^9.21.21
+    "@types/semver": ^7.3.10
     "@types/uuid": ^8.3.4
     "@typescript-eslint/eslint-plugin": ^5.3.1
     "@typescript-eslint/parser": ^5.3.1
@@ -2615,6 +2616,7 @@ __metadata:
     "@patternfly/react-icons": ^4.53.16
     "@patternfly/react-styles": ^4.52.16
     "@patternfly/react-table": ^4.71.16
+    "@patternfly/react-tokens": ^4.58.5
     copy-webpack-plugin: ^10.2.4
     css-loader: ^6.7.1
     css-minimizer-webpack-plugin: ^3.4.1
@@ -2780,6 +2782,7 @@ __metadata:
   resolution: "@openshift/dynamic-plugin-sdk@portal:../lib-core::locator=%40monorepo%2Fsample-app%40workspace%3Apackages%2Fsample-app"
   dependencies:
     lodash-es: ^4.17.21
+    semver: ^7.3.7
     yup: ^0.32.11
   peerDependencies:
     react: ^17.0.2
@@ -2798,6 +2801,7 @@ __metadata:
   resolution: "@openshift/dynamic-plugin-sdk@portal:../lib-core::locator=%40monorepo%2Fsample-plugin%40workspace%3Apackages%2Fsample-plugin"
   dependencies:
     lodash-es: ^4.17.21
+    semver: ^7.3.7
     yup: ^0.32.11
   peerDependencies:
     react: ^17.0.2
@@ -2816,6 +2820,7 @@ __metadata:
   resolution: "@openshift/dynamic-plugin-sdk@workspace:packages/lib-core"
   dependencies:
     lodash-es: ^4.17.21
+    semver: ^7.3.7
     yup: ^0.32.11
   peerDependencies:
     react: ^17.0.2
@@ -4956,6 +4961,13 @@ __metadata:
   version: 0.16.2
   resolution: "@types/scheduler@npm:0.16.2"
   checksum: b6b4dcfeae6deba2e06a70941860fb1435730576d3689225a421280b7742318d1548b3d22c1f66ab68e414f346a9542f29240bc955b6332c5b11e561077583bc
+  languageName: node
+  linkType: hard
+
+"@types/semver@npm:^7.3.10":
+  version: 7.3.12
+  resolution: "@types/semver@npm:7.3.12"
+  checksum: 35536b2fc5602904f21cae681f6c9498e177dab3f54ae37c92f9a1b7e43c35f18bcd81e1c98c1cf0d33ee046bb06c771e9928c1c00a401d56a03f56549252a15
   languageName: node
   linkType: hard
 
@@ -17415,7 +17427,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:7.x, semver@npm:^7.3.2":
+"semver@npm:7.x, semver@npm:^7.3.2, semver@npm:^7.3.7":
   version: 7.3.7
   resolution: "semver@npm:7.3.7"
   dependencies:

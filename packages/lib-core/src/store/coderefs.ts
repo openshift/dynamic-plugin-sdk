@@ -17,7 +17,7 @@ class CodeRefError extends CustomError {
 }
 
 class ExtensionCodeRefsResolutionError extends CustomError {
-  constructor(readonly extension: LoadedExtension, readonly resolutionErrors: unknown[]) {
+  constructor(readonly extension: LoadedExtension, readonly causes: unknown[]) {
     super();
   }
 }

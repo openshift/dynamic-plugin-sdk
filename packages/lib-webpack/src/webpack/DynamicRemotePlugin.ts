@@ -35,7 +35,7 @@ const validateExtensions = (extensions: EncodedExtension[]) => {
 };
 
 /**
- * Settings for the global function used by plugin entry scripts.
+ * Settings for the global callback function used by plugin entry scripts.
  */
 type PluginEntryCallbackSettings = Partial<{
   /**
@@ -79,7 +79,7 @@ export type DynamicRemotePluginOptions = Partial<{
   sharedModules: WebpackSharedObject;
 
   /**
-   * Customize the global function used by plugin entry scripts at runtime.
+   * Customize the global callback function used by plugin entry scripts.
    *
    * See {@link PluginEntryCallbackSettings} properties and their defaults.
    */
@@ -164,6 +164,7 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
     new GenerateManifestPlugin(PLUGIN_MANIFEST, {
       name: this.pluginMetadata.name,
       version: this.pluginMetadata.version,
+      dependencies: this.pluginMetadata.dependencies,
       extensions: this.extensions,
     }).apply(compiler);
 

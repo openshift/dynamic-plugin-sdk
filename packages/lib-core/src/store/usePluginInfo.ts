@@ -1,11 +1,11 @@
 import * as _ from 'lodash-es';
-import type { PluginInfoEntry, PluginConsumer } from '../types/store';
+import type { PluginInfoEntry, PluginStoreInterface } from '../types/store';
 import { PluginEventType } from '../types/store';
 import { usePluginSubscription } from './usePluginSubscription';
 
 const eventTypes = [PluginEventType.PluginInfoChanged];
 
-const getData = (pluginConsumer: PluginConsumer) => pluginConsumer.getPluginInfo();
+const getData = (pluginStore: PluginStoreInterface) => pluginStore.getPluginInfo();
 
 /**
  * React hook for consuming current information about plugins.

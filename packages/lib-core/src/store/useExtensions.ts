@@ -1,13 +1,13 @@
 import * as _ from 'lodash-es';
 import * as React from 'react';
 import type { Extension, LoadedExtension, ExtensionPredicate } from '../types/extension';
-import type { PluginConsumer } from '../types/store';
+import type { PluginStoreInterface } from '../types/store';
 import { PluginEventType } from '../types/store';
 import { usePluginSubscription } from './usePluginSubscription';
 
 const eventTypes = [PluginEventType.ExtensionsChanged];
 
-const getData = (pluginConsumer: PluginConsumer) => pluginConsumer.getExtensions();
+const getData = (pluginStore: PluginStoreInterface) => pluginStore.getExtensions();
 
 const isSameData = (prevData: LoadedExtension[], nextData: LoadedExtension[]) =>
   _.isEqualWith(prevData, nextData, (a, b) => a === b);
@@ -28,9 +28,9 @@ export const useExtensions = <TExtension extends Extension>(
 
   return React.useMemo(
     () =>
-      extensions.reduce(
+      extensions.reduce<LoadedExtension<TExtension>[]>(
         (acc, e) => ((predicate ?? (() => true))(e) ? [...acc, e] : acc),
-        [] as LoadedExtension<TExtension>[],
+        [],
       ),
     [extensions, predicate],
   );

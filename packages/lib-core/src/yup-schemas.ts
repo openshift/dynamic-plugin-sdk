@@ -81,6 +81,10 @@ export const extensionArraySchema = yup.array().of(extensionSchema).required();
 export const pluginRuntimeMetadataSchema = yup.object().required().shape({
   name: pluginNameSchema,
   version: semverStringSchema,
+  // TODO(vojtech): Yup lacks native support for map-like structures with arbitrary keys
+  // TODO(vojtech): suppress false positive https://github.com/jsx-eslint/eslint-plugin-react/pull/3326
+  // eslint-disable-next-line react/forbid-prop-types
+  dependencies: yup.object(),
 });
 
 /**

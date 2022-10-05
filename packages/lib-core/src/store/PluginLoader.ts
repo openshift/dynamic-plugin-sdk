@@ -1,6 +1,7 @@
 import type { AnyObject, ResourceFetch } from '@monorepo/common';
 import { consoleLogger } from '@monorepo/common';
 import * as _ from 'lodash-es';
+import * as semver from 'semver';
 import { PLUGIN_MANIFEST, REMOTE_ENTRY_SCRIPT, REMOTE_ENTRY_CALLBACK } from '../constants';
 import type { PluginManifest } from '../types/plugin';
 import type { PluginEntryModule, PluginEntryCallback } from '../types/runtime';
@@ -17,22 +18,37 @@ type PluginLoadData = {
 type PluginLoadResult =
   | {
       success: true;
+      pluginName: string;
       manifest: PluginManifest;
       entryModule: PluginEntryModule;
     }
   | {
       success: false;
+      pluginName?: string;
+      errorMessage: string;
+      errorCause?: unknown;
     };
 
-type PluginLoadListener = (pluginName: string, result: PluginLoadResult) => void;
+type PluginLoadListener = (result: PluginLoadResult) => void;
+
+type DependencyResolution =
+  | {
+      success: true;
+      version: string;
+    }
+  | {
+      success: false;
+    };
 
 export type PluginLoaderOptions = Partial<{
   /** Control which plugins can be loaded. */
   canLoadPlugin: (pluginName: string) => boolean;
-  /** Name of the global function used by plugin entry scripts. */
+  /** Name of the global callback function used by plugin entry scripts. */
   entryCallbackName: string;
   /** Custom resource fetch implementation. */
   fetchImpl: ResourceFetch;
+  /** Fixed resolutions used when processing plugin dependencies. */
+  fixedPluginDependencyResolutions: Record<string, string>;
   /** Shared scope object for initializing `PluginEntryModule` containers. */
   sharedScope: AnyObject;
   /** Post-process the plugin manifest. Can be used as a custom validation hook. */
@@ -51,14 +67,12 @@ export class PluginLoader {
   /** Subscribed event listeners. */
   private readonly listeners = new Set<PluginLoadListener>();
 
-  /** Reference to the global callback function. */
-  private entryCallback: PluginEntryCallback | undefined;
-
   constructor(options: PluginLoaderOptions = {}) {
     this.options = {
       canLoadPlugin: options.canLoadPlugin ?? (() => true),
       entryCallbackName: options.entryCallbackName ?? REMOTE_ENTRY_CALLBACK,
       fetchImpl: options.fetchImpl ?? basicFetch,
+      fixedPluginDependencyResolutions: options.fixedPluginDependencyResolutions ?? {},
       sharedScope: options.sharedScope ?? {},
       postProcessManifest: options.postProcessManifest ?? (async (manifest) => manifest),
     };
@@ -69,7 +83,7 @@ export class PluginLoader {
    *
    * Returns a function for unsubscribing the provided listener.
    */
-  subscribe(listener: PluginLoadListener) {
+  subscribe(listener: PluginLoadListener): VoidFunction {
     this.listeners.add(listener);
 
     let isSubscribed = true;
@@ -90,7 +104,90 @@ export class PluginLoader {
   }
 
   /**
-   * Fetch the manifest from a plugin's `baseURL` and validate it.
+   * Start loading a plugin from `baseURL`.
+   *
+   * This involves the following steps:
+   * - get plugin manifest
+   * - resolve plugin dependencies
+   * - load plugin entry script
+   *
+   * The last step delegates control to the plugin entry script, which is supposed to call
+   * the global callback function created via {@link registerPluginEntryCallback} method.
+   *
+   * Use `subscribe` method to respond to plugin load results.
+   */
+  async loadPlugin(baseURL: string) {
+    let manifest: PluginManifest;
+
+    try {
+      manifest = await this.getPluginManifest(baseURL);
+    } catch (e) {
+      this.invokeListeners({
+        success: false,
+        errorMessage: `Failed to get a valid plugin manifest from ${baseURL}`,
+        errorCause: e,
+      });
+      return;
+    }
+
+    const pluginName = manifest.name;
+
+    if (this.plugins.get(pluginName)?.status === 'pending') {
+      consoleLogger.warn(`Attempt to reload plugin ${pluginName} while being loaded`);
+      return;
+    }
+
+    if (this.plugins.get(pluginName)?.status === 'loaded') {
+      consoleLogger.warn(`Attempt to reload plugin ${pluginName} after being loaded`);
+      return;
+    }
+
+    const data: PluginLoadData = {
+      entryCallbackFired: false,
+      status: 'pending',
+      manifest,
+    };
+
+    this.plugins.set(pluginName, data);
+
+    if (!this.options.canLoadPlugin(pluginName)) {
+      data.status = 'failed';
+      this.invokeListeners({
+        success: false,
+        pluginName,
+        errorMessage: `Plugin ${pluginName} is not allowed to be loaded`,
+      });
+      return;
+    }
+
+    try {
+      await this.resolvePluginDependencies(manifest);
+    } catch (e) {
+      data.status = 'failed';
+      this.invokeListeners({
+        success: false,
+        pluginName,
+        errorMessage: `Failed to resolve dependencies of plugin ${pluginName}`,
+        errorCause: e,
+      });
+      return;
+    }
+
+    try {
+      this.loadPluginEntryScript(baseURL, manifest);
+    } catch (e) {
+      data.status = 'failed';
+      this.invokeListeners({
+        success: false,
+        pluginName,
+        errorMessage: `Failed to start loading entry script of plugin ${pluginName}`,
+        errorCause: e,
+      });
+    }
+  }
+
+  /**
+   * Fetch the plugin manifest from `baseURL` and validate it.
    */
   async getPluginManifest(baseURL: string) {
     const manifestURL = resolveURL(baseURL, PLUGIN_MANIFEST);
@@ -109,8 +206,106 @@ export class PluginLoader {
     return manifest;
   }
 
+  private getDependencyResolutions() {
+    const resolutions = new Map<string, DependencyResolution>();
+
+    Array.from(this.plugins.entries()).forEach(([pluginName, data]) => {
+      if (data.status === 'loaded') {
+        resolutions.set(pluginName, { success: true, version: data.manifest.version });
+      } else if (data.status === 'failed') {
+        resolutions.set(pluginName, { success: false });
+      }
+    });
+
+    Object.entries(this.options.fixedPluginDependencyResolutions).forEach(([depName, version]) => {
+      if (semver.valid(version)) {
+        resolutions.set(depName, { success: true, version });
+      }
+    });
+
+    return resolutions;
+  }
+
   /**
-   * Start loading the entry script from a plugin's `baseURL` in the application's document.
+   * Resolve dependencies of the given plugin.
+   *
+   * Fail early if there are any unsuccessful or unmet dependency resolutions.
+   */
+  async resolvePluginDependencies(manifest: PluginManifest) {
+    return new Promise<void>((resolve, reject) => {
+      const pluginName = manifest.name;
+      const dependencies = manifest.dependencies ?? {};
+      const semverRangeOptions: semver.RangeOptions = { includePrerelease: true };
+
+      let unsubscribe: VoidFunction = _.noop;
+      let isResolutionComplete = false;
+
+      const resolvePromise = () => {
+        isResolutionComplete = true;
+        unsubscribe();
+        resolve();
+      };
+
+      const rejectPromise = (reason?: unknown) => {
+        isResolutionComplete = true;
+        unsubscribe();
+        reject(reason);
+      };
+
+      const tryResolveDependencies = () => {
+        const resolutions = this.getDependencyResolutions();
+        const resolutionErrors: string[] = [];
+
+        Object.entries(dependencies).forEach(([depName, versionRange]) => {
+          if (resolutions.has(depName)) {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const res = resolutions.get(depName)!;
+
+            if (res.success && !semver.satisfies(res.version, versionRange, semverRangeOptions)) {
+              resolutionErrors.push(
+                `Dependency ${depName} not met: required range ${versionRange}, resolved version ${res.version}`,
+              );
+            } else if (!res.success) {
+              resolutionErrors.push(`Dependency ${depName} could not be resolved successfully`);
+            }
+          }
+        });
+
+        const pendingDepNames = Object.keys(dependencies).filter(
+          (depName) => !resolutions.has(depName),
+        );
+
+        const pendingDepInfo =
+          pendingDepNames.length > 0
+            ? `${pendingDepNames.length} pending resolutions (${pendingDepNames.join(',')})`
+            : `no pending resolutions`;
+
+        if (resolutionErrors.length > 0) {
+          const errorTitle = `Detected ${resolutionErrors.length} resolution errors with ${pendingDepInfo}`;
+
+          rejectPromise(new Error(`${errorTitle}:\n\n${resolutionErrors.join('\n')}`));
+          return;
+        }
+
+        consoleLogger.info(`Plugin ${pluginName} has ${pendingDepInfo}`);
+
+        if (pendingDepNames.length === 0) {
+          resolvePromise();
+        }
+      };
+
+      tryResolveDependencies();
+
+      if (!isResolutionComplete) {
+        unsubscribe = this.subscribe(() => {
+          tryResolveDependencies();
+        });
+      }
+    });
+  }
+
+  /**
+   * Start loading the plugin entry script from `baseURL`.
    */
   loadPluginEntryScript(
     baseURL: string,
@@ -118,51 +313,41 @@ export class PluginLoader {
     getDocument: () => typeof document = _.constant(document),
   ) {
     const pluginName = manifest.name;
-    const scriptURL = resolveURL(baseURL, REMOTE_ENTRY_SCRIPT);
+    const data = this.plugins.get(pluginName);
 
-    if (this.entryCallback === undefined) {
-      throw new Error(`Attempt to load plugin ${pluginName} before registering entry callback`);
+    if (data?.status !== 'pending') {
+      consoleLogger.warn(`Attempt to load entry script of non-pending plugin ${pluginName}`);
+      return;
     }
-
-    if (!this.options.canLoadPlugin(pluginName)) {
-      throw new Error(`Loading plugin ${pluginName} is not allowed`);
-    }
-
-    if (this.plugins.get(pluginName)?.status === 'pending') {
-      throw new Error(`Reloading plugin ${pluginName} while being loaded is not allowed`);
-    }
-
-    if (this.plugins.get(pluginName)?.status === 'loaded') {
-      throw new Error(`Reloading plugin ${pluginName} after being loaded is not allowed`);
-    }
-
-    const data: PluginLoadData = {
-      entryCallbackFired: false,
-      status: 'pending',
-      manifest,
-    };
-
-    this.plugins.set(pluginName, data);
 
     const script = getDocument().createElement('script');
+    const scriptURL = resolveURL(baseURL, REMOTE_ENTRY_SCRIPT);
+
     script.src = scriptURL;
     script.async = true;
 
     script.onload = () => {
       if (!data.entryCallbackFired) {
         data.status = 'failed';
-        consoleLogger.error(`Entry script for plugin ${pluginName} loaded without callback`);
-        this.invokeListeners(pluginName, { success: false });
+        this.invokeListeners({
+          success: false,
+          pluginName,
+          errorMessage: `Entry script of plugin ${pluginName} loaded without callback`,
+        });
       }
     };
 
     script.onerror = (event) => {
       data.status = 'failed';
-      consoleLogger.error(`Failed to load entry script for plugin ${pluginName}`, event);
-      this.invokeListeners(pluginName, { success: false });
+      this.invokeListeners({
+        success: false,
+        pluginName,
+        errorMessage: `Failed to load entry script of plugin ${pluginName}`,
+        errorCause: event,
+      });
     };
 
-    consoleLogger.info(`Loading entry script for plugin ${pluginName} from ${scriptURL}`);
+    consoleLogger.info(`Loading entry script of plugin ${pluginName} from ${scriptURL}`);
 
     getDocument().head.appendChild(script);
   }
@@ -170,7 +355,7 @@ export class PluginLoader {
   createPluginEntryCallback(): PluginEntryCallback {
     return (pluginName, entryModule) => {
       if (!this.plugins.has(pluginName)) {
-        consoleLogger.error(`Received entry callback for unknown plugin ${pluginName}`);
+        consoleLogger.warn(`Received entry callback for unknown plugin ${pluginName}`);
         return;
       }
 
@@ -188,40 +373,37 @@ export class PluginLoader {
         // eslint-disable-next-line promise/always-return -- entryModule.init() returns Promise<void>
         .then(() => {
           data.status = 'loaded';
-          consoleLogger.info(`Entry script for plugin ${pluginName} loaded successfully`);
-          this.invokeListeners(pluginName, { success: true, manifest: data.manifest, entryModule });
+          this.invokeListeners({
+            success: true,
+            pluginName,
+            manifest: data.manifest,
+            entryModule,
+          });
         })
         .catch((e) => {
           data.status = 'failed';
-          consoleLogger.error(`Failed to initialize shared modules for plugin ${pluginName}`, e);
-          this.invokeListeners(pluginName, { success: false });
+          this.invokeListeners({
+            success: false,
+            pluginName,
+            errorMessage: `Failed to initialize shared modules of plugin ${pluginName}`,
+            errorCause: e,
+          });
         });
     };
   }
 
   /**
-   * Register the global function used by plugin entry scripts.
+   * Register the global callback function used by plugin entry scripts.
    */
   registerPluginEntryCallback(getWindow: () => typeof window = _.constant(window)) {
     const windowGlobal = getWindow() as unknown as AnyObject;
     const callbackName = this.options.entryCallbackName;
 
-    if (this.entryCallback !== undefined) {
-      throw new Error(`Global function ${callbackName} is already registered by this loader`);
-    }
-
     if (typeof windowGlobal[callbackName] === 'function') {
-      throw new Error(`Global function ${callbackName} is already registered by another loader`);
+      consoleLogger.warn(`Plugin callback ${callbackName} is already registered`);
+      return;
     }
 
-    this.entryCallback = this.createPluginEntryCallback();
-    windowGlobal[callbackName] = this.entryCallback;
-  }
-
-  getPendingPluginNames() {
-    return Array.from(this.plugins.entries()).reduce(
-      (acc, [pluginName, plugin]) => (plugin.status === 'pending' ? [...acc, pluginName] : acc),
-      [] as string[],
-    );
+    windowGlobal[callbackName] = this.createPluginEntryCallback();
   }
 }
