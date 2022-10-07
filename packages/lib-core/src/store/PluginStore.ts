@@ -72,11 +72,7 @@ export class PluginStore implements PluginStoreInterface {
 
     const unsubscribe = loader.subscribe((result) => {
       if (!result.success) {
-        if (result.errorCause) {
-          consoleLogger.error(result.errorMessage, result.errorCause);
-        } else {
-          consoleLogger.error(result.errorMessage);
-        }
+        consoleLogger.error(..._.compact([result.errorMessage, result.errorCause]));
 
         if (result.pluginName) {
           this.registerFailedPlugin(result.pluginName, result.errorMessage, result.errorCause);
