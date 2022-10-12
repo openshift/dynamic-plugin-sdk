@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import type { AnyObject } from '@monorepo/common';
 import { Button, Tooltip } from '@patternfly/react-core';
-import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
+import { HelpIcon } from '@patternfly/react-icons';
 import { sortable } from '@patternfly/react-table';
 import type { ComponentStory, ComponentMeta } from '@storybook/react';
 import React from 'react';

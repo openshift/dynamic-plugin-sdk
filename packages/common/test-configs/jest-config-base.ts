@@ -5,7 +5,7 @@ const config: InitialOptionsTsJest = {
   preset: 'ts-jest/presets/js-with-ts',
 
   testMatch: ['**/*.test.(js|jsx|ts|tsx)'],
-  transformIgnorePatterns: ['/node_modules/(?!(@patternfly)/)'],
+  transformIgnorePatterns: ['/node_modules/'],
 
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   moduleNameMapper: {

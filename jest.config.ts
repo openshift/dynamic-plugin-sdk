@@ -1,7 +1,5 @@
 import type { InitialOptionsTsJest } from 'ts-jest';
 
-process.env.TZ = 'UTC';
-
 const config: InitialOptionsTsJest = {
   projects: [
     '<rootDir>/packages/common',
@@ -12,8 +10,17 @@ const config: InitialOptionsTsJest = {
 
   collectCoverage: true,
   coverageDirectory: 'coverage',
-  coverageReporters: ['json', 'lcov', 'text'],
-  collectCoverageFrom: ['src/**/*.{js,jsx,ts,tsx}', '!**/(node_modules|dist)/**'],
+  coverageReporters: ['lcov'],
+  collectCoverageFrom: [
+    'src/**/*.{js,jsx,ts,tsx}',
+    '!**/(node_modules|dist)/**',
+    '!**/*.{test,stories}.*',
+  ],
 };
+
+if (process.env.CI) {
+  // https://github.com/kulshekhar/ts-jest/issues/259#issuecomment-888978737
+  config.maxWorkers = 1;
+}
 
 export default config;

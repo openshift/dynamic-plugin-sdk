@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { InfoCircleIcon } from '@patternfly/react-icons/dist/esm/icons/info-circle-icon';
+import { InfoCircleIcon } from '@patternfly/react-icons';
 import type { ComponentStory, ComponentMeta } from '@storybook/react';
 import React from 'react';
 import type { LabelListProps } from './LabelList';
