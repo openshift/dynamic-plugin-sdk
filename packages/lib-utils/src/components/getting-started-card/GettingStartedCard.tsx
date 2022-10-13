@@ -8,7 +8,7 @@ import {
   Split,
   SplitItem,
 } from '@patternfly/react-core';
-import CloseIcon from '@patternfly/react-icons/dist/js/icons/close-icon';
+import { CloseIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import '@patternfly/react-styles/css/utilities/Display/display.css';
 import '@patternfly/react-styles/css/utilities/Spacing/spacing.css';

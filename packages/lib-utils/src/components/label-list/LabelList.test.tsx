@@ -1,4 +1,4 @@
-import { InfoCircleIcon } from '@patternfly/react-icons/dist/esm/icons/info-circle-icon';
+import { InfoCircleIcon } from '@patternfly/react-icons';
 import { render, screen } from '@testing-library/react';
 import * as React from 'react';
 import type { LabelListProps } from './LabelList';

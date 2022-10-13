@@ -1,6 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
-import '@testing-library/jest-dom';
 import { ActionButtons } from './ActionButtons';
 
 const mockCallback = jest.fn();

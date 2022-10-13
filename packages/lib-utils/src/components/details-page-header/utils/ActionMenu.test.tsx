@@ -1,6 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
-import '@testing-library/jest-dom';
 import { ActionMenu } from './ActionMenu';
 
 const mockCallback = jest.fn();

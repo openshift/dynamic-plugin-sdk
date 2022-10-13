@@ -2,7 +2,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import '@testing-library/jest-dom';
 import type { BreadcrumbsProps } from './Breadcrumbs';
 import { Breadcrumbs } from './Breadcrumbs';
 

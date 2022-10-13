@@ -16,6 +16,7 @@ const config: InitialOptionsTsJest = {
   globals: {
     'ts-jest': {
       tsconfig: path.resolve(__dirname, '../tsconfig-bases/lib-react-esm.json'),
+      isolatedModules: true,
     },
   },
 };

@@ -1,6 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
-import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 import type { Tab } from './HorizontalNav';
 import { HorizontalNav, HorizontalNavTabs } from './HorizontalNav';
