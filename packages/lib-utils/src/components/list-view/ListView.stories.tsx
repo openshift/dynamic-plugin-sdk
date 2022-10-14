@@ -49,18 +49,18 @@ type RowProps<D> = {
   obj: D;
 };
 
-const Row: React.FunctionComponent<RowProps<Record<string, unknown>>> = ({ obj }) => {
+const Row: React.FC<RowProps<TableItem>> = ({ obj }) => {
   return (
     <>
-      <Td dataLabel={obj.name as string}>{obj.name as string}</Td>
-      <Td dataLabel={obj.kind as string}>{obj.kind as string}</Td>
-      <Td dataLabel={obj.labels as string}>{obj.labels as string}</Td>
+      <Td dataLabel={obj.name}>{obj.name}</Td>
+      <Td dataLabel={obj.kind}>{obj.kind}</Td>
+      <Td dataLabel={obj.labels}>{obj.labels}</Td>
     </>
   );
 };
 
 export const Primary = Template.bind({});
-let data: AnyObject[] = [];
+let data: TableItem[] = [];
 // eslint-disable-next-line no-plusplus
 for (let index = 0; index < 100; index++) {
   const idx = String(index).padStart(3, '0');
@@ -109,7 +109,7 @@ Primary.args = {
       },
     },
   ],
-  Row,
+  Row: Row as React.FC<RowProps<AnyObject>>,
   filters: [
     {
       id: 'name',
