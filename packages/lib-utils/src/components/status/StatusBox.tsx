@@ -1,4 +1,5 @@
 import { Alert, EmptyState, EmptyStateBody, Spinner, Text, Title } from '@patternfly/react-core';
+import * as _ from 'lodash-es';
 import * as React from 'react';
 
 export type LoadError = {
@@ -42,10 +43,12 @@ export type StatusBoxProps = {
   loadError?: LoadError;
   /** Optional flag indicating that data has been loaded */
   loaded?: boolean;
+  /** Load error default message */
+  loadErrorDefaultText?: string;
   /** Custom empty state when no data exist */
-  CustomNoDataEmptyState?: React.ReactElement;
+  CustomNoDataEmptyState?: React.ComponentType;
   /** Custom empty state when there are no applicable data */
-  CustomEmptyState?: React.ReactElement;
+  CustomEmptyState?: React.ComponentType;
 };
 
 export const StatusBox: React.FC<StatusBoxProps> = ({
@@ -56,11 +59,13 @@ export const StatusBox: React.FC<StatusBoxProps> = ({
   emptyStateDescription,
   loaded,
   CustomEmptyState,
+  loadErrorDefaultText,
   CustomNoDataEmptyState,
 }): React.ReactElement | null => {
   if (loadError) {
-    const loadErrorMsg = loadError.message;
-    switch (loadError?.status) {
+    const status = _.get(loadError, 'response.status');
+    const loadErrorMsg = loadError.message || loadErrorDefaultText || 'Data loading failed.';
+    switch (status) {
       case 404:
         return (
           <EmptyState>
@@ -91,14 +96,14 @@ export const StatusBox: React.FC<StatusBoxProps> = ({
 
   if (noData) {
     if (!areFiltersApplied && CustomNoDataEmptyState) {
-      return CustomNoDataEmptyState;
+      return <CustomNoDataEmptyState />;
     }
-    return (
-      CustomEmptyState || (
-        <EmptyState>
-          <Text>{emptyStateDescription}</Text>
-        </EmptyState>
-      )
+    return CustomEmptyState ? (
+      <CustomEmptyState />
+    ) : (
+      <EmptyState>
+        <Text>{emptyStateDescription}</Text>
+      </EmptyState>
     );
   }
 

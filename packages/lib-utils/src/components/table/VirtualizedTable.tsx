@@ -11,7 +11,7 @@ import { StatusBox } from '../status/StatusBox';
 import type { RowProps, TableColumn } from './VirtualizedTableBody';
 import VirtualizedTableBody, { RowMemo } from './VirtualizedTableBody';
 
-export type VirtualizedTableProps<D = AnyObject> = {
+export type VirtualizedTableProps<D> = {
   /** Optional flag indicating that filters are applied to data. */
   areFiltersApplied?: boolean;
   /** Optional actions for each row. */
@@ -23,9 +23,11 @@ export type VirtualizedTableProps<D = AnyObject> = {
   /** Optional load error object. */
   loadError?: LoadError;
   /** Table columns array. */
-  columns: TableColumn[];
+  columns: TableColumn<D>[];
   /** Table row component. */
-  Row: React.ComponentType<RowProps>;
+  Row: React.FC<RowProps<D>>;
+  /** Optional load error default text. */
+  loadErrorDefaultText?: string;
   /** Optional isSelected row callback */
   isRowSelected?: (item: D) => boolean;
   /** Optional onSelect row callback */
@@ -33,9 +35,9 @@ export type VirtualizedTableProps<D = AnyObject> = {
   /** Optional pagination params */
   pagination?: TablePagination;
   /** Optional no data empty state component. */
-  CustomNoDataEmptyState?: React.ReactElement;
+  CustomNoDataEmptyState?: React.ComponentType;
   /** Optional no applicable data empty state component. */
-  CustomEmptyState?: React.ReactElement;
+  CustomEmptyState?: React.ComponentType;
   /** Optional empty state description. */
   emptyStateDescription?: string;
   /** Optional aria label. */
@@ -72,8 +74,6 @@ type TablePagination = {
   offset: number;
 };
 
-type SortDirection = 'asc' | 'desc' | 'none';
-
 type WithScrollContainerProps = {
   children: (scrollContainer: HTMLElement) => React.ReactElement | null;
 };
@@ -88,16 +88,7 @@ export const WithScrollContainer: React.FC<WithScrollContainerProps> = ({ childr
   return scrollContainer ? children(scrollContainer) : <span ref={ref} />;
 };
 
-export const compareData = (a: unknown, b: unknown, direction: SortDirection): number => {
-  if (typeof a === 'number' && typeof b === 'number') {
-    return direction === 'asc' ? a - b : b - a;
-  }
-  return direction === 'asc'
-    ? String(a).localeCompare(String(b))
-    : String(b).localeCompare(String(a));
-};
-
-const VirtualizedTable: React.FC<VirtualizedTableProps> = ({
+const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
   areFiltersApplied,
   rowActions = [],
   data: initialData,
@@ -106,6 +97,7 @@ const VirtualizedTable: React.FC<VirtualizedTableProps> = ({
   columns,
   pagination,
   Row,
+  loadErrorDefaultText,
   CustomNoDataEmptyState,
   CustomEmptyState,
   emptyStateDescription,
@@ -115,7 +107,7 @@ const VirtualizedTable: React.FC<VirtualizedTableProps> = ({
   virtualized,
   'aria-label': ariaLabel,
 }) => {
-  const [activeSortDirection, setActiveSortDirection] = React.useState<SortDirection>('none');
+  const [activeSortDirection, setActiveSortDirection] = React.useState('none');
   const [activeSortIndex, setActiveSortIndex] = React.useState(-1);
   const [data, setData] = React.useState<AnyObject[]>([]);
 
@@ -139,7 +131,12 @@ const VirtualizedTable: React.FC<VirtualizedTableProps> = ({
       return initialData?.sort((objA, objB) => {
         const a = columnSort ? _.get(objA, String(columnSort)) : Object.values(objA)[index];
         const b = columnSort ? _.get(objB, String(columnSort)) : Object.values(objB)[index];
-        return compareData(a, b, direction);
+        if (typeof a === 'number' && typeof b === 'number') {
+          return direction === 'asc' ? a - b : b - a;
+        }
+        return direction === 'asc'
+          ? String(a).localeCompare(String(b))
+          : String(b).localeCompare(String(a));
       });
     }
     return initialData;
@@ -150,7 +147,7 @@ const VirtualizedTable: React.FC<VirtualizedTableProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialData]);
 
-  const onSort = (event: React.FormEvent, index: number, direction: SortDirection) => {
+  const onSort = (event: React.FormEvent, index: number, direction: string) => {
     setActiveSortIndex(index);
     setActiveSortDirection(direction);
     const updatedRows = sortData(index, direction);
@@ -198,6 +195,7 @@ const VirtualizedTable: React.FC<VirtualizedTableProps> = ({
       CustomEmptyState={CustomEmptyState}
       loaded={loaded}
       loadError={loadError}
+      loadErrorDefaultText={loadErrorDefaultText}
       noData={!data || _.isEmpty(data)}
       CustomNoDataEmptyState={CustomNoDataEmptyState}
     >
@@ -208,7 +206,6 @@ const VirtualizedTable: React.FC<VirtualizedTableProps> = ({
               {onSelect && (
                 <Th
                   className="pf-m-truncate dps-list-view__table-text"
-                  data-testid="check-all-rows"
                   select={{
                     onSelect: (event, rowSelected) => onSelect(event, rowSelected, data),
                     isSelected: data.every((item) => isRowSelected?.(item)),
@@ -260,10 +257,9 @@ const VirtualizedTable: React.FC<VirtualizedTableProps> = ({
                         isSelected: isRowSelected?.(item) || false,
                         disable: !!(item as Record<string, unknown>)?.disable,
                       }}
-                      data-testid={`check-row-${index}`}
                     />
                   )}
-                  <RowMemo Row={Row} obj={item} index={index} />
+                  <RowMemo Row={Row} obj={item} />
                   {rowActions && (
                     <Td isActionCell>
                       <ActionsColumn

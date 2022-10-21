@@ -18,7 +18,7 @@ export interface FilterChipsProps {
   onDelete?: (key?: string) => void;
 }
 
-const FilterChips: React.FC<FilterChipsProps> = ({
+const FilterChips: React.FunctionComponent<FilterChipsProps> = ({
   filters = [],
   filterValues = {},
   onDelete = () => undefined,
