@@ -1,10 +1,6 @@
-import {
-  useExtensions,
-  useResolvedExtensions,
-  isModelFeatureFlag,
-  isTelemetryListener,
-} from '@openshift/dynamic-plugin-sdk';
+import { useExtensions, useResolvedExtensions } from '@openshift/dynamic-plugin-sdk';
 import type { LoadedExtension } from '@openshift/dynamic-plugin-sdk';
+import { isModelFeatureFlag, isTelemetryListener } from '@openshift/dynamic-plugin-sdk-extensions';
 import {
   Card,
   CardBody,

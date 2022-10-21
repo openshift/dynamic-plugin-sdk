@@ -13,6 +13,7 @@ const config: InitialOptionsTsJest = {
     '\\.(css|scss)$': 'identity-obj-proxy',
   },
 
+  passWithNoTests: true,
   clearMocks: true,
 };
 

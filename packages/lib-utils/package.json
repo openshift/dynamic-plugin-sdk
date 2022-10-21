@@ -24,12 +24,13 @@
     "test": "yarn run -T test $INIT_CWD"
   },
   "peerDependencies": {
-    "@openshift/dynamic-plugin-sdk": "^1.0.0",
+    "@openshift/dynamic-plugin-sdk": ">=1.0.0-alpha",
     "@patternfly/react-core": "^4.202.16",
     "@patternfly/react-table": "^4.71.16",
     "@patternfly/react-virtualized-extension": "^4.53.2",
     "react": "^17.0.2",
     "react-redux": "^7.2.2",
+    "react-router": "^5.2.1",
     "react-router-dom": "^6.3.0",
     "react-virtualized": "^9.22.3",
     "redux": "^4.1.2",

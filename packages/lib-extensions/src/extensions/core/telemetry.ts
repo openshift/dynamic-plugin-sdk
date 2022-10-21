@@ -1,5 +1,5 @@
 import type { AnyObject } from '@monorepo/common';
-import type { Extension, CodeRef } from '../types/extension';
+import type { Extension, CodeRef } from '@openshift/dynamic-plugin-sdk';
 
 export type TelemetryListener = Extension<
   'core.telemetry/listener',

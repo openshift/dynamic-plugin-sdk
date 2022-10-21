@@ -1,5 +1,5 @@
+import type { CodeRef, Extension } from '@openshift/dynamic-plugin-sdk';
 import type { Provider } from 'react';
-import type { CodeRef, Extension } from '../types/extension';
 
 /** Adds new React context provider to Console application root. */
 export type ContextProvider<TValue = unknown> = Extension<

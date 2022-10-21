@@ -1,7 +1,7 @@
+import type { CodeRef, Extension } from '@openshift/dynamic-plugin-sdk';
 import type { ComponentType } from 'react';
 import type { RouteComponentProps } from 'react-router';
-import type { ExtensionK8sResourceIdentifier } from '../types/common';
-import type { CodeRef, Extension } from '../types/extension';
+import type { ExtensionK8sResourceIdentifier } from '../../types/common';
 
 /** Adds new page to host application's React router. */
 export type RoutePage = Extension<'core.page/route', RoutePageProperties>;

@@ -1,7 +1,7 @@
 import type { AnyObject } from '@monorepo/common';
+import type { Extension, CodeRef } from '@openshift/dynamic-plugin-sdk';
 import type { ReactNode } from 'react';
-import type { ExtensionHook } from '../types/common';
-import type { Extension, CodeRef } from '../types/extension';
+import type { ExtensionHook } from '../../types/common';
 
 export type CatalogItemType = Extension<
   'core.catalog/item-type',

@@ -1,5 +1,6 @@
-import { useResolvedExtensions, isReduxProvider } from '@openshift/dynamic-plugin-sdk';
-import type { ReduxProvider } from '@openshift/dynamic-plugin-sdk';
+import { useResolvedExtensions } from '@openshift/dynamic-plugin-sdk';
+import { isReduxProvider } from '@openshift/dynamic-plugin-sdk-extensions';
+import type { ReduxProvider } from '@openshift/dynamic-plugin-sdk-extensions';
 import * as React from 'react';
 import { Provider } from 'react-redux';
 
