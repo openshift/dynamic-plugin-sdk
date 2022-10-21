@@ -1,4 +1,3 @@
-import type { AnyObject } from '@monorepo/common';
 import {
   Pagination,
   PaginationVariant,
@@ -28,7 +27,7 @@ export type FilterItem = {
   id: string;
 };
 
-export type ListViewProps<D = AnyObject> = VirtualizedTableProps & {
+export type ListViewProps<D> = VirtualizedTableProps<D> & {
   /** Optional custom onFilter callback. */
   onFilter?: (filterValues: Record<string, string[]>, activeFilter?: FilterItem) => D[];
   /** Optional array of filterBy options. */
@@ -40,8 +39,10 @@ export function filterDefault<D extends Record<string, unknown>>(
   filterValues: Record<string, string[]>,
 ): D[] {
   return data.filter((item) =>
-    Object.entries(filterValues).every(([key, values]) =>
-      values.every((v) => String(item[key]).toLowerCase().includes(v.toLowerCase())),
+    Object.entries(filterValues).every(
+      ([key, values]) =>
+        typeof item[key] === 'string' &&
+        values.every((v) => (item[key] as string).toLowerCase().includes(v)),
     ),
   );
 }
@@ -49,7 +50,7 @@ export function filterDefault<D extends Record<string, unknown>>(
 const calculatePage = (limit = 10, offset = 0) => Math.floor(offset / limit) + 1;
 const calculateOffset = (page = 1, limit = 10) => (page - 1) * limit;
 
-const ListView: React.FC<ListViewProps> = ({
+const ListView: React.FC<ListViewProps<Record<string, unknown>>> = ({
   columns,
   data,
   filters = [],
@@ -63,14 +64,15 @@ const ListView: React.FC<ListViewProps> = ({
   virtualized,
   CustomEmptyState,
   emptyStateDescription,
+  loadErrorDefaultText,
   CustomNoDataEmptyState,
   'aria-label': ariaLabel,
 }) => {
   const location = useLocation();
-  const [searchParams, setSearchParams] = useSearchParams();
   const [activeFilter, setActiveFilter] = React.useState<FilterItem | undefined>(filters?.[0]);
   const [filteredData, setFilteredData] = React.useState(data);
   const [isFilterSelectExpanded, setFilterSelectExpanded] = React.useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [useURL, setUseURL] = React.useState(true);
   const [pagination, setPagination] = React.useState({
     limit: 10,
@@ -227,6 +229,7 @@ const ListView: React.FC<ListViewProps> = ({
         emptyStateDescription={emptyStateDescription}
         CustomEmptyState={CustomEmptyState}
         loadError={loadError}
+        loadErrorDefaultText={loadErrorDefaultText}
         CustomNoDataEmptyState={CustomNoDataEmptyState}
       />
       {!virtualized && (
