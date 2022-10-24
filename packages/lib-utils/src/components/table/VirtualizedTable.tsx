@@ -117,7 +117,9 @@ const VirtualizedTable: React.FC<VirtualizedTableProps<AnyObject>> = ({
 
   const paginateData = (allData: AnyObject[]) => {
     const end =
-      pagination?.offset && pagination?.limit ? pagination.offset + pagination.limit : undefined;
+      pagination && pagination.offset >= 0 && pagination.limit > 0
+        ? pagination.offset + pagination.limit
+        : undefined;
     return allData.slice(
       virtualized ? undefined : pagination?.offset,
       virtualized ? undefined : end,

@@ -184,7 +184,7 @@ const ListView: React.FC<ListViewProps<Record<string, unknown>>> = ({
                 onSetPage={(e, page) =>
                   setPagination({ ...pagination, offset: calculateOffset(page, pagination.limit) })
                 }
-                onPerPageSelect={(e, value) => setPagination({ ...pagination, limit: value })}
+                onPerPageSelect={(e, value) => setPagination({ limit: value, offset: 0 })}
                 titles={{ paginationTitle: 'Above table pagination' }}
               />
             </ToolbarItem>
@@ -242,7 +242,7 @@ const ListView: React.FC<ListViewProps<Record<string, unknown>>> = ({
           onSetPage={(e, page) =>
             setPagination({ ...pagination, offset: calculateOffset(page, pagination.limit) })
           }
-          onPerPageSelect={(e, value) => setPagination({ ...pagination, limit: value })}
+          onPerPageSelect={(e, value) => setPagination({ limit: value, offset: 0 })}
           titles={{ paginationTitle: 'Below table pagination' }}
         />
       )}
