@@ -1,4 +1,4 @@
-import { CustomError } from '@monorepo/common';
+import { CustomError } from '@openshift/dynamic-plugin-sdk';
 import * as _ from 'lodash-es';
 import * as k8sActions from '../../app/redux/actions/k8s';
 import type { K8sModelCommon } from '../../types/k8s';

@@ -4,8 +4,8 @@ import {
   REMOTE_ENTRY_CALLBACK,
 } from '@openshift/dynamic-plugin-sdk/src/constants';
 import { extensionArraySchema } from '@openshift/dynamic-plugin-sdk/src/yup-schemas';
-import type { EncodedExtension } from '@openshift/dynamic-plugin-sdk/src/types/extension';
-import * as _ from 'lodash-es';
+import type { EncodedExtension } from '@openshift/dynamic-plugin-sdk';
+import * as _ from 'lodash';
 import glob from 'glob';
 import path from 'path';
 import { WebpackPluginInstance, Compiler, container } from 'webpack';
@@ -37,7 +37,7 @@ const validateExtensions = (extensions: EncodedExtension[]) => {
 /**
  * Settings for the global callback function used by plugin entry scripts.
  */
-type PluginEntryCallbackSettings = Partial<{
+export type PluginEntryCallbackSettings = Partial<{
   /**
    * Name of the function.
    *

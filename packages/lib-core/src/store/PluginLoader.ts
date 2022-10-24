@@ -1,8 +1,9 @@
-import type { AnyObject, ResourceFetch } from '@monorepo/common';
+import type { AnyObject } from '@monorepo/common';
 import { consoleLogger } from '@monorepo/common';
 import * as _ from 'lodash-es';
 import * as semver from 'semver';
 import { PLUGIN_MANIFEST, REMOTE_ENTRY_SCRIPT, REMOTE_ENTRY_CALLBACK } from '../constants';
+import type { ResourceFetch } from '../types/fetch';
 import type { PluginManifest } from '../types/plugin';
 import type { PluginEntryModule, PluginEntryCallback } from '../types/runtime';
 import { basicFetch } from '../utils/basic-fetch';
@@ -15,7 +16,7 @@ type PluginLoadData = {
   manifest: PluginManifest;
 };
 
-type PluginLoadResult =
+export type PluginLoadResult =
   | {
       success: true;
       pluginName: string;
@@ -29,7 +30,7 @@ type PluginLoadResult =
       errorCause?: unknown;
     };
 
-type PluginLoadListener = (result: PluginLoadResult) => void;
+export type PluginLoadListener = (result: PluginLoadResult) => void;
 
 type DependencyResolution =
   | {
@@ -352,7 +353,7 @@ export class PluginLoader {
     getDocument().head.appendChild(script);
   }
 
-  createPluginEntryCallback(): PluginEntryCallback {
+  private createPluginEntryCallback(): PluginEntryCallback {
     return (pluginName, entryModule) => {
       if (!this.plugins.has(pluginName)) {
         consoleLogger.warn(`Received entry callback for unknown plugin ${pluginName}`);

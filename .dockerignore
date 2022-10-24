@@ -1,4 +1,5 @@
 /coverage
+/docs/generated
 /screenshots
 **/node_modules
 **/dist

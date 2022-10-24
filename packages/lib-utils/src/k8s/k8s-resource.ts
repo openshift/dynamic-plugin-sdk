@@ -1,9 +1,9 @@
-import type { AnyObject } from '@monorepo/common';
+import type { AnyObject } from '@openshift/dynamic-plugin-sdk';
 import type { K8sModelCommon, K8sResourceCommon, QueryOptions, Patch } from '../types/k8s';
 import { commonFetchJSON } from '../utils/common-fetch';
 import { getK8sResourceURL } from './k8s-utils';
 
-type K8sResourceBaseOptions<TQueryOptions = QueryOptions> = {
+export type K8sResourceBaseOptions<TQueryOptions = QueryOptions> = {
   model: K8sModelCommon;
   queryOptions?: TQueryOptions;
   fetchOptions?: Partial<{
@@ -12,23 +12,26 @@ type K8sResourceBaseOptions<TQueryOptions = QueryOptions> = {
   }>;
 };
 
-type K8sResourceReadOptions = K8sResourceBaseOptions;
+export type K8sResourceReadOptions = K8sResourceBaseOptions;
 
-type K8sResourceUpdateOptions<TResource extends K8sResourceCommon> = K8sResourceBaseOptions & {
-  resource: TResource;
-};
+export type K8sResourceUpdateOptions<TResource extends K8sResourceCommon> =
+  K8sResourceBaseOptions & {
+    resource: TResource;
+  };
 
-type K8sResourcePatchOptions = K8sResourceBaseOptions & {
+export type K8sResourcePatchOptions = K8sResourceBaseOptions & {
   patches: Patch[];
 };
 
-type K8sResourceDeleteOptions = K8sResourceBaseOptions & {
+export type K8sResourceDeleteOptions = K8sResourceBaseOptions & {
   payload?: AnyObject;
 };
 
-type K8sResourceListOptions = K8sResourceBaseOptions<Pick<QueryOptions, 'ns' | 'queryParams'>>;
+export type K8sResourceListOptions = K8sResourceBaseOptions<
+  Pick<QueryOptions, 'ns' | 'queryParams'>
+>;
 
-type K8sResourceListResult<TResource extends K8sResourceCommon> = {
+export type K8sResourceListResult<TResource extends K8sResourceCommon> = {
   apiVersion: string;
   items: TResource[];
   metadata: {
@@ -158,10 +161,10 @@ const abbrBlacklist = ['ASS'];
 
 /**
  * Provides an abbreviation string for given kind with respect to abbrBlacklist.
- * @param kind Kind for which the abbreviation is generated.
- * @return Abbreviation string for given kind.
+ * @param kind - Kind for which the abbreviation is generated.
+ * @returns Abbreviation string for given kind.
  * TODO: Use in resource-icon component once it is being migrated to the SDK.
- * * */
+ */
 export const kindToAbbr = (kind: string) => {
   const abbrKind = (kind.replace(/[^A-Z]/g, '') || kind.toUpperCase()).slice(0, 4);
   return abbrBlacklist.includes(abbrKind) ? abbrKind.slice(0, -1) : abbrKind;

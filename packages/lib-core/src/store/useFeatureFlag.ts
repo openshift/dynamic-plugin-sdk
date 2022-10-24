@@ -8,7 +8,7 @@ const eventTypes = [PluginEventType.FeatureFlagsChanged];
 
 const isSameData = (prevData: boolean, nextData: boolean) => prevData === nextData;
 
-type UseFeatureFlagResult = [currentValue: boolean, setValue: (newValue: boolean) => void];
+export type UseFeatureFlagResult = [currentValue: boolean, setValue: (newValue: boolean) => void];
 
 /**
  * React hook that provides access to a feature flag.

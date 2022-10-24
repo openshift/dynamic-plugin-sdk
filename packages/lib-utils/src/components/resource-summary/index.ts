@@ -1,6 +1,14 @@
-import DetailsItem from './DetailsItem';
+import DetailsItem, { DetailsItemProps } from './DetailsItem';
 import DetailsItemList from './DetailsItemList';
-import OverviewPage from './OverviewPage';
-import ResourceSummary from './ResourceSummary';
+import OverviewPage, { OverViewPageProps } from './OverviewPage';
+import ResourceSummary, { ResourceSummaryProps } from './ResourceSummary';
 
-export { DetailsItem, DetailsItemList, ResourceSummary, OverviewPage };
+export {
+  DetailsItem,
+  DetailsItemProps,
+  DetailsItemList,
+  ResourceSummary,
+  ResourceSummaryProps,
+  OverviewPage,
+  OverViewPageProps,
+};

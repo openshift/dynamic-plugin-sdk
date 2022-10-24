@@ -1,4 +1,4 @@
-import { consoleLogger } from '@monorepo/common';
+import { consoleLogger } from '@openshift/dynamic-plugin-sdk';
 import type {
   BulkMessageHandler,
   CloseHandler,

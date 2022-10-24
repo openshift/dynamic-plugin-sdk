@@ -1,3 +1,3 @@
 # `@openshift/dynamic-plugin-sdk-extensions`
 
-> Provides core extension types for dynamic plugins.
+> Provides extension types for dynamic plugins.

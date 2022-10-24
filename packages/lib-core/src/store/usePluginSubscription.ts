@@ -7,8 +7,10 @@ const isSameReference = (a: unknown, b: unknown) => a === b;
 /**
  * React hook for subscribing to `PluginStore` events.
  *
- * This hook implements the common `PluginStore` usage pattern:
+ * This hook implements the common `PluginStore` usage pattern, returning the current
+ * data via the `getData` function.
  *
+ * @example
  * ```
  * pluginStore.subscribe(eventTypes, () => {
  *   // get current data from plugin store
@@ -16,8 +18,6 @@ const isSameReference = (a: unknown, b: unknown) => a === b;
  *   // re-render the component on data change
  * });
  * ```
- *
- * Returns the current data as retrieved by `getData` function.
  *
  * Return value changes only if both of the following conditions are true:
  * - `PluginStore` has emitted events of interest

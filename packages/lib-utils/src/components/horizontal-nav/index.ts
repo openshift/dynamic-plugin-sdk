@@ -4,4 +4,5 @@ export {
   Tab,
   HorizontalNavProps,
   withRouter,
+  WithRouterProps,
 } from './HorizontalNav';

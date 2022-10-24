@@ -11,16 +11,17 @@
   "files": [
     "dist/index.js",
     "dist/index.d.ts",
-    "dist/build-meta.json"
+    "dist/build-metadata.json"
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "prepack": "yarn build",
     "prepublishOnly": "yarn test",
-    "build": "rm -rf dist && yarn run -T rollup -c",
+    "build": "rm -rf dist && yarn run -T rollup -c && yarn api-extractor",
     "lint": "yarn run -T eslint $INIT_CWD",
-    "test": "yarn run -T test $INIT_CWD"
+    "test": "yarn run -T test $INIT_CWD",
+    "api-extractor": "yarn run -T api-extractor -c $INIT_CWD/api-extractor.json"
   },
   "peerDependencies": {
     "webpack": "^5.69.1"

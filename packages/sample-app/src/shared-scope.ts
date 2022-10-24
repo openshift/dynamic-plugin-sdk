@@ -4,8 +4,9 @@
  * Initialize a webpack share scope object.
  *
  * The host application should use webpack `ModuleFederationPlugin` to declare
- * modules shared between the application and its plugins. For example:
+ * modules shared between the application and its plugins.
  *
+ * @example
  * ```ts
  * new ModuleFederationPlugin({
  *   shared: {

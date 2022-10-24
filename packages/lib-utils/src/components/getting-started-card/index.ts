@@ -1,1 +1,1 @@
-export { default as GettingStartedCard } from './GettingStartedCard';
+export { default as GettingStartedCard, GettingStartedCardProps } from './GettingStartedCard';

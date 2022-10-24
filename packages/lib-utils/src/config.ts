@@ -1,4 +1,4 @@
-import type { ResourceFetch } from '@monorepo/common';
+import type { ResourceFetch } from '@openshift/dynamic-plugin-sdk';
 import type { Store } from 'redux';
 import type { WebSocketAppSettings, WebSocketOptions } from './web-socket/types';
 

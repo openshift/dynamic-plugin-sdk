@@ -1,6 +1,6 @@
 import type { AnyObject, ReplaceProperties } from '@monorepo/common';
 
-type ExtensionFlags = Partial<{
+export type ExtensionFlags = Partial<{
   required: string[];
   disallowed: string[];
 }>;
@@ -25,17 +25,17 @@ export type EncodedCodeRef = { $codeRef: string };
 export type CodeRef<TValue = unknown> = () => Promise<TValue>;
 
 // TODO(vojtech): apply the recursive part only on object properties or array elements
-type MapCodeRefsToValues<T> = {
+export type MapCodeRefsToValues<T> = {
   [K in keyof T]: T[K] extends CodeRef<infer TValue> ? TValue : MapCodeRefsToValues<T[K]>;
 };
 
 // TODO(vojtech): apply the recursive part only on object properties or array elements
-type MapCodeRefsToEncodedCodeRefs<T> = {
+export type MapCodeRefsToEncodedCodeRefs<T> = {
   [K in keyof T]: T[K] extends CodeRef ? EncodedCodeRef : MapCodeRefsToEncodedCodeRefs<T[K]>;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ExtractExtensionProperties<T> = T extends Extension<any, infer TProperties>
+export type ExtractExtensionProperties<T> = T extends Extension<any, infer TProperties>
   ? TProperties
   : never;
 

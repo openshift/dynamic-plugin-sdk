@@ -1,7 +1,7 @@
 {
   "name": "@openshift/dynamic-plugin-sdk-utils",
   "version": "1.0.0",
-  "description": "Provides React focused plugin SDK initialization and utilities",
+  "description": "Provides React focused dynamic plugin SDK utilities",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -12,20 +12,24 @@
     "dist/index.js",
     "dist/index.d.ts",
     "dist/index.css",
-    "dist/build-meta.json"
+    "dist/build-metadata.json"
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "prepack": "yarn build",
     "prepublishOnly": "yarn test",
-    "build": "rm -rf dist && yarn run -T rollup -c",
+    "build": "rm -rf dist && yarn run -T rollup -c && yarn api-extractor",
     "lint": "yarn run -T eslint $INIT_CWD",
-    "test": "yarn run -T test $INIT_CWD"
+    "test": "yarn run -T test $INIT_CWD",
+    "api-extractor": "yarn run -T api-extractor -c $INIT_CWD/api-extractor.json"
   },
   "peerDependencies": {
     "@openshift/dynamic-plugin-sdk": "^1.0.0",
+    "@openshift/dynamic-plugin-sdk-extensions": "^1.0.0",
     "@patternfly/react-core": "^4.202.16",
+    "@patternfly/react-icons": "^4.53.16",
+    "@patternfly/react-styles": "^4.52.16",
     "@patternfly/react-table": "^4.71.16",
     "@patternfly/react-virtualized-extension": "^4.53.2",
     "react": "^17.0.2",

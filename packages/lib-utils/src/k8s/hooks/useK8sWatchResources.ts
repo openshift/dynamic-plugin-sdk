@@ -24,9 +24,10 @@ import type {
 
 /**
  * Hook that retrieves the k8s resources along with their respective status for loaded and error.
- * @param initResources resources need to be watched as key-value pair, wherein key will be unique to resource and value will be options needed to watch for the respective resource.
- * @param options WS and fetch options passed down to WSFactory @see {@link WebSocketFactory} and when pulling the first item.
- * @return A map where keys are as provided in initResouces and value has three properties data, loaded and error.
+ * @param initResources - resources need to be watched as key-value pair, wherein key will be unique to resource and value will be options needed to watch for the respective resource.
+ * @param options - WS and fetch options passed down to WSFactory @see {@link WebSocketFactory} and when pulling the first item.
+ * @returns A map where keys are as provided in initResources and value has three properties data, loaded and error.
+ *
  * @example
  * ```ts
  * const Component: React.FC = () => {

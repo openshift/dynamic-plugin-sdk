@@ -1,0 +1,45 @@
+{
+  // Matches the end_of_line setting in .editorconfig
+  "newlineKind": "lf",
+
+  "dtsRollup": {
+    "enabled": true,
+    "untrimmedFilePath": "<projectFolder>/dist/index.d.ts"
+  },
+
+  "apiReport": {
+    "enabled": true,
+    "reportFolder": "reports",
+    "reportTempFolder": "<projectFolder>/dist/api"
+  },
+
+  "docModel": {
+    "enabled": true
+  },
+
+  // Avoid generating tsdoc-metadata.json
+  // https://github.com/microsoft/rushstack/pull/1628#issuecomment-553665782
+  "tsdocMetadata": {
+    "enabled": false
+  },
+
+  "messages": {
+    "extractorMessageReporting": {
+      // Avoid having to explicitly mark every exported API member with @public tag
+      "ae-missing-release-tag": {
+        "logLevel": "none"
+      },
+      // Avoid issues with TSDoc parser unable to process @link references
+      "ae-unresolved-link": {
+        "logLevel": "none"
+      }
+    },
+
+    "tsdocMessageReporting": {
+      // https://github.com/Microsoft/tsdoc/issues/19
+      "tsdoc-param-tag-with-invalid-name": {
+        "logLevel": "none"
+      }
+    }
+  }
+}

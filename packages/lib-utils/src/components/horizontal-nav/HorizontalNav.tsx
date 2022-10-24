@@ -14,7 +14,7 @@ type Tab = {
   ariaLabel: string;
 };
 
-type WithRouterProps = {
+export type WithRouterProps = {
   /** URL parameters */
   params?: Record<string, string>;
   /** Navigate function */

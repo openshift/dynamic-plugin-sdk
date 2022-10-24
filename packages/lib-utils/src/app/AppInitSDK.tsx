@@ -1,5 +1,4 @@
-import { consoleLogger } from '@monorepo/common';
-import { PluginStoreProvider } from '@openshift/dynamic-plugin-sdk';
+import { consoleLogger, PluginStoreProvider } from '@openshift/dynamic-plugin-sdk';
 import type { PluginStore } from '@openshift/dynamic-plugin-sdk';
 import * as React from 'react';
 import { Provider } from 'react-redux';
@@ -9,7 +8,7 @@ import type { InitAPIDiscovery } from '../types/api-discovery';
 import { initAPIDiscovery } from './api-discovery';
 import { useReduxStore } from './redux';
 
-type AppInitSDKProps = {
+export type AppInitSDKProps = {
   configurations: {
     apiDiscovery?: InitAPIDiscovery;
     apiPriorityList?: string[];
@@ -24,7 +23,7 @@ type AppInitSDKProps = {
  * Add this at app-level to make use of app's redux store and pass configurations prop needed to initialize the app, preferred to have it under Provider.
  * It checks for store instance if present or not.
  * If the store is there then the reference is persisted to be used in SDK else it creates a new store and passes it to the children with the provider
- * @component AppInitSDK
+ *
  * @example
  * ```tsx
  * return (

@@ -68,7 +68,7 @@ export const isActionFilter = (e: Extension): e is ActionFilter => {
 
 // Arbitrary types
 
-type Group = {
+export type Group = {
   /** ID used to identify the action section. */
   id: string;
   /**
@@ -91,7 +91,7 @@ type Group = {
   insertAfter?: string | string[];
 };
 
-type Action = {
+export type Action = {
   /** A unique identifier for this action. */
   id: string;
   /** The label to display in the UI. */

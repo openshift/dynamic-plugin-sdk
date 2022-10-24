@@ -5,7 +5,7 @@ import { LabelList } from '../label-list';
 import DetailsItem from './DetailsItem';
 import DetailsItemList from './DetailsItemList';
 
-type ResourceSummaryProps = {
+export type ResourceSummaryProps = {
   resource?: K8sResourceCommon;
   loaded?: boolean;
 };

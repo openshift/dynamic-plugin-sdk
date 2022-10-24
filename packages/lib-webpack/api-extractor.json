@@ -1,0 +1,6 @@
+{
+  "extends": "../../api-extractor.json",
+  "mainEntryPointFilePath": "dist/types/lib-webpack/src/index.d.ts",
+  "apiReport": { "reportFileName": "lib-webpack.api.md" },
+  "docModel": { "apiJsonFilePath": "dist/api/lib-webpack.api.json" }
+}

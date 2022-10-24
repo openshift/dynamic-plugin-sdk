@@ -3,9 +3,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
 import analyzer from 'rollup-plugin-analyzer';
-import dts from 'rollup-plugin-dts';
 import css from 'rollup-plugin-import-css';
-import { replaceCode } from './rollup-plugins/replaceCode';
 import { writeJSONFile } from './rollup-plugins/writeJSONFile';
 
 // https://yarnpkg.com/advanced/lifecycle-scripts#environment-variables
@@ -52,36 +50,8 @@ const getBanner = ({ repository }, buildMetadata) => {
 /**
  * @param {import('type-fest').PackageJson} pkg
  */
-const getExternalModules = ({ dependencies, peerDependencies }) => {
-  const modules = new Set([
-    ...Object.keys(dependencies ?? {}),
-    ...Object.keys(peerDependencies ?? {}),
-  ]);
-
-  modules.add('lodash-es');
-  modules.delete('lodash');
-
-  return Array.from(modules);
-};
-
-/**
- * @param {import('type-fest').PackageJson} pkg
- */
-const getExternalModuleRegExps = (pkg) => {
-  const externalModules = getExternalModules(pkg);
-  return externalModules.map((module) => new RegExp(`^${module}(\\/.+)*$`));
-};
-
-/**
- * @param {string} fileName
- */
-const replaceLodashEsRequire = (fileName) =>
-  replaceCode({
-    fileName,
-    replacements: {
-      "require('lodash-es')": "require('lodash')",
-    },
-  });
+const getExternalModules = ({ dependencies, peerDependencies }) =>
+  Array.from(new Set([...Object.keys(dependencies ?? {}), ...Object.keys(peerDependencies ?? {})]));
 
 /**
  * Rollup configuration for generating the library `.js` bundle.
@@ -93,6 +63,7 @@ const replaceLodashEsRequire = (fileName) =>
  */
 export const tsLibConfig = (pkg, inputFile, format = 'esm') => {
   const buildMetadata = getBuildMetadata(pkg);
+  const externalModules = getExternalModules(pkg);
 
   return {
     input: inputFile,
@@ -101,7 +72,7 @@ export const tsLibConfig = (pkg, inputFile, format = 'esm') => {
       format,
       banner: getBanner(pkg, buildMetadata),
     },
-    external: getExternalModuleRegExps(pkg),
+    external: externalModules.map((m) => new RegExp(`^${m}(\\/.+)*$`)),
     plugins: [
       nodeResolve(),
       commonjs(),
@@ -113,9 +84,8 @@ export const tsLibConfig = (pkg, inputFile, format = 'esm') => {
         include: ['src/**/*', '../common/src/**/*'],
         noEmitOnError: true,
       }),
-      ...(format === 'cjs' ? [replaceLodashEsRequire('index.js')] : []),
       writeJSONFile({
-        fileName: 'build-meta.json',
+        fileName: 'build-metadata.json',
         value: buildMetadata,
       }),
       analyzer({
@@ -125,27 +95,3 @@ export const tsLibConfig = (pkg, inputFile, format = 'esm') => {
     ],
   };
 };
-
-/**
- * Rollup configuration for generating the library `.d.ts` bundle.
- *
- * @param {import('type-fest').PackageJson} pkg
- * @param {string} inputFile
- * @returns {import('rollup').RollupOptions}
- */
-export const dtsLibConfig = (pkg, inputFile) => ({
-  input: inputFile,
-  output: {
-    file: 'dist/index.d.ts',
-  },
-  external: [...getExternalModuleRegExps(pkg), /\.css$/],
-  plugins: [
-    dts({
-      respectExternal: true,
-    }),
-    analyzer({
-      summaryOnly: true,
-      root: rootDir,
-    }),
-  ],
-});
