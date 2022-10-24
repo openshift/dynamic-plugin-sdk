@@ -8,19 +8,21 @@ import { CellMeasurerCache, CellMeasurer } from 'react-virtualized';
 import type { MeasuredCellParent } from 'react-virtualized/dist/es/CellMeasurer';
 import './virtualized-table.css';
 
-export type RowProps<D> = {
+export type RowProps<D = AnyObject> = {
   /** Row data object. */
   obj: D;
+  /** Row index */
+  index: number;
 };
 
-export const RowMemo: React.FC<RowMemoProps<AnyObject>> = React.memo(
-  // eslint-disable-next-line react/prop-types -- this rule has issues with React.memo
-  ({ Row: RowComponent, obj }) => <RowComponent obj={obj} />,
-);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const RowMemo = React.memo(({ Row: RowComponent, obj, index }: RowMemoProps<any>) => (
+  <RowComponent obj={obj} index={index} />
+));
 
-export type RowMemoProps<D> = RowProps<D> & { Row: React.ComponentType<RowProps<D>> };
+export type RowMemoProps<D = AnyObject> = RowProps<D> & { Row: React.ComponentType<RowProps<D>> };
 
-export type TableColumn<D> = ICell & {
+export type TableColumn<D = AnyObject> = ICell & {
   /** Column ID. */
   id: string;
   /** Optional sort configuration. */
@@ -60,7 +62,7 @@ export const TableRow: React.FC<TableRowProps> = ({ id, children, style, trKey, 
   </tr>
 );
 
-type VirtualizedTableBodyProps<D> = {
+type VirtualizedTableBodyProps<D = AnyObject> = {
   /** Table columns. */
   columns: TableColumn<D>[];
   /** Data to be rendered. */
@@ -85,7 +87,7 @@ type VirtualizedTableBodyProps<D> = {
   width: number;
 };
 
-const VirtualizedTableBody = ({
+const VirtualizedTableBody: React.FC<VirtualizedTableBodyProps> = ({
   columns,
   data,
   height,
@@ -97,7 +99,7 @@ const VirtualizedTableBody = ({
   rowActions = [],
   scrollTop,
   width,
-}: VirtualizedTableBodyProps<AnyObject>) => {
+}) => {
   const cellMeasurementCache = new CellMeasurerCache({
     fixedWidth: true,
     minHeight: 44,
@@ -116,8 +118,9 @@ const VirtualizedTableBody = ({
   };
 
   const rowRenderer = ({ index, isVisible, key, parent, style }: RowRendererParams) => {
-    const rowArgs: RowProps<AnyObject> = {
+    const rowArgs: RowProps = {
       obj: data[index],
+      index,
     };
 
     // do not render non visible elements (this excludes overscan)
@@ -145,7 +148,7 @@ const VirtualizedTableBody = ({
               }}
             />
           )}
-          <RowMemo Row={Row} obj={rowArgs.obj} />
+          <RowMemo Row={Row} obj={rowArgs.obj} index={index} />
           {rowActions?.length > 0 && (
             <PFTd isActionCell>
               <ActionsColumn items={rowActions} />
