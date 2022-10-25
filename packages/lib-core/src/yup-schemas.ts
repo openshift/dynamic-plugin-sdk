@@ -19,13 +19,17 @@ const semverStringSchema = yup
  * Examples:
  *
  * ```
- * foo, foo-bar, foo.bar, foo.bar-test, foo-bar-abc.123-test
+ * foo
+ * foo-bar
+ * foo.bar
+ * foo.bar-Test
+ * Foo-Bar-abc.123
  * ```
  */
 const pluginNameSchema = yup
   .string()
   .required()
-  .matches(/^[a-z]+[a-z0-9-.]*[a-z]+$/, 'plugin name');
+  .matches(/^[a-zA-Z]+(?:[-.]?[a-zA-Z0-9]+)*$/, 'plugin name');
 
 /**
  * Schema for a valid extension type.
@@ -33,13 +37,20 @@ const pluginNameSchema = yup
  * Examples:
  *
  * ```
- * app.foo, my-app.foo-bar, app.foo/bar, my-app.foo-bar/test/a-b
+ * app.foo
+ * app.foo-bar
+ * app.foo/bar
+ * My-app.Foo-Bar
+ * My-app.Foo-Bar/abcTest
  * ```
  */
 const extensionTypeSchema = yup
   .string()
   .required()
-  .matches(/^[a-z]+[a-z-]*\.[a-z]+[a-z-]*(?:\/[a-z]+[a-z-]*)*$/, 'extension type');
+  .matches(
+    /^[a-zA-Z]+(?:-[a-zA-Z]+)*\.[a-zA-Z]+(?:-[a-zA-Z]+)*(?:\/[a-zA-Z]+(?:-[a-zA-Z]+)*)*$/,
+    'extension type',
+  );
 
 /**
  * Schema for a valid feature flag name.
@@ -47,7 +58,9 @@ const extensionTypeSchema = yup
  * Examples:
  *
  * ```
- * FOO, FOO_BAR
+ * FOO
+ * FOO_BAR
+ * FOO_BAR123
  * ```
  */
 const featureFlagNameSchema = yup
