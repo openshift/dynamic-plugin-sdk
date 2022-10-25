@@ -16,11 +16,10 @@ const config: InitialOptionsTsJest = {
     '!**/(node_modules|dist)/**',
     '!**/*.{test,stories}.*',
   ],
-};
 
-if (process.env.CI) {
   // https://github.com/kulshekhar/ts-jest/issues/259#issuecomment-888978737
-  config.maxWorkers = 1;
-}
+  maxWorkers: 1,
+  logHeapUsage: !!process.env.CI,
+};
 
 export default config;

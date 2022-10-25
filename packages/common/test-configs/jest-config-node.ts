@@ -9,7 +9,6 @@ const config: InitialOptionsTsJest = {
   globals: {
     'ts-jest': {
       tsconfig: path.resolve(__dirname, '../tsconfig-bases/lib-node-cjs.json'),
-      isolatedModules: true,
     },
   },
 };
