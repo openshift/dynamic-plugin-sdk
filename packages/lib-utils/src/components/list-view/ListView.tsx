@@ -16,6 +16,8 @@ import { debounce, omit } from 'lodash-es';
 import * as React from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { parseFiltersFromURL, setFiltersToURL } from '../../utils/url-sync';
+import { ActionButtons } from '../details-page-header/utils/ActionButtons';
+import type { ActionButtonProp } from '../details-page-header/utils/ActionButtons';
 import type { VirtualizedTableProps } from '../table/VirtualizedTable';
 import VirtualizedTable from '../table/VirtualizedTable';
 import FilterChips from './FilterChips';
@@ -33,6 +35,7 @@ export type ListViewProps<D> = VirtualizedTableProps<D> & {
   onFilter?: (filterValues: Record<string, string[]>, activeFilter?: FilterItem) => D[];
   /** Optional array of filterBy options. */
   filters?: FilterItem[];
+  actionButtons?: ActionButtonProp[];
 };
 
 export function filterDefault<D extends Record<string, unknown>>(
@@ -65,6 +68,7 @@ const ListView = <D extends AnyObject>({
   emptyStateDescription,
   CustomNoDataEmptyState,
   'aria-label': ariaLabel,
+  actionButtons,
 }: ListViewProps<D>) => {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -173,6 +177,7 @@ const ListView = <D extends AnyObject>({
               </ToolbarItem>
             </>
           )}
+          {actionButtons ? <ActionButtons actionButtons={actionButtons} /> : null}
           {!virtualized && (
             <ToolbarItem className="dps-table-view-top-pagination">
               <Pagination
