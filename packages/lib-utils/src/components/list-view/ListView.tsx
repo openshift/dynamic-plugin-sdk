@@ -28,7 +28,7 @@ export type FilterItem = {
   id: string;
 };
 
-export type ListViewProps<D = AnyObject> = VirtualizedTableProps & {
+export type ListViewProps<D> = VirtualizedTableProps<D> & {
   /** Optional custom onFilter callback. */
   onFilter?: (filterValues: Record<string, string[]>, activeFilter?: FilterItem) => D[];
   /** Optional array of filterBy options. */
@@ -49,7 +49,7 @@ export function filterDefault<D extends Record<string, unknown>>(
 const calculatePage = (limit = 10, offset = 0) => Math.floor(offset / limit) + 1;
 const calculateOffset = (page = 1, limit = 10) => (page - 1) * limit;
 
-const ListView: React.FC<ListViewProps> = ({
+const ListView = <D extends AnyObject>({
   columns,
   data,
   filters = [],
@@ -65,7 +65,7 @@ const ListView: React.FC<ListViewProps> = ({
   emptyStateDescription,
   CustomNoDataEmptyState,
   'aria-label': ariaLabel,
-}) => {
+}: ListViewProps<D>) => {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeFilter, setActiveFilter] = React.useState<FilterItem | undefined>(filters?.[0]);

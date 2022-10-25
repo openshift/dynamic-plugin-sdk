@@ -11,7 +11,7 @@ import { StatusBox } from '../status/StatusBox';
 import type { RowProps, TableColumn } from './VirtualizedTableBody';
 import VirtualizedTableBody, { RowMemo } from './VirtualizedTableBody';
 
-export type VirtualizedTableProps<D = AnyObject> = {
+export type VirtualizedTableProps<D> = {
   /** Optional flag indicating that filters are applied to data. */
   areFiltersApplied?: boolean;
   /** Optional actions for each row. */
@@ -23,9 +23,11 @@ export type VirtualizedTableProps<D = AnyObject> = {
   /** Optional load error object. */
   loadError?: LoadError;
   /** Table columns array. */
-  columns: TableColumn[];
+  columns: TableColumn<D>[];
   /** Table row component. */
-  Row: React.ComponentType<RowProps>;
+  Row: React.ComponentType<RowProps<D>>;
+  /** DEPRECATED - Optional load error default text. No longer takes effect and will be removed */
+  loadErrorDefaultText?: string;
   /** Optional isSelected row callback */
   isRowSelected?: (item: D) => boolean;
   /** Optional onSelect row callback */
@@ -97,7 +99,7 @@ export const compareData = (a: unknown, b: unknown, direction: SortDirection): n
     : String(b).localeCompare(String(a));
 };
 
-const VirtualizedTable: React.FC<VirtualizedTableProps> = ({
+const VirtualizedTable = <D extends AnyObject>({
   areFiltersApplied,
   rowActions = [],
   data: initialData,
@@ -114,16 +116,16 @@ const VirtualizedTable: React.FC<VirtualizedTableProps> = ({
   scrollNode,
   virtualized,
   'aria-label': ariaLabel,
-}) => {
+}: VirtualizedTableProps<D>) => {
   const [activeSortDirection, setActiveSortDirection] = React.useState<SortDirection>('none');
   const [activeSortIndex, setActiveSortIndex] = React.useState(-1);
-  const [data, setData] = React.useState<AnyObject[]>([]);
+  const [data, setData] = React.useState<D[]>([]);
 
-  const addUUID = (allData: AnyObject[]) => {
+  const addUUID = (allData: D[]) => {
     return allData.map((item) => ({ ...item, uuid: item.uuid || item.id || uuidv4() }));
   };
 
-  const paginateData = (allData: AnyObject[]) => {
+  const paginateData = (allData: D[]) => {
     const end =
       pagination?.offset && pagination?.limit ? pagination.offset + pagination.limit : undefined;
     return allData.slice(

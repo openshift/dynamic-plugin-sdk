@@ -8,7 +8,7 @@ import { CellMeasurerCache, CellMeasurer } from 'react-virtualized';
 import type { MeasuredCellParent } from 'react-virtualized/dist/es/CellMeasurer';
 import './virtualized-table.css';
 
-export type RowProps<D = AnyObject> = {
+export type RowProps<D> = {
   /** Row data object. */
   obj: D;
   /** Row index */
@@ -20,9 +20,9 @@ export const RowMemo = React.memo(({ Row: RowComponent, obj, index }: RowMemoPro
   <RowComponent obj={obj} index={index} />
 ));
 
-export type RowMemoProps<D = AnyObject> = RowProps<D> & { Row: React.ComponentType<RowProps<D>> };
+export type RowMemoProps<D> = RowProps<D> & { Row: React.ComponentType<RowProps<D>> };
 
-export type TableColumn<D = AnyObject> = ICell & {
+export type TableColumn<D> = ICell & {
   /** Column ID. */
   id: string;
   /** Optional sort configuration. */
@@ -62,7 +62,7 @@ export const TableRow: React.FC<TableRowProps> = ({ id, children, style, trKey, 
   </tr>
 );
 
-type VirtualizedTableBodyProps<D = AnyObject> = {
+type VirtualizedTableBodyProps<D> = {
   /** Table columns. */
   columns: TableColumn<D>[];
   /** Data to be rendered. */
@@ -87,7 +87,7 @@ type VirtualizedTableBodyProps<D = AnyObject> = {
   width: number;
 };
 
-const VirtualizedTableBody: React.FC<VirtualizedTableBodyProps> = ({
+const VirtualizedTableBody = <D extends AnyObject>({
   columns,
   data,
   height,
@@ -99,7 +99,7 @@ const VirtualizedTableBody: React.FC<VirtualizedTableBodyProps> = ({
   rowActions = [],
   scrollTop,
   width,
-}) => {
+}: VirtualizedTableBodyProps<D>) => {
   const cellMeasurementCache = new CellMeasurerCache({
     fixedWidth: true,
     minHeight: 44,
@@ -118,7 +118,7 @@ const VirtualizedTableBody: React.FC<VirtualizedTableBodyProps> = ({
   };
 
   const rowRenderer = ({ index, isVisible, key, parent, style }: RowRendererParams) => {
-    const rowArgs: RowProps = {
+    const rowArgs: RowProps<D> = {
       obj: data[index],
       index,
     };
