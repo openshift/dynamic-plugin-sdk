@@ -1,11 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import { toHaveNoViolations, axe } from 'jest-axe';
+import { axe } from 'jest-axe';
 import React from 'react';
-import '@testing-library/jest-dom';
 
 import { DetailsItemList } from './index';
-
-expect.extend(toHaveNoViolations);
 
 describe('DetailsItemList', () => {
   it('Is accessible', async () => {

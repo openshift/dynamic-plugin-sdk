@@ -1,11 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import { toHaveNoViolations, axe } from 'jest-axe';
+import { axe } from 'jest-axe';
 import React from 'react';
-import '@testing-library/jest-dom';
 import type { K8sResourceCommon } from '../../index';
 import { ResourceSummary } from './index';
-
-expect.extend(toHaveNoViolations);
 
 const k8Object: K8sResourceCommon = {
   apiVersion: 'v1beta1',

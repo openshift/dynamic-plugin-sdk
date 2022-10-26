@@ -1,11 +1,9 @@
 import { InfoCircleIcon } from '@patternfly/react-icons';
 import { render, screen } from '@testing-library/react';
-import { toHaveNoViolations, axe } from 'jest-axe';
+import { axe } from 'jest-axe';
 import * as React from 'react';
 import type { LabelListProps } from './LabelList';
 import { LabelList } from './LabelList';
-
-expect.extend(toHaveNoViolations);
 
 const mockLabels: LabelListProps = {
   labels: {
