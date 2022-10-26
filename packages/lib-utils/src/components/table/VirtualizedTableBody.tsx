@@ -11,12 +11,14 @@ import './virtualized-table.css';
 export type RowProps<D> = {
   /** Row data object. */
   obj: D;
+  /** Row index */
+  index: number;
 };
 
-export const RowMemo: React.FC<RowMemoProps<AnyObject>> = React.memo(
-  // eslint-disable-next-line react/prop-types -- this rule has issues with React.memo
-  ({ Row: RowComponent, obj }) => <RowComponent obj={obj} />,
-);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const RowMemo = React.memo(({ Row: RowComponent, obj, index }: RowMemoProps<any>) => (
+  <RowComponent obj={obj} index={index} />
+));
 
 export type RowMemoProps<D> = RowProps<D> & { Row: React.ComponentType<RowProps<D>> };
 
@@ -85,7 +87,7 @@ type VirtualizedTableBodyProps<D> = {
   width: number;
 };
 
-const VirtualizedTableBody = ({
+const VirtualizedTableBody = <D extends AnyObject>({
   columns,
   data,
   height,
@@ -97,7 +99,7 @@ const VirtualizedTableBody = ({
   rowActions = [],
   scrollTop,
   width,
-}: VirtualizedTableBodyProps<AnyObject>) => {
+}: VirtualizedTableBodyProps<D>) => {
   const cellMeasurementCache = new CellMeasurerCache({
     fixedWidth: true,
     minHeight: 44,
@@ -116,8 +118,9 @@ const VirtualizedTableBody = ({
   };
 
   const rowRenderer = ({ index, isVisible, key, parent, style }: RowRendererParams) => {
-    const rowArgs: RowProps<AnyObject> = {
+    const rowArgs: RowProps<D> = {
       obj: data[index],
+      index,
     };
 
     // do not render non visible elements (this excludes overscan)
@@ -145,7 +148,7 @@ const VirtualizedTableBody = ({
               }}
             />
           )}
-          <RowMemo Row={Row} obj={rowArgs.obj} />
+          <RowMemo Row={Row} obj={rowArgs.obj} index={index} />
           {rowActions?.length > 0 && (
             <PFTd isActionCell>
               <ActionsColumn items={rowActions} />
