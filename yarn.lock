@@ -2728,7 +2728,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openshift/dynamic-plugin-sdk-extensions@workspace:packages/lib-extensions"
   peerDependencies:
-    "@openshift/dynamic-plugin-sdk": ">=1.0.0-alpha"
+    "@openshift/dynamic-plugin-sdk": ^1.0.0
     react: ^17.0.2
     react-redux: ^7.2.2
     react-router: ^5.2.1
@@ -2746,7 +2746,7 @@ __metadata:
     typesafe-actions: ^4.4.2
     uuid: ^8.3.2
   peerDependencies:
-    "@openshift/dynamic-plugin-sdk": ">=1.0.0-alpha"
+    "@openshift/dynamic-plugin-sdk": ^1.0.0
     "@patternfly/react-core": ^4.202.16
     "@patternfly/react-table": ^4.71.16
     "@patternfly/react-virtualized-extension": ^4.53.2
