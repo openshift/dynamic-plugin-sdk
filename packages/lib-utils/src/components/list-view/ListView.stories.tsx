@@ -139,4 +139,17 @@ Primary.args = {
   scrollNode: undefined,
   emptyStateDescription: 'No matching data found...',
   virtualized: false,
+  actionButtons: [
+    {
+      label: 'Add',
+      // eslint-disable-next-line no-console
+      callback: () => console.log('Adding workspace'),
+      tooltip: 'Add a workspace by clicking on the button',
+    },
+    {
+      label: 'Delete',
+      callback: () => null,
+      isDisabled: true,
+    },
+  ],
 };

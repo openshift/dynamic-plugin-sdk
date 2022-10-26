@@ -1,5 +1,6 @@
-import { screen, render, fireEvent } from '@testing-library/react';
+import { screen, render, fireEvent, waitFor } from '@testing-library/react';
 import * as React from 'react';
+// import { axe } from 'jest-axe';
 import { act } from 'react-dom/test-utils';
 import { MemoryRouter } from 'react-router-dom';
 import type { TableTestItem } from '../table/test-data';
@@ -41,6 +42,44 @@ describe('TableView - non-virtualized', () => {
       expect(screen.getByTestId(`col-branches-${index}`).textContent).toEqual(item.branches);
     });
   });
+
+  // Uncomment once https://github.com/openshift/dynamic-plugin-sdk/pull/168 has been merged
+  // That PR adds jest-axe
+  // it('is accessible on load', async () => {
+  // const { container } = render(
+  //   <MemoryRouter initialEntries={[{ pathname: '/hac' }]}>
+  //     <ListView
+  //       data={data}
+  //       columns={columns}
+  //       Row={Row}
+  //       filters={testFilters}
+  //       loaded
+  //       isRowSelected={undefined}
+  //       onSelect={undefined}
+  //       onFilter={undefined}
+  //       loadError={undefined}
+  //       CustomEmptyState={undefined}
+  //       emptyStateDescription={undefined}
+  //       CustomNoDataEmptyState={undefined}
+  //       aria-label={undefined}
+  //       actionButtons={[
+  //         {
+  //           label: 'Add',
+  //           callback: () => null,
+  //           tooltip: 'Add a workspace by clicking on the button',
+  //         },
+  //         {
+  //           label: 'Delete',
+  //           callback: () => null,
+  //           isDisabled: true,
+  //         },
+  //       ]}
+  //     />
+  //   </MemoryRouter>,
+  // );
+  //   const results = await axe(container);
+  //   expect(results).toHaveNoViolations();
+  // });
 
   it('should show/hide chips & clear all button on search/clear', async () => {
     jest.useFakeTimers();
@@ -204,5 +243,47 @@ describe('TableView - non-virtualized', () => {
     expect(screen.getByTestId('col-name-0').textContent).toEqual('name-010');
     fireEvent.click(screen.getAllByRole('button')[3]);
     expect(screen.getByTestId('col-name-0').textContent).toEqual('name-000');
+  });
+
+  it('action buttons are rendered and functional', async () => {
+    const callbackMock = jest.fn();
+    render(
+      <MemoryRouter initialEntries={[{ pathname: '/hac' }]}>
+        <ListView
+          data={data}
+          columns={columns}
+          Row={Row}
+          filters={testFilters}
+          loaded
+          actionButtons={[
+            {
+              label: 'Add',
+              callback: callbackMock,
+              tooltip: 'Add a workspace by clicking on the button',
+            },
+            {
+              label: 'Delete',
+              callback: () => null,
+              isDisabled: true,
+            },
+          ]}
+        />
+      </MemoryRouter>,
+    );
+
+    // Patternfly doesn't add the proper disabled attribute, so need to check for aria fallback
+    //  expect(screen.getByText('Delete')).toBeDisabled(); /doesn't  work
+    expect(screen.getByText('Add').getAttribute('aria-disabled')).toEqual('false');
+    expect(screen.getByText('Delete').getAttribute('aria-disabled')).toEqual('true');
+
+    // Check that tooltip is rendered
+    expect(screen.queryByText('Add a workspace by clicking on the button')).not.toBeInTheDocument();
+    fireEvent.focus(screen.getByText('Add'));
+    expect(
+      await screen.findByText('Add a workspace by clicking on the button'),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Add'));
+    await waitFor(() => expect(callbackMock).toHaveBeenCalledTimes(1));
   });
 });
