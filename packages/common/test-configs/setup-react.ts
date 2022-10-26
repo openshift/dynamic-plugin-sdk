@@ -2,6 +2,10 @@
 // https://github.com/testing-library/jest-dom#custom-matchers
 import '@testing-library/jest-dom';
 
+import { toHaveNoViolations } from 'jest-axe';
+
+expect.extend(toHaveNoViolations);
+
 jest.mock('react', () => ({
   ...jest.requireActual('react'),
   useLayoutEffect: jest.requireActual('react').useEffect,

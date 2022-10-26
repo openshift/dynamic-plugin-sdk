@@ -58,3 +58,12 @@ export {
   WebSocketOptions,
   WebSocketState,
 } from './web-socket';
+
+export {
+  DetailsItem,
+  DetailsItemList,
+  OverviewPage,
+  ResourceSummary,
+} from './components/resource-summary';
+
+export { DetailsPage, DetailsPageProps } from './components/details-page/DetailsPage';

@@ -9,7 +9,7 @@ export type HrefForLabels = {
 
 export type LabelListProps = {
   /** Key value pair for labels (k8s labels) */
-  labels: Record<string, string>;
+  labels?: Record<string, string>;
   /** Optional icon for labels in list */
   icon?: React.ReactNode;
   /** Optional icon for labels in list */
@@ -29,7 +29,7 @@ export const LabelList: React.FC<LabelListProps> = ({
 }) => {
   const defaultColor = 'purple';
 
-  return _.isEmpty(labels) ? (
+  return _.isEmpty(labels) || !labels ? (
     <Text>No labels</Text>
   ) : (
     <LabelGroup defaultIsOpen={expand}>

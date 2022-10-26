@@ -1,19 +1,11 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import {
-  TextContent,
-  Text,
-  TextVariants,
-  DescriptionList,
-  DescriptionListTerm,
-  DescriptionListGroup,
-  DescriptionListDescription,
-  Label,
-} from '@patternfly/react-core';
+import { TextContent, Text, TextVariants } from '@patternfly/react-core';
 import { CheckCircleIcon } from '@patternfly/react-icons';
 import type { ComponentStory, ComponentMeta } from '@storybook/react';
 import React from 'react';
 import { MemoryRouter, Routes, Route, Link } from 'react-router-dom';
 import type { K8sResourceCommon } from '../../types/k8s';
+import { OverviewPage } from '../resource-summary';
 import { DetailsPage } from './DetailsPage';
 
 const meta: ComponentMeta<typeof DetailsPage> = {
@@ -58,51 +50,9 @@ const mockWorkspace: K8sResourceCommon = {
       label1: 'value1',
       label2: 'value2',
     },
+    creationTimestamp: '2022-09-15T21:07:32Z',
   },
 };
-
-export const SampleOverview: React.FC = () => (
-  <DescriptionList
-    columnModifier={{
-      default: '2Col',
-    }}
-  >
-    <DescriptionListGroup>
-      <DescriptionListTerm>Name</DescriptionListTerm>
-      <DescriptionListDescription>demo-workspace</DescriptionListDescription>
-    </DescriptionListGroup>
-    <DescriptionListGroup>
-      <DescriptionListTerm>Members</DescriptionListTerm>
-      <DescriptionListDescription>Alex and 3 others</DescriptionListDescription>
-    </DescriptionListGroup>
-    <DescriptionListGroup>
-      <DescriptionListTerm>Services</DescriptionListTerm>
-      <DescriptionListDescription>
-        <Label>App Studio</Label>
-      </DescriptionListDescription>
-    </DescriptionListGroup>
-    <DescriptionListGroup>
-      <DescriptionListTerm>APIs</DescriptionListTerm>
-      <DescriptionListDescription>
-        <a href="/apis">21 kinds</a>
-      </DescriptionListDescription>
-    </DescriptionListGroup>
-    <DescriptionListGroup>
-      <DescriptionListTerm>Labels</DescriptionListTerm>
-      <DescriptionListDescription>
-        <Label>internal.kcp.dev/phase=Ready</Label>
-      </DescriptionListDescription>
-    </DescriptionListGroup>
-    <DescriptionListGroup>
-      <DescriptionListTerm>Applications</DescriptionListTerm>
-      <DescriptionListDescription>
-        <span>
-          <a href="/">Demo app</a>,<a href="/">Billing app</a>
-        </span>
-      </DescriptionListDescription>
-    </DescriptionListGroup>
-  </DescriptionList>
-);
 
 export const PlaceholderComponent: React.FC<{ value: string }> = ({ value }) => (
   <TextContent>
@@ -113,7 +63,16 @@ export const PlaceholderComponent: React.FC<{ value: string }> = ({ value }) => 
 Primary.args = {
   ariaLabel: 'Workspace details',
   tabs: [
-    { key: 'overview', title: 'Overview', content: <SampleOverview />, ariaLabel: 'Overview' },
+    {
+      key: 'overview',
+      title: 'Overview',
+      content: (
+        <OverviewPage resource={mockWorkspace} rightColumn={<>Right column content</>}>
+          <span>Additional content</span>
+        </OverviewPage>
+      ),
+      ariaLabel: 'Overview',
+    },
     {
       key: 'applications',
       title: 'Applications',

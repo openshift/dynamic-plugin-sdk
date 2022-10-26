@@ -1,5 +1,6 @@
 import { InfoCircleIcon } from '@patternfly/react-icons';
 import { render, screen } from '@testing-library/react';
+import { axe } from 'jest-axe';
 import * as React from 'react';
 import type { LabelListProps } from './LabelList';
 import { LabelList } from './LabelList';
@@ -14,6 +15,15 @@ const mockLabels: LabelListProps = {
 };
 
 describe('Label list', () => {
+  test('Labels are accessible', async () => {
+    const { container } = render(
+      <LabelList labels={mockLabels.labels} icon={mockLabels.icon} color={mockLabels.color} />,
+    );
+
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
+  });
+
   test('Labels are rendered', () => {
     render(
       <LabelList labels={mockLabels.labels} icon={mockLabels.icon} color={mockLabels.color} />,
