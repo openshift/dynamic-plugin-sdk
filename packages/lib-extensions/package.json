@@ -1,6 +1,6 @@
 {
   "name": "@openshift/dynamic-plugin-sdk-extensions",
-  "version": "1.0.0-alpha1",
+  "version": "1.0.0",
   "description": "Provides core extension types for dynamic plugins",
   "license": "Apache-2.0",
   "repository": {
@@ -23,7 +23,7 @@
     "test": "yarn run -T test $INIT_CWD"
   },
   "peerDependencies": {
-    "@openshift/dynamic-plugin-sdk": ">=1.0.0-alpha",
+    "@openshift/dynamic-plugin-sdk": "^1.0.0",
     "react": "^17.0.2",
     "react-redux": "^7.2.2",
     "react-router": "^5.2.1",
