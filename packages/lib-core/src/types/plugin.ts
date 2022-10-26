@@ -1,4 +1,5 @@
 import type { Extension, LoadedExtension } from './extension';
+import type { PluginEntryModule } from './runtime';
 
 export type PluginRuntimeMetadata = {
   name: string;
@@ -13,6 +14,7 @@ export type PluginManifest = PluginRuntimeMetadata & {
 export type LoadedPlugin = {
   metadata: Readonly<PluginRuntimeMetadata>;
   extensions: Readonly<LoadedExtension[]>;
+  entryModule: PluginEntryModule;
   enabled: boolean;
   disableReason?: string;
 };
