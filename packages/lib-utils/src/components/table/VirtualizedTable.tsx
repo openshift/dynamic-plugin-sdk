@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import type { AnyObject } from '@monorepo/common';
-import type { IAction } from '@patternfly/react-table';
+import type { IAction, IRowData } from '@patternfly/react-table';
 import { ActionsColumn, Tbody, Td, Th, Thead, Tr, TableComposable } from '@patternfly/react-table';
 import { AutoSizer, WindowScroller } from '@patternfly/react-virtualized-extension';
 import * as _ from 'lodash-es';
@@ -11,27 +10,31 @@ import { StatusBox } from '../status/StatusBox';
 import type { RowProps, TableColumn } from './VirtualizedTableBody';
 import VirtualizedTableBody, { RowMemo } from './VirtualizedTableBody';
 
-export type VirtualizedTableProps<D> = {
+export type VirtualizedTableProps = {
   /** Optional flag indicating that filters are applied to data. */
   areFiltersApplied?: boolean;
   /** Optional actions for each row. */
   rowActions?: IAction[];
   /** Data array. */
-  data: D[];
+  data: unknown[];
   /** Flag indicating data has been loaded. */
   loaded: boolean;
   /** Optional load error object. */
   loadError?: LoadError;
   /** Table columns array. */
-  columns: TableColumn<D>[];
+  columns: TableColumn[];
   /** Table row component. */
-  Row: React.ComponentType<RowProps<D>>;
+  Row: React.ComponentType<RowProps>;
   /** DEPRECATED - Optional load error default text. No longer takes effect and will be removed */
   loadErrorDefaultText?: string;
   /** Optional isSelected row callback */
-  isRowSelected?: (item: D) => boolean;
+  isRowSelected?: (item: unknown) => boolean;
   /** Optional onSelect row callback */
-  onSelect?: (event: React.FormEvent<HTMLInputElement>, isRowSelected: boolean, data: D[]) => void;
+  onSelect?: (
+    event: React.FormEvent<HTMLInputElement>,
+    isRowSelected: boolean,
+    data: unknown[],
+  ) => void;
   /** Optional pagination params */
   pagination?: TablePagination;
   /** Optional no data empty state component. */
@@ -99,7 +102,7 @@ export const compareData = (a: unknown, b: unknown, direction: SortDirection): n
     : String(b).localeCompare(String(a));
 };
 
-const VirtualizedTable = <D extends AnyObject>({
+const VirtualizedTable = ({
   areFiltersApplied,
   rowActions = [],
   data: initialData,
@@ -116,16 +119,18 @@ const VirtualizedTable = <D extends AnyObject>({
   scrollNode,
   virtualized,
   'aria-label': ariaLabel,
-}: VirtualizedTableProps<D>) => {
+}: VirtualizedTableProps) => {
   const [activeSortDirection, setActiveSortDirection] = React.useState<SortDirection>('none');
   const [activeSortIndex, setActiveSortIndex] = React.useState(-1);
-  const [data, setData] = React.useState<D[]>([]);
+  const [data, setData] = React.useState<unknown[]>([]);
 
-  const addUUID = (allData: D[]) => {
-    return allData.map((item) => ({ ...item, uuid: item.uuid || item.id || uuidv4() }));
-  };
+  const addUUID = (allData: unknown[]) =>
+    allData.map((item) => {
+      const obj = Object(item);
+      return { ...obj, uuid: obj.uuid || obj.id || uuidv4() };
+    });
 
-  const paginateData = (allData: D[]) => {
+  const paginateData = (allData: unknown[]) => {
     const end =
       pagination && pagination.offset >= 0 && pagination.limit > 0
         ? pagination.offset + pagination.limit
@@ -140,9 +145,9 @@ const VirtualizedTable = <D extends AnyObject>({
     if (direction && direction !== 'none') {
       // back compatibility with sort column attribute defined as a string + transforms: [sortable]
       const columnSort = _.isString(columns[index].sort) ? columns[index].sort : undefined;
-      return initialData?.sort((objA, objB) => {
-        const a = columnSort ? _.get(objA, String(columnSort)) : Object.values(objA)[index];
-        const b = columnSort ? _.get(objB, String(columnSort)) : Object.values(objB)[index];
+      return initialData?.sort((objA: unknown, objB: unknown) => {
+        const a = columnSort ? _.get(objA, String(columnSort)) : Object.values(Object(objA))[index];
+        const b = columnSort ? _.get(objB, String(columnSort)) : Object.values(Object(objB))[index];
         return compareData(a, b, direction);
       });
     }
@@ -255,7 +260,7 @@ const VirtualizedTable = <D extends AnyObject>({
             ))) || (
             <Tbody>
               {data.map((item, index) => (
-                <Tr key={`row-${item.uuid}`}>
+                <Tr key={`row-${Object(item)?.uuid}`}>
                   {onSelect && (
                     <Td
                       select={{
@@ -272,10 +277,10 @@ const VirtualizedTable = <D extends AnyObject>({
                     <Td isActionCell>
                       <ActionsColumn
                         items={rowActions}
-                        rowData={item}
+                        rowData={item as IRowData}
                         extraData={{
                           rowIndex: index,
-                          id: (item.id || item.uuid) as string,
+                          id: (Object(item).id || Object(item).uuid) as string,
                         }}
                       />
                     </Td>

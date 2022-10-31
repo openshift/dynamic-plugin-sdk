@@ -142,7 +142,7 @@ describe('TableView - non-virtualized', () => {
       workspaces: [],
     });
     expect(filteredName.length).toEqual(1);
-    expect(filteredName[0].name).toEqual(data[2].name);
+    expect((filteredName[0] as TableTestItem).name).toEqual(data[2].name);
     const filteredNameBranches = filterDefault([...data], {
       name: ['name-X'],
       branches: ['invalid-value'],

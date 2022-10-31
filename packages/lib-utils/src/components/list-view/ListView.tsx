@@ -1,4 +1,3 @@
-import type { AnyObject } from '@monorepo/common';
 import { Pagination, PaginationVariant } from '@patternfly/react-core';
 import type {
   ConditionalFilterItem,
@@ -14,22 +13,22 @@ import type { VirtualizedTableProps } from '../table/VirtualizedTable';
 import VirtualizedTable from '../table/VirtualizedTable';
 import './list-view.css';
 
-export type ListViewProps<D> = VirtualizedTableProps<D> & {
+export type ListViewProps = VirtualizedTableProps & {
   /** Optional custom onFilter callback. */
-  onFilter?: (filterValues: Record<string, string[]>, activeFilter?: ConditionalFilterItem) => D[];
+  onFilter?: (
+    filterValues: Record<string, string[]>,
+    activeFilter?: ConditionalFilterItem,
+  ) => unknown[];
   /** Optional array of filterBy options. */
   filters?: ConditionalFilterItem[];
   /** Optional array of toolbar global actions. */
   globalActions?: ActionsProps;
 };
 
-export function filterDefault<D extends Record<string, unknown>>(
-  data: D[],
-  filterValues: Record<string, string[]>,
-): D[] {
+export function filterDefault(data: unknown[], filterValues: Record<string, string[]>): unknown[] {
   return data.filter((item) =>
     Object.entries(filterValues).every(([key, values]) =>
-      values.every((v) => String(item[key]).toLowerCase().includes(v.toLowerCase())),
+      values.every((v) => String(Object(item)[key]).toLowerCase().includes(v.toLowerCase())),
     ),
   );
 }
@@ -37,9 +36,9 @@ export function filterDefault<D extends Record<string, unknown>>(
 const calculatePage = (limit = 10, offset = 0) => Math.floor(offset / limit) + 1;
 const calculateOffset = (page = 1, limit = 10) => (page - 1) * limit;
 
-const ListView = <D extends AnyObject>({
+const ListView = ({
   columns,
-  data,
+  data = [],
   filters = [],
   isRowSelected,
   onSelect,
@@ -54,7 +53,7 @@ const ListView = <D extends AnyObject>({
   emptyStateDescription,
   CustomNoDataEmptyState,
   'aria-label': ariaLabel,
-}: ListViewProps<D>) => {
+}: ListViewProps) => {
   const location = useLocation();
   const [activeFilter, setActiveFilter] = React.useState<string>(filters?.[0]?.id || '');
   const [filteredData, setFilteredData] = React.useState(data);

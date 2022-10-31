@@ -45,7 +45,7 @@ export const testFilters: ConditionalFilterItem[] = [
   },
 ];
 
-export const testColumns: TableColumn<TableTestItem>[] = [
+export const testColumns: TableColumn[] = [
   {
     title: 'Name',
     id: 'name',
@@ -76,20 +76,21 @@ export type TableTestItem = {
   workspaces: number;
 };
 
-export const TestRow: React.FC<RowProps<TableTestItem>> = ({ obj, index }) => {
+export const TestRow: React.FC<RowProps> = ({ obj, index }) => {
+  const item = obj as TableTestItem;
   return (
     <>
-      <Td data-testid={`col-name-${index}`} dataLabel={obj.name}>
-        {obj.name}
+      <Td data-testid={`col-name-${index}`} dataLabel={item.name}>
+        {item.name}
       </Td>
-      <Td data-testid={`col-prs-${index}`} dataLabel={obj.prs}>
-        {obj.prs}
+      <Td data-testid={`col-prs-${index}`} dataLabel={item.prs}>
+        {item.prs}
       </Td>
-      <Td data-testid={`col-branches-${index}`} dataLabel={obj.branches}>
-        {obj.branches}
+      <Td data-testid={`col-branches-${index}`} dataLabel={item.branches}>
+        {item.branches}
       </Td>
-      <Td data-testid={`col-workspaces-${index}`} dataLabel={String(obj.workspaces)}>
-        {obj.workspaces}
+      <Td data-testid={`col-workspaces-${index}`} dataLabel={String(item.workspaces)}>
+        {item.workspaces}
       </Td>
     </>
   );

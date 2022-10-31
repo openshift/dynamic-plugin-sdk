@@ -1,4 +1,3 @@
-import type { AnyObject } from '@monorepo/common';
 import { ActionsColumn, Td as PFTd } from '@patternfly/react-table';
 import type { ICell, SortByDirection, ThProps, TdProps, IAction } from '@patternfly/react-table';
 import { VirtualTableBody } from '@patternfly/react-virtualized-extension';
@@ -8,25 +7,28 @@ import { CellMeasurerCache, CellMeasurer } from 'react-virtualized';
 import type { MeasuredCellParent } from 'react-virtualized/dist/es/CellMeasurer';
 import './virtualized-table.css';
 
-export type RowProps<D> = {
+export type RowProps = {
   /** Row data object. */
-  obj: D;
+  obj: unknown;
   /** Row index */
   index: number;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const RowMemo = React.memo(({ Row: RowComponent, obj, index }: RowMemoProps<any>) => (
+export const RowMemo = React.memo(({ Row: RowComponent, obj, index }: RowMemoProps) => (
   <RowComponent obj={obj} index={index} />
 ));
 
-export type RowMemoProps<D> = RowProps<D> & { Row: React.ComponentType<RowProps<D>> };
+export type RowMemoProps = RowProps & { Row: React.ComponentType<RowProps> };
 
-export type TableColumn<D> = ICell & {
+export type TableColumn = ICell & {
   /** Column ID. */
   id: string;
   /** Optional sort configuration. */
-  sort?: ((data: D[], sortDirection: SortByDirection) => D[]) | ThProps['sort'] | string;
+  sort?:
+    | ((data: unknown[], sortDirection: SortByDirection) => unknown[])
+    | ThProps['sort']
+    | string;
   /** Optional visibility. */
   visibility?: string[];
 };
@@ -62,11 +64,11 @@ export const TableRow: React.FC<TableRowProps> = ({ id, children, style, trKey, 
   </tr>
 );
 
-type VirtualizedTableBodyProps<D> = {
+type VirtualizedTableBodyProps = {
   /** Table columns. */
-  columns: TableColumn<D>[];
+  columns: TableColumn[];
   /** Data to be rendered. */
-  data: D[];
+  data: unknown[];
   /** Optional actions for each row. */
   rowActions?: IAction[];
   /** Table body height. */
@@ -76,18 +78,22 @@ type VirtualizedTableBodyProps<D> = {
   /** onChildScroll callback. */
   onChildScroll: (params: Scroll) => void;
   /** Row component. */
-  Row: React.ComponentType<RowProps<D>>;
+  Row: React.ComponentType<RowProps>;
   /** Optional isSelected row callback */
-  isRowSelected?: (item: D) => boolean;
+  isRowSelected?: (item: unknown) => boolean;
   /** Optional onSelect row callback */
-  onSelect?: (event: React.FormEvent<HTMLInputElement>, isRowSelected: boolean, data: D[]) => void;
+  onSelect?: (
+    event: React.FormEvent<HTMLInputElement>,
+    isRowSelected: boolean,
+    data: unknown[],
+  ) => void;
   /** Scroll top number. */
   scrollTop: number;
   /** Table body width. */
   width: number;
 };
 
-const VirtualizedTableBody = <D extends AnyObject>({
+const VirtualizedTableBody = ({
   columns,
   data,
   height,
@@ -99,7 +105,7 @@ const VirtualizedTableBody = <D extends AnyObject>({
   rowActions = [],
   scrollTop,
   width,
-}: VirtualizedTableBodyProps<D>) => {
+}: VirtualizedTableBodyProps) => {
   const cellMeasurementCache = new CellMeasurerCache({
     fixedWidth: true,
     minHeight: 44,
@@ -118,7 +124,7 @@ const VirtualizedTableBody = <D extends AnyObject>({
   };
 
   const rowRenderer = ({ index, isVisible, key, parent, style }: RowRendererParams) => {
-    const rowArgs: RowProps<D> = {
+    const rowArgs: RowProps = {
       obj: data[index],
       index,
     };

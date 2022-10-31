@@ -1,11 +1,11 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import type { AnyObject } from '@monorepo/common';
 import { Button, Tooltip } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import { sortable } from '@patternfly/react-table';
 import type { ComponentStory, ComponentMeta } from '@storybook/react';
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
+import type { RowProps } from '../table/VirtualizedTableBody';
 import { Td } from '../table/VirtualizedTableBody';
 import ListView from './ListView';
 
@@ -33,28 +33,29 @@ const Template: ComponentStory<typeof ListView> = (args) => {
           {...args}
           onSelect={(e, isRowSelected, selectedData) =>
             isRowSelected
-              ? setSelected([...new Set([...selected, ...selectedData.map((i) => String(i.name))])])
+              ? setSelected([
+                  ...new Set([...selected, ...selectedData.map((i) => (i as TableItem).name)]),
+                ])
               : setSelected(
-                  selected.filter((i) => !selectedData.map((item) => item.name).includes(i)),
+                  selected.filter(
+                    (i) => !selectedData.map((item) => (item as TableItem).name).includes(i),
+                  ),
                 )
           }
-          isRowSelected={(i) => selected.includes(i.name as string)}
+          isRowSelected={(i) => selected.includes((i as TableItem).name)}
         />
       </div>
     </BrowserRouter>
   );
 };
 
-type RowProps<D> = {
-  obj: D;
-};
-
-const Row: React.FC<RowProps<TableItem>> = ({ obj }) => {
+const Row: React.FC<RowProps> = ({ obj }) => {
+  const item = obj as TableItem;
   return (
     <>
-      <Td dataLabel={obj.name}>{obj.name}</Td>
-      <Td dataLabel={obj.kind}>{obj.kind}</Td>
-      <Td dataLabel={obj.labels}>{obj.labels}</Td>
+      <Td dataLabel={item.name}>{item.name}</Td>
+      <Td dataLabel={item.kind}>{item.kind}</Td>
+      <Td dataLabel={item.labels}>{item.labels}</Td>
     </>
   );
 };
@@ -109,7 +110,7 @@ Primary.args = {
       },
     },
   ],
-  Row: Row as React.FC<RowProps<AnyObject>>,
+  Row,
   filters: [
     {
       id: 'name',

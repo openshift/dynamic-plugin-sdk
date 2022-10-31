@@ -111,7 +111,7 @@ describe('VirtualizedTable - non-virtualized', () => {
     render(
       <VirtualizedTable
         {...initialValues}
-        isRowSelected={(item) => item.name === data[0].name}
+        isRowSelected={(item) => (item as TableTestItem).name === data[0].name}
         onSelect={() => null}
       />,
     );
