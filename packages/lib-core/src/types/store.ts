@@ -1,3 +1,4 @@
+import type { AnyObject } from '@monorepo/common';
 import type { LoadedExtension } from './extension';
 import type { LoadedPlugin, FailedPlugin } from './plugin';
 
@@ -99,4 +100,12 @@ export type PluginStoreInterface = {
    * Disabling a plugin puts all of its extensions out of use.
    */
   disablePlugins: (pluginNames: string[], disableReason?: string) => void;
+
+  /**
+   * Get a specific module exposed by the given plugin.
+   */
+  getExposedModule: <TModule extends AnyObject>(
+    pluginName: string,
+    moduleName: string,
+  ) => Promise<TModule>;
 };

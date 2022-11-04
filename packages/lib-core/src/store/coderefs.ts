@@ -1,5 +1,5 @@
 import type { AnyObject } from '@monorepo/common';
-import { CustomError, visitDeep } from '@monorepo/common';
+import { CustomError, ErrorWithCause, visitDeep } from '@monorepo/common';
 import * as _ from 'lodash-es';
 import type {
   EncodedCodeRef,
@@ -9,12 +9,6 @@ import type {
   ResolvedExtension,
 } from '../types/extension';
 import type { PluginEntryModule } from '../types/runtime';
-
-class CodeRefError extends CustomError {
-  constructor(message: string, readonly cause?: unknown) {
-    super(message);
-  }
-}
 
 class ExtensionCodeRefsResolutionError extends CustomError {
   constructor(readonly extension: LoadedExtension, readonly causes: unknown[]) {
@@ -74,7 +68,7 @@ const createCodeRef =
     const refData = parseEncodedCodeRef(encodedCodeRef);
 
     if (!refData) {
-      throw new CodeRefError(
+      throw new ErrorWithCause(
         formatErrorMessage(`Malformed code reference '${encodedCodeRef.$codeRef}'`),
       );
     }
@@ -87,11 +81,11 @@ const createCodeRef =
       const moduleFactory = await entryModule.get(moduleName);
       referencedModule = moduleFactory();
     } catch (e) {
-      throw new CodeRefError(formatErrorMessage(`Failed to load module '${moduleName}'`), e);
+      throw new ErrorWithCause(formatErrorMessage(`Failed to load module '${moduleName}'`), e);
     }
 
     if (!_.has(referencedModule, exportName)) {
-      throw new CodeRefError(
+      throw new ErrorWithCause(
         formatErrorMessage(`Missing module export '${moduleName}.${exportName}'`),
       );
     }

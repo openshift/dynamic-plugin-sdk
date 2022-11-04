@@ -1,4 +1,5 @@
-import { consoleLogger } from '@monorepo/common';
+import type { AnyObject } from '@monorepo/common';
+import { consoleLogger, ErrorWithCause } from '@monorepo/common';
 import * as _ from 'lodash-es';
 import type { Extension, LoadedExtension, CodeRef } from '../types/extension';
 import type {
@@ -84,6 +85,7 @@ export class PluginStore implements PluginStoreInterface {
       const pluginAdded = this.addPlugin(
         _.omit<PluginManifest, 'extensions'>(result.manifest, 'extensions'),
         this.processExtensions(result.pluginName, result.manifest.extensions, result.entryModule),
+        result.entryModule,
       );
 
       if (pluginAdded && this.options.autoEnableLoadedPlugins) {
@@ -270,7 +272,11 @@ export class PluginStore implements PluginStoreInterface {
    *
    * Returns `true` if the plugin was added successfully.
    */
-  addPlugin(metadata: PluginRuntimeMetadata, processedExtensions: LoadedExtension[]) {
+  addPlugin(
+    metadata: PluginRuntimeMetadata,
+    processedExtensions: LoadedExtension[],
+    entryModule: PluginEntryModule,
+  ) {
     const pluginName = metadata.name;
     const pluginVersion = metadata.version;
 
@@ -282,6 +288,7 @@ export class PluginStore implements PluginStoreInterface {
     this.loadedPlugins.set(pluginName, {
       metadata: Object.freeze(metadata),
       extensions: processedExtensions.map((e) => Object.freeze(e)),
+      entryModule,
       enabled: false,
     });
 
@@ -320,5 +327,23 @@ export class PluginStore implements PluginStoreInterface {
     );
 
     return this.options.postProcessExtensions(processedExtensions);
+  }
+
+  async getExposedModule<TModule extends AnyObject>(pluginName: string, moduleName: string) {
+    if (!this.loadedPlugins.has(pluginName)) {
+      throw new Error(
+        `Attempt to get module '${moduleName}' of plugin ${pluginName} which is not loaded yet`,
+      );
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const plugin = this.loadedPlugins.get(pluginName)!;
+
+    try {
+      const moduleFactory = await plugin.entryModule.get(moduleName);
+      return moduleFactory() as TModule;
+    } catch (e) {
+      throw new ErrorWithCause(`Failed to load module '${moduleName}' of plugin ${pluginName}`, e);
+    }
   }
 }

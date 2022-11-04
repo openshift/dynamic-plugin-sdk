@@ -1,7 +1,5 @@
 /**
  * Base class for custom errors.
- *
- * This shouldn't be needed once https://github.com/tc39/proposal-error-cause receives widespread support.
  */
 export class CustomError extends Error {
   constructor(message?: string) {
