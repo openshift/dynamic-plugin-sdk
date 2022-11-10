@@ -7,6 +7,9 @@
  * @packageDocumentation
  */
 
+// Core utilities
+export * from './utils/shared-scope';
+
 // Core components
 export {
   PluginLoader,

@@ -1,6 +1,6 @@
 import type { AnyObject } from '@monorepo/common';
 import type { LoadedExtension } from './extension';
-import type { LoadedPlugin, FailedPlugin } from './plugin';
+import type { LoadedPlugin, FailedPlugin, PluginManifest } from './plugin';
 
 export enum PluginEventType {
   /**
@@ -85,7 +85,7 @@ export type PluginStoreInterface = {
    *
    * Use `subscribe` method to respond to events emitted by the `PluginStore`.
    */
-  loadPlugin: (baseURL: string) => void;
+  loadPlugin: (baseURL: string, manifest?: PluginManifest) => void;
 
   /**
    * Enable the given plugin(s).

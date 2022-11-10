@@ -29,14 +29,31 @@ const pluginSharedModules: WebpackSharedObject = {
   'react-dom': { singleton: true, import: false },
 };
 
+// classing plugin with jsonp entry point
+const jsonpPlugin = new DynamicRemotePlugin({
+  extensions,
+  sharedModules: pluginSharedModules,
+});
+
+// plugin used by HCC services using global var scope
+const varHccPlugin = new DynamicRemotePlugin({
+  extensions: [],
+  sharedModules: pluginSharedModules,
+  registrationMethod: 'var',
+  pluginMetadata: {
+    version: '1.0.0',
+    name: 'hccModule',
+    exposedModules: {
+      './HccComponent': path.resolve(__dirname, './src/hcc-component.tsx'),
+    },
+  },
+});
+
 const plugins: WebpackPluginInstance[] = [
   new EnvironmentPlugin({
     NODE_ENV: 'development',
   }),
-  new DynamicRemotePlugin({
-    extensions,
-    sharedModules: pluginSharedModules,
-  }),
+  ...(process.env.VAR === 'true' ? [varHccPlugin] : [jsonpPlugin]),
 ];
 
 const config: Configuration = {
@@ -78,6 +95,9 @@ const config: Configuration = {
   plugins,
   devtool: isProd ? 'source-map' : 'cheap-source-map',
   optimization: {
+    runtimeChunk: {
+      name: 'runtime',
+    },
     minimize: isProd,
     minimizer: [
       '...', // The '...' string represents the webpack default TerserPlugin instance

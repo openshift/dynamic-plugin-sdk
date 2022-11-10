@@ -1,12 +1,15 @@
+/// <reference types="webpack/module" />
+
 import type { AnyObject } from '@monorepo/common';
-import { consoleLogger } from '@monorepo/common';
+import { ErrorWithCause, consoleLogger } from '@monorepo/common';
 import * as _ from 'lodash-es';
 import * as semver from 'semver';
-import { PLUGIN_MANIFEST, REMOTE_ENTRY_SCRIPT, REMOTE_ENTRY_CALLBACK } from '../constants';
+import { PLUGIN_MANIFEST, REMOTE_ENTRY_CALLBACK } from '../constants';
 import type { ResourceFetch } from '../types/fetch';
 import type { PluginManifest } from '../types/plugin';
 import type { PluginEntryModule, PluginEntryCallback } from '../types/runtime';
 import { basicFetch } from '../utils/basic-fetch';
+import { initSharedScope } from '../utils/shared-scope';
 import { resolveURL } from '../utils/url';
 import { pluginManifestSchema } from '../yup-schemas';
 
@@ -54,6 +57,8 @@ export type PluginLoaderOptions = Partial<{
   sharedScope: AnyObject;
   /** Post-process the plugin manifest. Can be used as a custom validation hook. */
   postProcessManifest: (manifest: PluginManifest) => Promise<PluginManifest>;
+  /** The name of webpack shared scope used for __webpack_init_sharing__. Default value is 'default' */
+  sharedScopeName: string;
 }>;
 
 /**
@@ -76,6 +81,7 @@ export class PluginLoader {
       fixedPluginDependencyResolutions: options.fixedPluginDependencyResolutions ?? {},
       sharedScope: options.sharedScope ?? {},
       postProcessManifest: options.postProcessManifest ?? (async (manifest) => manifest),
+      sharedScopeName: options.sharedScopeName ?? 'default',
     };
   }
 
@@ -117,11 +123,11 @@ export class PluginLoader {
    *
    * Use `subscribe` method to respond to plugin load results.
    */
-  async loadPlugin(baseURL: string) {
+  async loadPlugin(baseURL: string, externalManifest?: PluginManifest): Promise<void> {
     let manifest: PluginManifest;
 
     try {
-      manifest = await this.getPluginManifest(baseURL);
+      manifest = externalManifest || (await this.getPluginManifest(baseURL));
     } catch (e) {
       this.invokeListeners({
         success: false,
@@ -132,13 +138,15 @@ export class PluginLoader {
     }
 
     const pluginName = manifest.name;
+    const pluginEntryURL = resolveURL(baseURL, manifest.entryScript);
+    const isUniqueEntry = PluginLoader.isUniqueScript(pluginEntryURL);
 
     if (this.plugins.get(pluginName)?.status === 'pending') {
       consoleLogger.warn(`Attempt to reload plugin ${pluginName} while being loaded`);
       return;
     }
 
-    if (this.plugins.get(pluginName)?.status === 'loaded') {
+    if (!isUniqueEntry && this.plugins.get(pluginName)?.status === 'loaded') {
       consoleLogger.warn(`Attempt to reload plugin ${pluginName} after being loaded`);
       return;
     }
@@ -150,6 +158,24 @@ export class PluginLoader {
     };
 
     this.plugins.set(pluginName, data);
+
+    /**
+     * Inject runtime script if it exists in a separate chunk
+     */
+    if (manifest.runtimeChunkScript) {
+      try {
+        await PluginLoader.loadPluginRuntimeScript(baseURL, manifest.runtimeChunkScript);
+      } catch (error) {
+        data.status = 'failed';
+        this.invokeListeners({
+          success: false,
+          pluginName,
+          errorMessage: `Failed to load ${pluginName}.`,
+          errorCause: error,
+        });
+        return;
+      }
+    }
 
     if (!this.options.canLoadPlugin(pluginName)) {
       data.status = 'failed';
@@ -175,7 +201,7 @@ export class PluginLoader {
     }
 
     try {
-      this.loadPluginEntryScript(baseURL, manifest);
+      await this.loadPluginEntryScript(baseURL, manifest);
     } catch (e) {
       data.status = 'failed';
       this.invokeListeners({
@@ -185,6 +211,19 @@ export class PluginLoader {
         errorCause: e,
       });
     }
+
+    const pluginReadinessPromise = new Promise<void>((resolve) => {
+      this.subscribe((event) => {
+        if (event.pluginName === pluginName) {
+          /**
+           * Do not resolve the promise until plugin was initialized.
+           * Prevents race condition between the getExposedModule method and listeners.
+           */
+          resolve();
+        }
+      });
+    });
+    await pluginReadinessPromise;
   }
 
   /**
@@ -306,9 +345,135 @@ export class PluginLoader {
   }
 
   /**
+   * Append entry module to DOM
+   */
+  injectPluginScript(
+    baseURL: string,
+    pluginLoadData: PluginLoadData,
+    // onLoad type does not have stand alone definition
+    onLoad?: (ev?: Event) => void,
+    onError?: OnErrorEventHandler,
+    getDocument: () => typeof document = _.constant(document),
+  ) {
+    const pluginName = pluginLoadData.manifest.name;
+
+    this.plugins.set(pluginName, pluginLoadData);
+    const initPromise = new Promise<void>((resolve, reject) => {
+      const script = getDocument().createElement('script');
+
+      script.src = resolveURL(baseURL, pluginLoadData.manifest.entryScript);
+      script.async = true;
+
+      script.onload = async (event) => {
+        if (onLoad) {
+          onLoad(event);
+        }
+        if (pluginLoadData.manifest.registrationMethod === 'var') {
+          await this.initializeVarModule(pluginName);
+        }
+        return resolve();
+      };
+
+      script.onerror = (event) => {
+        if (onError) {
+          onError(event);
+        }
+        return reject(new Error('Unable to initialize remote module'));
+      };
+
+      getDocument().head.appendChild(script);
+
+      consoleLogger.info(`Loading entry script of plugin ${pluginName} from ${script.src}`);
+    });
+
+    return initPromise;
+  }
+
+  /**
+   * Initialize container loaded to window scope.
+   *
+   * Required by HCC plugins.
+   * Simulates the jsonp flow used in the other type of plugins.
+   */
+  async initializeVarModule(pluginName: string) {
+    if (!this.plugins.has(pluginName)) {
+      throw new ErrorWithCause(`No plugin data exist for '${pluginName}'`);
+    }
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const data = this.plugins.get(pluginName)!;
+    const moduleScope = data.manifest.name;
+    await initSharedScope(this.options.sharedScopeName);
+    const entryModule: PluginEntryModule = (
+      window as unknown as { [key: string]: PluginEntryModule }
+    )[moduleScope];
+    try {
+      await Promise.resolve(entryModule.init(this.options.sharedScope));
+    } catch (error) {
+      data.status = 'failed';
+      this.invokeListeners({
+        success: false,
+        pluginName,
+        errorCause: 'Plugin container initialization failed',
+        errorMessage: `Unable to initialize ${pluginName} webpack container! ${error}`,
+      });
+      return;
+    }
+    data.status = 'loaded';
+    data.entryCallbackFired = true;
+    this.invokeListeners({
+      success: true,
+      pluginName,
+      manifest: data.manifest,
+      entryModule,
+    });
+  }
+
+  setPluginData(data: PluginLoadData) {
+    this.plugins.set(data.manifest.name, data);
+  }
+
+  static isUniqueScript(
+    scriptURL: string,
+    getDocument: () => typeof document = _.constant(document),
+  ) {
+    return getDocument().head.querySelector(`script[src="${scriptURL}"]`) === null;
+  }
+
+  static async loadPluginRuntimeScript(
+    baseURL: string,
+    runtimeScript: string,
+    getDocument: () => typeof document = _.constant(document),
+  ) {
+    const script = getDocument().createElement('script');
+    script.src = resolveURL(baseURL, runtimeScript);
+
+    /**
+     * Runtime chunks do not have build time generated hashes.
+     * We can't rely on it existing to prevent duplicate injection!
+     * We have to check the DOM if the script with same URL.
+     */
+    const shouldInject = PluginLoader.isUniqueScript(script.src);
+
+    return new Promise<void>((resolve, reject) => {
+      if (!shouldInject) {
+        resolve();
+      } else {
+        getDocument().head.appendChild(script);
+        script.onload = () => {
+          return resolve();
+        };
+
+        script.onerror = () => {
+          return reject(new Error(`Unable to load plugin runtime chunk from ${script.src}`));
+        };
+      }
+    });
+  }
+
+  /**
    * Start loading the plugin entry script from `baseURL`.
    */
-  loadPluginEntryScript(
+  async loadPluginEntryScript(
     baseURL: string,
     manifest: PluginManifest,
     getDocument: () => typeof document = _.constant(document),
@@ -321,14 +486,11 @@ export class PluginLoader {
       return;
     }
 
-    const script = getDocument().createElement('script');
-    const scriptURL = resolveURL(baseURL, REMOTE_ENTRY_SCRIPT);
-
-    script.src = scriptURL;
-    script.async = true;
-
-    script.onload = () => {
-      if (!data.entryCallbackFired) {
+    const onLoad = () => {
+      /**
+       * Check callback fired only for plugins using the jsonp wrapper
+       */
+      if (!data.entryCallbackFired && data.manifest.registrationMethod === 'jsonp') {
         data.status = 'failed';
         this.invokeListeners({
           success: false,
@@ -338,7 +500,7 @@ export class PluginLoader {
       }
     };
 
-    script.onerror = (event) => {
+    const onError: OnErrorEventHandler = (event) => {
       data.status = 'failed';
       this.invokeListeners({
         success: false,
@@ -348,9 +510,8 @@ export class PluginLoader {
       });
     };
 
-    consoleLogger.info(`Loading entry script of plugin ${pluginName} from ${scriptURL}`);
-
-    getDocument().head.appendChild(script);
+    this.setPluginData(data);
+    this.injectPluginScript(baseURL, data, onLoad, onError, getDocument);
   }
 
   private createPluginEntryCallback(): PluginEntryCallback {

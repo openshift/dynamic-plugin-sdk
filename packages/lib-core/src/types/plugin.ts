@@ -9,6 +9,9 @@ export type PluginRuntimeMetadata = {
 
 export type PluginManifest = PluginRuntimeMetadata & {
   extensions: Extension[];
+  registrationMethod?: 'jsonp' | 'var';
+  entryScript: string;
+  runtimeChunkScript?: string;
 };
 
 export type LoadedPlugin = {
