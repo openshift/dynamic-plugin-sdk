@@ -4,7 +4,7 @@ import type { PluginStore } from '@openshift/dynamic-plugin-sdk';
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import type { UtilsConfig } from '../config';
-import { isUtilsConfigSet, setUtilsConfig } from '../config';
+import { setUtilsConfig } from '../config';
 import type { InitAPIDiscovery } from '../types/api-discovery';
 import { initAPIDiscovery } from './api-discovery';
 import { useReduxStore } from './redux';
@@ -49,9 +49,7 @@ const AppInitSDK: React.FC<AppInitSDKProps> = ({ children, configurations }) => 
 
   React.useEffect(() => {
     try {
-      if (!isUtilsConfigSet()) {
-        setUtilsConfig({ appFetch, wsAppSettings });
-      }
+      setUtilsConfig({ appFetch, wsAppSettings });
       apiDiscovery(store, apiPriorityList);
     } catch (e) {
       consoleLogger.warn('Error while initializing AppInitSDK', e);

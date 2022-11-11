@@ -25,6 +25,7 @@ let config: Readonly<UtilsConfig> | undefined;
 
 /**
  * Checks if the {@link UtilsConfig} is set.
+ * @deprecated
  */
 export const isUtilsConfigSet = (): boolean => {
   return config !== undefined;
@@ -36,10 +37,6 @@ export const isUtilsConfigSet = (): boolean => {
  * This must be done before using any of the Kubernetes utilities.
  */
 export const setUtilsConfig = (c: UtilsConfig) => {
-  if (config !== undefined) {
-    throw new Error('UtilsConfig reference has already been set');
-  }
-
   config = Object.freeze({ ...c });
 };
 
