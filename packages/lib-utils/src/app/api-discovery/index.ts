@@ -119,9 +119,10 @@ const batchResourcesRequest = (
   });
 };
 
-const getResources = async (
+export const getResources = async (
   preferenceList: string[],
   dispatch: Dispatch,
+  onlyPreferenceList = false,
 ): Promise<DiscoveryResources> => {
   const apiResourceData: APIResourceData = await commonFetchJSON('/apis');
   const groupVersionMap = apiResourceData.groups.reduce(
@@ -134,13 +135,15 @@ const getResources = async (
     },
     {},
   );
-  const all = ['/api/v1'].concat(
-    _.flatten(
-      apiResourceData.groups.map<string[]>((group) =>
-        group.versions.map<string>((version) => `/apis/${version.groupVersion}`),
-      ),
-    ).sort((api) => (preferenceList.find((item) => api.includes(`/apis/${item}`)) ? -1 : 0)),
-  );
+  const all = onlyPreferenceList
+    ? preferenceList
+    : ['/api/v1'].concat(
+        _.flatten(
+          apiResourceData.groups.map<string[]>((group) =>
+            group.versions.map<string>((version) => `/apis/${version.groupVersion}`),
+          ),
+        ).sort((api) => (preferenceList.find((item) => api.includes(`/apis/${item}`)) ? -1 : 0)),
+      );
 
   // let batchedData: APIResourceList[] = [];
   const batches = _.chunk(all, API_DISCOVERY_REQUEST_BATCH_SIZE);

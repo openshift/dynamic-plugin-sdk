@@ -1,6 +1,7 @@
 import type { Map as ImmutableMap } from 'immutable';
 import * as React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { getResources } from '../../app/api-discovery';
 import * as k8sActions from '../../app/redux/actions/k8s';
 import { getReduxIdPayload } from '../../app/redux/reducers/k8s/selector';
 import type { K8sResourceCommon } from '../../types/k8s';
@@ -46,6 +47,12 @@ export const useK8sWatchResource = <R extends K8sResourceCommon | K8sResourceCom
   );
 
   const dispatch = useDispatch();
+
+  React.useEffect(() => {
+    if (modelsLoaded && !k8sModel && resource.kind) {
+      dispatch(getResources([resource.kind], dispatch, true));
+    }
+  }, [dispatch, modelsLoaded, k8sModel, resource]);
 
   React.useEffect(() => {
     if (watchData) {
