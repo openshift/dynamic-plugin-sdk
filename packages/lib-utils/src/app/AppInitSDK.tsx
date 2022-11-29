@@ -4,7 +4,7 @@ import * as React from 'react';
 import { Provider } from 'react-redux';
 import type { UtilsConfig } from '../config';
 import { isUtilsConfigSet, setUtilsConfig } from '../config';
-import type { InitAPIDiscovery } from '../types/api-discovery';
+import type { APIResourceList, InitAPIDiscovery } from '../types/api-discovery';
 import { initAPIDiscovery } from './api-discovery';
 import { useReduxStore } from './redux';
 
@@ -12,6 +12,7 @@ export type AppInitSDKProps = {
   configurations: {
     apiDiscovery?: InitAPIDiscovery;
     apiPriorityList?: string[];
+    staticApiModels?: Record<string, APIResourceList>;
     appFetch: UtilsConfig['appFetch'];
     pluginStore: PluginStore;
     wsAppSettings: UtilsConfig['wsAppSettings'];
@@ -44,6 +45,7 @@ const AppInitSDK: React.FC<AppInitSDKProps> = ({ children, configurations }) => 
     wsAppSettings,
     apiDiscovery = initAPIDiscovery,
     apiPriorityList,
+    staticApiModels,
   } = configurations;
 
   React.useEffect(() => {
@@ -51,11 +53,11 @@ const AppInitSDK: React.FC<AppInitSDKProps> = ({ children, configurations }) => 
       if (!isUtilsConfigSet()) {
         setUtilsConfig({ appFetch, wsAppSettings });
       }
-      apiDiscovery(store, apiPriorityList);
+      apiDiscovery(store, apiPriorityList, staticApiModels);
     } catch (e) {
       consoleLogger.warn('Error while initializing AppInitSDK', e);
     }
-  }, [apiDiscovery, appFetch, store, wsAppSettings, apiPriorityList]);
+  }, [apiDiscovery, appFetch, store, wsAppSettings, apiPriorityList, staticApiModels]);
 
   return (
     <PluginStoreProvider store={pluginStore}>

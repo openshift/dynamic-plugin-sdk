@@ -67,11 +67,11 @@ type APIResourceData = {
 };
 
 const batchResourcesRequest = (
-  batch: string[],
+  batch: (string | APIResourceList)[],
   groupVersionMap: AnyObject,
 ): Promise<DiscoveryResources>[] => {
-  return batch.map<Promise<DiscoveryResources>>(async (p: string) => {
-    const resourceList = await commonFetchJSON<APIResourceList>(p);
+  return batch.map<Promise<DiscoveryResources>>(async (p: string | APIResourceList) => {
+    const resourceList = typeof p === 'string' ? await commonFetchJSON<APIResourceList>(p) : p;
     const resourceSet = new Set<string>();
     const namespacedSet = new Set<string>();
     resourceList.resources?.forEach(({ namespaced, name }) => {
@@ -122,6 +122,7 @@ const batchResourcesRequest = (
 const getResources = async (
   preferenceList: string[],
   dispatch: Dispatch,
+  staticApiModels?: Record<string, APIResourceList>,
 ): Promise<DiscoveryResources> => {
   const apiResourceData: APIResourceData = await commonFetchJSON('/apis');
   const groupVersionMap = apiResourceData.groups.reduce(
@@ -134,13 +135,21 @@ const getResources = async (
     },
     {},
   );
-  const all = ['/api/v1'].concat(
-    _.flatten(
-      apiResourceData.groups.map<string[]>((group) =>
-        group.versions.map<string>((version) => `/apis/${version.groupVersion}`),
-      ),
-    ).sort((api) => (preferenceList.find((item) => api.includes(`/apis/${item}`)) ? -1 : 0)),
-  );
+  const all = ['/api/v1']
+    .concat(
+      _.flatten(
+        apiResourceData.groups.map<string[]>((group) =>
+          group.versions.map<string>((version) => `/apis/${version.groupVersion}`),
+        ),
+      ).sort((api) => (preferenceList.find((item) => api.includes(`/apis/${item}`)) ? -1 : 0)),
+    )
+    .map((apiEndpoint) => {
+      if (Object.prototype.hasOwnProperty.call(staticApiModels, apiEndpoint) && staticApiModels) {
+        return staticApiModels[apiEndpoint];
+      }
+
+      return apiEndpoint;
+    });
 
   // let batchedData: APIResourceList[] = [];
   const batches = _.chunk(all, API_DISCOVERY_REQUEST_BATCH_SIZE);
@@ -162,26 +171,32 @@ const getResources = async (
 };
 
 const updateResources =
-  (preferenceList: string[]) =>
+  (preferenceList: string[], staticApiModels?: Record<string, APIResourceList>) =>
   async (dispatch: Dispatch): Promise<DiscoveryResources> => {
     dispatch(setResourcesInFlight(true));
     dispatch(setBatchesInFlight(true));
 
-    const resources = await getResources(preferenceList, dispatch);
+    const resources = await getResources(preferenceList, dispatch, staticApiModels);
 
     return resources;
   };
 
-const startAPIDiscovery = (preferenceList: string[]) => (dispatch: DispatchWithThunk) => {
-  dispatch(updateResources(preferenceList))
-    .then((resources) => {
-      return resources;
-    })
-    // TODO handle failures - retry if error is recoverable
-    .catch((err) => consoleLogger.error('API discovery startAPIDiscovery failed:', err));
-};
+const startAPIDiscovery =
+  (preferenceList: string[], staticApiModels?: Record<string, APIResourceList>) =>
+  (dispatch: DispatchWithThunk) => {
+    dispatch(updateResources(preferenceList, staticApiModels))
+      .then((resources) => {
+        return resources;
+      })
+      // TODO handle failures - retry if error is recoverable
+      .catch((err) => consoleLogger.error('API discovery startAPIDiscovery failed:', err));
+  };
 
-export const initAPIDiscovery: InitAPIDiscovery = (storeInstance, preferenceList = []) => {
+export const initAPIDiscovery: InitAPIDiscovery = (
+  storeInstance,
+  preferenceList = [],
+  staticApiModels = {},
+) => {
   const resources = getCachedResources();
   if (resources) {
     storeInstance.dispatch(receivedResources(resources));
@@ -189,6 +204,6 @@ export const initAPIDiscovery: InitAPIDiscovery = (storeInstance, preferenceList
 
   consoleLogger.info(`API discovery waiting ${API_DISCOVERY_INIT_DELAY} ms before initializing`);
   window.setTimeout(() => {
-    storeInstance.dispatch(startAPIDiscovery(preferenceList));
+    storeInstance.dispatch(startAPIDiscovery(preferenceList, staticApiModels));
   }, API_DISCOVERY_INIT_DELAY);
 };
