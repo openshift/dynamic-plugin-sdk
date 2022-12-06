@@ -3,7 +3,7 @@
  *
  * @remarks
  * This package provides extension types and corresponding type guard functions
- * used to interpret these extensions at runtime.
+ * used to interpret the corresponding extension objects at runtime.
  *
  * @packageDocumentation
  */

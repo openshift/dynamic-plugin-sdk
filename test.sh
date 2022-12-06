@@ -21,11 +21,5 @@ yarn lint
 # Run unit tests
 yarn test
 
-# Ensure that Git repo is still clean
-if [[ -n "$(git status --porcelain)" ]]; then
-  echo "Git repository is not clean, make sure that all changes are committed"
-  exit 1
-fi
-
 # Upload code coverage
 ./prow-codecov.sh 2>/dev/null

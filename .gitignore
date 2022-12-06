@@ -3,6 +3,7 @@
 /screenshots
 **/node_modules
 **/dist
+**/.DS_Store
 
 # https://next.yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
 .pnp.*

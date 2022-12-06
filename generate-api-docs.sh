@@ -6,7 +6,8 @@ yarn build-libs
 
 mkdir -p docs/generated && rm -rf docs/generated/*
 
-shopt -s globstar
-cp packages/lib-*/dist/api/lib-*.api.json docs/generated
+for dir in packages/lib-*; do
+  cp $dir/dist/api/$(basename $dir).api.json docs/generated
+done
 
 yarn api-documenter markdown -i docs/generated -o docs/generated/api

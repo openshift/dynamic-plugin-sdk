@@ -61,6 +61,16 @@ const checkImport = (context, node) => {
  * Enforce imported external modules to be declared in `dependencies` or `peerDependencies`
  * within the closest parent `package.json`.
  *
+ * This rule is meant to replace `import/no-extraneous-dependencies` which seems to have
+ * some behavioral inconsistencies as well as suboptimal support for monorepo projects.
+ *
+ * This rule differs from `import/no-extraneous-dependencies` in the following ways:
+ * - only the first closest parent `package.json` found is taken into account
+ * - external modules must be declared in either `dependencies` or `peerDependencies`
+ * - supports optional criteria that determine whether a file should be linted
+ *   - `includeFiles` and `excludeFiles` - `minimatch` compatible file glob patterns
+ *   - `excludeModules` - external modules to exclude from linting
+ *
  * @type {import('eslint').Rule.RuleModule}
  */
 module.exports = {
