@@ -1,5 +1,4 @@
-import type { AnyObject } from '@monorepo/common';
-import type { Extension, CodeRef } from '@openshift/dynamic-plugin-sdk';
+import type { AnyObject, Extension, CodeRef } from '@openshift/dynamic-plugin-sdk';
 import type { ReactNode } from 'react';
 import type { ExtensionHook } from '../../types/common';
 
@@ -137,7 +136,7 @@ export type CatalogItemDetailsDescription = {
   value: string | ReactNode;
 };
 
-type TypeAndTitle = {
+export type TypeAndTitle = {
   /** Type ID for the item type. */
   type: string;
   /** Title for the item */

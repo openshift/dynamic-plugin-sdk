@@ -251,7 +251,7 @@ export class PluginStore implements PluginStoreInterface {
     );
   }
 
-  updateExtensions() {
+  private updateExtensions() {
     const prevExtensions = this.extensions;
 
     this.extensions = Array.from(this.loadedPlugins.values()).reduce<LoadedExtension[]>(
@@ -272,7 +272,7 @@ export class PluginStore implements PluginStoreInterface {
    *
    * Returns `true` if the plugin was added successfully.
    */
-  addPlugin(
+  private addPlugin(
     metadata: PluginRuntimeMetadata,
     processedExtensions: LoadedExtension[],
     entryModule: PluginEntryModule,
@@ -300,7 +300,7 @@ export class PluginStore implements PluginStoreInterface {
     return true;
   }
 
-  registerFailedPlugin(pluginName: string, errorMessage: string, errorCause?: unknown) {
+  private registerFailedPlugin(pluginName: string, errorMessage: string, errorCause?: unknown) {
     if (this.loadedPlugins.has(pluginName)) {
       consoleLogger.warn(`Attempt to register an already loaded plugin ${pluginName} as failed`);
       return;
@@ -313,7 +313,11 @@ export class PluginStore implements PluginStoreInterface {
   /**
    * Process extension objects as received from the plugin manifest.
    */
-  processExtensions(pluginName: string, extensions: Extension[], entryModule: PluginEntryModule) {
+  private processExtensions(
+    pluginName: string,
+    extensions: Extension[],
+    entryModule: PluginEntryModule,
+  ) {
     const processedExtensions: LoadedExtension[] = extensions.map((e, index) =>
       decodeCodeRefs(
         {

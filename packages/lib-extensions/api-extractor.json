@@ -1,0 +1,6 @@
+{
+  "extends": "../../api-extractor.json",
+  "mainEntryPointFilePath": "dist/types/lib-extensions/src/index.d.ts",
+  "apiReport": { "reportFileName": "lib-extensions.api.md" },
+  "docModel": { "apiJsonFilePath": "dist/api/lib-extensions.api.json" }
+}

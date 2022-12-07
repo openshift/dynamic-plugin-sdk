@@ -7,7 +7,7 @@ import {
   Label,
   DropdownPosition,
 } from '@patternfly/react-core';
-import * as _ from 'lodash';
+import * as _ from 'lodash-es';
 import React from 'react';
 import type { K8sResourceCommon } from '../../types/k8s';
 import type { BreadcrumbProp, ActionButtonProp, ActionMenuProps } from './utils';

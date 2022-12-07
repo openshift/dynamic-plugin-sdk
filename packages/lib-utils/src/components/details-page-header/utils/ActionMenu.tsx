@@ -1,4 +1,4 @@
-import type { EitherNotBoth } from '@monorepo/common';
+import type { EitherNotBoth } from '@openshift/dynamic-plugin-sdk';
 import {
   Dropdown,
   DropdownPosition,
@@ -24,9 +24,7 @@ export type Action = {
   label: React.ReactNode;
   /** Optional subtext for the menu item */
   description?: string;
-  /** Executable callback or href.
-   * External links should automatically provide an external link icon on action.
-   * */
+  /** Executable callback or href. External links should automatically provide an external link icon on action. */
   cta: ActionCTA;
   /** Optional flag to indicate whether the action is disabled. */
   isDisabled?: boolean;

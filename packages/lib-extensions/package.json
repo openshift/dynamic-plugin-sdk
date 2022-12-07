@@ -1,7 +1,7 @@
 {
   "name": "@openshift/dynamic-plugin-sdk-extensions",
   "version": "1.0.0",
-  "description": "Provides core extension types for dynamic plugins",
+  "description": "Provides extension types for dynamic plugins",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -11,16 +11,17 @@
   "files": [
     "dist/index.js",
     "dist/index.d.ts",
-    "dist/build-meta.json"
+    "dist/build-metadata.json"
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "prepack": "yarn build",
     "prepublishOnly": "yarn test",
-    "build": "rm -rf dist && yarn run -T rollup -c",
+    "build": "rm -rf dist && yarn run -T rollup -c && yarn api-extractor",
     "lint": "yarn run -T eslint $INIT_CWD",
-    "test": "yarn run -T test $INIT_CWD"
+    "test": "yarn run -T test $INIT_CWD",
+    "api-extractor": "yarn run -T api-extractor -c $INIT_CWD/api-extractor.json"
   },
   "peerDependencies": {
     "@openshift/dynamic-plugin-sdk": "^1.0.0",
@@ -28,5 +29,16 @@
     "react-redux": "^7.2.2",
     "react-router": "^5.2.1",
     "redux": "^4.1.2"
+  },
+  "peerDependenciesMeta": {
+    "react-redux": {
+      "optional": true
+    },
+    "react-router": {
+      "optional": true
+    },
+    "redux": {
+      "optional": true
+    }
   }
 }

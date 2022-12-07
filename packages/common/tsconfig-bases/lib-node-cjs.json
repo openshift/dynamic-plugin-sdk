@@ -5,6 +5,7 @@
     "target": "es2021",
     "module": "commonjs",
     "moduleResolution": "node",
-    "declaration": true
+    "declaration": true,
+    "declarationMap": true
   }
 }

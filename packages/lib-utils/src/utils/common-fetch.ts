@@ -1,4 +1,4 @@
-import { CustomError, applyDefaults, applyOverrides } from '@monorepo/common';
+import { CustomError, applyDefaults, applyOverrides } from '@openshift/dynamic-plugin-sdk';
 import { getUtilsConfig } from '../config';
 
 export type FetchOptionArgs = [

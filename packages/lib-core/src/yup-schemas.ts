@@ -16,8 +16,7 @@ const semverStringSchema = yup
 /**
  * Schema for a valid plugin name.
  *
- * Examples:
- *
+ * @example
  * ```
  * foo
  * foo-bar
@@ -34,8 +33,7 @@ const pluginNameSchema = yup
 /**
  * Schema for a valid extension type.
  *
- * Examples:
- *
+ * @example
  * ```
  * app.foo
  * app.foo-bar
@@ -55,8 +53,7 @@ const extensionTypeSchema = yup
 /**
  * Schema for a valid feature flag name.
  *
- * Examples:
- *
+ * @example
  * ```
  * FOO
  * FOO_BAR

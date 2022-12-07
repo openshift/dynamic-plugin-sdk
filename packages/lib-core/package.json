@@ -11,25 +11,17 @@
   "files": [
     "dist/index.js",
     "dist/index.d.ts",
-    "dist/index.ts38.d.ts",
-    "dist/build-meta.json"
+    "dist/build-metadata.json"
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "typesVersions": {
-    ">=3.8 <4.0": {
-      "dist/index.d.ts": [
-        "dist/index.ts38.d.ts"
-      ]
-    }
-  },
   "scripts": {
     "prepack": "yarn build",
     "prepublishOnly": "yarn test",
-    "build": "rm -rf dist && yarn run -T rollup -c && yarn process-dts",
+    "build": "rm -rf dist && yarn run -T rollup -c && yarn api-extractor",
     "lint": "yarn run -T eslint $INIT_CWD",
     "test": "yarn run -T test $INIT_CWD",
-    "process-dts": "yarn run -T downlevel-dts dist/index.d.ts dist/index.ts38.d.ts --to=3.8"
+    "api-extractor": "yarn run -T api-extractor -c $INIT_CWD/api-extractor.json"
   },
   "peerDependencies": {
     "react": "^17.0.2"

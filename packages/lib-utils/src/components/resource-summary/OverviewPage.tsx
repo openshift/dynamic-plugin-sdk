@@ -2,11 +2,11 @@ import { Grid, GridItem } from '@patternfly/react-core';
 import React from 'react';
 import type { ReactElement } from 'react';
 import type { K8sResourceCommon } from '../../index';
-import type { LoadError } from '../status/StatusBox';
-import { StatusBox } from '../status/StatusBox';
+import type { LoadError } from '../status';
+import { StatusBox } from '../status';
 import ResourceSummary from './ResourceSummary';
 
-type OverViewPageProps = {
+export type OverViewPageProps = {
   loaded?: boolean;
   loadError?: LoadError;
   resource: K8sResourceCommon;

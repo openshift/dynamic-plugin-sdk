@@ -1,3 +1,3 @@
 # `@openshift/dynamic-plugin-sdk-utils`
 
-> Provides React focused plugin SDK initialization and utilities.
+> Provides React focused dynamic plugin SDK utilities.

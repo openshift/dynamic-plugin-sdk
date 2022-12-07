@@ -50,7 +50,7 @@ export type K8sResourceCommon = K8sResourceIdentifier &
     data: { [key: string]: unknown };
   }>;
 
-type OwnerReference = {
+export type OwnerReference = {
   apiVersion: string;
   kind: string;
   name: string;

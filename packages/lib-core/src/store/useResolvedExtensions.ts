@@ -12,7 +12,7 @@ import { isExtensionCodeRefsResolutionError, resolveCodeRefValues } from './code
 import { usePluginStore } from './PluginStoreContext';
 import { useExtensions } from './useExtensions';
 
-type UseResolvedExtensionsResult<TExtension extends Extension> = [
+export type UseResolvedExtensionsResult<TExtension extends Extension> = [
   resolvedExtensions: LoadedExtension<ResolvedExtension<TExtension>>[],
   resolved: boolean,
   errors: unknown[],

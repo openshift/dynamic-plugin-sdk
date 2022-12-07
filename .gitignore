@@ -1,3 +1,10 @@
+/coverage
+/docs/generated
+/screenshots
+**/node_modules
+**/dist
+**/.DS_Store
+
 # https://next.yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
 .pnp.*
 .yarn/*
@@ -6,9 +13,3 @@
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-
-/coverage
-/screenshots
-**/node_modules
-**/dist
-**/.DS_Store

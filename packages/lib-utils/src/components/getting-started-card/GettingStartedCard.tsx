@@ -14,7 +14,7 @@ import '@patternfly/react-styles/css/utilities/Display/display.css';
 import '@patternfly/react-styles/css/utilities/Spacing/spacing.css';
 import { useLocalStorage } from '../../hooks';
 
-type GettingStartedCardProps = {
+export type GettingStartedCardProps = {
   cardClassName?: string;
   imgAlt?: string;
   imgClassName?: string;

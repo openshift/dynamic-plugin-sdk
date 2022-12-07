@@ -1,12 +1,12 @@
 import * as _ from 'lodash-es';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type LogFunction = (message?: any, ...optionalParams: any[]) => void;
+export type LogFunction = (message?: any, ...optionalParams: any[]) => void;
 
 /**
  * Minimal logger interface.
  */
-type Logger = Record<'info' | 'warn' | 'error', LogFunction>;
+export type Logger = Record<'info' | 'warn' | 'error', LogFunction>;
 
 const isProdEnv = process.env.NODE_ENV === 'production';
 

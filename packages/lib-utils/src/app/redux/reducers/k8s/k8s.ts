@@ -1,4 +1,4 @@
-import { consoleLogger } from '@monorepo/common';
+import { consoleLogger } from '@openshift/dynamic-plugin-sdk';
 import { Map as ImmutableMap, fromJS } from 'immutable';
 import * as _ from 'lodash-es';
 import { getReferenceForModel, getNamespacedResources, allModels } from '../../../../k8s/k8s-utils';

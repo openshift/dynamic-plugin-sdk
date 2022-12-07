@@ -29,7 +29,7 @@ export type ReplaceProperties<T, R> = {
  *
  * Utility type, probably never a reason to export.
  */
-type Never<T> = {
+export type Never<T> = {
   [K in keyof T]?: never;
 };
 

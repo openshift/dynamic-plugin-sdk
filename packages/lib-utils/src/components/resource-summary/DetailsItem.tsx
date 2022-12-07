@@ -10,7 +10,7 @@ import React from 'react';
 
 import type { K8sResourceCommon } from '../../index';
 
-type DetailsItemProps = {
+export type DetailsItemProps = {
   defaultValue?: string;
   hideEmpty?: boolean;
   loaded?: boolean;

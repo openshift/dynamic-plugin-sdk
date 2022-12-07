@@ -1,13 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
-import type { AnyObject } from '@monorepo/common';
+import type { AnyObject } from '@openshift/dynamic-plugin-sdk';
 import type { IAction } from '@patternfly/react-table';
 import { ActionsColumn, Tbody, Td, Th, Thead, Tr, TableComposable } from '@patternfly/react-table';
 import { AutoSizer, WindowScroller } from '@patternfly/react-virtualized-extension';
 import * as _ from 'lodash-es';
 import * as React from 'react';
 import type { Size, WindowScrollerChildProps } from 'react-virtualized';
-import type { LoadError } from '../status/StatusBox';
-import { StatusBox } from '../status/StatusBox';
+import type { LoadError } from '../status';
+import { StatusBox } from '../status';
 import type { RowProps, TableColumn } from './VirtualizedTableBody';
 import VirtualizedTableBody, { RowMemo } from './VirtualizedTableBody';
 
@@ -69,7 +69,7 @@ export const getParentScrollableElement = (node: HTMLElement) => {
   return undefined;
 };
 
-type TablePagination = {
+export type TablePagination = {
   limit: number;
   offset: number;
 };

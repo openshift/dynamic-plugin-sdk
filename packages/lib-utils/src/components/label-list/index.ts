@@ -1,1 +1,1 @@
-export { default as LabelList, LabelListProps } from './LabelList';
+export { default as LabelList, LabelListProps, HrefForLabels } from './LabelList';

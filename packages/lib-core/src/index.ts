@@ -1,18 +1,49 @@
-export { PluginLoader, PluginLoaderOptions } from './store/PluginLoader';
+/**
+ * Core runtime package of the dynamic plugin SDK.
+ *
+ * @remarks
+ * This package allows loading, managing and interpreting dynamic plugins at runtime.
+ *
+ * @packageDocumentation
+ */
+
+// Core components
+export {
+  PluginLoader,
+  PluginLoaderOptions,
+  PluginLoadListener,
+  PluginLoadResult,
+} from './store/PluginLoader';
 export { PluginStore, PluginStoreOptions } from './store/PluginStore';
-export { PluginStoreProvider, usePluginStore } from './store/PluginStoreContext';
-export { useFeatureFlag } from './store/useFeatureFlag';
+export {
+  PluginStoreProvider,
+  PluginStoreProviderProps,
+  usePluginStore,
+} from './store/PluginStoreContext';
+
+// React hooks
 export { useExtensions } from './store/useExtensions';
+export { useResolvedExtensions, UseResolvedExtensionsResult } from './store/useResolvedExtensions';
+export { useFeatureFlag, UseFeatureFlagResult } from './store/useFeatureFlag';
 export { usePluginInfo } from './store/usePluginInfo';
-export { useResolvedExtensions } from './store/useResolvedExtensions';
+
+// Core types
 export {
   CodeRef,
+  EncodedCodeRef,
   Extension,
+  ExtensionFlags,
   ExtensionPredicate,
   EncodedExtension,
   LoadedExtension,
   ResolvedExtension,
+  MapCodeRefsToEncodedCodeRefs,
+  MapCodeRefsToValues,
+  ExtractExtensionProperties,
 } from './types/extension';
+export { ResourceFetch } from './types/fetch';
+export { PluginManifest, PluginRuntimeMetadata, LoadedPlugin, FailedPlugin } from './types/plugin';
+export { PluginEntryModule } from './types/runtime';
 export {
   PluginEventType,
   PluginInfoEntry,
@@ -21,4 +52,18 @@ export {
   FeatureFlags,
   PluginStoreInterface,
 } from './types/store';
-export { PluginManifest, PluginRuntimeMetadata, LoadedPlugin } from './types/plugin';
+
+// Common types and utilities
+export {
+  AnyObject,
+  ReplaceProperties,
+  Never,
+  EitherNotBoth,
+  EitherOrNone,
+  CustomError,
+  applyDefaults,
+  applyOverrides,
+  LogFunction,
+  Logger,
+  consoleLogger,
+} from '@monorepo/common';
