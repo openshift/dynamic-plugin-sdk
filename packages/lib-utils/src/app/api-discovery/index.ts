@@ -122,7 +122,7 @@ const batchResourcesRequest = (
 const getResources = async (
   preferenceList: string[],
   dispatch: Dispatch,
-  staticApiModels?: Record<string, APIResourceList>,
+  staticAPIModels?: Record<string, APIResourceList>,
 ): Promise<DiscoveryResources> => {
   const apiResourceData: APIResourceData = await commonFetchJSON('/apis');
   const groupVersionMap = apiResourceData.groups.reduce(
@@ -144,8 +144,8 @@ const getResources = async (
       ).sort((api) => (preferenceList.find((item) => api.includes(`/apis/${item}`)) ? -1 : 0)),
     )
     .map((apiEndpoint) => {
-      if (Object.prototype.hasOwnProperty.call(staticApiModels, apiEndpoint) && staticApiModels) {
-        return staticApiModels[apiEndpoint];
+      if (Object.prototype.hasOwnProperty.call(staticAPIModels, apiEndpoint) && staticAPIModels) {
+        return staticAPIModels[apiEndpoint];
       }
 
       return apiEndpoint;
@@ -171,20 +171,20 @@ const getResources = async (
 };
 
 const updateResources =
-  (preferenceList: string[], staticApiModels?: Record<string, APIResourceList>) =>
+  (preferenceList: string[], staticAPIModels?: Record<string, APIResourceList>) =>
   async (dispatch: Dispatch): Promise<DiscoveryResources> => {
     dispatch(setResourcesInFlight(true));
     dispatch(setBatchesInFlight(true));
 
-    const resources = await getResources(preferenceList, dispatch, staticApiModels);
+    const resources = await getResources(preferenceList, dispatch, staticAPIModels);
 
     return resources;
   };
 
 const startAPIDiscovery =
-  (preferenceList: string[], staticApiModels?: Record<string, APIResourceList>) =>
+  (preferenceList: string[], staticAPIModels?: Record<string, APIResourceList>) =>
   (dispatch: DispatchWithThunk) => {
-    dispatch(updateResources(preferenceList, staticApiModels))
+    dispatch(updateResources(preferenceList, staticAPIModels))
       .then((resources) => {
         return resources;
       })
@@ -195,7 +195,7 @@ const startAPIDiscovery =
 export const initAPIDiscovery: InitAPIDiscovery = (
   storeInstance,
   preferenceList = [],
-  staticApiModels = {},
+  staticAPIModels = {},
 ) => {
   const resources = getCachedResources();
   if (resources) {
@@ -204,6 +204,6 @@ export const initAPIDiscovery: InitAPIDiscovery = (
 
   consoleLogger.info(`API discovery waiting ${API_DISCOVERY_INIT_DELAY} ms before initializing`);
   window.setTimeout(() => {
-    storeInstance.dispatch(startAPIDiscovery(preferenceList, staticApiModels));
+    storeInstance.dispatch(startAPIDiscovery(preferenceList, staticAPIModels));
   }, API_DISCOVERY_INIT_DELAY);
 };
