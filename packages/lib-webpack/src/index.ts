@@ -8,6 +8,19 @@
  * @packageDocumentation
  */
 
+export { AnyObject, ReplaceProperties } from '@monorepo/common';
+
+export {
+  CodeRef,
+  EncodedCodeRef,
+  Extension,
+  ExtensionFlags,
+  EncodedExtension,
+  MapCodeRefsToEncodedCodeRefs,
+  ExtractExtensionProperties,
+  PluginRuntimeMetadata,
+} from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
+
 export {
   DynamicRemotePlugin,
   DynamicRemotePluginOptions,

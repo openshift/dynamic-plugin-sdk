@@ -4,5 +4,5 @@
     "outDir": "dist",
     "declarationDir": "types"
   },
-  "include": ["src", "../common/src"]
+  "include": ["src"]
 }

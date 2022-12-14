@@ -20,7 +20,6 @@ export type UseFeatureFlagResult = [currentValue: boolean, setValue: (newValue: 
  * @example
  * ```ts
  * const [flag, setFlag] = useFeatureFlag('FOO');
- * ...
  * setFlag(true);
  * ```
  */

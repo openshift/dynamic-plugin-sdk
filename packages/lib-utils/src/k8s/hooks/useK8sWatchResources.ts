@@ -105,14 +105,12 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
           k8sModels.get(modelReference) ||
           k8sModels.get(getGroupVersionKindForReference(modelReference).kind);
         if (!resourceModel && ids) {
-          // eslint-disable-next-line no-param-reassign
           ids[key] = {
             noModel: true,
           } as WatchModel;
         } else if (ids) {
           const watchData = getWatchData(resources[key], resourceModel, options);
           if (watchData) {
-            // eslint-disable-next-line no-param-reassign
             ids[key] = watchData as WatchModel;
           }
         }

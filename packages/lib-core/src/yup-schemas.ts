@@ -1,4 +1,5 @@
 import * as yup from 'yup';
+import type { PluginRegistrationMethod } from './types/plugin';
 
 /**
  * Schema for a valid SemVer string.
@@ -10,7 +11,6 @@ const semverStringSchema = yup
   .required()
   .matches(
     /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/,
-    'SemVer string',
   );
 
 /**
@@ -28,7 +28,7 @@ const semverStringSchema = yup
 const pluginNameSchema = yup
   .string()
   .required()
-  .matches(/^[a-zA-Z]+(?:[-.]?[a-zA-Z0-9]+)*$/, 'plugin name');
+  .matches(/^[a-zA-Z]+(?:[-.]?[a-zA-Z0-9]+)*$/);
 
 /**
  * Schema for a valid extension type.
@@ -45,10 +45,7 @@ const pluginNameSchema = yup
 const extensionTypeSchema = yup
   .string()
   .required()
-  .matches(
-    /^[a-zA-Z]+(?:-[a-zA-Z]+)*\.[a-zA-Z]+(?:-[a-zA-Z]+)*(?:\/[a-zA-Z]+(?:-[a-zA-Z]+)*)*$/,
-    'extension type',
-  );
+  .matches(/^[a-zA-Z]+(?:-[a-zA-Z]+)*\.[a-zA-Z]+(?:-[a-zA-Z]+)*(?:\/[a-zA-Z]+(?:-[a-zA-Z]+)*)*$/);
 
 /**
  * Schema for a valid feature flag name.
@@ -63,7 +60,7 @@ const extensionTypeSchema = yup
 const featureFlagNameSchema = yup
   .string()
   .required()
-  .matches(/^[A-Z]+[A-Z0-9_]*$/, 'feature flag name');
+  .matches(/^[A-Z]+[A-Z0-9_]*$/);
 
 /**
  * Schema for `Extension` objects.
@@ -86,6 +83,14 @@ export const extensionSchema = yup
 export const extensionArraySchema = yup.array().of(extensionSchema).required();
 
 /**
+ * Schema for `PluginRegistrationMethod` objects.
+ */
+export const pluginRegistrationMethodSchema = yup
+  .mixed<PluginRegistrationMethod>()
+  .oneOf(['callback', 'custom'])
+  .required();
+
+/**
  * Schema for `PluginRuntimeMetadata` objects.
  */
 export const pluginRuntimeMetadataSchema = yup.object().required().shape({
@@ -102,5 +107,7 @@ export const pluginRuntimeMetadataSchema = yup.object().required().shape({
  */
 export const pluginManifestSchema = pluginRuntimeMetadataSchema.shape({
   extensions: extensionArraySchema,
-  entryScript: yup.string().required(),
+  loadScripts: yup.array().of(yup.string().required()).required(),
+  registrationMethod: pluginRegistrationMethodSchema,
+  compilationHash: yup.string(),
 });

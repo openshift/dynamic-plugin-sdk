@@ -55,6 +55,19 @@ const parseEncodedCodeRef = (
   return [moduleName, exportName];
 };
 
+export const getPluginModule = async <TModule extends AnyObject>(
+  moduleName: string,
+  entryModule: PluginEntryModule,
+  formatErrorMessage: (message: string) => string = _.identity,
+) => {
+  try {
+    const moduleFactory = await entryModule.get(moduleName);
+    return moduleFactory() as TModule;
+  } catch (e) {
+    throw new ErrorWithCause(formatErrorMessage(`Failed to load module '${moduleName}'`), e);
+  }
+};
+
 /**
  * Create new {@link CodeRef} function from an {@link EncodedCodeRef} object.
  */
@@ -68,26 +81,15 @@ const createCodeRef =
     const refData = parseEncodedCodeRef(encodedCodeRef);
 
     if (!refData) {
-      throw new ErrorWithCause(
-        formatErrorMessage(`Malformed code reference '${encodedCodeRef.$codeRef}'`),
-      );
+      throw new Error(formatErrorMessage(`Malformed code reference '${encodedCodeRef.$codeRef}'`));
     }
 
     const [moduleName, exportName] = refData;
 
-    let referencedModule: AnyObject;
-
-    try {
-      const moduleFactory = await entryModule.get(moduleName);
-      referencedModule = moduleFactory();
-    } catch (e) {
-      throw new ErrorWithCause(formatErrorMessage(`Failed to load module '${moduleName}'`), e);
-    }
+    const referencedModule = await getPluginModule(moduleName, entryModule, formatErrorMessage);
 
     if (!_.has(referencedModule, exportName)) {
-      throw new ErrorWithCause(
-        formatErrorMessage(`Missing module export '${moduleName}.${exportName}'`),
-      );
+      throw new Error(formatErrorMessage(`Missing module export '${moduleName}.${exportName}'`));
     }
 
     return referencedModule[exportName];
@@ -131,7 +133,6 @@ export const decodeCodeRefs = (
       codeRefCache.set(codeRefKey, codeRef);
     }
 
-    // eslint-disable-next-line no-param-reassign
     obj[key] = codeRef;
   });
 
@@ -161,12 +162,10 @@ export const resolveCodeRefValues = async <TExtension extends Extension>(
       codeRef()
         // eslint-disable-next-line promise/always-return -- resolutions element type is Promise<void>
         .then((resolvedValue) => {
-          // eslint-disable-next-line no-param-reassign
           obj[key] = resolvedValue;
         })
         .catch((e) => {
           resolutionErrors.push(e);
-          // eslint-disable-next-line no-param-reassign
           obj[key] = undefined;
         }),
     );

@@ -200,7 +200,6 @@ describe('TableView - non-virtualized', () => {
 
   it('should paginate the table correctly', () => {
     let longData: TableTestItem[] = [];
-    // eslint-disable-next-line no-plusplus
     for (let index = 0; index < 20; index++) {
       const idx = String(index).padStart(3, '0');
       longData = [

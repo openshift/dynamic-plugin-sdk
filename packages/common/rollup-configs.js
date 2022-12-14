@@ -1,7 +1,10 @@
 import { execSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
 import commonjs from '@rollup/plugin-commonjs';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
+import jsonc from 'jsonc-parser';
 import analyzer from 'rollup-plugin-analyzer';
 import css from 'rollup-plugin-import-css';
 import { writeJSONFile } from './rollup-plugins/writeJSONFile';
@@ -65,6 +68,10 @@ export const tsLibConfig = (pkg, inputFile, format = 'esm') => {
   const buildMetadata = getBuildMetadata(pkg);
   const externalModules = getExternalModules(pkg);
 
+  const tsconfig = jsonc.parse(
+    fs.readFileSync(path.resolve(process.cwd(), 'tsconfig.json'), 'utf-8'),
+  );
+
   return {
     input: inputFile,
     output: {
@@ -81,8 +88,9 @@ export const tsLibConfig = (pkg, inputFile, format = 'esm') => {
       }),
       typescript({
         tsconfig: './tsconfig.json',
-        include: ['src/**/*', '../common/src/**/*'],
+        include: tsconfig.include.map((filePattern) => `${filePattern}/**/*`),
         noEmitOnError: true,
+        jsx: 'react',
       }),
       writeJSONFile({
         fileName: 'build-metadata.json',

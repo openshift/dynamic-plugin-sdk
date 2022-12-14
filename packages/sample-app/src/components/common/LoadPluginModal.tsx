@@ -1,4 +1,3 @@
-import type { PluginManifest } from '@openshift/dynamic-plugin-sdk';
 import { usePluginStore } from '@openshift/dynamic-plugin-sdk';
 import { Button, Modal, Text, TextContent, TextInput } from '@patternfly/react-core';
 import * as React from 'react';

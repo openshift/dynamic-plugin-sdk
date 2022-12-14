@@ -17,11 +17,11 @@ export type ReduxReducer = Extension<
   }
 >;
 
-/** Provides a configuration for establishing new Redux store instance scoped to the contributing plugin.  */
+/** Provides a configuration for establishing new Redux store instance scoped to the contributing plugin. */
 export type ReduxProvider = Extension<
   'core.redux-provider',
   {
-    /** The configured Redux store object; configured with reducers, middleware, etc... */
+    /** The configured Redux store object; configured with reducers, middleware, etc. */
     store: CodeRef<Store>;
     /** The Redux React context object for which the instance will be scoped to. */
     context: CodeRef<React.Context<ReactReduxContextValue>>;

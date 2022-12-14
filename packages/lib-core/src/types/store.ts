@@ -57,7 +57,11 @@ export type PluginStoreInterface = {
   /**
    * Get extensions which are currently in use.
    *
-   * An extension is in use when the associated plugin is currently enabled.
+   * An extension is in use when the associated plugin is currently enabled and its
+   * feature flag requirements (if any) are met according to current feature flags.
+   *
+   * If you need to modify or augment existing extension objects, we recommend using
+   * a custom React hook based on `useExtensions` or `useResolvedExtensions` hooks.
    *
    * Always returns a new array instance.
    */
@@ -71,21 +75,37 @@ export type PluginStoreInterface = {
   getPluginInfo: () => PluginInfoEntry[];
 
   /**
-   * Set new feature flags (non-boolean values will be discarded).
+   * Merge the entries of `newFlags` with current feature flags (non-boolean values
+   * will be discarded).
    */
   setFeatureFlags: (newFlags: FeatureFlags) => void;
 
   /**
    * Get current feature flags.
+   *
+   * Always returns a new object.
    */
   getFeatureFlags: () => FeatureFlags;
 
   /**
-   * Start loading a plugin from the specified URL.
+   * Load a plugin from the given URL.
+   *
+   * Under normal circumstances, a plugin manifest file is generated as part of the
+   * plugin's build process and fetched by `PluginStore` at runtime over the network.
+   *
+   * By default, the plugin manifest will be fetched as `plugin-manifest.json` relative
+   * to the plugin's base URL. Passing a custom object overrides the default manifest
+   * fetch behavior.
+   *
+   * Be advised that any plugin modules which are already loaded by the host application
+   * (e.g. directly via `getExposedModule` method or indirectly via `useResolvedExtensions`
+   * hook) will _not_ be replaced upon reloading the associated plugin. This is due to how
+   * webpack loads federated modules. If some of the plugins have changed and you need to
+   * perform full reload of the plugin code, we recommend reloading the application page.
    *
    * Use `subscribe` method to respond to events emitted by the `PluginStore`.
    */
-  loadPlugin: (baseURL: string, manifest?: PluginManifest) => void;
+  loadPlugin: (baseURL: string, manifestNameOrObject?: string | PluginManifest) => Promise<void>;
 
   /**
    * Enable the given plugin(s).

@@ -17,6 +17,22 @@ module.exports = {
   // Enforce a maximum number of classes per file
   'max-classes-per-file': 'off',
 
+  // Disallow reassigning function parameters
+  'no-param-reassign': [
+    'error',
+    {
+      props: false,
+    },
+  ],
+
+  // Disallow the unary operators ++ and --
+  'no-plusplus': [
+    'error',
+    {
+      allowForLoopAfterthoughts: true,
+    },
+  ],
+
   // Replaced by lib-restricted-external-imports, see the replacement rule documentation for details
   'import/no-extraneous-dependencies': 'off',
 
@@ -25,12 +41,12 @@ module.exports = {
     'error',
     [
       {
-        includeFiles: 'packages/lib-core/src/**',
+        includeFiles: 'packages/+(lib-core|lib-webpack)/src/**',
         excludeFiles: '**/*.test.*',
         excludeModules: ['@monorepo/common'],
       },
       {
-        includeFiles: 'packages/+(lib-extensions|lib-utils|lib-webpack)/src/**',
+        includeFiles: 'packages/+(lib-extensions|lib-utils)/src/**',
         excludeFiles: '**/*.+(test|stories).*',
       },
     ],

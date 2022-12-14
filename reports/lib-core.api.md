@@ -141,22 +141,21 @@ export type PluginInfoEntry = LoadedPluginInfoEntry | FailedPluginInfoEntry;
 // @public
 export class PluginLoader {
     constructor(options?: PluginLoaderOptions);
-    getPluginManifest(baseURL: string): Promise<PluginManifest>;
-    loadPlugin(baseURL: string): Promise<void>;
-    loadPluginEntryScript(baseURL: string, manifest: PluginManifest, getDocument?: () => typeof document): void;
-    registerPluginEntryCallback(getWindow?: () => typeof window): void;
-    resolvePluginDependencies(manifest: PluginManifest): Promise<void>;
+    loadPlugin(baseURL: string, manifestNameOrObject?: string | PluginManifest): Promise<void>;
+    registerPluginEntryCallback(): void;
     subscribe(listener: PluginLoadListener): VoidFunction;
 }
 
 // @public (undocumented)
 export type PluginLoaderOptions = Partial<{
-    canLoadPlugin: (pluginName: string) => boolean;
+    canLoadPlugin: (manifest: PluginManifest, reload: boolean) => boolean;
+    canReloadScript: (manifest: PluginManifest, scriptName: string) => boolean;
     entryCallbackName: string;
     fetchImpl: ResourceFetch;
     fixedPluginDependencyResolutions: Record<string, string>;
     sharedScope: AnyObject;
-    postProcessManifest: (manifest: PluginManifest) => Promise<PluginManifest>;
+    postProcessManifest: (manifest: PluginManifest) => PluginManifest;
+    getPluginEntryModule: (manifest: PluginManifest) => PluginEntryModule | void;
 }>;
 
 // @public (undocumented)
@@ -178,7 +177,13 @@ export type PluginLoadResult = {
 // @public (undocumented)
 export type PluginManifest = PluginRuntimeMetadata & {
     extensions: Extension[];
+    loadScripts: string[];
+    registrationMethod: PluginRegistrationMethod;
+    compilationHash?: string;
 };
+
+// @public (undocumented)
+export type PluginRegistrationMethod = 'callback' | 'custom';
 
 // @public (undocumented)
 export type PluginRuntimeMetadata = {
@@ -206,7 +211,7 @@ export class PluginStore implements PluginStoreInterface {
     getPluginInfo(): PluginInfoEntry[];
     hasLoader(): boolean;
     // (undocumented)
-    loadPlugin(baseURL: string): Promise<void>;
+    loadPlugin(baseURL: string, manifestNameOrObject?: string | PluginManifest): Promise<void>;
     // (undocumented)
     setFeatureFlags(newFlags: FeatureFlags): void;
     setLoader(loader: PluginLoader): VoidFunction;
@@ -221,7 +226,7 @@ export type PluginStoreInterface = {
     getPluginInfo: () => PluginInfoEntry[];
     setFeatureFlags: (newFlags: FeatureFlags) => void;
     getFeatureFlags: () => FeatureFlags;
-    loadPlugin: (baseURL: string) => void;
+    loadPlugin: (baseURL: string, manifestNameOrObject?: string | PluginManifest) => Promise<void>;
     enablePlugins: (pluginNames: string[]) => void;
     disablePlugins: (pluginNames: string[], disableReason?: string) => void;
     getExposedModule: <TModule extends AnyObject>(pluginName: string, moduleName: string) => Promise<TModule>;

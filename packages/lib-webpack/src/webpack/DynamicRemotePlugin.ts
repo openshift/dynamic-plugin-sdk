@@ -1,19 +1,20 @@
 import {
-  PLUGIN_MANIFEST,
-  REMOTE_ENTRY_CALLBACK,
-} from '@openshift/dynamic-plugin-sdk/src/constants';
-import { extensionArraySchema } from '@openshift/dynamic-plugin-sdk/src/yup-schemas';
-import type { EncodedExtension } from '@openshift/dynamic-plugin-sdk';
+  DEFAULT_PLUGIN_MANIFEST,
+  DEFAULT_REMOTE_ENTRY_CALLBACK,
+} from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
+import type { EncodedExtension } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
 import * as _ from 'lodash';
 import glob from 'glob';
 import path from 'path';
+import * as yup from 'yup';
 import { WebpackPluginInstance, Compiler, container } from 'webpack';
 import type { PluginBuildMetadata } from '../types/plugin';
 import type { WebpackSharedObject } from '../types/webpack';
 import { parseJSONFile } from '../utils/json';
-import { pluginBuildMetadataSchema } from '../yup-schemas';
+import { dynamicRemotePluginAdaptedOptionsSchema } from '../yup-schemas';
 import { GenerateManifestPlugin } from './GenerateManifestPlugin';
-import { PatchContainerEntryPlugin } from './PatchContainerEntryPlugin';
+import { PatchEntryCallbackPlugin } from './PatchEntryCallbackPlugin';
+import { ValidateCompilationPlugin } from './ValidateCompilationPlugin';
 
 const parsePluginMetadata = (fileName: string, baseDir = process.cwd()) => {
   const filePath = path.resolve(baseDir, fileName);
@@ -25,20 +26,12 @@ const parseExtensions = (globPattern: string, baseDir = process.cwd()) => {
   return _.flatMap(matchedFiles.map((filePath) => parseJSONFile<EncodedExtension[]>(filePath)));
 };
 
-const validatePluginMetadata = (pluginMetadata: PluginBuildMetadata) => {
-  pluginBuildMetadataSchema.strict(true).validateSync(pluginMetadata);
-};
-
-const validateExtensions = (extensions: EncodedExtension[]) => {
-  extensionArraySchema.strict(true).validateSync(extensions);
-};
-
 /**
  * Settings for the global callback function used by plugin entry scripts.
  */
 export type PluginEntryCallbackSettings = Partial<{
   /**
-   * Name of the function.
+   * Name of the function to call.
    *
    * Default value: `__load_plugin_entry__`.
    */
@@ -56,7 +49,7 @@ export type DynamicRemotePluginOptions = Partial<{
   /**
    * Plugin metadata JSON file name, or the parsed plugin metadata.
    *
-   * Default value: `plugin.json`.
+   * Default value: `plugin-metadata.json`.
    */
   pluginMetadata: string | PluginBuildMetadata;
 
@@ -66,103 +59,137 @@ export type DynamicRemotePluginOptions = Partial<{
    * The value is either a `minimatch` compatible JSON file glob pattern,
    * or the parsed extensions array.
    *
-   * Default value: `extensions.json`.
+   * Default value: `plugin-extensions.json`.
    */
   extensions: string | EncodedExtension[];
 
   /**
    * Modules shared between the host application and its plugins at runtime.
    *
+   * It is the host application's responsibility to initialize and maintain its shared
+   * scope object, and to communicate information about application provided modules to
+   * its plugins.
+   *
    * Default value: empty object.
    */
   sharedModules: WebpackSharedObject;
 
   /**
-   * Customize the global callback function used by plugin entry scripts.
+   * Configure how the plugin entry module will be exposed at runtime.
    *
-   * See {@link PluginEntryCallbackSettings} properties and their defaults.
+   * This value is passed to webpack `ModuleFederationPlugin` as `library.type`.
+   * Note that `library.name` will be set to the name of the plugin.
+   *
+   * Default value: `jsonp`.
+   *
+   * @see https://webpack.js.org/configuration/output/#outputlibrarytype
+   */
+  moduleFederationLibraryType: string;
+
+  /**
+   * Customize the call to global callback function in the plugin entry script.
+   *
+   * This option applies only if `moduleFederationLibraryType` is `jsonp`.
    */
   entryCallbackSettings: PluginEntryCallbackSettings;
 
   /**
-   * Plugin runtime registration method.
+   * Customize the filename of the generated plugin entry script.
    *
-   * jsonp is consumed via pre-defined callback. By default __load_plugin_entry__(..)
-   * var is assigned to global variable name
+   * We recommend using the `[fullhash]` placeholder in production builds.
    *
-   * alias to: https://webpack.js.org/configuration/output/#outputlibrarytarget
+   * Default value: `plugin-entry.js`.
    *
-   * Default value: jsonp
+   * @see https://webpack.js.org/configuration/output/#outputfilename
    */
-   registrationMethod: 'jsonp' | 'var'
+  entryScriptFilename: string;
+
+  /**
+   * Customize the filename of the generated plugin manifest.
+   *
+   * Default value: `plugin-manifest.json`.
+   */
+  pluginManifestFilename: string;
 }>;
 
 export class DynamicRemotePlugin implements WebpackPluginInstance {
-  private readonly registrationMethod: 'jsonp' | 'var';
-
-  private readonly pluginMetadata: Omit<PluginBuildMetadata, 'entryScript'>;
+  private readonly pluginMetadata: PluginBuildMetadata;
 
   private readonly extensions: EncodedExtension[];
 
   private readonly sharedModules: WebpackSharedObject;
 
-  private readonly entryCallbackSettings: Required<PluginEntryCallbackSettings>;
+  private readonly moduleFederationLibraryType: string;
+
+  private readonly entryCallbackSettings: PluginEntryCallbackSettings;
+
+  private readonly entryScriptFilename: string;
+
+  private readonly pluginManifestFilename: string;
 
   constructor(options: DynamicRemotePluginOptions = {}) {
     const adaptedOptions: Required<DynamicRemotePluginOptions> = {
-      pluginMetadata: options.pluginMetadata ?? 'plugin.json',
-      extensions: options.extensions ?? 'extensions.json',
+      pluginMetadata: options.pluginMetadata ?? 'plugin-metadata.json',
+      extensions: options.extensions ?? 'plugin-extensions.json',
       sharedModules: options.sharedModules ?? {},
+      moduleFederationLibraryType: options.moduleFederationLibraryType ?? 'jsonp',
       entryCallbackSettings: options.entryCallbackSettings ?? {},
-      registrationMethod: options.registrationMethod ?? 'jsonp'
+      entryScriptFilename: options.entryScriptFilename ?? 'plugin-entry.js',
+      pluginManifestFilename: options.pluginManifestFilename ?? DEFAULT_PLUGIN_MANIFEST,
     };
 
-    this.pluginMetadata =
-      typeof adaptedOptions.pluginMetadata === 'string'
-        ? parsePluginMetadata(adaptedOptions.pluginMetadata)
-        : adaptedOptions.pluginMetadata;
+    if (typeof adaptedOptions.pluginMetadata === 'string') {
+      adaptedOptions.pluginMetadata = parsePluginMetadata(adaptedOptions.pluginMetadata);
+    }
 
-    validatePluginMetadata(this.pluginMetadata);
+    if (typeof adaptedOptions.extensions === 'string') {
+      adaptedOptions.extensions = parseExtensions(adaptedOptions.extensions);
+    }
 
-    this.extensions =
-      typeof adaptedOptions.extensions === 'string'
-        ? parseExtensions(adaptedOptions.extensions)
-        : adaptedOptions.extensions;
+    try {
+      dynamicRemotePluginAdaptedOptionsSchema
+        .strict(true)
+        .validateSync(adaptedOptions, { abortEarly: false });
+    } catch (e) {
+      throw new Error(
+        `Invalid ${DynamicRemotePlugin.name} options:\n` +
+          (e as yup.ValidationError).errors.join('\n'),
+      );
+    }
 
-    validateExtensions(this.extensions);
-
+    this.pluginMetadata = adaptedOptions.pluginMetadata;
+    this.extensions = adaptedOptions.extensions;
     this.sharedModules = adaptedOptions.sharedModules;
-    this.registrationMethod = adaptedOptions.registrationMethod
-
-    this.entryCallbackSettings = {
-      name: adaptedOptions.entryCallbackSettings.name ?? REMOTE_ENTRY_CALLBACK,
-      pluginID: adaptedOptions.entryCallbackSettings.pluginID ?? this.pluginMetadata.name,
-    };
+    this.moduleFederationLibraryType = adaptedOptions.moduleFederationLibraryType;
+    this.entryCallbackSettings = adaptedOptions.entryCallbackSettings;
+    this.entryScriptFilename = adaptedOptions.entryScriptFilename;
+    this.pluginManifestFilename = adaptedOptions.pluginManifestFilename;
   }
 
   apply(compiler: Compiler) {
-    const containerName = this.pluginMetadata.name;
-
     if (!compiler.options.output.publicPath) {
       throw new Error(
         'output.publicPath option must be set to ensure plugin assets are loaded properly in the browser',
       );
     }
 
-    if (this.registrationMethod === 'jsonp' && compiler.options.output.uniqueName) {
-      throw new Error(
-        'output.uniqueName option will be set automatically, do not set it in your webpack configuration',
-      );
-    }
+    const containerName = this.pluginMetadata.name;
+
+    const jsonp = this.moduleFederationLibraryType === 'jsonp';
+    const entryCallbackName = this.entryCallbackSettings.name ?? DEFAULT_REMOTE_ENTRY_CALLBACK;
+    const entryCallbackPluginID = this.entryCallbackSettings.pluginID ?? this.pluginMetadata.name;
+
+    // Assign a unique name for the webpack build
+    compiler.options.output.uniqueName ??= containerName;
 
     // Generate webpack federated module container assets
     new container.ModuleFederationPlugin({
       name: containerName,
       library: {
-        type: this.registrationMethod,
-        name: this.registrationMethod === 'var' ? containerName : this.entryCallbackSettings.name,
+        type: this.moduleFederationLibraryType,
+        name: jsonp ? entryCallbackName : containerName,
       },
-      filename: `${containerName}.[fullhash].js`,
+      filename: this.entryScriptFilename,
       exposes: _.mapValues(
         this.pluginMetadata.exposedModules || {},
         (moduleRequest, moduleName) => ({
@@ -174,20 +201,22 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
     }).apply(compiler);
 
     // Generate plugin manifest
-    new GenerateManifestPlugin(containerName, PLUGIN_MANIFEST, {
+    new GenerateManifestPlugin(containerName, this.pluginManifestFilename, {
       name: this.pluginMetadata.name,
       version: this.pluginMetadata.version,
       dependencies: this.pluginMetadata.dependencies,
       extensions: this.extensions,
-      registrationMethod: this.registrationMethod,
+      registrationMethod: jsonp ? 'callback' : 'custom',
     }).apply(compiler);
 
-    // Post-process container entry generated by ModuleFederationPlugin
-    new PatchContainerEntryPlugin(
-      containerName,
-      this.entryCallbackSettings.name,
-      this.entryCallbackSettings.pluginID,
-      this.registrationMethod,
-    ).apply(compiler);
+    if (jsonp) {
+      // Post-process container entry generated by webpack ModuleFederationPlugin
+      new PatchEntryCallbackPlugin(containerName, entryCallbackName, entryCallbackPluginID).apply(
+        compiler,
+      );
+    }
+
+    // Validate webpack compilation
+    new ValidateCompilationPlugin(containerName, jsonp).apply(compiler);
   }
 }
