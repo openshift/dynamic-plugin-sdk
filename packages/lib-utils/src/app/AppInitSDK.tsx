@@ -12,6 +12,7 @@ export type AppInitSDKProps = {
   configurations: {
     apiDiscovery?: InitAPIDiscovery;
     apiPriorityList?: string[];
+    apiWhitelist?: string[];
     appFetch: UtilsConfig['appFetch'];
     pluginStore: PluginStore;
     wsAppSettings: UtilsConfig['wsAppSettings'];
@@ -44,6 +45,7 @@ const AppInitSDK: React.FC<AppInitSDKProps> = ({ children, configurations }) => 
     wsAppSettings,
     apiDiscovery = initAPIDiscovery,
     apiPriorityList,
+    apiWhitelist,
   } = configurations;
 
   React.useEffect(() => {
@@ -51,11 +53,11 @@ const AppInitSDK: React.FC<AppInitSDKProps> = ({ children, configurations }) => 
       if (!isUtilsConfigSet()) {
         setUtilsConfig({ appFetch, wsAppSettings });
       }
-      apiDiscovery(store, apiPriorityList);
+      apiDiscovery(store, apiPriorityList, apiWhitelist);
     } catch (e) {
       consoleLogger.warn('Error while initializing AppInitSDK', e);
     }
-  }, [apiDiscovery, appFetch, store, wsAppSettings, apiPriorityList]);
+  }, [apiDiscovery, appFetch, store, wsAppSettings, apiPriorityList, apiWhitelist]);
 
   return (
     <PluginStoreProvider store={pluginStore}>

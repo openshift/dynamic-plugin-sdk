@@ -4,6 +4,7 @@ import type { PluginEntryModule } from './runtime';
 export type PluginRuntimeMetadata = {
   name: string;
   version: string;
+  apiWhitelist?: Readonly<(string | undefined)[] | undefined>;
   dependencies?: Record<string, string>;
 };
 

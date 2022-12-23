@@ -119,9 +119,13 @@ const batchResourcesRequest = (
   });
 };
 
+const includesApi = (checkArray: string[], api: string) =>
+  checkArray.find((item) => api.includes(`/apis/${item}`));
+
 const getResources = async (
   preferenceList: string[],
   dispatch: Dispatch,
+  apiWhitelist?: string[],
 ): Promise<DiscoveryResources> => {
   const apiResourceData: APIResourceData = await commonFetchJSON('/apis');
   const groupVersionMap = apiResourceData.groups.reduce(
@@ -139,7 +143,11 @@ const getResources = async (
       apiResourceData.groups.map<string[]>((group) =>
         group.versions.map<string>((version) => `/apis/${version.groupVersion}`),
       ),
-    ).sort((api) => (preferenceList.find((item) => api.includes(`/apis/${item}`)) ? -1 : 0)),
+    )
+      .sort((api) => (includesApi(preferenceList, api) ? -1 : 0))
+      .filter((api) =>
+        apiWhitelist && apiWhitelist.length !== 0 ? includesApi(apiWhitelist, api) : true,
+      ),
   );
 
   // let batchedData: APIResourceList[] = [];
@@ -162,26 +170,31 @@ const getResources = async (
 };
 
 const updateResources =
-  (preferenceList: string[]) =>
+  (preferenceList: string[], apiWhitelist?: string[]) =>
   async (dispatch: Dispatch): Promise<DiscoveryResources> => {
     dispatch(setResourcesInFlight(true));
     dispatch(setBatchesInFlight(true));
 
-    const resources = await getResources(preferenceList, dispatch);
+    const resources = await getResources(preferenceList, dispatch, apiWhitelist);
 
     return resources;
   };
 
-const startAPIDiscovery = (preferenceList: string[]) => (dispatch: DispatchWithThunk) => {
-  dispatch(updateResources(preferenceList))
-    .then((resources) => {
-      return resources;
-    })
-    // TODO handle failures - retry if error is recoverable
-    .catch((err) => consoleLogger.error('API discovery startAPIDiscovery failed:', err));
-};
+const startAPIDiscovery =
+  (preferenceList: string[], apiWhitelist?: string[]) => (dispatch: DispatchWithThunk) => {
+    dispatch(updateResources(preferenceList, apiWhitelist))
+      .then((resources) => {
+        return resources;
+      })
+      // TODO handle failures - retry if error is recoverable
+      .catch((err) => consoleLogger.error('API discovery startAPIDiscovery failed:', err));
+  };
 
-export const initAPIDiscovery: InitAPIDiscovery = (storeInstance, preferenceList = []) => {
+export const initAPIDiscovery: InitAPIDiscovery = (
+  storeInstance,
+  preferenceList = [],
+  apiWhitelist = [],
+) => {
   const resources = getCachedResources();
   if (resources) {
     storeInstance.dispatch(receivedResources(resources));
@@ -189,6 +202,6 @@ export const initAPIDiscovery: InitAPIDiscovery = (storeInstance, preferenceList
 
   consoleLogger.info(`API discovery waiting ${API_DISCOVERY_INIT_DELAY} ms before initializing`);
   window.setTimeout(() => {
-    storeInstance.dispatch(startAPIDiscovery(preferenceList));
+    storeInstance.dispatch(startAPIDiscovery(preferenceList, apiWhitelist));
   }, API_DISCOVERY_INIT_DELAY);
 };

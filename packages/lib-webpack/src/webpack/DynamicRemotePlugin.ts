@@ -165,6 +165,7 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
       name: this.pluginMetadata.name,
       version: this.pluginMetadata.version,
       dependencies: this.pluginMetadata.dependencies,
+      apiWhitelist: this.pluginMetadata.apiWhitelist,
       extensions: this.extensions,
     }).apply(compiler);
 
