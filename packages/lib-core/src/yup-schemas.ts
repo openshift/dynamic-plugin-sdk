@@ -98,7 +98,7 @@ export const pluginRuntimeMetadataSchema = yup
     // TODO(vojtech): suppress false positive https://github.com/jsx-eslint/eslint-plugin-react/pull/3326
     // eslint-disable-next-line react/forbid-prop-types
     dependencies: yup.object(),
-    apiWhitelist: yup.array().of(yup.string()),
+    apiAllowed: yup.array().of(yup.string()),
   });
 
 /**

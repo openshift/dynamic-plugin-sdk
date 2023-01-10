@@ -125,7 +125,7 @@ const includesApi = (checkArray: string[], api: string) =>
 const getResources = async (
   preferenceList: string[],
   dispatch: Dispatch,
-  apiWhitelist?: string[],
+  apiAllowed?: string[],
 ): Promise<DiscoveryResources> => {
   const apiResourceData: APIResourceData = await commonFetchJSON('/apis');
   const groupVersionMap = apiResourceData.groups.reduce(
@@ -146,7 +146,7 @@ const getResources = async (
     )
       .sort((api) => (includesApi(preferenceList, api) ? -1 : 0))
       .filter((api) =>
-        apiWhitelist && apiWhitelist.length !== 0 ? includesApi(apiWhitelist, api) : true,
+      apiAllowed && apiAllowed.length !== 0 ? includesApi(apiAllowed, api) : true,
       ),
   );
 
@@ -170,19 +170,19 @@ const getResources = async (
 };
 
 const updateResources =
-  (preferenceList: string[], apiWhitelist?: string[]) =>
+  (preferenceList: string[], apiAllowed?: string[]) =>
   async (dispatch: Dispatch): Promise<DiscoveryResources> => {
     dispatch(setResourcesInFlight(true));
     dispatch(setBatchesInFlight(true));
 
-    const resources = await getResources(preferenceList, dispatch, apiWhitelist);
+    const resources = await getResources(preferenceList, dispatch, apiAllowed);
 
     return resources;
   };
 
 const startAPIDiscovery =
-  (preferenceList: string[], apiWhitelist?: string[]) => (dispatch: DispatchWithThunk) => {
-    dispatch(updateResources(preferenceList, apiWhitelist))
+  (preferenceList: string[], apiAllowed?: string[]) => (dispatch: DispatchWithThunk) => {
+    dispatch(updateResources(preferenceList, apiAllowed))
       .then((resources) => {
         return resources;
       })
@@ -193,7 +193,7 @@ const startAPIDiscovery =
 export const initAPIDiscovery: InitAPIDiscovery = (
   storeInstance,
   preferenceList = [],
-  apiWhitelist = [],
+  apiAllowed = [],
 ) => {
   const resources = getCachedResources();
   if (resources) {
@@ -202,6 +202,6 @@ export const initAPIDiscovery: InitAPIDiscovery = (
 
   consoleLogger.info(`API discovery waiting ${API_DISCOVERY_INIT_DELAY} ms before initializing`);
   window.setTimeout(() => {
-    storeInstance.dispatch(startAPIDiscovery(preferenceList, apiWhitelist));
+    storeInstance.dispatch(startAPIDiscovery(preferenceList, apiAllowed));
   }, API_DISCOVERY_INIT_DELAY);
 };

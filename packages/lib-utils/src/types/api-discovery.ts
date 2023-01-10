@@ -5,7 +5,7 @@ import type { K8sVerb, K8sModelCommon } from './k8s';
 export type InitAPIDiscovery = (
   store: Store<unknown, Action<AnyAction>>,
   preferenceList?: string[],
-  apiWhitelist?: string[],
+  apiAllowed?: string[],
 ) => void;
 
 export type APIResourceList = K8sModelCommon & {
