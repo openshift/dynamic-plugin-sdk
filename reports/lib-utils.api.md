@@ -114,6 +114,7 @@ export type AppInitSDKProps = {
     configurations: {
         apiDiscovery?: InitAPIDiscovery;
         apiPriorityList?: string[];
+        apiAllowed?: string[];
         appFetch: UtilsConfig['appFetch'];
         pluginStore: PluginStore;
         wsAppSettings: UtilsConfig['wsAppSettings'];
@@ -269,7 +270,7 @@ export type HrefForLabels = {
 };
 
 // @public (undocumented)
-export type InitAPIDiscovery = (store: Store<unknown, ActionType_2<AnyAction>>, preferenceList?: string[]) => void;
+export type InitAPIDiscovery = (store: Store<unknown, ActionType_2<AnyAction>>, preferenceList?: string[], apiAllowed?: string[]) => void;
 
 // @public
 export const isUtilsConfigSet: () => boolean;

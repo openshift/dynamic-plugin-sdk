@@ -184,6 +184,7 @@ export type PluginManifest = PluginRuntimeMetadata & {
 export type PluginRuntimeMetadata = {
     name: string;
     version: string;
+    apiAllowed?: Readonly<(string | undefined)[] | undefined>;
     dependencies?: Record<string, string>;
 };
 
