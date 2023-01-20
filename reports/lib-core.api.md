@@ -179,7 +179,7 @@ export type PluginManifest = PluginRuntimeMetadata & {
     extensions: Extension[];
     loadScripts: string[];
     registrationMethod: PluginRegistrationMethod;
-    compilationHash?: string;
+    buildHash?: string;
 };
 
 // @public (undocumented)

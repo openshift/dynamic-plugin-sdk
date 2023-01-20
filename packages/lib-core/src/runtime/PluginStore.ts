@@ -1,7 +1,8 @@
+import { v4 as uuidv4 } from 'uuid';
 import type { AnyObject } from '@monorepo/common';
 import { consoleLogger } from '@monorepo/common';
 import * as _ from 'lodash-es';
-import type { Extension, LoadedExtension, CodeRef } from '../types/extension';
+import type { Extension, LoadedExtension } from '../types/extension';
 import type {
   PluginRuntimeMetadata,
   PluginManifest,
@@ -37,8 +38,6 @@ export class PluginStore implements PluginStoreInterface {
   private readonly options: Required<PluginStoreOptions>;
 
   private loader?: PluginLoader;
-
-  private readonly codeRefCache = new Map<string, CodeRef>();
 
   /** Plugins that were successfully loaded and processed. */
   private readonly loadedPlugins = new Map<string, LoadedPlugin>();
@@ -239,12 +238,14 @@ export class PluginStore implements PluginStoreInterface {
 
   enablePlugins(pluginNames: string[]) {
     this.setPluginsEnabled(pluginNames, true, (plugin) => {
+      // eslint-disable-next-line no-param-reassign
       plugin.disableReason = undefined;
     });
   }
 
   disablePlugins(pluginNames: string[], disableReason?: string) {
     this.setPluginsEnabled(pluginNames, false, (plugin) => {
+      // eslint-disable-next-line no-param-reassign
       plugin.disableReason = disableReason;
     });
   }
@@ -331,10 +332,9 @@ export class PluginStore implements PluginStoreInterface {
         {
           ...e,
           pluginName,
-          uid: `${pluginName}[${index}]`,
+          uid: `${pluginName}[${index}]_${uuidv4()}`,
         },
         entryModule,
-        this.codeRefCache,
       ),
     );
 

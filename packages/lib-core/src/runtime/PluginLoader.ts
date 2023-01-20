@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import type { AnyObject } from '@monorepo/common';
 import { consoleLogger, ErrorWithCause } from '@monorepo/common';
 import * as _ from 'lodash-es';
@@ -8,7 +9,6 @@ import type { PluginManifest } from '../types/plugin';
 import type { PluginEntryModule, PluginEntryCallback } from '../types/runtime';
 import { basicFetch } from '../utils/basic-fetch';
 import { settleAllPromises } from '../utils/promise';
-import { getRandomString } from '../utils/random';
 import { injectScriptElement, getScriptElement } from '../utils/scripts';
 import { resolveURL } from '../utils/url';
 import { pluginManifestSchema } from '../yup-schemas';
@@ -249,7 +249,7 @@ export class PluginLoader {
     if (
       reload &&
       this.plugins.get(pluginName)?.status === 'loaded' &&
-      _.isEqual(manifest.compilationHash, this.plugins.get(pluginName)?.manifest.compilationHash)
+      _.isEqual(manifest.buildHash, this.plugins.get(pluginName)?.manifest.buildHash)
     ) {
       consoleLogger.warn(`Attempt to reload plugin ${pluginName} with same compilation hash`);
       return;
@@ -330,7 +330,7 @@ export class PluginLoader {
 
         return injectScriptElement(
           resolveURL(baseURL, scriptName, (url) => {
-            url.searchParams.set('cacheBuster', getRandomString());
+            url.searchParams.set('cacheBuster', uuidv4());
             return url;
           }),
           scriptID,
@@ -346,6 +346,7 @@ export class PluginLoader {
     }
 
     if (manifest.registrationMethod === 'callback' && !data.entryCallbackFired) {
+      // eslint-disable-next-line no-param-reassign
       data.status = 'failed';
       this.invokeListeners({
         success: false,
@@ -356,6 +357,7 @@ export class PluginLoader {
     }
 
     if (manifest.registrationMethod === 'callback' && !data.entryCallbackModule) {
+      // eslint-disable-next-line no-param-reassign
       data.status = 'failed';
       this.invokeListeners({
         success: false,
@@ -373,6 +375,7 @@ export class PluginLoader {
     if (entryModule) {
       await this.processPlugin(data, entryModule);
     } else {
+      // eslint-disable-next-line no-param-reassign
       data.status = 'failed';
       this.invokeListeners({
         success: false,
@@ -387,6 +390,7 @@ export class PluginLoader {
     const pluginName = manifest.name;
 
     if (typeof entryModule.init !== 'function' || typeof entryModule.get !== 'function') {
+      // eslint-disable-next-line no-param-reassign
       data.status = 'failed';
       this.invokeListeners({
         success: false,
@@ -399,6 +403,7 @@ export class PluginLoader {
     try {
       await Promise.resolve(entryModule.init(this.options.sharedScope));
     } catch (e) {
+      // eslint-disable-next-line no-param-reassign
       data.status = 'failed';
       this.invokeListeners({
         success: false,
@@ -409,6 +414,7 @@ export class PluginLoader {
       return;
     }
 
+    // eslint-disable-next-line no-param-reassign
     data.status = 'loaded';
     this.invokeListeners({
       success: true,

@@ -101,38 +101,24 @@ const createCodeRef =
  *
  * Returns the extension that was passed in.
  */
-export const decodeCodeRefs = (
-  extension: LoadedExtension,
-  entryModule: PluginEntryModule,
-  codeRefCache: Map<string, CodeRef>,
-) => {
+export const decodeCodeRefs = (extension: LoadedExtension, entryModule: PluginEntryModule) => {
   visitDeep<EncodedCodeRef>(extension.properties, isEncodedCodeRef, (encodedCodeRef, key, obj) => {
-    const codeRefKey = `${extension.pluginName}[${encodedCodeRef.$codeRef}]`;
+    const codeRef = createCodeRef(
+      encodedCodeRef,
+      entryModule,
+      (message) => `${message} in extension ${extension.uid}`,
+    );
 
-    let codeRef: CodeRef;
+    // Use a sensible function name that reflects the current context
+    Object.defineProperty(codeRef, 'name', {
+      value: `$codeRef_${extension.pluginName}[${encodedCodeRef.$codeRef}]`,
+      configurable: true,
+    });
 
-    if (codeRefCache.has(codeRefKey)) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      codeRef = codeRefCache.get(codeRefKey)!;
-    } else {
-      codeRef = createCodeRef(
-        encodedCodeRef,
-        entryModule,
-        (message) => `${message} in extension ${extension.uid}`,
-      );
+    // Mark the function with a non-configurable symbol property
+    Object.defineProperty(codeRef, codeRefSymbol, { value: true });
 
-      // Use a sensible function name that reflects the current context
-      Object.defineProperty(codeRef, 'name', {
-        value: `$codeRef_${codeRefKey}`,
-        configurable: true,
-      });
-
-      // Mark the function with a non-configurable symbol property
-      Object.defineProperty(codeRef, codeRefSymbol, { value: true });
-
-      codeRefCache.set(codeRefKey, codeRef);
-    }
-
+    // eslint-disable-next-line no-param-reassign
     obj[key] = codeRef;
   });
 
@@ -162,10 +148,12 @@ export const resolveCodeRefValues = async <TExtension extends Extension>(
       codeRef()
         // eslint-disable-next-line promise/always-return -- resolutions element type is Promise<void>
         .then((resolvedValue) => {
+          // eslint-disable-next-line no-param-reassign
           obj[key] = resolvedValue;
         })
         .catch((e) => {
           resolutionErrors.push(e);
+          // eslint-disable-next-line no-param-reassign
           obj[key] = undefined;
         }),
     );

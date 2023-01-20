@@ -29,6 +29,7 @@
   "dependencies": {
     "lodash-es": "^4.17.21",
     "semver": "^7.3.7",
+    "uuid": "^8.3.2",
     "yup": "^0.32.11"
   }
 }

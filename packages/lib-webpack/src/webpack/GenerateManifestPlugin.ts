@@ -6,7 +6,7 @@ export class GenerateManifestPlugin implements WebpackPluginInstance {
   constructor(
     private readonly containerName: string,
     private readonly manifestFilename: string,
-    private readonly manifestData: Omit<PluginManifest, 'loadScripts' | 'compilationHash'>,
+    private readonly manifestData: Omit<PluginManifest, 'loadScripts' | 'buildHash'>,
   ) {}
 
   apply(compiler: Compiler) {
@@ -26,7 +26,7 @@ export class GenerateManifestPlugin implements WebpackPluginInstance {
           const manifest: PluginManifest = {
             ...this.manifestData,
             loadScripts,
-            compilationHash: compilation.fullHash,
+            buildHash: compilation.fullHash,
           };
 
           compilation.emitAsset(

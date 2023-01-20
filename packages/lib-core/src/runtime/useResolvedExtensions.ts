@@ -48,10 +48,6 @@ export const useResolvedExtensions = <TExtension extends Extension>(
   const [errors, setErrors] = React.useState<unknown[]>([]);
 
   React.useEffect(() => {
-    setResolved(false);
-    setResolvedExtensions([]);
-    setErrors([]);
-
     // eslint-disable-next-line promise/catch-or-return -- this Promise never rejects
     settleAllPromises(extensions.map(resolveCodeRefValues)).then(
       ([fulfilledValues, rejectedReasons]) => {
@@ -76,6 +72,12 @@ export const useResolvedExtensions = <TExtension extends Extension>(
         setErrors(rejectedReasons);
       },
     );
+
+    return () => {
+      setResolved(false);
+      setResolvedExtensions([]);
+      setErrors([]);
+    };
   }, [extensions, pluginStore]);
 
   return [resolvedExtensions, resolved, errors];

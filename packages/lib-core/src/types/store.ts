@@ -60,8 +60,10 @@ export type PluginStoreInterface = {
    * An extension is in use when the associated plugin is currently enabled and its
    * feature flag requirements (if any) are met according to current feature flags.
    *
-   * If you need to modify or augment existing extension objects, we recommend using
-   * a custom React hook based on `useExtensions` or `useResolvedExtensions` hooks.
+   * If you need to enhance or modify existing extension objects after the associated
+   * plugin has been loaded and processed, we recommend using a custom React hook which
+   * calls `useExtensions` or `useResolvedExtensions` and returns new extension object
+   * instances.
    *
    * Always returns a new array instance.
    */

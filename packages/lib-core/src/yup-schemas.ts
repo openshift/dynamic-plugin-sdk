@@ -109,5 +109,5 @@ export const pluginManifestSchema = pluginRuntimeMetadataSchema.shape({
   extensions: extensionArraySchema,
   loadScripts: yup.array().of(yup.string().required()).required(),
   registrationMethod: pluginRegistrationMethodSchema,
-  compilationHash: yup.string(),
+  buildHash: yup.string(),
 });

@@ -61,6 +61,7 @@ export const getReduxData = (immutableData, resource: WatchK8sResource) => {
     // @ts-ignore
     return immutableData.toArray().map((a) => {
       if (!a[INTERNAL_REDUX_IMMUTABLE_TOJSON_CACHE_SYMBOL]) {
+        // eslint-disable-next-line no-param-reassign
         a[INTERNAL_REDUX_IMMUTABLE_TOJSON_CACHE_SYMBOL] = a.toJSON();
       }
       return a[INTERNAL_REDUX_IMMUTABLE_TOJSON_CACHE_SYMBOL];
@@ -68,6 +69,7 @@ export const getReduxData = (immutableData, resource: WatchK8sResource) => {
   }
   if (immutableData.toJSON) {
     if (!immutableData[INTERNAL_REDUX_IMMUTABLE_TOJSON_CACHE_SYMBOL]) {
+      // eslint-disable-next-line no-param-reassign
       immutableData[INTERNAL_REDUX_IMMUTABLE_TOJSON_CACHE_SYMBOL] = immutableData.toJSON();
     }
     return immutableData[INTERNAL_REDUX_IMMUTABLE_TOJSON_CACHE_SYMBOL];
