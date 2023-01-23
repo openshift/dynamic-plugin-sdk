@@ -55,6 +55,19 @@ const parseEncodedCodeRef = (
   return [moduleName, exportName];
 };
 
+export const getPluginModule = async <TModule extends AnyObject>(
+  moduleName: string,
+  entryModule: PluginEntryModule,
+  formatErrorMessage: (message: string) => string = _.identity,
+) => {
+  try {
+    const moduleFactory = await entryModule.get(moduleName);
+    return moduleFactory() as TModule;
+  } catch (e) {
+    throw new ErrorWithCause(formatErrorMessage(`Failed to load module '${moduleName}'`), e);
+  }
+};
+
 /**
  * Create new {@link CodeRef} function from an {@link EncodedCodeRef} object.
  */
@@ -68,26 +81,15 @@ const createCodeRef =
     const refData = parseEncodedCodeRef(encodedCodeRef);
 
     if (!refData) {
-      throw new ErrorWithCause(
-        formatErrorMessage(`Malformed code reference '${encodedCodeRef.$codeRef}'`),
-      );
+      throw new Error(formatErrorMessage(`Malformed code reference '${encodedCodeRef.$codeRef}'`));
     }
 
     const [moduleName, exportName] = refData;
 
-    let referencedModule: AnyObject;
-
-    try {
-      const moduleFactory = await entryModule.get(moduleName);
-      referencedModule = moduleFactory();
-    } catch (e) {
-      throw new ErrorWithCause(formatErrorMessage(`Failed to load module '${moduleName}'`), e);
-    }
+    const referencedModule = await getPluginModule(moduleName, entryModule, formatErrorMessage);
 
     if (!_.has(referencedModule, exportName)) {
-      throw new ErrorWithCause(
-        formatErrorMessage(`Missing module export '${moduleName}.${exportName}'`),
-      );
+      throw new Error(formatErrorMessage(`Missing module export '${moduleName}.${exportName}'`));
     }
 
     return referencedModule[exportName];
@@ -99,37 +101,22 @@ const createCodeRef =
  *
  * Returns the extension that was passed in.
  */
-export const decodeCodeRefs = (
-  extension: LoadedExtension,
-  entryModule: PluginEntryModule,
-  codeRefCache: Map<string, CodeRef>,
-) => {
+export const decodeCodeRefs = (extension: LoadedExtension, entryModule: PluginEntryModule) => {
   visitDeep<EncodedCodeRef>(extension.properties, isEncodedCodeRef, (encodedCodeRef, key, obj) => {
-    const codeRefKey = `${extension.pluginName}[${encodedCodeRef.$codeRef}]`;
+    const codeRef = createCodeRef(
+      encodedCodeRef,
+      entryModule,
+      (message) => `${message} in extension ${extension.uid}`,
+    );
 
-    let codeRef: CodeRef;
+    // Use a sensible function name that reflects the current context
+    Object.defineProperty(codeRef, 'name', {
+      value: `$codeRef_${extension.pluginName}[${encodedCodeRef.$codeRef}]`,
+      configurable: true,
+    });
 
-    if (codeRefCache.has(codeRefKey)) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      codeRef = codeRefCache.get(codeRefKey)!;
-    } else {
-      codeRef = createCodeRef(
-        encodedCodeRef,
-        entryModule,
-        (message) => `${message} in extension ${extension.uid}`,
-      );
-
-      // Use a sensible function name that reflects the current context
-      Object.defineProperty(codeRef, 'name', {
-        value: `$codeRef_${codeRefKey}`,
-        configurable: true,
-      });
-
-      // Mark the function with a non-configurable symbol property
-      Object.defineProperty(codeRef, codeRefSymbol, { value: true });
-
-      codeRefCache.set(codeRefKey, codeRef);
-    }
+    // Mark the function with a non-configurable symbol property
+    Object.defineProperty(codeRef, codeRefSymbol, { value: true });
 
     // eslint-disable-next-line no-param-reassign
     obj[key] = codeRef;

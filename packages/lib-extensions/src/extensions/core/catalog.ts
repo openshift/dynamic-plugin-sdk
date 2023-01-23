@@ -9,7 +9,7 @@ export type CatalogItemType = Extension<
     catalogDescription?: string;
     /** Description for the catalog item type. */
     typeDescription?: string;
-    /** Custom filters specific to the catalog item.  */
+    /** Custom filters specific to the catalog item. */
     filters?: CatalogItemAttribute[];
     /** Custom groupings specific to the catalog item. */
     groupings?: CatalogItemAttribute[];
@@ -59,9 +59,7 @@ export type CatalogItem<TData extends AnyObject = AnyObject> = {
   uid: string;
   type: string;
   name: string;
-  /** Optional title to render a custom title using ReactNode.
-   * Rendered in catalog tile and side panel
-   *  */
+  /** Optional title to render a custom title using ReactNode. Rendered in catalog tile and side panel. */
   title?: string | ReactNode;
   // Used as the second label next to the provider label in the list result.
   secondaryLabel?: string | ReactNode;
@@ -103,7 +101,7 @@ export type ItemType = TypeAndTitle & {
   catalogDescription?: string;
   /** Description for the catalog item type. */
   typeDescription?: string;
-  /** Custom filters specific to the catalog item.  */
+  /** Custom filters specific to the catalog item. */
   filters?: CatalogItemAttribute[];
   /** Custom groupings specific to the catalog item. */
   groupings?: CatalogItemAttribute[];

@@ -1,6 +1,8 @@
 import type { Extension, LoadedExtension } from './extension';
 import type { PluginEntryModule } from './runtime';
 
+export type PluginRegistrationMethod = 'callback' | 'custom';
+
 export type PluginRuntimeMetadata = {
   name: string;
   version: string;
@@ -9,6 +11,9 @@ export type PluginRuntimeMetadata = {
 
 export type PluginManifest = PluginRuntimeMetadata & {
   extensions: Extension[];
+  loadScripts: string[];
+  registrationMethod: PluginRegistrationMethod;
+  buildHash?: string;
 };
 
 export type LoadedPlugin = {

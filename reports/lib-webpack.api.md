@@ -5,9 +5,13 @@
 ```ts
 
 import { Compiler } from 'webpack';
-import type { EncodedExtension } from '@openshift/dynamic-plugin-sdk';
-import type { PluginRuntimeMetadata } from '@openshift/dynamic-plugin-sdk';
 import { WebpackPluginInstance } from 'webpack';
+
+// @public
+export type AnyObject = Record<string, unknown>;
+
+// @public (undocumented)
+export type CodeRef<TValue = unknown> = () => Promise<TValue>;
 
 // @public (undocumented)
 export class DynamicRemotePlugin implements WebpackPluginInstance {
@@ -21,8 +25,43 @@ export type DynamicRemotePluginOptions = Partial<{
     pluginMetadata: string | PluginBuildMetadata;
     extensions: string | EncodedExtension[];
     sharedModules: WebpackSharedObject;
+    moduleFederationLibraryType: string;
     entryCallbackSettings: PluginEntryCallbackSettings;
+    entryScriptFilename: string;
+    pluginManifestFilename: string;
 }>;
+
+// @public (undocumented)
+export type EncodedCodeRef = {
+    $codeRef: string;
+};
+
+// @public (undocumented)
+export type EncodedExtension<TExtension extends Extension = Extension> = ReplaceProperties<TExtension, {
+    properties: ReplaceProperties<ExtractExtensionProperties<TExtension>, MapCodeRefsToEncodedCodeRefs<ExtractExtensionProperties<TExtension>>>;
+}>;
+
+// @public (undocumented)
+export type Extension<TType extends string = string, TProperties extends AnyObject = AnyObject> = {
+    type: TType;
+    properties: TProperties;
+    flags?: ExtensionFlags;
+    [customProperty: string]: unknown;
+};
+
+// @public (undocumented)
+export type ExtensionFlags = Partial<{
+    required: string[];
+    disallowed: string[];
+}>;
+
+// @public (undocumented)
+export type ExtractExtensionProperties<T> = T extends Extension<any, infer TProperties> ? TProperties : never;
+
+// @public (undocumented)
+export type MapCodeRefsToEncodedCodeRefs<T> = {
+    [K in keyof T]: T[K] extends CodeRef ? EncodedCodeRef : MapCodeRefsToEncodedCodeRefs<T[K]>;
+};
 
 // @public (undocumented)
 export type PluginBuildMetadata = PluginRuntimeMetadata & {
@@ -36,6 +75,18 @@ export type PluginEntryCallbackSettings = Partial<{
     name: string;
     pluginID: string;
 }>;
+
+// @public (undocumented)
+export type PluginRuntimeMetadata = {
+    name: string;
+    version: string;
+    dependencies?: Record<string, string>;
+};
+
+// @public
+export type ReplaceProperties<T, R> = {
+    [K in keyof T]: K extends keyof R ? R[K] : T[K];
+};
 
 // @public
 export type WebpackSharedConfig = {

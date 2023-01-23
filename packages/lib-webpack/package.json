@@ -24,7 +24,7 @@
     "api-extractor": "yarn run -T api-extractor -c $INIT_CWD/api-extractor.json"
   },
   "peerDependencies": {
-    "webpack": "^5.69.1"
+    "webpack": "^5.75.0"
   },
   "dependencies": {
     "glob": "^7.2.0",

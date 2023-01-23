@@ -1,10 +1,12 @@
 /// <reference types="webpack/module" />
 
+const SHARED_SCOPE_NAME = 'default';
+
 /**
- * Initialize a webpack share scope object.
+ * Initialize the webpack share scope object.
  *
- * The host application should use webpack `ModuleFederationPlugin` to declare
- * modules shared between the application and its plugins.
+ * The host application should use webpack `ModuleFederationPlugin` to declare modules
+ * shared between the application and its plugins.
  *
  * @example
  * ```ts
@@ -15,15 +17,15 @@
  * })
  * ```
  */
-export const initSharedScope = async (name = 'default') => __webpack_init_sharing__(name);
+export const initSharedScope = async () => __webpack_init_sharing__(SHARED_SCOPE_NAME);
 
 /**
- * Get a webpack share scope object.
+ * Get the webpack share scope object.
  */
-export const getSharedScope = (name = 'default') => {
-  if (!Object.keys(__webpack_share_scopes__).includes(name)) {
-    throw new Error(`Attempt to access share scope ${name} before its initialization`);
+export const getSharedScope = () => {
+  if (!Object.keys(__webpack_share_scopes__).includes(SHARED_SCOPE_NAME)) {
+    throw new Error('Attempt to access share scope object before its initialization');
   }
 
-  return __webpack_share_scopes__[name];
+  return __webpack_share_scopes__[SHARED_SCOPE_NAME];
 };

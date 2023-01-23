@@ -25,12 +25,12 @@ module.exports = {
     'error',
     [
       {
-        includeFiles: 'packages/lib-core/src/**',
+        includeFiles: 'packages/+(lib-core|lib-webpack)/src/**',
         excludeFiles: '**/*.test.*',
         excludeModules: ['@monorepo/common'],
       },
       {
-        includeFiles: 'packages/+(lib-extensions|lib-utils|lib-webpack)/src/**',
+        includeFiles: 'packages/+(lib-extensions|lib-utils)/src/**',
         excludeFiles: '**/*.+(test|stories).*',
       },
     ],

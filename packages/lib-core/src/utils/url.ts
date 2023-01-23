@@ -17,5 +17,9 @@ export const isAbsoluteURL = (url: string) => url.indexOf('://') > 0 || url.inde
 export const resolveURL = (
   base: string,
   to: string,
-  getDocumentOrigin: () => string = _.constant(window.location.origin),
-) => new URL(to, isAbsoluteURL(base) ? base : new URL(base, getDocumentOrigin())).toString();
+  processURL: (url: URL) => URL = _.identity,
+  getDocumentOrigin = () => window.location.origin,
+) =>
+  processURL(
+    new URL(to, isAbsoluteURL(base) ? base : new URL(base, getDocumentOrigin())),
+  ).toString();

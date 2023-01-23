@@ -1,6 +1,8 @@
 {
   "extends": "../../api-extractor.json",
   "mainEntryPointFilePath": "dist/types/lib-webpack/src/index.d.ts",
+  "bundledPackages": ["@monorepo/common", "@openshift/dynamic-plugin-sdk"],
+  "compiler": { "tsconfigFilePath": "tsconfig.api-extractor.json" },
   "apiReport": { "reportFileName": "lib-webpack.api.md" },
   "docModel": { "apiJsonFilePath": "dist/api/lib-webpack.api.json" }
 }

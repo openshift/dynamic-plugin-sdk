@@ -22,7 +22,7 @@ const PageHeader: React.FC = () => {
   const loadPluginModalRef = React.useRef<LoadPluginModalRefProps>(null);
 
   const openLoadPluginModal = () => {
-    loadPluginModalRef?.current?.open();
+    loadPluginModalRef.current?.open();
   };
 
   return (

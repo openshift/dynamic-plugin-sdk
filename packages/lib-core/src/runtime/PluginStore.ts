@@ -1,7 +1,8 @@
+import { v4 as uuidv4 } from 'uuid';
 import type { AnyObject } from '@monorepo/common';
-import { consoleLogger, ErrorWithCause } from '@monorepo/common';
+import { consoleLogger } from '@monorepo/common';
 import * as _ from 'lodash-es';
-import type { Extension, LoadedExtension, CodeRef } from '../types/extension';
+import type { Extension, LoadedExtension } from '../types/extension';
 import type {
   PluginRuntimeMetadata,
   PluginManifest,
@@ -11,13 +12,22 @@ import type {
 import type { PluginEntryModule } from '../types/runtime';
 import type { PluginInfoEntry, PluginStoreInterface, FeatureFlags } from '../types/store';
 import { PluginEventType } from '../types/store';
-import { decodeCodeRefs } from './coderefs';
+import { decodeCodeRefs, getPluginModule } from './coderefs';
 import type { PluginLoader } from './PluginLoader';
 
 export type PluginStoreOptions = Partial<{
-  /** Automatically enable plugins after adding them to the {@link PluginStore}? */
+  /**
+   * Control whether to enable plugins automatically once they are loaded.
+   *
+   * Default value: `true`.
+   */
   autoEnableLoadedPlugins: boolean;
-  /** Post-process loaded extension objects before adding associated plugin to the {@link PluginStore}. */
+
+  /**
+   * Post-process the plugin's extension objects.
+   *
+   * By default, no post-processing is performed on the extension objects.
+   */
   postProcessExtensions: (extensions: LoadedExtension[]) => LoadedExtension[];
 }>;
 
@@ -27,9 +37,7 @@ export type PluginStoreOptions = Partial<{
 export class PluginStore implements PluginStoreInterface {
   private readonly options: Required<PluginStoreOptions>;
 
-  private loader: PluginLoader | undefined;
-
-  private readonly codeRefCache = new Map<string, CodeRef>();
+  private loader?: PluginLoader;
 
   /** Plugins that were successfully loaded and processed. */
   private readonly loadedPlugins = new Map<string, LoadedPlugin>();
@@ -66,30 +74,30 @@ export class PluginStore implements PluginStoreInterface {
    */
   setLoader(loader: PluginLoader): VoidFunction {
     if (this.loader !== undefined) {
-      throw new Error('PluginLoader has already been set');
+      throw new Error('PluginLoader is already set');
     }
 
     this.loader = loader;
 
     const unsubscribe = loader.subscribe((result) => {
       if (!result.success) {
-        consoleLogger.error(..._.compact([result.errorMessage, result.errorCause]));
+        const { pluginName, errorMessage, errorCause } = result;
 
-        if (result.pluginName) {
-          this.registerFailedPlugin(result.pluginName, result.errorMessage, result.errorCause);
+        consoleLogger.error(..._.compact([errorMessage, errorCause]));
+
+        if (pluginName) {
+          this.registerFailedPlugin(pluginName, errorMessage, errorCause);
         }
 
         return;
       }
 
-      const pluginAdded = this.addPlugin(
-        _.omit<PluginManifest, 'extensions'>(result.manifest, 'extensions'),
-        this.processExtensions(result.pluginName, result.manifest.extensions, result.entryModule),
-        result.entryModule,
-      );
+      const { pluginName, manifest, entryModule } = result;
 
-      if (pluginAdded && this.options.autoEnableLoadedPlugins) {
-        this.enablePlugins([result.pluginName]);
+      this.addPlugin(manifest, entryModule);
+
+      if (this.options.autoEnableLoadedPlugins) {
+        this.enablePlugins([pluginName]);
       }
     });
 
@@ -108,7 +116,7 @@ export class PluginStore implements PluginStoreInterface {
 
   subscribe(eventTypes: PluginEventType[], listener: VoidFunction): VoidFunction {
     if (eventTypes.length === 0) {
-      consoleLogger.warn('subscribe method called with no eventTypes');
+      consoleLogger.warn('subscribe method called with empty eventTypes');
       return _.noop;
     }
 
@@ -182,19 +190,21 @@ export class PluginStore implements PluginStoreInterface {
     return { ...this.featureFlags };
   }
 
-  async loadPlugin(baseURL: string) {
+  async loadPlugin(baseURL: string, manifestNameOrObject?: string | PluginManifest) {
     if (this.loader === undefined) {
       consoleLogger.error('PluginLoader must be set before loading any plugins');
       return;
     }
 
-    await this.loader.loadPlugin(baseURL);
+    // TODO(vojtech): PluginLoader.loadPlugin is now properly async, we can consider
+    // removing PluginLoader.subscribe API in favor of directly handling the Promise
+    await this.loader.loadPlugin(baseURL, manifestNameOrObject);
   }
 
   private setPluginsEnabled(
     pluginNames: string[],
     enabled: boolean,
-    onEnabledChange: (plugin: LoadedPlugin) => void = _.noop,
+    onEnabledChange: (plugin: LoadedPlugin) => void,
   ) {
     let updateRequired = false;
 
@@ -221,8 +231,8 @@ export class PluginStore implements PluginStoreInterface {
     });
 
     if (updateRequired) {
-      this.invokeListeners(PluginEventType.PluginInfoChanged);
       this.updateExtensions();
+      this.invokeListeners(PluginEventType.PluginInfoChanged);
     }
   }
 
@@ -240,10 +250,6 @@ export class PluginStore implements PluginStoreInterface {
     });
   }
 
-  /**
-   * Determine whether the given extension is currently in use, based on its feature flag
-   * requirements (if any).
-   */
   private isExtensionInUse(extension: Extension) {
     return (
       (extension.flags?.required?.every((f) => this.featureFlags[f] === true) ?? true) &&
@@ -266,24 +272,21 @@ export class PluginStore implements PluginStoreInterface {
   }
 
   /**
-   * Add new plugin to the {@link PluginStore}.
+   * Add a plugin to the {@link PluginStore}.
    *
    * Once added, the plugin is disabled by default. Enable it to put its extensions into use.
-   *
-   * Returns `true` if the plugin was added successfully.
    */
-  private addPlugin(
-    metadata: PluginRuntimeMetadata,
-    processedExtensions: LoadedExtension[],
-    entryModule: PluginEntryModule,
-  ) {
-    const pluginName = metadata.name;
-    const pluginVersion = metadata.version;
+  private addPlugin(manifest: PluginManifest, entryModule: PluginEntryModule) {
+    const pluginName = manifest.name;
+    const reload = this.loadedPlugins.has(pluginName) || this.failedPlugins.has(pluginName);
 
-    if (this.loadedPlugins.has(pluginName)) {
-      consoleLogger.warn(`Attempt to re-add an already loaded plugin ${pluginName}`);
-      return false;
-    }
+    const metadata: PluginRuntimeMetadata = _.pick(manifest, ['name', 'version', 'dependencies']);
+
+    const processedExtensions = this.processExtensions(
+      pluginName,
+      manifest.extensions,
+      entryModule,
+    );
 
     this.loadedPlugins.set(pluginName, {
       metadata: Object.freeze(metadata),
@@ -295,19 +298,25 @@ export class PluginStore implements PluginStoreInterface {
     this.failedPlugins.delete(pluginName);
     this.invokeListeners(PluginEventType.PluginInfoChanged);
 
-    consoleLogger.info(`Plugin ${pluginName} version ${pluginVersion} added to PluginStore`);
+    if (reload) {
+      this.updateExtensions();
+    }
 
-    return true;
+    consoleLogger.info(`Plugin ${pluginName} has been ${reload ? 'reloaded' : 'loaded'}`);
   }
 
   private registerFailedPlugin(pluginName: string, errorMessage: string, errorCause?: unknown) {
-    if (this.loadedPlugins.has(pluginName)) {
-      consoleLogger.warn(`Attempt to register an already loaded plugin ${pluginName} as failed`);
-      return;
-    }
+    const reload = this.loadedPlugins.has(pluginName) || this.failedPlugins.has(pluginName);
 
+    this.loadedPlugins.delete(pluginName);
     this.failedPlugins.set(pluginName, { errorMessage, errorCause });
     this.invokeListeners(PluginEventType.PluginInfoChanged);
+
+    if (reload) {
+      this.updateExtensions();
+    }
+
+    consoleLogger.error(`Plugin ${pluginName} has failed to ${reload ? 'reload' : 'load'}`);
   }
 
   /**
@@ -323,10 +332,9 @@ export class PluginStore implements PluginStoreInterface {
         {
           ...e,
           pluginName,
-          uid: `${pluginName}[${index}]`,
+          uid: `${pluginName}[${index}]_${uuidv4()}`,
         },
         entryModule,
-        this.codeRefCache,
       ),
     );
 
@@ -343,11 +351,12 @@ export class PluginStore implements PluginStoreInterface {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const plugin = this.loadedPlugins.get(pluginName)!;
 
-    try {
-      const moduleFactory = await plugin.entryModule.get(moduleName);
-      return moduleFactory() as TModule;
-    } catch (e) {
-      throw new ErrorWithCause(`Failed to load module '${moduleName}' of plugin ${pluginName}`, e);
-    }
+    const referencedModule = await getPluginModule<TModule>(
+      moduleName,
+      plugin.entryModule,
+      (message) => `${message} of plugin ${pluginName}`,
+    );
+
+    return referencedModule;
   }
 }

@@ -61,8 +61,7 @@ const Row: React.FC<RowProps<TableItem>> = ({ obj }) => {
 
 export const Primary = Template.bind({});
 let data: TableItem[] = [];
-// eslint-disable-next-line no-plusplus
-for (let index = 0; index < 100; index++) {
+for (let index = 0; index < 100; index += 1) {
   const idx = String(index).padStart(3, '0');
   data = [
     ...data,

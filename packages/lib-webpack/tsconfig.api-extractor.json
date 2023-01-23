@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@monorepo/common": ["dist/types/common/src/index.d.ts"],
+      "@openshift/dynamic-plugin-sdk/src/shared-webpack": [
+        "dist/types/lib-core/src/shared-webpack.d.ts"
+      ]
+    }
+  }
+}

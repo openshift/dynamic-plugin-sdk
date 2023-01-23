@@ -72,6 +72,12 @@ export const useResolvedExtensions = <TExtension extends Extension>(
         setErrors(rejectedReasons);
       },
     );
+
+    return () => {
+      setResolved(false);
+      setResolvedExtensions([]);
+      setErrors([]);
+    };
   }, [extensions, pluginStore]);
 
   return [resolvedExtensions, resolved, errors];
