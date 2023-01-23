@@ -278,12 +278,14 @@ export class PluginStore implements PluginStoreInterface {
    */
   private addPlugin(manifest: PluginManifest, entryModule: PluginEntryModule) {
     const pluginName = manifest.name;
+    const buildHash = manifest.buildHash ?? uuidv4();
     const reload = this.loadedPlugins.has(pluginName) || this.failedPlugins.has(pluginName);
 
     const metadata: PluginRuntimeMetadata = _.pick(manifest, ['name', 'version', 'dependencies']);
 
     const processedExtensions = this.processExtensions(
       pluginName,
+      buildHash,
       manifest.extensions,
       entryModule,
     );
@@ -324,21 +326,22 @@ export class PluginStore implements PluginStoreInterface {
    */
   private processExtensions(
     pluginName: string,
+    buildHash: string,
     extensions: Extension[],
     entryModule: PluginEntryModule,
   ) {
-    const processedExtensions: LoadedExtension[] = extensions.map((e, index) =>
-      decodeCodeRefs(
-        {
-          ...e,
-          pluginName,
-          uid: `${pluginName}[${index}]_${uuidv4()}`,
-        },
-        entryModule,
+    return this.options.postProcessExtensions(
+      extensions.map<LoadedExtension>((e, index) =>
+        decodeCodeRefs(
+          {
+            ...e,
+            pluginName,
+            uid: `${pluginName}[${index}]_${buildHash}`,
+          },
+          entryModule,
+        ),
       ),
     );
-
-    return this.options.postProcessExtensions(processedExtensions);
   }
 
   async getExposedModule<TModule extends AnyObject>(pluginName: string, moduleName: string) {
