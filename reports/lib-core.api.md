@@ -76,7 +76,7 @@ export type FailedPluginInfoEntry = {
 
 // @public (undocumented)
 export type FeatureFlags = {
-    [key: string]: boolean;
+    [flagName: string]: boolean;
 };
 
 // @public (undocumented)

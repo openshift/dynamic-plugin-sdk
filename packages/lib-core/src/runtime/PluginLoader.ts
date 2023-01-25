@@ -251,7 +251,7 @@ export class PluginLoader {
       this.plugins.get(pluginName)?.status === 'loaded' &&
       _.isEqual(manifest.buildHash, this.plugins.get(pluginName)?.manifest.buildHash)
     ) {
-      consoleLogger.warn(`Attempt to reload plugin ${pluginName} with same compilation hash`);
+      consoleLogger.warn(`Attempt to reload plugin ${pluginName} with same build hash`);
       return;
     }
 

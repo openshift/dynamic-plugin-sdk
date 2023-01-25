@@ -42,7 +42,7 @@ export type FailedPluginInfoEntry = {
 
 export type PluginInfoEntry = LoadedPluginInfoEntry | FailedPluginInfoEntry;
 
-export type FeatureFlags = { [key: string]: boolean };
+export type FeatureFlags = { [flagName: string]: boolean };
 
 export type PluginStoreInterface = {
   /**
