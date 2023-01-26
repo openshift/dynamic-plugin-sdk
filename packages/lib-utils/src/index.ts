@@ -29,7 +29,8 @@ export {
   K8sResourceListResult,
 } from './k8s/k8s-resource';
 export { getK8sResourceURL } from './k8s/k8s-utils';
-export { InitAPIDiscovery, DiscoveryResources } from './types/api-discovery';
+export { createAPIActions, initAPIDiscovery } from './app/api-discovery';
+export { InitAPIDiscovery, DiscoveryResources, APIActions } from './types/api-discovery';
 export {
   K8sModelCommon,
   K8sResourceCommon,
