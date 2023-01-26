@@ -36,3 +36,9 @@ export type DiscoveryResources = {
     };
   };
 };
+
+export type APIActions = {
+  setResourcesInFlight: (isInFlight: boolean) => void;
+  setBatchesInFlight: (isInFlight: boolean) => void;
+  receivedResources: (resource: DiscoveryResources) => void;
+};

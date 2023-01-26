@@ -7,6 +7,7 @@
 import type { ActionType as ActionType_2 } from 'typesafe-actions';
 import type { AnyAction } from 'redux';
 import type { AnyObject } from '@openshift/dynamic-plugin-sdk';
+import type { Dispatch } from 'redux';
 import { DropdownPosition } from '@patternfly/react-core';
 import type { EitherNotBoth } from '@openshift/dynamic-plugin-sdk';
 import type { IAction } from '@patternfly/react-table';
@@ -106,6 +107,13 @@ export enum ActionType {
     UpdateListFromWS = "updateListFromWS"
 }
 
+// @public (undocumented)
+export type APIActions = {
+    setResourcesInFlight: (isInFlight: boolean) => void;
+    setBatchesInFlight: (isInFlight: boolean) => void;
+    receivedResources: (resource: DiscoveryResources) => void;
+};
+
 // @public
 export const AppInitSDK: React_2.FC<AppInitSDKProps>;
 
@@ -148,6 +156,9 @@ export const commonFetchJSON: {
 
 // @public (undocumented)
 export const commonFetchText: (url: string, requestInit?: RequestInit | undefined, timeout?: number | undefined, isK8sAPIRequest?: boolean | undefined) => Promise<string>;
+
+// @public (undocumented)
+export const createAPIActions: (dispatch: Dispatch) => APIActions;
 
 // @public
 export type DestroyHandler = GenericHandler<unknown | undefined>;
@@ -270,6 +281,9 @@ export type HrefForLabels = {
 
 // @public (undocumented)
 export type InitAPIDiscovery = (store: Store<unknown, ActionType_2<AnyAction>>, preferenceList?: string[]) => void;
+
+// @public (undocumented)
+export const initAPIDiscovery: InitAPIDiscovery;
 
 // @public
 export const isUtilsConfigSet: () => boolean;

@@ -5,6 +5,7 @@ import { plural } from 'pluralize';
 import type { Dispatch } from 'redux';
 import { kindToAbbr } from '../../k8s/k8s-resource';
 import type {
+  APIActions,
   APIResourceList,
   DiscoveryResources,
   InitAPIDiscovery,
@@ -17,6 +18,12 @@ import { cacheResources, getCachedResources } from './discovery-cache';
 
 const API_DISCOVERY_INIT_DELAY = 5_000;
 const API_DISCOVERY_REQUEST_BATCH_SIZE = 5;
+
+export const createAPIActions = (dispatch: Dispatch): APIActions => ({
+  setResourcesInFlight: (isInFlight) => dispatch(setResourcesInFlight(isInFlight)),
+  setBatchesInFlight: (isInFlight) => dispatch(setBatchesInFlight(isInFlight)),
+  receivedResources: (resource) => dispatch(receivedResources(resource)),
+});
 
 const pluralizeKind = (kind: string): string => {
   // Use startCase to separate words so the last can be pluralized but remove spaces so as not to humanize
