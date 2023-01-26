@@ -119,7 +119,7 @@ export type PluginLoaderOptions = Partial<{
   sharedScope: AnyObject;
 
   /**
-   * Post-process the plugin manifest when fetched over the network.
+   * Post-process the plugin manifest.
    *
    * By default, no post-processing is performed on the manifest.
    */
@@ -226,6 +226,8 @@ export class PluginLoader {
       return;
     }
 
+    manifest = this.options.postProcessManifest(manifest);
+
     try {
       manifest = pluginManifestSchema.strict(true).validateSync(manifest, { abortEarly: false });
     } catch (e) {
@@ -306,7 +308,7 @@ export class PluginLoader {
     const response = await this.options.fetchImpl(manifestURL, { cache: 'no-cache' });
     const responseText = await response.text();
 
-    return this.options.postProcessManifest(JSON.parse(responseText));
+    return JSON.parse(responseText);
   }
 
   /**
