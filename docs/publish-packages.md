@@ -27,20 +27,12 @@ Make sure you're in sync with the upstream `main` branch:
 git fetch upstream && git rebase upstream/main
 ```
 
-## Log into npmjs account
-
-Only members of npmjs [openshift organization](https://www.npmjs.com/org/openshift) can publish
-packages maintained in this repo.
-
-```sh
-npm login --scope=@openshift
-```
-
 ## Build packages
 
-To build all distributable SDK packages:
+To update dependencies and build all distributable SDK packages:
 
 ```sh
+yarn install
 yarn build-libs
 ```
 
@@ -50,19 +42,43 @@ Alternatively, you can build a specific SDK package:
 (cd ./packages/PKG_DIR ; yarn build)
 ```
 
+## Check package versions
+
+Make sure the `version` field in the relevant `package.json` file(s) has the right value:
+
+```sh
+jq -r .version < ./packages/PKG_DIR/package.json
+npm pkg set version=NEW_VERSION -workspace ./packages/PKG_DIR
+```
+
+Since our packages adhere to [Semantic Versioning](https://semver.org/) specification,
+any backwards incompatible API changes _must_ be published under a new major version.
+
+## Check package changelogs
+
+If present, make sure the `CHANGELOG.md` file of the given package(s) is up to date:
+
+- Each changelog entry describes a notable change that may impact consumers of the package.
+- Each version section may contain a notice with additional information, e.g. how to upgrade
+  from a previous version.
+
+See [Common Changelog](https://common-changelog.org/) for details on good changelog practices.
+
+## Log into npmjs account
+
+Only members of npmjs [openshift organization](https://www.npmjs.com/org/openshift) can publish
+packages maintained in this repo.
+
+```sh
+npm login --scope=@openshift
+```
+
 ## Publish packages
 
 To see the latest published version of the given package:
 
 ```sh
 npm view $(jq -r .name < ./packages/PKG_DIR/package.json) dist-tags.latest
-```
-
-Make sure the `version` field in the relevant `package.json` file(s) has the right value:
-
-```sh
-npm pkg get version -workspace ./packages/PKG_DIR | jq -r .[]
-npm pkg set version=NEW_VERSION -workspace ./packages/PKG_DIR
 ```
 
 To verify the package before publishing:
