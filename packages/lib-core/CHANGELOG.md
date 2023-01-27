@@ -1,5 +1,9 @@
 # Changelog for `@openshift/dynamic-plugin-sdk`
 
+## 2.0.1 - 2023-01-27
+
+- Call postProcessManifest regardless if manifest is provided as a custom object ([#190])
+
 ## 2.0.0 - 2023-01-23
 
 > This release adds new mandatory fields to the plugin manifest.
@@ -19,3 +23,4 @@
 [#180]: https://github.com/openshift/dynamic-plugin-sdk/pull/180
 [#182]: https://github.com/openshift/dynamic-plugin-sdk/pull/182
 [#184]: https://github.com/openshift/dynamic-plugin-sdk/pull/184
+[#190]: https://github.com/openshift/dynamic-plugin-sdk/pull/190
