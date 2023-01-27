@@ -1,4 +1,4 @@
-import { consoleLogger } from '@openshift/dynamic-plugin-sdk';
+import { consoleLogger } from '@monorepo/common';
 import * as _ from 'lodash-es';
 import type { Dispatch } from 'redux';
 import type { ActionType as Action } from 'typesafe-actions';

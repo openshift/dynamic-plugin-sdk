@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@monorepo/common": ["dist/types/common/src/index.d.ts"]
+    }
+  }
+}

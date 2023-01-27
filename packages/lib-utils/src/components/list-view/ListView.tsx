@@ -1,4 +1,4 @@
-import type { AnyObject } from '@openshift/dynamic-plugin-sdk';
+import type { AnyObject } from '@monorepo/common';
 import {
   Pagination,
   PaginationVariant,
