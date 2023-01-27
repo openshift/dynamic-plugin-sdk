@@ -1,5 +1,5 @@
-import { consoleLogger } from '@monorepo/common';
-import type { AnyObject } from '@monorepo/common';
+import type { AnyObject } from '@openshift/dynamic-plugin-sdk';
+import { consoleLogger } from '@openshift/dynamic-plugin-sdk';
 import * as _ from 'lodash-es';
 import { plural } from 'pluralize';
 import type { Dispatch } from 'redux';

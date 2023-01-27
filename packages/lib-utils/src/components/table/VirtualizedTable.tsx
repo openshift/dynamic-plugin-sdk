@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import type { AnyObject } from '@monorepo/common';
+import type { AnyObject } from '@openshift/dynamic-plugin-sdk';
 import type { IAction } from '@patternfly/react-table';
 import { ActionsColumn, Tbody, Td, Th, Thead, Tr, TableComposable } from '@patternfly/react-table';
 import { AutoSizer, WindowScroller } from '@patternfly/react-virtualized-extension';

@@ -1,4 +1,4 @@
-import type { AnyObject } from '@monorepo/common';
+import type { AnyObject } from '@openshift/dynamic-plugin-sdk';
 
 /**
  * Configuration that is used to configure WebSockets from a host app perspective.
