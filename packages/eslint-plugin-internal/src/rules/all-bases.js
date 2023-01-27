@@ -32,6 +32,7 @@ module.exports = {
       {
         includeFiles: 'packages/+(lib-extensions|lib-utils)/src/**',
         excludeFiles: '**/*.+(test|stories).*',
+        excludeModules: ['@monorepo/common'],
       },
     ],
   ],
