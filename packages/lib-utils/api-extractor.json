@@ -1,6 +1,8 @@
 {
   "extends": "../../api-extractor.json",
-  "mainEntryPointFilePath": "dist/types/index.d.ts",
+  "mainEntryPointFilePath": "dist/types/lib-utils/src/index.d.ts",
+  "bundledPackages": ["@monorepo/common"],
+  "compiler": { "tsconfigFilePath": "tsconfig.api-extractor.json" },
   "apiReport": { "reportFileName": "lib-utils.api.md" },
   "docModel": { "apiJsonFilePath": "dist/api/lib-utils.api.json" }
 }

@@ -1,4 +1,4 @@
-import { consoleLogger } from '@openshift/dynamic-plugin-sdk';
+import { consoleLogger } from '@monorepo/common';
 import * as _ from 'lodash-es';
 import { getReferenceForModel } from '../../k8s/k8s-utils';
 import type { DiscoveryResources } from '../../types/api-discovery';
