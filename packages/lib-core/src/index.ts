@@ -22,3 +22,14 @@ export {
   PluginStoreInterface,
 } from './types/store';
 export { PluginManifest, PluginRuntimeMetadata, LoadedPlugin } from './types/plugin';
+// Common types and utilities
+export {
+  AnyObject,
+  ReplaceProperties,
+  EitherNotBoth,
+  EitherOrNone,
+  CustomError,
+  applyDefaults,
+  applyOverrides,
+  consoleLogger,
+} from '@monorepo/common';
