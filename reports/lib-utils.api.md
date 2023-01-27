@@ -6,10 +6,8 @@
 
 import type { ActionType as ActionType_2 } from 'typesafe-actions';
 import type { AnyAction } from 'redux';
-import type { AnyObject } from '@openshift/dynamic-plugin-sdk';
 import type { Dispatch } from 'redux';
 import { DropdownPosition } from '@patternfly/react-core';
-import type { EitherNotBoth } from '@openshift/dynamic-plugin-sdk';
 import type { IAction } from '@patternfly/react-table';
 import type { ICell } from '@patternfly/react-table';
 import type { Map as Map_2 } from 'immutable';
@@ -106,6 +104,9 @@ export enum ActionType {
     // (undocumented)
     UpdateListFromWS = "updateListFromWS"
 }
+
+// @public
+export type AnyObject = Record<string, unknown>;
 
 // @public (undocumented)
 export type APIActions = {
@@ -210,6 +211,9 @@ export type DiscoveryResources = {
         };
     };
 };
+
+// @public
+export type EitherNotBoth<TypeA, TypeB> = (TypeA & Never<TypeB>) | (TypeB & Never<TypeA>);
 
 // @public (undocumented)
 export type ErrorHandler = GenericHandler<Event>;
@@ -463,6 +467,11 @@ export type MessageDataType = AnyObject | string;
 
 // @public (undocumented)
 export type MessageHandler = GenericHandler<MessageDataType>;
+
+// @public
+export type Never<T> = {
+    [K in keyof T]?: never;
+};
 
 // @public (undocumented)
 export type OpenHandler = GenericHandler<never>;
