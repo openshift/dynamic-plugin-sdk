@@ -1,4 +1,4 @@
-import { consoleLogger } from '@monorepo/common';
+import { consoleLogger } from '@openshift/dynamic-plugin-sdk';
 import * as React from 'react';
 import { useStore } from 'react-redux';
 import type { Store } from 'redux';

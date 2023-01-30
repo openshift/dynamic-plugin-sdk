@@ -8,9 +8,6 @@
  * @packageDocumentation
  */
 
-// Common types
-export { AnyObject, EitherNotBoth, Never } from '@monorepo/common';
-
 // Kubernetes utilities
 export { default as AppInitSDK, AppInitSDKProps } from './app/AppInitSDK';
 export { UtilsConfig, isUtilsConfigSet, setUtilsConfig, getUtilsConfig } from './config';

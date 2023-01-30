@@ -1,4 +1,4 @@
-import type { AnyObject } from '@monorepo/common';
+import type { AnyObject } from '@openshift/dynamic-plugin-sdk';
 import { ActionsColumn, Td as PFTd } from '@patternfly/react-table';
 import type { ICell, SortByDirection, ThProps, TdProps, IAction } from '@patternfly/react-table';
 import { VirtualTableBody } from '@patternfly/react-virtualized-extension';

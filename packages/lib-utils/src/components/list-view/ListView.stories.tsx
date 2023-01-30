@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import type { AnyObject } from '@monorepo/common';
+import type { AnyObject } from '@openshift/dynamic-plugin-sdk';
 import { Button, Tooltip } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import { sortable } from '@patternfly/react-table';

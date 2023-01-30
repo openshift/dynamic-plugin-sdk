@@ -1,4 +1,4 @@
-import type { AnyObject } from '@monorepo/common';
+import type { AnyObject } from '@openshift/dynamic-plugin-sdk';
 import type { K8sModelCommon, K8sResourceCommon, QueryOptions, Patch } from '../types/k8s';
 import { commonFetchJSON } from '../utils/common-fetch';
 import { getK8sResourceURL } from './k8s-utils';

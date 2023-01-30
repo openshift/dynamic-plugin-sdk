@@ -2794,7 +2794,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openshift/dynamic-plugin-sdk-extensions@portal:../lib-extensions::locator=%40monorepo%2Fsample-app%40workspace%3Apackages%2Fsample-app"
   peerDependencies:
-    "@openshift/dynamic-plugin-sdk": ^1.0.0
+    "@openshift/dynamic-plugin-sdk": ^2.0.0
     react: ^17.0.2
     react-redux: ^7.2.2
     react-router: ^5.2.1
@@ -2813,7 +2813,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openshift/dynamic-plugin-sdk-extensions@portal:../lib-extensions::locator=%40monorepo%2Fsample-plugin%40workspace%3Apackages%2Fsample-plugin"
   peerDependencies:
-    "@openshift/dynamic-plugin-sdk": ^1.0.0
+    "@openshift/dynamic-plugin-sdk": ^2.0.0
     react: ^17.0.2
     react-redux: ^7.2.2
     react-router: ^5.2.1
@@ -2832,7 +2832,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openshift/dynamic-plugin-sdk-extensions@workspace:packages/lib-extensions"
   peerDependencies:
-    "@openshift/dynamic-plugin-sdk": ^1.0.0
+    "@openshift/dynamic-plugin-sdk": ^2.0.0
     react: ^17.0.2
     react-redux: ^7.2.2
     react-router: ^5.2.1
@@ -2857,8 +2857,8 @@ __metadata:
     typesafe-actions: ^4.4.2
     uuid: ^8.3.2
   peerDependencies:
-    "@openshift/dynamic-plugin-sdk": ^1.0.0
-    "@openshift/dynamic-plugin-sdk-extensions": ^1.0.0
+    "@openshift/dynamic-plugin-sdk": ^2.0.0
+    "@openshift/dynamic-plugin-sdk-extensions": ^1.1.0
     "@patternfly/react-core": ^4.202.16
     "@patternfly/react-icons": ^4.53.16
     "@patternfly/react-styles": ^4.52.16

@@ -1,4 +1,4 @@
-import type { EitherNotBoth } from '@monorepo/common';
+import type { EitherNotBoth } from '@openshift/dynamic-plugin-sdk';
 import {
   Dropdown,
   DropdownPosition,

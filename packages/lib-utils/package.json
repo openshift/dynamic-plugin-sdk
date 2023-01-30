@@ -1,6 +1,6 @@
 {
   "name": "@openshift/dynamic-plugin-sdk-utils",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Provides React focused dynamic plugin SDK utilities",
   "license": "Apache-2.0",
   "repository": {
@@ -25,8 +25,8 @@
     "api-extractor": "yarn run -T api-extractor -c $INIT_CWD/api-extractor.json"
   },
   "peerDependencies": {
-    "@openshift/dynamic-plugin-sdk": "^1.0.0",
-    "@openshift/dynamic-plugin-sdk-extensions": "^1.0.0",
+    "@openshift/dynamic-plugin-sdk": "^2.0.0",
+    "@openshift/dynamic-plugin-sdk-extensions": "^1.1.0",
     "@patternfly/react-core": "^4.202.16",
     "@patternfly/react-icons": "^4.53.16",
     "@patternfly/react-styles": "^4.52.16",
