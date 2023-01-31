@@ -107,10 +107,11 @@ export type PluginLoaderOptions = Partial<{
   fixedPluginDependencyResolutions: Record<string, string>;
 
   /**
-   * Shared scope object for initializing `PluginEntryModule` containers.
+   * webpack share scope object for initializing `PluginEntryModule` containers.
    *
    * Host applications built with webpack should use dedicated webpack specific APIs
-   * such as `__webpack_init_sharing__` and `__webpack_share_scopes__`.
+   * such as `__webpack_init_sharing__` and `__webpack_share_scopes__` to initialize
+   * and access this object.
    *
    * Default value: empty object.
    *

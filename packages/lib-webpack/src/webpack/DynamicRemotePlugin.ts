@@ -27,6 +27,42 @@ const parseExtensions = (globPattern: string, baseDir = process.cwd()) => {
 };
 
 /**
+ * Settings for the webpack `ModuleFederationPlugin`.
+ */
+export type PluginModuleFederationSettings = Partial<{
+  /**
+   * Configure how the plugin entry module will be exposed at runtime.
+   *
+   * This value is passed to `ModuleFederationPlugin` as `library.type`.
+   *
+   * Note that `library.name` will be set to the name of the plugin.
+   *
+   * Default value: `jsonp`.
+   *
+   * @see https://webpack.js.org/configuration/output/#outputlibrarytype
+   */
+  libraryType: string;
+
+  /**
+   * The name of webpack share scope object used to share modules between the host
+   * application and its plugins.
+   *
+   * This option applies only if the target host application is built with webpack
+   * and uses dedicated webpack specific APIs such as `__webpack_init_sharing__`
+   * and `__webpack_share_scopes__` to initialize and access this object.
+   *
+   * If the target host application is not built with webpack, plugins will not be
+   * able to contribute new modules into the share scope object; however, plugins
+   * will still be able to use any application provided shared modules.
+   *
+   * Default value: `default`.
+   *
+   * @see https://webpack.js.org/plugins/module-federation-plugin/#sharescope
+   */
+  sharedScope: string;
+}>;
+
+/**
  * Settings for the global callback function used by plugin entry scripts.
  */
 export type PluginEntryCallbackSettings = Partial<{
@@ -75,21 +111,14 @@ export type DynamicRemotePluginOptions = Partial<{
   sharedModules: WebpackSharedObject;
 
   /**
-   * Configure how the plugin entry module will be exposed at runtime.
-   *
-   * This value is passed to webpack `ModuleFederationPlugin` as `library.type`.
-   * Note that `library.name` will be set to the name of the plugin.
-   *
-   * Default value: `jsonp`.
-   *
-   * @see https://webpack.js.org/configuration/output/#outputlibrarytype
+   * Customize the webpack `ModuleFederationPlugin` options.
    */
-  moduleFederationLibraryType: string;
+  moduleFederationSettings: PluginModuleFederationSettings;
 
   /**
    * Customize the call to global callback function in the plugin entry script.
    *
-   * This option applies only if `moduleFederationLibraryType` is `jsonp`.
+   * This option applies only if the module federation library type is `jsonp`.
    */
   entryCallbackSettings: PluginEntryCallbackSettings;
 
@@ -119,7 +148,7 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
 
   private readonly sharedModules: WebpackSharedObject;
 
-  private readonly moduleFederationLibraryType: string;
+  private readonly moduleFederationSettings: PluginModuleFederationSettings;
 
   private readonly entryCallbackSettings: PluginEntryCallbackSettings;
 
@@ -132,7 +161,7 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
       pluginMetadata: options.pluginMetadata ?? 'plugin-metadata.json',
       extensions: options.extensions ?? 'plugin-extensions.json',
       sharedModules: options.sharedModules ?? {},
-      moduleFederationLibraryType: options.moduleFederationLibraryType ?? 'jsonp',
+      moduleFederationSettings: options.moduleFederationSettings ?? {},
       entryCallbackSettings: options.entryCallbackSettings ?? {},
       entryScriptFilename: options.entryScriptFilename ?? 'plugin-entry.js',
       pluginManifestFilename: options.pluginManifestFilename ?? DEFAULT_PLUGIN_MANIFEST,
@@ -160,7 +189,7 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
     this.pluginMetadata = adaptedOptions.pluginMetadata;
     this.extensions = adaptedOptions.extensions;
     this.sharedModules = adaptedOptions.sharedModules;
-    this.moduleFederationLibraryType = adaptedOptions.moduleFederationLibraryType;
+    this.moduleFederationSettings = adaptedOptions.moduleFederationSettings;
     this.entryCallbackSettings = adaptedOptions.entryCallbackSettings;
     this.entryScriptFilename = adaptedOptions.entryScriptFilename;
     this.pluginManifestFilename = adaptedOptions.pluginManifestFilename;
@@ -175,9 +204,26 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
 
     const containerName = this.pluginMetadata.name;
 
-    const jsonp = this.moduleFederationLibraryType === 'jsonp';
+    const moduleFederationLibraryType = this.moduleFederationSettings.libraryType ?? 'jsonp';
+    const moduleFederationSharedScope = this.moduleFederationSettings.sharedScope ?? 'default';
+
     const entryCallbackName = this.entryCallbackSettings.name ?? DEFAULT_REMOTE_ENTRY_CALLBACK;
     const entryCallbackPluginID = this.entryCallbackSettings.pluginID ?? this.pluginMetadata.name;
+
+    const jsonp = moduleFederationLibraryType === 'jsonp';
+
+    const containerLibrary = {
+      type: moduleFederationLibraryType,
+      name: jsonp ? entryCallbackName : containerName,
+    };
+
+    const containerModules = _.mapValues(
+      this.pluginMetadata.exposedModules || {},
+      (moduleRequest, moduleName) => ({
+        import: moduleRequest,
+        name: `exposed-${moduleName}`,
+      }),
+    );
 
     // Assign a unique name for the webpack build
     compiler.options.output.uniqueName ??= containerName;
@@ -185,20 +231,24 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
     // Generate webpack federated module container assets
     new container.ModuleFederationPlugin({
       name: containerName,
-      library: {
-        type: this.moduleFederationLibraryType,
-        name: jsonp ? entryCallbackName : containerName,
-      },
+      library: containerLibrary,
       filename: this.entryScriptFilename,
-      exposes: _.mapValues(
-        this.pluginMetadata.exposedModules || {},
-        (moduleRequest, moduleName) => ({
-          import: moduleRequest,
-          name: `exposed-${moduleName}`,
-        }),
-      ),
+      exposes: containerModules,
       shared: this.sharedModules,
+      shareScope: moduleFederationSharedScope,
     }).apply(compiler);
+
+    // ModuleFederationPlugin does not generate a container entry when the provided
+    // exposes option is empty; we fix that by invoking the ContainerPlugin manually
+    if (_.isEmpty(containerModules)) {
+      new container.ContainerPlugin({
+        name: containerName,
+        library: containerLibrary,
+        filename: this.entryScriptFilename,
+        exposes: containerModules,
+        shareScope: moduleFederationSharedScope,
+      }).apply(compiler);
+    }
 
     // Generate plugin manifest
     new GenerateManifestPlugin(containerName, this.pluginManifestFilename, {
@@ -209,8 +259,8 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
       registrationMethod: jsonp ? 'callback' : 'custom',
     }).apply(compiler);
 
+    // Post-process container entry generated by ModuleFederationPlugin
     if (jsonp) {
-      // Post-process container entry generated by webpack ModuleFederationPlugin
       new PatchEntryCallbackPlugin(containerName, entryCallbackName, entryCallbackPluginID).apply(
         compiler,
       );
