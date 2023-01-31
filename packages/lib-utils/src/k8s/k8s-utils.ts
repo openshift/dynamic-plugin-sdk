@@ -15,14 +15,36 @@ import type {
 import type { WebSocketOptions } from '../web-socket/types';
 import { WebSocketFactory } from '../web-socket/WebSocketFactory';
 
+const ACTIVE_WORKSPACE_KEY = 'sdk/active-workspace';
+
+/**
+ * @returns the activeWorkspace as a string or null
+ */
+export function getActiveWorkspace() {
+  return localStorage.getItem(ACTIVE_WORKSPACE_KEY);
+}
+
+/**
+ * @param workspace - the string name of the workspace you wish to set as active
+ */
+export function setActiveWorkspace(workspace: string) {
+  localStorage.setItem(ACTIVE_WORKSPACE_KEY, workspace);
+}
+
 const getQueryString = (queryParams: QueryParams) =>
   Object.entries(queryParams)
     .map(([key, value = '']) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
     .join('&');
 
 const getK8sAPIPath = ({ apiGroup = 'core', apiVersion }: K8sModelCommon) => {
+  let path = '';
+  const activeWorkspace = getActiveWorkspace();
+  if (activeWorkspace) {
+    path += `/workspaces/${activeWorkspace}`;
+  }
   const isLegacy = apiGroup === 'core' && apiVersion === 'v1';
-  return isLegacy ? `/api/${apiVersion}` : `/apis/${apiGroup}/${apiVersion}`;
+  path += isLegacy ? `/api/${apiVersion}` : `/apis/${apiGroup}/${apiVersion}`;
+  return path;
 };
 
 /**
@@ -43,10 +65,16 @@ export const getK8sResourceURL = (
   const { ns, name, path, queryParams } = queryOptions;
   let resourcePath = getK8sAPIPath(model);
 
+  const activeWorkspace = getActiveWorkspace();
+  if (activeWorkspace) {
+    resourcePath += `/${activeWorkspace}`;
+  }
   if (resource?.metadata?.namespace) {
-    resourcePath += `/namespaces/${resource.metadata.namespace}`;
+    resourcePath += activeWorkspace
+      ? `/namespaces/${activeWorkspace}/${resource.metadata.namespace}`
+      : `/namespaces/${resource.metadata.namespace}`;
   } else if (ns) {
-    resourcePath += `/namespaces/${ns}`;
+    resourcePath += activeWorkspace ? `/namespaces/${activeWorkspace}/${ns}` : `/namespaces/${ns}`;
   }
 
   if (resource?.metadata?.namespace && ns && resource.metadata.namespace !== ns) {

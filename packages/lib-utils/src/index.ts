@@ -10,6 +10,7 @@
 
 // Kubernetes utilities
 export { default as AppInitSDK, AppInitSDKProps } from './app/AppInitSDK';
+export { useWorkspace } from './hooks/useWorkspace';
 export { UtilsConfig, isUtilsConfigSet, setUtilsConfig, getUtilsConfig } from './config';
 export { commonFetch, commonFetchText, commonFetchJSON } from './utils/common-fetch';
 export {
@@ -28,7 +29,7 @@ export {
   K8sResourceListOptions,
   K8sResourceListResult,
 } from './k8s/k8s-resource';
-export { getK8sResourceURL } from './k8s/k8s-utils';
+export { getK8sResourceURL, getActiveWorkspace, setActiveWorkspace } from './k8s/k8s-utils';
 export { createAPIActions, initAPIDiscovery } from './app/api-discovery';
 export { InitAPIDiscovery, DiscoveryResources, APIActions } from './types/api-discovery';
 export {
