@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import type { AnyObject } from '@monorepo/common';
 import { consoleLogger } from '@monorepo/common';
 import * as _ from 'lodash-es';
+import { version as sdkVersion } from '../../package.json';
 import type { Extension, LoadedExtension } from '../types/extension';
 import type {
   PluginRuntimeMetadata,
@@ -53,6 +54,8 @@ export class PluginStore implements PluginStoreInterface {
 
   /** Feature flags used to determine the availability of extensions. */
   private featureFlags: FeatureFlags = {};
+
+  readonly sdkVersion = sdkVersion;
 
   constructor(options: PluginStoreOptions = {}) {
     this.options = {

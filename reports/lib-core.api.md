@@ -213,6 +213,8 @@ export class PluginStore implements PluginStoreInterface {
     // (undocumented)
     loadPlugin(baseURL: string, manifestNameOrObject?: string | PluginManifest): Promise<void>;
     // (undocumented)
+    readonly sdkVersion: string;
+    // (undocumented)
     setFeatureFlags(newFlags: FeatureFlags): void;
     setLoader(loader: PluginLoader): VoidFunction;
     // (undocumented)
@@ -221,6 +223,7 @@ export class PluginStore implements PluginStoreInterface {
 
 // @public (undocumented)
 export type PluginStoreInterface = {
+    readonly sdkVersion: string;
     subscribe: (eventTypes: PluginEventType[], listener: VoidFunction) => VoidFunction;
     getExtensions: () => LoadedExtension[];
     getPluginInfo: () => PluginInfoEntry[];

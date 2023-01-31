@@ -2,6 +2,7 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import commonjs from '@rollup/plugin-commonjs';
+import json from '@rollup/plugin-json';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
 import jsonc from 'jsonc-parser';
@@ -83,6 +84,10 @@ export const tsLibConfig = (pkg, inputFile, format = 'esm') => {
     plugins: [
       nodeResolve(),
       commonjs(),
+      json({
+        compact: true,
+        preferConst: true,
+      }),
       css({
         output: 'dist/index.css',
       }),
