@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react-hooks/native';
-// import { act } from 'react-dom/test-utils';
-import { useWorkspace } from './useWorkspace';
 import TestRenderer from 'react-test-renderer';
+import { useWorkspace } from './useWorkspace';
+
 const { act } = TestRenderer;
 
 jest.mock('react-redux', () => ({
@@ -23,9 +23,10 @@ describe('useWorkspace', () => {
 
   test('unset workspace should return null', () => {
     const { result } = renderHook(() => useWorkspace());
-    const [data, _] = result.current;
+    const [data, setter] = result.current;
 
     expect(data).toBeNull();
+    expect(setter).toBeDefined();
   });
 
   test('set workspace should return the activeWorkspace', () => {

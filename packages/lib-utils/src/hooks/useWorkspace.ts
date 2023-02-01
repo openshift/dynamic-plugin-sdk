@@ -1,6 +1,6 @@
+import { consoleLogger } from '@openshift/dynamic-plugin-sdk';
 import { useState } from 'react';
 import { getActiveWorkspace, setActiveWorkspace } from '../k8s/k8s-utils';
-import { consoleLogger } from '@monorepo/common';
 
 /**
  * Hook that retrieves the active workspace from localStorage. The key for the active workspace is
@@ -28,23 +28,22 @@ export const useWorkspace = () => {
 
     try {
       // get the activeWorkspace under that key if set, otherwise return null.
-      const workspace = getActiveWorkspace();
-      return workspace ? workspace : null;
+      return getActiveWorkspace();
     } catch (error) {
-      consoleLogger.error('Failed to get activeWorkspace due to: ' + error);
+      consoleLogger.error(`Failed to get activeWorkspace due to: ${error}`);
       return null;
     }
   });
 
-  const setActive = (workspace: string) => {
+  const setActive = (ws: string) => {
     try {
-      setWorkspace(workspace);
+      setWorkspace(ws);
       // Save to local storage using helper tools
       if (typeof window !== 'undefined') {
-        setActiveWorkspace(workspace);
+        setActiveWorkspace(ws);
       }
     } catch (error) {
-      consoleLogger.error('Failed to set activeWorkspace due to: ' + error);
+      consoleLogger.error(`Failed to get activeWorkspace due to: ${error}`);
     }
   };
 
