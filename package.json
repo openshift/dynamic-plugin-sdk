@@ -52,10 +52,10 @@
     "@types/node": "^16.11.12",
     "@types/pluralize": "^0.0.29",
     "@types/react": "^17.0.43",
-    "@types/react-test-renderer": "^18.0.0",
     "@types/react-dom": "^17.0.14",
     "@types/react-router": "^5.1.17",
     "@types/react-router-dom": "^5.3.3",
+    "@types/react-test-renderer": "^18.0.0",
     "@types/react-virtualized": "^9.21.21",
     "@types/semver": "^7.3.10",
     "@types/uuid": "^8.3.4",
@@ -104,7 +104,6 @@
     "tslib": "^2.3.1",
     "type-fest": "^2.18.0",
     "typescript": "~4.4.4",
-    "webpack": "^5.75.0",
-    "uuid": "^8.3.2"
+    "webpack": "^5.75.0"
   }
 }
