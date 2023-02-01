@@ -13,6 +13,14 @@ export const pluginBuildMetadataSchema = pluginRuntimeMetadataSchema.shape({
 });
 
 /**
+ * Schema for `PluginModuleFederationSettings` objects.
+ */
+const pluginModuleFederationSettingsSchema = yup.object().required().shape({
+  libraryType: yup.string(),
+  sharedScope: yup.string(),
+});
+
+/**
  * Schema for `PluginEntryCallbackSettings` objects.
  */
 const pluginEntryCallbackSettingsSchema = yup.object().required().shape({
@@ -27,7 +35,7 @@ export const dynamicRemotePluginAdaptedOptionsSchema = yup.object().required().s
   pluginMetadata: pluginBuildMetadataSchema,
   extensions: extensionArraySchema,
   sharedModules: yup.object().required(),
-  moduleFederationLibraryType: yup.string().required(),
+  moduleFederationSettings: pluginModuleFederationSettingsSchema,
   entryCallbackSettings: pluginEntryCallbackSettingsSchema,
   entryScriptFilename: yup.string().required(),
   pluginManifestFilename: yup.string().required(),

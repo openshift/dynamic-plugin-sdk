@@ -24,6 +24,7 @@ export {
 export {
   DynamicRemotePlugin,
   DynamicRemotePluginOptions,
+  PluginModuleFederationSettings,
   PluginEntryCallbackSettings,
 } from './webpack/DynamicRemotePlugin';
 

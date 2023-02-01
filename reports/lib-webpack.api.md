@@ -25,7 +25,7 @@ export type DynamicRemotePluginOptions = Partial<{
     pluginMetadata: string | PluginBuildMetadata;
     extensions: string | EncodedExtension[];
     sharedModules: WebpackSharedObject;
-    moduleFederationLibraryType: string;
+    moduleFederationSettings: PluginModuleFederationSettings;
     entryCallbackSettings: PluginEntryCallbackSettings;
     entryScriptFilename: string;
     pluginManifestFilename: string;
@@ -74,6 +74,12 @@ export type PluginBuildMetadata = PluginRuntimeMetadata & {
 export type PluginEntryCallbackSettings = Partial<{
     name: string;
     pluginID: string;
+}>;
+
+// @public
+export type PluginModuleFederationSettings = Partial<{
+    libraryType: string;
+    sharedScope: string;
 }>;
 
 // @public (undocumented)
