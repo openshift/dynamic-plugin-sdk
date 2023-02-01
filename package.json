@@ -30,6 +30,7 @@
     "@patternfly/react-table": "^4.71.16",
     "@patternfly/react-virtualized-extension": "^4.53.2",
     "@rollup/plugin-commonjs": "^21.0.2",
+    "@rollup/plugin-json": "^5.0.2",
     "@rollup/plugin-node-resolve": "^13.1.1",
     "@rollup/plugin-typescript": "^8.3.0",
     "@storybook/addon-actions": "^6.5.9",

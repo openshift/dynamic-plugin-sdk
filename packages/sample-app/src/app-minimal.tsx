@@ -30,6 +30,9 @@ initSharedScope().then(() => {
   pluginStore.setLoader(pluginLoader);
   pluginStore.setFeatureFlags({ TELEMETRY_FLAG: true });
 
+  // eslint-disable-next-line no-console
+  console.info(`Using plugin SDK version ${pluginStore.sdkVersion}`);
+
   render(
     <PluginStoreProvider store={pluginStore}>
       <ErrorBoundary>

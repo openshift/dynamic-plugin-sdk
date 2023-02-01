@@ -46,6 +46,11 @@ export type FeatureFlags = { [flagName: string]: boolean };
 
 export type PluginStoreInterface = {
   /**
+   * Version of the `@openshift/dynamic-plugin-sdk` package.
+   */
+  readonly sdkVersion: string;
+
+  /**
    * Subscribe to events emitted by the `PluginStore`.
    *
    * See {@link PluginEventType} for information on specific event types.
