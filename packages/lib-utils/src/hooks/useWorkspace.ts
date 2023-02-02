@@ -5,7 +5,7 @@ import { getActiveWorkspace, setActiveWorkspace } from '../k8s/k8s-utils';
 /**
  * Hook that retrieves the active workspace from localStorage. The key for the active workspace is
  * always `sdk/active-workspace`
- * @returns a default value and a setter for updating the active workspace
+ * @returns a value for the activeWorkspace (string | null ) and a setter for updating the active workspace
  *
  * @example
  * ```ts

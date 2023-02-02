@@ -21,7 +21,7 @@ describe('useWorkspace', () => {
     jest.clearAllMocks();
   });
 
-  test('unset workspace should return null', () => {
+  test('an unset workspace should return null', () => {
     const { result } = renderHook(() => useWorkspace());
     const [data, setter] = result.current;
 
@@ -29,7 +29,7 @@ describe('useWorkspace', () => {
     expect(setter).toBeDefined();
   });
 
-  test('set workspace should return the activeWorkspace', () => {
+  test('a set workspace should return the activeWorkspace', () => {
     localStorage.setItem(WORKSPACE_KEY, 'platform-experience');
     const { result } = renderHook(() => useWorkspace());
     const [data, setter] = result.current;
@@ -49,5 +49,18 @@ describe('useWorkspace', () => {
       setter('openshift');
     });
     expect(localStorage.getItem(WORKSPACE_KEY)).toBe('openshift');
+  });
+
+  test('clearing localStorage should return null', () => {
+    localStorage.setItem(WORKSPACE_KEY, 'platform-experience');
+    const { result } = renderHook(() => useWorkspace());
+    const [data, setter] = result.current;
+
+    expect(data).toBe('platform-experience');
+    expect(setter).toBeDefined();
+
+    localStorage.clear();
+
+    expect(localStorage.getItem(WORKSPACE_KEY)).toBeNull();
   });
 });
