@@ -65,16 +65,10 @@ export const getK8sResourceURL = (
   const { ns, name, path, queryParams } = queryOptions;
   let resourcePath = getK8sAPIPath(model);
 
-  const activeWorkspace = getActiveWorkspace();
-  if (activeWorkspace) {
-    resourcePath += `/${activeWorkspace}`;
-  }
   if (resource?.metadata?.namespace) {
-    resourcePath += activeWorkspace
-      ? `/namespaces/${activeWorkspace}/${resource.metadata.namespace}`
-      : `/namespaces/${resource.metadata.namespace}`;
+    resourcePath += `/namespaces/${resource.metadata.namespace}`;
   } else if (ns) {
-    resourcePath += activeWorkspace ? `/namespaces/${activeWorkspace}/${ns}` : `/namespaces/${ns}`;
+    resourcePath += `/namespaces/${ns}`;
   }
 
   if (resource?.metadata?.namespace && ns && resource.metadata.namespace !== ns) {

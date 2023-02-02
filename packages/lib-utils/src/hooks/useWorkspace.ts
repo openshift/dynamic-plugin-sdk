@@ -35,12 +35,12 @@ export const useWorkspace = () => {
     }
   });
 
-  const setActive = (ws: string) => {
+  const setActive = (newWorkspace: string) => {
     try {
-      setWorkspace(ws);
+      setWorkspace(newWorkspace);
       // Save to local storage using helper tools
       if (typeof window !== 'undefined') {
-        setActiveWorkspace(ws);
+        setActiveWorkspace(newWorkspace);
       }
     } catch (error) {
       consoleLogger.error(`Failed to get activeWorkspace due to: ${error}`);
