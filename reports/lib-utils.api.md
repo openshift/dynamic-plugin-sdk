@@ -719,7 +719,7 @@ export const useK8sWatchResources: <R extends ResourcesObject>(initResources: Wa
 }> | undefined) => WatchK8sResults<R>;
 
 // @public
-export const useWorkspace: () => readonly [string | null, (ws: string) => void];
+export const useWorkspace: () => readonly [string | null, (newWorkspace: string) => void];
 
 // @public (undocumented)
 export type UtilsConfig = {
