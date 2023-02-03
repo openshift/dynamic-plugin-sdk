@@ -230,6 +230,9 @@ export type FilterValue = Partial<{
 export type GenericHandler<T = unknown> = (data: T) => void;
 
 // @public (undocumented)
+export function getActiveWorkspace(): string | null;
+
+// @public (undocumented)
 export type GetGroupVersionKindForModel = (model: K8sModelCommon) => K8sResourceIdentifier;
 
 // @public
@@ -663,6 +666,9 @@ export type Selector = Partial<{
     [key: string]: unknown;
 }>;
 
+// @public (undocumented)
+export function setActiveWorkspace(workspace: string): void;
+
 // @public
 export const setUtilsConfig: (c: UtilsConfig) => void;
 
@@ -711,6 +717,9 @@ export const useK8sWatchResources: <R extends ResourcesObject>(initResources: Wa
     wsPrefix?: string | undefined;
     pathPrefix?: string | undefined;
 }> | undefined) => WatchK8sResults<R>;
+
+// @public
+export const useWorkspace: () => readonly [string | null, (newWorkspace: string) => void];
 
 // @public (undocumented)
 export type UtilsConfig = {
