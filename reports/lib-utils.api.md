@@ -4,9 +4,12 @@
 
 ```ts
 
+/// <reference types="react" />
+
 import type { ActionType as ActionType_2 } from 'typesafe-actions';
 import type { AnyAction } from 'redux';
 import type { AnyObject } from '@openshift/dynamic-plugin-sdk';
+import { Context } from 'react';
 import type { Dispatch } from 'redux';
 import { DropdownPosition } from '@patternfly/react-core';
 import type { EitherNotBoth } from '@openshift/dynamic-plugin-sdk';
@@ -667,7 +670,7 @@ export type Selector = Partial<{
 }>;
 
 // @public (undocumented)
-export function setActiveWorkspace(workspace: string): void;
+export function setActiveWorkspaceLocalStorage(workspace: string): void;
 
 // @public
 export const setUtilsConfig: (c: UtilsConfig) => void;
@@ -856,5 +859,22 @@ export type WithRouterProps = {
     navigate?: ReturnType<typeof useNavigate>;
     location?: ReturnType<typeof useLocation>;
 };
+
+// @public (undocumented)
+export const WorkspaceContext: Context<    {
+getState: () => WorkspaceContextState;
+setWorkspaceContext: (workspace: string | null) => void;
+subscribe: (event: UpdateEvents, onUpdate: () => void) => string;
+unsubscribe: (id: string, event: UpdateEvents) => void;
+update: (event: UpdateEvents, attributes: Partial<WorkspaceContextState>) => void;
+}>;
+
+// @public (undocumented)
+export const WorkspaceProvider: React_3.FC<React_3.PropsWithChildren<unknown>>;
+
+// Warnings were encountered during analysis:
+//
+// dist/types/utils/WorkspaceContext.d.ts:3:5 - (ae-forgotten-export) The symbol "WorkspaceContextState" needs to be exported by the entry point index.d.ts
+// dist/types/utils/WorkspaceContext.d.ts:5:5 - (ae-forgotten-export) The symbol "UpdateEvents" needs to be exported by the entry point index.d.ts
 
 ```

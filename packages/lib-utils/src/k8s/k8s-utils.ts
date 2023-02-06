@@ -27,7 +27,7 @@ export function getActiveWorkspace() {
 /**
  * @param workspace - the string name of the workspace you wish to set as active
  */
-export function setActiveWorkspace(workspace: string) {
+export function setActiveWorkspaceLocalStorage(workspace: string) {
   localStorage.setItem(ACTIVE_WORKSPACE_KEY, workspace);
 }
 
