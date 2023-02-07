@@ -2,7 +2,7 @@
 
 ## 2.0.1 - 2023-01-27
 
-- Call postProcessManifest regardless if manifest is provided as a custom object ([#190])
+- Call `postProcessManifest` regardless of plugin manifest origin ([#190])
 
 ## 2.0.0 - 2023-01-23
 

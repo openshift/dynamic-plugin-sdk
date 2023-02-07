@@ -8,16 +8,6 @@
 export type AnyObject = Record<string, unknown>;
 
 /**
- * The type `Function` doesn't provide enough type safety.
- *
- * Use the `AnyFunction` type for arbitrary functions whose signature is unknown.
- *
- * @see https://github.com/typescript-eslint/typescript-eslint/issues/1896
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyFunction = (...args: any) => any;
-
-/**
  * Replace existing direct properties of `T` with ones declared in `R`.
  */
 export type ReplaceProperties<T, R> = {

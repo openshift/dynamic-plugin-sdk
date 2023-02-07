@@ -8,18 +8,14 @@ const columnNames = {
   featureFlags: 'Feature flags',
 };
 
+const actionLabels = {
+  enable: 'Enable',
+  disable: 'Disable',
+};
+
 const FeatureFlagTable: React.FC = () => {
   const flagName = 'TELEMETRY_FLAG';
   const [flag, setFlag] = useFeatureFlag(flagName);
-
-  const [actionButtonLabel, setActionButtonLabel] = React.useState<string>(
-    flag ? 'Disable' : 'Enable',
-  );
-
-  const toggleFeatureFlag = () => {
-    setFlag(!flag);
-    setActionButtonLabel(!flag ? 'Disable' : 'Enable');
-  };
 
   return (
     <TableComposable variant="compact">
@@ -27,16 +23,15 @@ const FeatureFlagTable: React.FC = () => {
         <Tr>
           <Th>{columnNames.featureFlags}</Th>
           <Th>{columnNames.action}</Th>
-          <Td />
         </Tr>
       </Thead>
       <Tbody>
         <Tr>
           <Td dataLabel={columnNames.featureFlags}>{flagName}</Td>
-          <Td dataLabel={columnNames.action}>
+          <Td dataLabel={columnNames.action} modifier="fitContent">
             <TableText>
-              <Button variant="secondary" onClick={() => toggleFeatureFlag()}>
-                {actionButtonLabel}
+              <Button variant="secondary" onClick={() => setFlag(!flag)}>
+                {flag ? actionLabels.disable : actionLabels.enable}
               </Button>
             </TableText>
           </Td>

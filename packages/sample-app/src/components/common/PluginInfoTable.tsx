@@ -12,7 +12,17 @@ import {
   Tooltip,
 } from '@patternfly/react-core';
 import { ModuleIcon, InfoCircleIcon } from '@patternfly/react-icons';
-import { TableComposable, Thead, Tbody, Tr, Th, Td } from '@patternfly/react-table';
+import {
+  ActionsColumn,
+  TableComposable,
+  TableText,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+} from '@patternfly/react-table';
+import type { IAction } from '@patternfly/react-table';
 // eslint-disable-next-line camelcase
 import { global_info_color_100 } from '@patternfly/react-tokens';
 import * as React from 'react';
@@ -29,21 +39,22 @@ const columnTooltips = {
   enabled: 'Enabling a plugin puts all of its extensions into use. Disabling it does the opposite.',
 };
 
-const actionButtonLabels = {
+const actionLabels = {
   enable: 'Enable',
   disable: 'Disable',
+  logCustomProperties: 'Log custom properties',
 };
 
 type PluginEnabledStatusProps = {
-  infoEntry: LoadedPluginInfoEntry;
+  entry: LoadedPluginInfoEntry;
 };
 
-const PluginEnabledStatus: React.FC<PluginEnabledStatusProps> = ({ infoEntry }) => (
+const PluginEnabledStatus: React.FC<PluginEnabledStatusProps> = ({ entry }) => (
   <Flex direction={{ default: 'row' }} spaceItems={{ default: 'spaceItemsSm' }}>
-    <FlexItem>{infoEntry.enabled ? 'Yes' : 'No'}</FlexItem>
-    {!infoEntry.enabled && infoEntry.disableReason && (
+    <FlexItem>{entry.enabled ? 'Yes' : 'No'}</FlexItem>
+    {!entry.enabled && entry.disableReason && (
       <FlexItem>
-        <Tooltip content={infoEntry.disableReason}>
+        <Tooltip content={entry.disableReason}>
           <InfoCircleIcon color={global_info_color_100.var} />
         </Tooltip>
       </FlexItem>
@@ -55,6 +66,19 @@ const PluginInfoTable: React.FC = () => {
   const pluginStore = usePluginStore();
   const infoEntries = usePluginInfo().sort((a, b) => a.pluginName.localeCompare(b.pluginName));
 
+  const getDropdownActions = (entry: LoadedPluginInfoEntry): IAction[] => [
+    {
+      title: actionLabels.logCustomProperties,
+      onClick: () => {
+        // eslint-disable-next-line no-console
+        console.log(
+          `Custom properties of plugin ${entry.pluginName}`,
+          entry.metadata.customProperties,
+        );
+      },
+    },
+  ];
+
   return (
     <TableComposable variant="compact">
       <Thead>
@@ -63,14 +87,14 @@ const PluginInfoTable: React.FC = () => {
           <Th>{columnNames.status}</Th>
           <Th>{columnNames.version}</Th>
           <Th info={{ tooltip: columnTooltips.enabled }}>{columnNames.enabled}</Th>
-          <Th width={20}>{columnNames.actions}</Th>
+          <Th>{columnNames.actions}</Th>
           <Td />
         </Tr>
       </Thead>
       <Tbody>
         {infoEntries.length === 0 ? (
           <Tr>
-            <Td colSpan={Object.keys(columnNames).length}>
+            <Td colSpan={6}>
               <Bullseye>
                 <EmptyState>
                   <EmptyStateIcon icon={ModuleIcon} />
@@ -93,20 +117,27 @@ const PluginInfoTable: React.FC = () => {
                 {entry.status === 'loaded' ? entry.metadata.version : '-'}
               </Td>
               <Td dataLabel={columnNames.enabled}>
-                {entry.status === 'loaded' ? <PluginEnabledStatus infoEntry={entry} /> : '-'}
+                {entry.status === 'loaded' ? <PluginEnabledStatus entry={entry} /> : '-'}
               </Td>
-              <Td dataLabel={columnNames.actions}>
+              <Td dataLabel={columnNames.actions} modifier="fitContent">
                 {entry.status === 'loaded' ? (
-                  <Button
-                    variant="secondary"
-                    onClick={() =>
-                      entry.enabled
-                        ? pluginStore.disablePlugins([entry.pluginName], 'Disabled by user')
-                        : pluginStore.enablePlugins([entry.pluginName])
-                    }
-                  >
-                    {entry.enabled ? actionButtonLabels.disable : actionButtonLabels.enable}
-                  </Button>
+                  <TableText>
+                    <Button
+                      variant="secondary"
+                      onClick={() =>
+                        entry.enabled
+                          ? pluginStore.disablePlugins([entry.pluginName], 'Disabled by user')
+                          : pluginStore.enablePlugins([entry.pluginName])
+                      }
+                    >
+                      {entry.enabled ? actionLabels.disable : actionLabels.enable}
+                    </Button>
+                  </TableText>
+                ) : null}
+              </Td>
+              <Td isActionCell>
+                {entry.status === 'loaded' ? (
+                  <ActionsColumn items={getDropdownActions(entry)} />
                 ) : null}
               </Td>
             </Tr>

@@ -1,3 +1,4 @@
+import type { AnyObject } from '@monorepo/common';
 import type { Extension, LoadedExtension } from './extension';
 import type { PluginEntryModule } from './runtime';
 
@@ -7,6 +8,7 @@ export type PluginRuntimeMetadata = {
   name: string;
   version: string;
   dependencies?: Record<string, string>;
+  customProperties?: AnyObject;
 };
 
 export type PluginManifest = PluginRuntimeMetadata & {

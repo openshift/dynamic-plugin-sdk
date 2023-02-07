@@ -15,7 +15,6 @@ export type Extension<TType extends string = string, TProperties extends AnyObje
 export type LoadedExtension<TExtension extends Extension = Extension> = TExtension & {
   pluginName: string;
   uid: string;
-  [customProperty: string]: unknown;
 };
 
 export type ExtensionPredicate<TExtension extends Extension> = (e: Extension) => e is TExtension;

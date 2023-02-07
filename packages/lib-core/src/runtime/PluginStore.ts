@@ -155,8 +155,8 @@ export class PluginStore implements PluginStoreInterface {
 
     Array.from(this.loadedPlugins.entries()).forEach(([pluginName, plugin]) => {
       entries.push({
-        pluginName,
         status: 'loaded',
+        pluginName,
         metadata: plugin.metadata,
         enabled: plugin.enabled,
         disableReason: plugin.disableReason,
@@ -165,8 +165,8 @@ export class PluginStore implements PluginStoreInterface {
 
     Array.from(this.failedPlugins.entries()).forEach(([pluginName, plugin]) => {
       entries.push({
-        pluginName,
         status: 'failed',
+        pluginName,
         errorMessage: plugin.errorMessage,
         errorCause: plugin.errorCause,
       });
@@ -284,7 +284,12 @@ export class PluginStore implements PluginStoreInterface {
     const buildHash = manifest.buildHash ?? uuidv4();
     const reload = this.loadedPlugins.has(pluginName) || this.failedPlugins.has(pluginName);
 
-    const metadata: PluginRuntimeMetadata = _.pick(manifest, ['name', 'version', 'dependencies']);
+    const metadata: PluginRuntimeMetadata = _.pick(manifest, [
+      'name',
+      'version',
+      'dependencies',
+      'customProperties',
+    ]);
 
     const processedExtensions = this.processExtensions(
       pluginName,

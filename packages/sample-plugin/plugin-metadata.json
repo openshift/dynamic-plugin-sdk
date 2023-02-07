@@ -6,5 +6,8 @@
   },
   "exposedModules": {
     "telemetryListener": "./src/telemetry-listener"
+  },
+  "customProperties": {
+    "test": true
   }
 }

@@ -1,3 +1,5 @@
+// TODO(vojtech): suppress false positive https://github.com/jsx-eslint/eslint-plugin-react/pull/3326
+/* eslint-disable react/forbid-prop-types */
 import * as yup from 'yup';
 import type { PluginRegistrationMethod } from './types/plugin';
 
@@ -97,9 +99,8 @@ export const pluginRuntimeMetadataSchema = yup.object().required().shape({
   name: pluginNameSchema,
   version: semverStringSchema,
   // TODO(vojtech): Yup lacks native support for map-like structures with arbitrary keys
-  // TODO(vojtech): suppress false positive https://github.com/jsx-eslint/eslint-plugin-react/pull/3326
-  // eslint-disable-next-line react/forbid-prop-types
   dependencies: yup.object(),
+  customProperties: yup.object(),
 });
 
 /**
