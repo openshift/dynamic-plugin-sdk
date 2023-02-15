@@ -100,6 +100,8 @@ export const pluginRuntimeMetadataSchema = yup.object().required().shape({
   // TODO(vojtech): suppress false positive https://github.com/jsx-eslint/eslint-plugin-react/pull/3326
   // eslint-disable-next-line react/forbid-prop-types
   dependencies: yup.object(),
+  // eslint-disable-next-line react/forbid-prop-types
+  pluginData: yup.object(),
 });
 
 /**

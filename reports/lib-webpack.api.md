@@ -87,6 +87,7 @@ export type PluginRuntimeMetadata = {
     name: string;
     version: string;
     dependencies?: Record<string, string>;
+    pluginData?: Record<string, unknown>;
 };
 
 // @public
