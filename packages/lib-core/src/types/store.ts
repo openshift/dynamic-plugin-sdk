@@ -1,6 +1,6 @@
 import type { AnyObject } from '@monorepo/common';
 import type { LoadedExtension } from './extension';
-import type { LoadedPlugin, FailedPlugin, PluginManifest } from './plugin';
+import type { PluginManifest, LoadedPlugin, FailedPlugin } from './plugin';
 
 export enum PluginEventType {
   /**
@@ -31,13 +31,13 @@ export enum PluginEventType {
 }
 
 export type LoadedPluginInfoEntry = {
-  pluginName: string;
   status: 'loaded';
+  pluginName: string;
 } & Pick<LoadedPlugin, 'metadata' | 'enabled' | 'disableReason'>;
 
 export type FailedPluginInfoEntry = {
-  pluginName: string;
   status: 'failed';
+  pluginName: string;
 } & Pick<FailedPlugin, 'errorMessage' | 'errorCause'>;
 
 export type PluginInfoEntry = LoadedPluginInfoEntry | FailedPluginInfoEntry;

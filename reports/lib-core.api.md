@@ -70,8 +70,8 @@ export type FailedPlugin = {
 
 // @public (undocumented)
 export type FailedPluginInfoEntry = {
-    pluginName: string;
     status: 'failed';
+    pluginName: string;
 } & Pick<FailedPlugin, 'errorMessage' | 'errorCause'>;
 
 // @public (undocumented)
@@ -83,7 +83,6 @@ export type FeatureFlags = {
 export type LoadedExtension<TExtension extends Extension = Extension> = TExtension & {
     pluginName: string;
     uid: string;
-    [customProperty: string]: unknown;
 };
 
 // @public (undocumented)
@@ -97,8 +96,8 @@ export type LoadedPlugin = {
 
 // @public (undocumented)
 export type LoadedPluginInfoEntry = {
-    pluginName: string;
     status: 'loaded';
+    pluginName: string;
 } & Pick<LoadedPlugin, 'metadata' | 'enabled' | 'disableReason'>;
 
 // @public (undocumented)
@@ -190,6 +189,7 @@ export type PluginRuntimeMetadata = {
     name: string;
     version: string;
     dependencies?: Record<string, string>;
+    customProperties?: AnyObject;
 };
 
 // @public

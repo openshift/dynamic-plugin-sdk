@@ -4,12 +4,16 @@ import { isModelFeatureFlag, isTelemetryListener } from '@openshift/dynamic-plug
 import {
   Card,
   CardBody,
-  CardTitle,
   Flex,
   FlexItem,
   Gallery,
   GalleryItem,
+  Tooltip,
 } from '@patternfly/react-core';
+import { InfoCircleIcon } from '@patternfly/react-icons';
+// eslint-disable-next-line camelcase
+import { global_info_color_100 } from '@patternfly/react-tokens';
+import * as _ from 'lodash-es';
 import * as React from 'react';
 import FeatureFlagTable from '../common/FeatureFlagTable';
 import PluginInfoTable from '../common/PluginInfoTable';
@@ -23,8 +27,16 @@ const ExtensionGallery: React.FC<ExtensionGalleryProps> = ({ extensions }) => (
     {extensions.map((e) => (
       <GalleryItem key={e.uid}>
         <Card isCompact>
-          <CardTitle>{e.type}</CardTitle>
-          <CardBody>{e.uid}</CardBody>
+          <CardBody>
+            <Flex direction={{ default: 'row' }} spaceItems={{ default: 'spaceItemsSm' }}>
+              <FlexItem>{e.type}</FlexItem>
+              <FlexItem>
+                <Tooltip content={_.truncate(e.uid)}>
+                  <InfoCircleIcon color={global_info_color_100.var} />
+                </Tooltip>
+              </FlexItem>
+            </Flex>
+          </CardBody>
         </Card>
       </GalleryItem>
     ))}
