@@ -860,7 +860,7 @@ export type WithRouterProps = {
     location?: ReturnType<typeof useLocation>;
 };
 
-// @public (undocumented)
+// @public
 export const WorkspaceContext: Context<    {
 getState: () => WorkspaceContextState;
 setWorkspaceContext: (workspace: string | null) => void;
@@ -869,12 +869,12 @@ unsubscribe: (id: string, event: UpdateEvents) => void;
 update: (event: UpdateEvents, attributes: Partial<WorkspaceContextState>) => void;
 }>;
 
-// @public (undocumented)
+// @public
 export const WorkspaceProvider: React_3.FC<React_3.PropsWithChildren<unknown>>;
 
 // Warnings were encountered during analysis:
 //
-// dist/types/utils/WorkspaceContext.d.ts:3:5 - (ae-forgotten-export) The symbol "WorkspaceContextState" needs to be exported by the entry point index.d.ts
-// dist/types/utils/WorkspaceContext.d.ts:5:5 - (ae-forgotten-export) The symbol "UpdateEvents" needs to be exported by the entry point index.d.ts
+// dist/types/utils/WorkspaceContext.d.ts:13:5 - (ae-forgotten-export) The symbol "WorkspaceContextState" needs to be exported by the entry point index.d.ts
+// dist/types/utils/WorkspaceContext.d.ts:15:5 - (ae-forgotten-export) The symbol "UpdateEvents" needs to be exported by the entry point index.d.ts
 
 ```
