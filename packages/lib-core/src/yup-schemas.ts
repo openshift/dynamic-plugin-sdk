@@ -107,6 +107,7 @@ export const pluginRuntimeMetadataSchema = yup.object().required().shape({
  * Schema for `PluginManifest` objects.
  */
 export const pluginManifestSchema = pluginRuntimeMetadataSchema.shape({
+  baseURL: yup.string().required(),
   extensions: extensionArraySchema,
   loadScripts: yup.array().of(yup.string().required()).required(),
   registrationMethod: pluginRegistrationMethodSchema,

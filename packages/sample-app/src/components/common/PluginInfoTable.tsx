@@ -42,7 +42,7 @@ const columnTooltips = {
 const actionLabels = {
   enable: 'Enable',
   disable: 'Disable',
-  logCustomProperties: 'Log custom properties',
+  logManifest: 'Log plugin manifest',
 };
 
 type PluginEnabledStatusProps = {
@@ -68,14 +68,9 @@ const PluginInfoTable: React.FC = () => {
 
   const getDropdownActions = (entry: LoadedPluginInfoEntry): IAction[] => [
     {
-      title: actionLabels.logCustomProperties,
-      onClick: () => {
-        // eslint-disable-next-line no-console
-        console.log(
-          `Custom properties of plugin ${entry.pluginName}`,
-          entry.metadata.customProperties,
-        );
-      },
+      title: actionLabels.logManifest,
+      // eslint-disable-next-line no-console
+      onClick: () => console.log(entry.manifest),
     },
   ];
 
@@ -114,7 +109,7 @@ const PluginInfoTable: React.FC = () => {
               <Td dataLabel={columnNames.name}>{entry.pluginName}</Td>
               <Td dataLabel={columnNames.status}>{entry.status}</Td>
               <Td dataLabel={columnNames.version}>
-                {entry.status === 'loaded' ? entry.metadata.version : '-'}
+                {entry.status === 'loaded' ? entry.manifest.version : '-'}
               </Td>
               <Td dataLabel={columnNames.enabled}>
                 {entry.status === 'loaded' ? <PluginEnabledStatus entry={entry} /> : '-'}

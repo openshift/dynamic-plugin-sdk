@@ -5,6 +5,7 @@ import CSSMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import type { Configuration, WebpackPluginInstance } from 'webpack';
 import { EnvironmentPlugin } from 'webpack';
 import extensions from './plugin-extensions';
+import pluginMetadata from './plugin-metadata';
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -34,6 +35,7 @@ const plugins: WebpackPluginInstance[] = [
     NODE_ENV: 'development',
   }),
   new DynamicRemotePlugin({
+    pluginMetadata,
     extensions,
     sharedModules: pluginSharedModules,
     entryScriptFilename: isProd ? 'plugin-entry.[fullhash].min.js' : 'plugin-entry.js',
