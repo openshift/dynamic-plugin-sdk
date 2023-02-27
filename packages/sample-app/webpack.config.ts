@@ -7,8 +7,10 @@ import _ from 'lodash';
 import MiniCSSExtractPlugin from 'mini-css-extract-plugin';
 import type { Configuration, WebpackPluginInstance } from 'webpack';
 import { EnvironmentPlugin, container } from 'webpack';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 const isProd = process.env.NODE_ENV === 'production';
+const analyzeBundles = process.env.ANALYZE_BUNDLES === 'true';
 
 const pathTo = (relativePath: string) => path.resolve(__dirname, relativePath);
 
@@ -169,6 +171,16 @@ if (isProd) {
     new MiniCSSExtractPlugin({
       filename: '[name].[contenthash].css',
       chunkFilename: '[id].[chunkhash].css',
+    }),
+  );
+}
+
+if (analyzeBundles) {
+  plugins.push(
+    new BundleAnalyzerPlugin({
+      analyzerMode: 'static',
+      reportFilename: pathTo('dist/bundle-report.html'),
+      openAnalyzer: false,
     }),
   );
 }
