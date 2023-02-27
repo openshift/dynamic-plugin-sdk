@@ -25,7 +25,7 @@
     "api-extractor": "yarn run -T api-extractor -c $INIT_CWD/api-extractor.json"
   },
   "peerDependencies": {
-    "react": "^17.0.2"
+    "react": "^17 || ^18"
   },
   "dependencies": {
     "lodash-es": "^4.17.21",
