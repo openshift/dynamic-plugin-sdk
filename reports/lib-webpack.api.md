@@ -15,21 +15,21 @@ export type CodeRef<TValue = unknown> = () => Promise<TValue>;
 
 // @public (undocumented)
 export class DynamicRemotePlugin implements WebpackPluginInstance {
-    constructor(options?: DynamicRemotePluginOptions);
+    constructor(options: DynamicRemotePluginOptions);
     // (undocumented)
     apply(compiler: Compiler): void;
 }
 
 // @public (undocumented)
-export type DynamicRemotePluginOptions = Partial<{
-    pluginMetadata: string | PluginBuildMetadata;
-    extensions: string | EncodedExtension[];
-    sharedModules: WebpackSharedObject;
-    moduleFederationSettings: PluginModuleFederationSettings;
-    entryCallbackSettings: PluginEntryCallbackSettings;
-    entryScriptFilename: string;
-    pluginManifestFilename: string;
-}>;
+export type DynamicRemotePluginOptions = {
+    pluginMetadata: PluginBuildMetadata;
+    extensions: EncodedExtension[];
+    sharedModules?: WebpackSharedObject;
+    moduleFederationSettings?: PluginModuleFederationSettings;
+    entryCallbackSettings?: PluginEntryCallbackSettings;
+    entryScriptFilename?: string;
+    pluginManifestFilename?: string;
+};
 
 // @public (undocumented)
 export type EncodedCodeRef = {

@@ -3,13 +3,8 @@ import type { AnyObject } from '@monorepo/common';
 import { consoleLogger } from '@monorepo/common';
 import * as _ from 'lodash-es';
 import { version as sdkVersion } from '../../package.json';
-import type { Extension, LoadedExtension } from '../types/extension';
-import type {
-  PluginManifest,
-  LoadedPluginManifest,
-  LoadedPlugin,
-  FailedPlugin,
-} from '../types/plugin';
+import type { LoadedExtension } from '../types/extension';
+import type { PluginManifest, LoadedPlugin, FailedPlugin } from '../types/plugin';
 import type { PluginEntryModule } from '../types/runtime';
 import type { PluginInfoEntry, PluginStoreInterface, FeatureFlags } from '../types/store';
 import { PluginEventType } from '../types/store';
@@ -23,13 +18,6 @@ export type PluginStoreOptions = Partial<{
    * Default value: `true`.
    */
   autoEnableLoadedPlugins: boolean;
-
-  /**
-   * Post-process the plugin's extension objects.
-   *
-   * By default, no post-processing is performed on the extension objects.
-   */
-  postProcessExtensions: (extensions: LoadedExtension[]) => LoadedExtension[];
 }>;
 
 /**
@@ -60,7 +48,6 @@ export class PluginStore implements PluginStoreInterface {
   constructor(options: PluginStoreOptions = {}) {
     this.options = {
       autoEnableLoadedPlugins: options.autoEnableLoadedPlugins ?? true,
-      postProcessExtensions: options.postProcessExtensions ?? _.identity,
     };
 
     Object.values(PluginEventType).forEach((t) => {
@@ -253,7 +240,7 @@ export class PluginStore implements PluginStoreInterface {
     });
   }
 
-  private isExtensionInUse(extension: Extension) {
+  private isExtensionInUse(extension: LoadedExtension) {
     return (
       (extension.flags?.required?.every((f) => this.featureFlags[f] === true) ?? true) &&
       (extension.flags?.disallowed?.every((f) => this.featureFlags[f] === false) ?? true)
@@ -265,7 +252,7 @@ export class PluginStore implements PluginStoreInterface {
 
     this.extensions = Array.from(this.loadedPlugins.values()).reduce<LoadedExtension[]>(
       (acc, p) =>
-        p.enabled ? [...acc, ...p.extensions.filter((e) => this.isExtensionInUse(e))] : acc,
+        p.enabled ? [...acc, ...p.loadedExtensions.filter((e) => this.isExtensionInUse(e))] : acc,
       [],
     );
 
@@ -281,30 +268,24 @@ export class PluginStore implements PluginStoreInterface {
    */
   private addPlugin(manifest: PluginManifest, entryModule: PluginEntryModule) {
     const pluginName = manifest.name;
+    const buildHash = manifest.buildHash ?? uuidv4();
     const reload = this.loadedPlugins.has(pluginName) || this.failedPlugins.has(pluginName);
 
-    const processedManifest: LoadedPluginManifest = {
-      name: manifest.name,
-      version: manifest.version,
-      dependencies: manifest.dependencies ?? {},
-      customProperties: manifest.customProperties ?? {},
-      baseURL: manifest.baseURL,
-      loadScripts: manifest.loadScripts,
-      registrationMethod: manifest.registrationMethod,
-      buildHash: manifest.buildHash ?? uuidv4(),
-    };
-
-    const processedExtensions = this.processExtensions(
-      pluginName,
-      processedManifest.buildHash,
-      manifest.extensions,
-      entryModule,
+    const loadedExtensions = _.cloneDeep(manifest.extensions).map<LoadedExtension>((e, index) =>
+      decodeCodeRefs(
+        {
+          ...e,
+          pluginName,
+          uid: `${pluginName}[${index}]_${buildHash}`,
+        },
+        entryModule,
+      ),
     );
 
     this.loadedPlugins.set(pluginName, {
       // TODO(vojtech): use deepFreeze on the manifest
-      manifest: Object.freeze(processedManifest),
-      extensions: processedExtensions.map((e) => Object.freeze(e)),
+      manifest: Object.freeze(manifest),
+      loadedExtensions: loadedExtensions.map((e) => Object.freeze(e)),
       entryModule,
       enabled: false,
     });
@@ -331,29 +312,6 @@ export class PluginStore implements PluginStoreInterface {
     }
 
     consoleLogger.error(`Plugin ${pluginName} has failed to ${reload ? 'reload' : 'load'}`);
-  }
-
-  /**
-   * Process extension objects as received from the plugin manifest.
-   */
-  private processExtensions(
-    pluginName: string,
-    buildHash: string,
-    extensions: Extension[],
-    entryModule: PluginEntryModule,
-  ) {
-    return this.options.postProcessExtensions(
-      extensions.map<LoadedExtension>((e, index) =>
-        decodeCodeRefs(
-          {
-            ...e,
-            pluginName,
-            uid: `${pluginName}[${index}]_${buildHash}`,
-          },
-          entryModule,
-        ),
-      ),
-    );
   }
 
   async getExposedModule<TModule extends AnyObject>(pluginName: string, moduleName: string) {

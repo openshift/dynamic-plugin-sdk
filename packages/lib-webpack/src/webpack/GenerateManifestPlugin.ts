@@ -2,11 +2,13 @@ import type { PluginManifest } from '@openshift/dynamic-plugin-sdk/src/shared-we
 import { WebpackPluginInstance, Compiler, Compilation, sources, WebpackError } from 'webpack';
 import { findPluginChunks } from '../utils/plugin-chunks';
 
+type InputManifestData = Omit<PluginManifest, 'baseURL' | 'loadScripts' | 'buildHash'>;
+
 export class GenerateManifestPlugin implements WebpackPluginInstance {
   constructor(
     private readonly containerName: string,
     private readonly manifestFilename: string,
-    private readonly manifestData: Omit<PluginManifest, 'baseURL' | 'loadScripts' | 'buildHash'>,
+    private readonly manifestData: InputManifestData,
   ) {}
 
   apply(compiler: Compiler) {
