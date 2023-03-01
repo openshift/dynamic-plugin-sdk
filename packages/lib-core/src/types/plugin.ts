@@ -19,11 +19,9 @@ export type PluginManifest = PluginRuntimeMetadata & {
   buildHash?: string;
 };
 
-export type LoadedPluginManifest = Omit<Required<PluginManifest>, 'extensions'>;
-
 export type LoadedPlugin = {
-  manifest: Readonly<LoadedPluginManifest>;
-  extensions: Readonly<LoadedExtension[]>;
+  manifest: Readonly<PluginManifest>;
+  loadedExtensions: Readonly<LoadedExtension[]>;
   entryModule: PluginEntryModule;
   enabled: boolean;
   disableReason?: string;

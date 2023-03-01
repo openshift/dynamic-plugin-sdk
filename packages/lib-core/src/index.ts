@@ -64,7 +64,6 @@ export {
   PluginRegistrationMethod,
   PluginRuntimeMetadata,
   PluginManifest,
-  LoadedPluginManifest,
   LoadedPlugin,
   FailedPlugin,
 } from './types/plugin';
