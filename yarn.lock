@@ -2798,7 +2798,7 @@ __metadata:
   resolution: "@openshift/dynamic-plugin-sdk-extensions@portal:../lib-extensions::locator=%40monorepo%2Fsample-app%40workspace%3Apackages%2Fsample-app"
   peerDependencies:
     "@openshift/dynamic-plugin-sdk": ^2.0.0
-    react: ^17.0.2
+    react: ^17 || ^18
     react-redux: ^7.2.2
     react-router: ^5.2.1
     redux: ^4.1.2
@@ -2817,7 +2817,7 @@ __metadata:
   resolution: "@openshift/dynamic-plugin-sdk-extensions@portal:../lib-extensions::locator=%40monorepo%2Fsample-plugin%40workspace%3Apackages%2Fsample-plugin"
   peerDependencies:
     "@openshift/dynamic-plugin-sdk": ^2.0.0
-    react: ^17.0.2
+    react: ^17 || ^18
     react-redux: ^7.2.2
     react-router: ^5.2.1
     redux: ^4.1.2
@@ -2836,7 +2836,7 @@ __metadata:
   resolution: "@openshift/dynamic-plugin-sdk-extensions@workspace:packages/lib-extensions"
   peerDependencies:
     "@openshift/dynamic-plugin-sdk": ^2.0.0
-    react: ^17.0.2
+    react: ^17 || ^18
     react-redux: ^7.2.2
     react-router: ^5.2.1
     redux: ^4.1.2
@@ -2867,7 +2867,7 @@ __metadata:
     "@patternfly/react-styles": ^4.52.16
     "@patternfly/react-table": ^4.71.16
     "@patternfly/react-virtualized-extension": ^4.53.2
-    react: ^17.0.2
+    react: ^17 || ^18
     react-redux: ^7.2.2
     react-router: ^5.2.1
     react-router-dom: ^6.3.0
@@ -2922,7 +2922,7 @@ __metadata:
     uuid: ^8.3.2
     yup: ^0.32.11
   peerDependencies:
-    react: ^17.0.2
+    react: ^17 || ^18
   languageName: node
   linkType: soft
 
@@ -2935,7 +2935,7 @@ __metadata:
     uuid: ^8.3.2
     yup: ^0.32.11
   peerDependencies:
-    react: ^17.0.2
+    react: ^17 || ^18
   languageName: node
   linkType: soft
 
@@ -2948,7 +2948,7 @@ __metadata:
     uuid: ^8.3.2
     yup: ^0.32.11
   peerDependencies:
-    react: ^17.0.2
+    react: ^17 || ^18
   languageName: unknown
   linkType: soft
 
