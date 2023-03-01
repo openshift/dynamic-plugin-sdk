@@ -1,6 +1,6 @@
 {
   "name": "@openshift/dynamic-plugin-sdk-extensions",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Provides extension types for dynamic plugins",
   "license": "Apache-2.0",
   "repository": {
@@ -24,7 +24,7 @@
     "api-extractor": "yarn run -T api-extractor -c $INIT_CWD/api-extractor.json"
   },
   "peerDependencies": {
-    "@openshift/dynamic-plugin-sdk": "^2.0.0",
+    "@openshift/dynamic-plugin-sdk": "^3.0.0",
     "react": "^17 || ^18",
     "react-redux": "^7.2.2",
     "react-router": "^5.2.1",
