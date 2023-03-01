@@ -6,10 +6,18 @@ export class GenerateManifestPlugin implements WebpackPluginInstance {
   constructor(
     private readonly containerName: string,
     private readonly manifestFilename: string,
-    private readonly manifestData: Omit<PluginManifest, 'loadScripts' | 'buildHash'>,
+    private readonly manifestData: Omit<PluginManifest, 'baseURL' | 'loadScripts' | 'buildHash'>,
   ) {}
 
   apply(compiler: Compiler) {
+    const publicPath = compiler.options.output.publicPath;
+
+    if (!publicPath) {
+      throw new Error(
+        'output.publicPath option must be set to ensure plugin assets are loaded properly in the browser',
+      );
+    }
+
     compiler.hooks.thisCompilation.tap(GenerateManifestPlugin.name, (compilation) => {
       compilation.hooks.processAssets.tap(
         {
@@ -25,6 +33,7 @@ export class GenerateManifestPlugin implements WebpackPluginInstance {
 
           const manifest: PluginManifest = {
             ...this.manifestData,
+            baseURL: compilation.getAssetPath(publicPath, {}),
             loadScripts,
             buildHash: compilation.fullHash,
           };
@@ -34,11 +43,21 @@ export class GenerateManifestPlugin implements WebpackPluginInstance {
             new sources.RawSource(Buffer.from(JSON.stringify(manifest, null, 2))),
           );
 
+          const warnings: string[] = [];
+
           if (manifest.extensions.length === 0) {
-            const error = new WebpackError('Plugin manifest has no extensions');
+            warnings.push('Plugin has no extensions');
+          }
+
+          if (!manifest.baseURL.endsWith('/')) {
+            warnings.push('Plugin base URL (output.publicPath) should have a trailing slash');
+          }
+
+          warnings.forEach((message) => {
+            const error = new WebpackError(message);
             error.file = this.manifestFilename;
             compilation.warnings.push(error);
-          }
+          });
         },
       );
     });

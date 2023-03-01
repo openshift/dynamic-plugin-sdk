@@ -33,7 +33,7 @@ export enum PluginEventType {
 export type LoadedPluginInfoEntry = {
   status: 'loaded';
   pluginName: string;
-} & Pick<LoadedPlugin, 'metadata' | 'enabled' | 'disableReason'>;
+} & Pick<LoadedPlugin, 'manifest' | 'enabled' | 'disableReason'>;
 
 export type FailedPluginInfoEntry = {
   status: 'failed';

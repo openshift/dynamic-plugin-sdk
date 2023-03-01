@@ -87,7 +87,7 @@ export type LoadedExtension<TExtension extends Extension = Extension> = TExtensi
 
 // @public (undocumented)
 export type LoadedPlugin = {
-    metadata: Readonly<PluginRuntimeMetadata>;
+    manifest: Readonly<LoadedPluginManifest>;
     extensions: Readonly<LoadedExtension[]>;
     entryModule: PluginEntryModule;
     enabled: boolean;
@@ -98,7 +98,10 @@ export type LoadedPlugin = {
 export type LoadedPluginInfoEntry = {
     status: 'loaded';
     pluginName: string;
-} & Pick<LoadedPlugin, 'metadata' | 'enabled' | 'disableReason'>;
+} & Pick<LoadedPlugin, 'manifest' | 'enabled' | 'disableReason'>;
+
+// @public (undocumented)
+export type LoadedPluginManifest = Omit<Required<PluginManifest>, 'extensions'>;
 
 // @public (undocumented)
 export type LogFunction = (message?: any, ...optionalParams: any[]) => void;
@@ -175,6 +178,7 @@ export type PluginLoadResult = {
 
 // @public (undocumented)
 export type PluginManifest = PluginRuntimeMetadata & {
+    baseURL: string;
     extensions: Extension[];
     loadScripts: string[];
     registrationMethod: PluginRegistrationMethod;

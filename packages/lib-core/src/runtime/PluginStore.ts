@@ -5,8 +5,8 @@ import * as _ from 'lodash-es';
 import { version as sdkVersion } from '../../package.json';
 import type { Extension, LoadedExtension } from '../types/extension';
 import type {
-  PluginRuntimeMetadata,
   PluginManifest,
+  LoadedPluginManifest,
   LoadedPlugin,
   FailedPlugin,
 } from '../types/plugin';
@@ -157,7 +157,7 @@ export class PluginStore implements PluginStoreInterface {
       entries.push({
         status: 'loaded',
         pluginName,
-        metadata: plugin.metadata,
+        manifest: plugin.manifest,
         enabled: plugin.enabled,
         disableReason: plugin.disableReason,
       });
@@ -281,25 +281,29 @@ export class PluginStore implements PluginStoreInterface {
    */
   private addPlugin(manifest: PluginManifest, entryModule: PluginEntryModule) {
     const pluginName = manifest.name;
-    const buildHash = manifest.buildHash ?? uuidv4();
     const reload = this.loadedPlugins.has(pluginName) || this.failedPlugins.has(pluginName);
 
-    const metadata: PluginRuntimeMetadata = _.pick(manifest, [
-      'name',
-      'version',
-      'dependencies',
-      'customProperties',
-    ]);
+    const processedManifest: LoadedPluginManifest = {
+      name: manifest.name,
+      version: manifest.version,
+      dependencies: manifest.dependencies ?? {},
+      customProperties: manifest.customProperties ?? {},
+      baseURL: manifest.baseURL,
+      loadScripts: manifest.loadScripts,
+      registrationMethod: manifest.registrationMethod,
+      buildHash: manifest.buildHash ?? uuidv4(),
+    };
 
     const processedExtensions = this.processExtensions(
       pluginName,
-      buildHash,
+      processedManifest.buildHash,
       manifest.extensions,
       entryModule,
     );
 
     this.loadedPlugins.set(pluginName, {
-      metadata: Object.freeze(metadata),
+      // TODO(vojtech): use deepFreeze on the manifest
+      manifest: Object.freeze(processedManifest),
       extensions: processedExtensions.map((e) => Object.freeze(e)),
       entryModule,
       enabled: false,

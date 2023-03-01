@@ -12,14 +12,17 @@ export type PluginRuntimeMetadata = {
 };
 
 export type PluginManifest = PluginRuntimeMetadata & {
+  baseURL: string;
   extensions: Extension[];
   loadScripts: string[];
   registrationMethod: PluginRegistrationMethod;
   buildHash?: string;
 };
 
+export type LoadedPluginManifest = Omit<Required<PluginManifest>, 'extensions'>;
+
 export type LoadedPlugin = {
-  metadata: Readonly<PluginRuntimeMetadata>;
+  manifest: Readonly<LoadedPluginManifest>;
   extensions: Readonly<LoadedExtension[]>;
   entryModule: PluginEntryModule;
   enabled: boolean;

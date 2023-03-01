@@ -196,12 +196,6 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
   }
 
   apply(compiler: Compiler) {
-    if (!compiler.options.output.publicPath) {
-      throw new Error(
-        'output.publicPath option must be set to ensure plugin assets are loaded properly in the browser',
-      );
-    }
-
     const containerName = this.pluginMetadata.name;
 
     const moduleFederationLibraryType = this.moduleFederationSettings.libraryType ?? 'jsonp';
