@@ -1,6 +1,6 @@
 import type { AnyObject } from '@monorepo/common';
 import type { LoadedExtension } from './extension';
-import type { PluginManifest, LoadedPlugin, FailedPlugin } from './plugin';
+import type { PluginManifest, PendingPlugin, LoadedPlugin, FailedPlugin } from './plugin';
 
 export enum PluginEventType {
   /**
@@ -13,7 +13,7 @@ export enum PluginEventType {
   /**
    * Triggers on changes which have an impact on current plugin information:
    * - plugin was successfully loaded, processed and added to the `PluginStore`
-   * - plugin failed to load, or there was an error while processing its extensions
+   * - plugin failed to load, or there was an error while processing the plugin
    * - plugin was enabled or disabled (*)
    *
    * (*) this may trigger event {@link PluginEventType.ExtensionsChanged}
@@ -30,17 +30,22 @@ export enum PluginEventType {
   FeatureFlagsChanged = 'FeatureFlagsChanged',
 }
 
+export type PendingPluginInfoEntry = {
+  status: 'pending';
+} & Pick<PendingPlugin, 'manifest'>;
+
 export type LoadedPluginInfoEntry = {
   status: 'loaded';
-  pluginName: string;
 } & Pick<LoadedPlugin, 'manifest' | 'enabled' | 'disableReason'>;
 
 export type FailedPluginInfoEntry = {
   status: 'failed';
-  pluginName: string;
-} & Pick<FailedPlugin, 'errorMessage' | 'errorCause'>;
+} & Pick<FailedPlugin, 'manifest' | 'errorMessage' | 'errorCause'>;
 
-export type PluginInfoEntry = LoadedPluginInfoEntry | FailedPluginInfoEntry;
+export type PluginInfoEntry =
+  | PendingPluginInfoEntry
+  | LoadedPluginInfoEntry
+  | FailedPluginInfoEntry;
 
 export type FeatureFlags = { [flagName: string]: boolean };
 
@@ -70,16 +75,23 @@ export type PluginStoreInterface = {
    * calls `useExtensions` or `useResolvedExtensions` and returns new extension object
    * instances.
    *
-   * Always returns a new array instance.
+   * This method always returns a new array instance.
    */
   getExtensions: () => LoadedExtension[];
 
   /**
    * Get current information about plugins.
    *
-   * Always returns a new array instance.
+   * This method always returns a new array instance.
    */
   getPluginInfo: () => PluginInfoEntry[];
+
+  /**
+   * Get current feature flags.
+   *
+   * This method always returns a new object.
+   */
+  getFeatureFlags: () => FeatureFlags;
 
   /**
    * Merge the entries of `newFlags` with current feature flags (non-boolean values
@@ -88,31 +100,29 @@ export type PluginStoreInterface = {
   setFeatureFlags: (newFlags: FeatureFlags) => void;
 
   /**
-   * Get current feature flags.
+   * Start loading a plugin from the given manifest.
    *
-   * Always returns a new object.
-   */
-  getFeatureFlags: () => FeatureFlags;
-
-  /**
-   * Load a plugin from the given URL.
+   * Plugin manifest can be provided directly as an object or referenced via URL.
    *
-   * Under normal circumstances, a plugin manifest file is generated as part of the
-   * plugin's build process and fetched by `PluginStore` at runtime over the network.
+   * Depending on the plugin's current load status, this method works as follows:
+   * - plugin is loading - do nothing
+   * - plugin has been loaded - reload only if `forceReload` is `true`
+   * - plugin has failed to load - always reload
    *
-   * By default, the plugin manifest will be fetched as `plugin-manifest.json` relative
-   * to the plugin's base URL. Passing a custom object overrides the default manifest
-   * fetch behavior.
+   * The resulting Promise resolves when the load operation is complete. If the plugin
+   * is still loading, this method returns the same Promise instance representing that
+   * plugin's load operation.
+   *
+   * Use `subscribe` method to respond to events emitted by the `PluginStore`.
    *
    * Be advised that any plugin modules which are already loaded by the host application
    * (e.g. directly via `getExposedModule` method or indirectly via `useResolvedExtensions`
    * hook) will _not_ be replaced upon reloading the associated plugin. This is due to how
-   * webpack loads federated modules. If some of the plugins have changed and you need to
-   * perform full reload of the plugin code, we recommend reloading the application page.
-   *
-   * Use `subscribe` method to respond to events emitted by the `PluginStore`.
+   * webpack handles federated modules. If a host application detects changes in the given
+   * plugin's deployment, users should reload the application to ensure all plugin modules
+   * in use are up to date.
    */
-  loadPlugin: (baseURL: string, manifestNameOrObject?: string | PluginManifest) => Promise<void>;
+  loadPlugin: (manifest: PluginManifest | string, forceReload?: boolean) => Promise<void>;
 
   /**
    * Enable the given plugin(s).

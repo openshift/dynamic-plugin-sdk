@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="./types.d.ts" />
 
-import { PluginLoader, PluginStore, PluginStoreProvider } from '@openshift/dynamic-plugin-sdk';
+import { PluginStore, PluginStoreProvider } from '@openshift/dynamic-plugin-sdk';
 import '@patternfly/react-core/dist/styles/base.css';
 import * as React from 'react';
 import { render } from 'react-dom';
@@ -19,15 +19,13 @@ render(<Loading />, appContainer);
 
 // eslint-disable-next-line promise/catch-or-return, promise/always-return
 initSharedScope().then(() => {
-  const pluginLoader = new PluginLoader({
-    sharedScope: getSharedScope(),
-    fixedPluginDependencyResolutions: { 'sample-app': '1.0.0' },
+  const pluginStore = new PluginStore({
+    loaderOptions: {
+      sharedScope: getSharedScope(),
+      fixedPluginDependencyResolutions: { 'sample-app': '1.0.0' },
+    },
   });
 
-  const pluginStore = new PluginStore();
-
-  pluginLoader.registerPluginEntryCallback();
-  pluginStore.setLoader(pluginLoader);
   pluginStore.setFeatureFlags({ TELEMETRY_FLAG: true });
 
   // eslint-disable-next-line no-console

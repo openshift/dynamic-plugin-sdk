@@ -1,7 +1,4 @@
-import {
-  DEFAULT_PLUGIN_MANIFEST,
-  DEFAULT_REMOTE_ENTRY_CALLBACK,
-} from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
+import { DEFAULT_REMOTE_ENTRY_CALLBACK } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
 import type { EncodedExtension } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
 import * as _ from 'lodash';
 import * as yup from 'yup';
@@ -54,7 +51,7 @@ export type PluginModuleFederationSettings = Partial<{
  */
 export type PluginEntryCallbackSettings = Partial<{
   /**
-   * Name of the function to call.
+   * Name of the callback function.
    *
    * Default value: `__load_plugin_entry__`.
    */
@@ -132,7 +129,7 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
       moduleFederationSettings: options.moduleFederationSettings ?? {},
       entryCallbackSettings: options.entryCallbackSettings ?? {},
       entryScriptFilename: options.entryScriptFilename ?? 'plugin-entry.js',
-      pluginManifestFilename: options.pluginManifestFilename ?? DEFAULT_PLUGIN_MANIFEST,
+      pluginManifestFilename: options.pluginManifestFilename ?? 'plugin-manifest.json',
     };
 
     try {

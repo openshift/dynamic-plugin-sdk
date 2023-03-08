@@ -64,6 +64,7 @@ export type ExtractExtensionProperties<T> = T extends Extension<any, infer TProp
 
 // @public (undocumented)
 export type FailedPlugin = {
+    manifest: Readonly<PluginManifest>;
     errorMessage: string;
     errorCause?: unknown;
 };
@@ -71,8 +72,7 @@ export type FailedPlugin = {
 // @public (undocumented)
 export type FailedPluginInfoEntry = {
     status: 'failed';
-    pluginName: string;
-} & Pick<FailedPlugin, 'errorMessage' | 'errorCause'>;
+} & Pick<FailedPlugin, 'manifest' | 'errorMessage' | 'errorCause'>;
 
 // @public (undocumented)
 export type FeatureFlags = {
@@ -97,7 +97,6 @@ export type LoadedPlugin = {
 // @public (undocumented)
 export type LoadedPluginInfoEntry = {
     status: 'loaded';
-    pluginName: string;
 } & Pick<LoadedPlugin, 'manifest' | 'enabled' | 'disableReason'>;
 
 // @public (undocumented)
@@ -121,6 +120,16 @@ export type Never<T> = {
     [K in keyof T]?: never;
 };
 
+// @public (undocumented)
+export type PendingPlugin = {
+    manifest: Readonly<PluginManifest>;
+};
+
+// @public (undocumented)
+export type PendingPluginInfoEntry = {
+    status: 'pending';
+} & Pick<PendingPlugin, 'manifest'>;
+
 // @public
 export type PluginEntryModule = {
     init: (sharedScope: AnyObject) => void | Promise<void>;
@@ -135,43 +144,22 @@ export enum PluginEventType {
 }
 
 // @public (undocumented)
-export type PluginInfoEntry = LoadedPluginInfoEntry | FailedPluginInfoEntry;
-
-// @public
-export class PluginLoader {
-    constructor(options?: PluginLoaderOptions);
-    loadPlugin(baseURL: string, manifestNameOrObject?: string | PluginManifest): Promise<void>;
-    registerPluginEntryCallback(): void;
-    subscribe(listener: PluginLoadListener): VoidFunction;
-}
+export type PluginInfoEntry = PendingPluginInfoEntry | LoadedPluginInfoEntry | FailedPluginInfoEntry;
 
 // @public (undocumented)
 export type PluginLoaderOptions = Partial<{
     canLoadPlugin: (manifest: PluginManifest, reload: boolean) => boolean;
     canReloadScript: (manifest: PluginManifest, scriptName: string) => boolean;
-    entryCallbackName: string;
+    entryCallbackSettings: Partial<{
+        autoRegisterCallback: boolean;
+        name: string;
+    }>;
     fetchImpl: ResourceFetch;
     fixedPluginDependencyResolutions: Record<string, string>;
     sharedScope: AnyObject;
     postProcessManifest: (manifest: PluginManifest) => PluginManifest;
     getPluginEntryModule: (manifest: PluginManifest) => PluginEntryModule | void;
 }>;
-
-// @public (undocumented)
-export type PluginLoadListener = (result: PluginLoadResult) => void;
-
-// @public (undocumented)
-export type PluginLoadResult = {
-    success: true;
-    pluginName: string;
-    manifest: PluginManifest;
-    entryModule: PluginEntryModule;
-} | {
-    success: false;
-    pluginName?: string;
-    errorMessage: string;
-    errorCause?: unknown;
-};
 
 // @public (undocumented)
 export type PluginManifest = PluginRuntimeMetadata & {
@@ -210,14 +198,12 @@ export class PluginStore implements PluginStoreInterface {
     };
     // (undocumented)
     getPluginInfo(): PluginInfoEntry[];
-    hasLoader(): boolean;
     // (undocumented)
-    loadPlugin(baseURL: string, manifestNameOrObject?: string | PluginManifest): Promise<void>;
+    loadPlugin(manifest: PluginManifest | string, forceReload?: boolean): Promise<void>;
     // (undocumented)
     readonly sdkVersion: string;
     // (undocumented)
     setFeatureFlags(newFlags: FeatureFlags): void;
-    setLoader(loader: PluginLoader): VoidFunction;
     // (undocumented)
     subscribe(eventTypes: PluginEventType[], listener: VoidFunction): VoidFunction;
 }
@@ -228,9 +214,9 @@ export type PluginStoreInterface = {
     subscribe: (eventTypes: PluginEventType[], listener: VoidFunction) => VoidFunction;
     getExtensions: () => LoadedExtension[];
     getPluginInfo: () => PluginInfoEntry[];
-    setFeatureFlags: (newFlags: FeatureFlags) => void;
     getFeatureFlags: () => FeatureFlags;
-    loadPlugin: (baseURL: string, manifestNameOrObject?: string | PluginManifest) => Promise<void>;
+    setFeatureFlags: (newFlags: FeatureFlags) => void;
+    loadPlugin: (manifest: PluginManifest | string, forceReload?: boolean) => Promise<void>;
     enablePlugins: (pluginNames: string[]) => void;
     disablePlugins: (pluginNames: string[], disableReason?: string) => void;
     getExposedModule: <TModule extends AnyObject>(pluginName: string, moduleName: string) => Promise<TModule>;
@@ -238,6 +224,7 @@ export type PluginStoreInterface = {
 
 // @public (undocumented)
 export type PluginStoreOptions = Partial<{
+    loaderOptions: PluginLoaderOptions;
     autoEnableLoadedPlugins: boolean;
 }>;
 
