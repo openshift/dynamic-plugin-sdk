@@ -89,7 +89,10 @@ const loadList = (oldList: any, resources: K8sResourceCommon[]) => {
 export const sdkK8sReducer = (state: K8sState, action: K8sAction): K8sState => {
   if (!state) {
     return fromJS({
-      RESOURCES: { inFlight: false, models: ImmutableMap<string, K8sModelCommon>() },
+      RESOURCES: {
+        inFlight: false,
+        models: ImmutableMap<string, K8sModelCommon>(),
+      },
     });
   }
 

@@ -1,5 +1,8 @@
 import { renderHook } from '@testing-library/react-hooks/native';
+import React from 'react';
 import TestRenderer from 'react-test-renderer';
+import WorkspaceContext from '../utils/WorkspaceContext';
+import { workspaceState } from '../utils/workspaceState';
 import { useWorkspace } from './useWorkspace';
 
 const { act } = TestRenderer;
@@ -22,7 +25,10 @@ describe('useWorkspace', () => {
   });
 
   test('an unset workspace should return null', () => {
-    const { result } = renderHook(() => useWorkspace());
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <WorkspaceContext.Provider value={workspaceState()}>{children}</WorkspaceContext.Provider>
+    );
+    const { result } = renderHook(() => useWorkspace(), { wrapper });
     const [data, setter] = result.current;
 
     expect(data).toBeNull();
@@ -31,7 +37,10 @@ describe('useWorkspace', () => {
 
   test('a set workspace should return the activeWorkspace', () => {
     localStorage.setItem(WORKSPACE_KEY, 'platform-experience');
-    const { result } = renderHook(() => useWorkspace());
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <WorkspaceContext.Provider value={workspaceState()}>{children}</WorkspaceContext.Provider>
+    );
+    const { result } = renderHook(() => useWorkspace(), { wrapper });
     const [data, setter] = result.current;
 
     expect(data).toBe('platform-experience');
@@ -40,7 +49,10 @@ describe('useWorkspace', () => {
 
   test('updating workspace should return the activeWorkspace', () => {
     localStorage.setItem(WORKSPACE_KEY, 'platform-experience');
-    const { result } = renderHook(() => useWorkspace());
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <WorkspaceContext.Provider value={workspaceState()}>{children}</WorkspaceContext.Provider>
+    );
+    const { result } = renderHook(() => useWorkspace(), { wrapper });
     const [data, setter] = result.current;
 
     expect(data).toBe('platform-experience');
@@ -53,7 +65,10 @@ describe('useWorkspace', () => {
 
   test('clearing localStorage should return null', () => {
     localStorage.setItem(WORKSPACE_KEY, 'platform-experience');
-    const { result } = renderHook(() => useWorkspace());
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <WorkspaceContext.Provider value={workspaceState()}>{children}</WorkspaceContext.Provider>
+    );
+    const { result } = renderHook(() => useWorkspace(), { wrapper });
     const [data, setter] = result.current;
 
     expect(data).toBe('platform-experience');

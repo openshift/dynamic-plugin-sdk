@@ -5,6 +5,7 @@ import * as k8sActions from '../../app/redux/actions/k8s';
 import { getReduxIdPayload } from '../../app/redux/reducers/k8s/selector';
 import type { K8sResourceCommon } from '../../types/k8s';
 import type { SDKStoreState } from '../../types/redux';
+import WorkspaceContext from '../../utils/WorkspaceContext';
 import type { WebSocketOptions } from '../../web-socket/types';
 import { getWatchData, getReduxData, NoModelError } from './k8s-watcher';
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';
@@ -35,6 +36,8 @@ export const useK8sWatchResource = <R extends K8sResourceCommon | K8sResourceCom
   initResource: WatchK8sResource | null,
   options?: Partial<WebSocketOptions & RequestInit & { wsPrefix?: string; pathPrefix?: string }>,
 ): WatchK8sResult<R> => {
+  const workspaceContext = React.useContext(WorkspaceContext);
+  const workspace = workspaceContext.getState().activeWorkspace;
   const withFallback: WatchK8sResource = initResource || { kind: NOT_A_VALUE };
   const resource = useDeepCompareMemoize(withFallback, true);
   const modelsLoaded = useModelsLoaded();
@@ -57,7 +60,7 @@ export const useK8sWatchResource = <R extends K8sResourceCommon | K8sResourceCom
         dispatch(k8sActions.stopK8sWatch(watchData.id));
       }
     };
-  }, [dispatch, watchData]);
+  }, [dispatch, watchData, workspace]);
 
   const resourceK8s = useSelector<SDKStoreState, unknown>((state) =>
     watchData ? getReduxIdPayload(state, watchData.id) : null,
