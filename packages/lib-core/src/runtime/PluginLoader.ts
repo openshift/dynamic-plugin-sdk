@@ -71,11 +71,11 @@ export type PluginLoaderOptions = Partial<{
    */
   entryCallbackSettings: Partial<{
     /**
-     * Control whether to automatically register the callback function.
+     * Control whether to register the callback function.
      *
      * Default value: `true`.
      */
-    autoRegisterCallback: boolean;
+    registerCallback: boolean;
 
     /**
      * Name of the callback function.
@@ -167,9 +167,7 @@ export class PluginLoader {
       getPluginEntryModule: options.getPluginEntryModule ?? _.noop,
     };
 
-    if (this.options.entryCallbackSettings.autoRegisterCallback ?? true) {
-      this.registerPluginEntryCallback();
-    }
+    this.registerPluginEntryCallback();
   }
 
   private invokeLoadListeners() {
@@ -383,7 +381,7 @@ export class PluginLoader {
       let isResolutionComplete = false;
       let listener: VoidFunction;
 
-      const resolutionComplete = () => {
+      const setResolutionComplete = () => {
         isResolutionComplete = true;
         this.loadListeners.delete(listener);
       };
@@ -418,7 +416,7 @@ export class PluginLoader {
 
         if (resolutionErrors.length > 0) {
           const errorTitle = `Detected ${resolutionErrors.length} resolution errors with ${pendingDepInfo}`;
-          resolutionComplete();
+          setResolutionComplete();
           reject(new Error(`${errorTitle}:\n\n${resolutionErrors.join('\n')}`));
           return;
         }
@@ -426,7 +424,7 @@ export class PluginLoader {
         consoleLogger.info(`Plugin ${pluginName} has ${pendingDepInfo}`);
 
         if (pendingDepNames.length === 0) {
-          resolutionComplete();
+          setResolutionComplete();
           resolve();
         }
       };
@@ -466,7 +464,13 @@ export class PluginLoader {
    * This must be called in order to load plugins using the `callback` registration method.
    */
   registerPluginEntryCallback() {
+    const registerCallback = this.options.entryCallbackSettings.registerCallback ?? true;
     const callbackName = this.options.entryCallbackSettings.name ?? DEFAULT_REMOTE_ENTRY_CALLBACK;
+
+    if (!registerCallback) {
+      consoleLogger.info(`Plugin entry callback ${callbackName} will not be registered`);
+      return;
+    }
 
     if (typeof window[callbackName] === 'function') {
       consoleLogger.warn(`Plugin entry callback ${callbackName} is already registered`);

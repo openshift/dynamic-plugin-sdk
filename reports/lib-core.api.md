@@ -151,7 +151,7 @@ export type PluginLoaderOptions = Partial<{
     canLoadPlugin: (manifest: PluginManifest, reload: boolean) => boolean;
     canReloadScript: (manifest: PluginManifest, scriptName: string) => boolean;
     entryCallbackSettings: Partial<{
-        autoRegisterCallback: boolean;
+        registerCallback: boolean;
         name: string;
     }>;
     fetchImpl: ResourceFetch;

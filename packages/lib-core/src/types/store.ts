@@ -102,25 +102,24 @@ export type PluginStoreInterface = {
   /**
    * Start loading a plugin from the given manifest.
    *
-   * Plugin manifest can be provided directly as an object or referenced via URL.
+   * The plugin manifest can be provided directly as an object or referenced via URL.
    *
    * Depending on the plugin's current load status, this method works as follows:
    * - plugin is loading - do nothing
    * - plugin has been loaded - reload only if `forceReload` is `true`
    * - plugin has failed to load - always reload
    *
-   * The resulting Promise resolves when the load operation is complete. If the plugin
-   * is still loading, this method returns the same Promise instance representing that
-   * plugin's load operation.
+   * The resulting Promise resolves when the load operation is complete. If the given
+   * plugin is still loading when this method is invoked, the same Promise instance that
+   * represents the load operation is returned.
    *
-   * Use `subscribe` method to respond to events emitted by the `PluginStore`.
+   * Use the `subscribe` method to respond to events emitted by the `PluginStore`.
    *
    * Be advised that any plugin modules which are already loaded by the host application
-   * (e.g. directly via `getExposedModule` method or indirectly via `useResolvedExtensions`
-   * hook) will _not_ be replaced upon reloading the associated plugin. This is due to how
-   * webpack handles federated modules. If a host application detects changes in the given
-   * plugin's deployment, users should reload the application to ensure all plugin modules
-   * in use are up to date.
+   * will _not_ be replaced upon reloading the associated plugin. This is due to webpack
+   * module caching which also applies to federated modules. If a host application detects
+   * changes in a plugin's deployment, users should be prompted to reload the application
+   * to ensure all plugin modules in use are up to date.
    */
   loadPlugin: (manifest: PluginManifest | string, forceReload?: boolean) => Promise<void>;
 

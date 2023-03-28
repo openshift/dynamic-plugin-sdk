@@ -10,6 +10,9 @@ import { GenerateManifestPlugin } from './GenerateManifestPlugin';
 import { PatchEntryCallbackPlugin } from './PatchEntryCallbackPlugin';
 import { ValidateCompilationPlugin } from './ValidateCompilationPlugin';
 
+const DEFAULT_MANIFEST = 'plugin-manifest.json';
+const DEFAULT_ENTRY_SCRIPT = 'plugin-entry.js';
+
 /**
  * Settings for the webpack `ModuleFederationPlugin`.
  */
@@ -128,8 +131,8 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
       sharedModules: options.sharedModules ?? {},
       moduleFederationSettings: options.moduleFederationSettings ?? {},
       entryCallbackSettings: options.entryCallbackSettings ?? {},
-      entryScriptFilename: options.entryScriptFilename ?? 'plugin-entry.js',
-      pluginManifestFilename: options.pluginManifestFilename ?? 'plugin-manifest.json',
+      entryScriptFilename: options.entryScriptFilename ?? DEFAULT_ENTRY_SCRIPT,
+      pluginManifestFilename: options.pluginManifestFilename ?? DEFAULT_MANIFEST,
     };
 
     try {
