@@ -28,6 +28,7 @@ export class PatchEntryCallbackPlugin implements WebpackPluginInstance {
               } else {
                 const error = new WebpackError(`Missing call to ${this.callbackName}`);
                 error.file = fileName;
+                error.chunk = entryChunk;
                 compilation.errors.push(error);
               }
 
