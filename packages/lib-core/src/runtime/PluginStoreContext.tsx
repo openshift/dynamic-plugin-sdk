@@ -7,13 +7,9 @@ const PluginStoreContext = React.createContext<PluginStore | undefined>(undefine
 /**
  * React Context provider for passing the {@link PluginStore} down the component tree.
  */
-export const PluginStoreProvider: React.FC<PluginStoreProviderProps> = ({ store, children }) => {
-  if (!store.hasLoader()) {
-    throw new Error('PluginLoader must be set on the PluginStore');
-  }
-
-  return <PluginStoreContext.Provider value={store}>{children}</PluginStoreContext.Provider>;
-};
+export const PluginStoreProvider: React.FC<PluginStoreProviderProps> = ({ store, children }) => (
+  <PluginStoreContext.Provider value={store}>{children}</PluginStoreContext.Provider>
+);
 
 export type PluginStoreProviderProps = React.PropsWithChildren<{
   store: PluginStore;

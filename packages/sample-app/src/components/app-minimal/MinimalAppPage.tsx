@@ -1,21 +1,11 @@
 import { useExtensions, useResolvedExtensions } from '@openshift/dynamic-plugin-sdk';
 import type { LoadedExtension } from '@openshift/dynamic-plugin-sdk';
 import { isModelFeatureFlag, isTelemetryListener } from '@openshift/dynamic-plugin-sdk-extensions';
-import {
-  Card,
-  CardBody,
-  Flex,
-  FlexItem,
-  Gallery,
-  GalleryItem,
-  Tooltip,
-} from '@patternfly/react-core';
-import { InfoCircleIcon } from '@patternfly/react-icons';
-// eslint-disable-next-line camelcase
-import { global_info_color_100 } from '@patternfly/react-tokens';
+import { Card, CardBody, Flex, FlexItem, Gallery, GalleryItem } from '@patternfly/react-core';
 import * as _ from 'lodash-es';
 import * as React from 'react';
 import FeatureFlagTable from '../common/FeatureFlagTable';
+import LabelWithTooltipIcon from '../common/LabelWithTooltipIcon';
 import PluginInfoTable from '../common/PluginInfoTable';
 
 type ExtensionGalleryProps = {
@@ -28,14 +18,7 @@ const ExtensionGallery: React.FC<ExtensionGalleryProps> = ({ extensions }) => (
       <GalleryItem key={e.uid}>
         <Card isCompact>
           <CardBody>
-            <Flex direction={{ default: 'row' }} spaceItems={{ default: 'spaceItemsSm' }}>
-              <FlexItem>{e.type}</FlexItem>
-              <FlexItem>
-                <Tooltip content={_.truncate(e.uid)}>
-                  <InfoCircleIcon color={global_info_color_100.var} />
-                </Tooltip>
-              </FlexItem>
-            </Flex>
+            <LabelWithTooltipIcon label={e.type} tooltipContent={_.truncate(e.uid)} />
           </CardBody>
         </Card>
       </GalleryItem>
@@ -61,20 +44,18 @@ const TestExtensions: React.FC = () => {
   return resolved ? <ExtensionGallery extensions={[...extensions, ...resolvedExtensions]} /> : null;
 };
 
-const MinimalAppPage: React.FC = () => {
-  return (
-    <Flex direction={{ default: 'column' }}>
-      <FlexItem>
-        <PluginInfoTable />
-      </FlexItem>
-      <FlexItem>
-        <FeatureFlagTable />
-      </FlexItem>
-      <FlexItem>
-        <TestExtensions />
-      </FlexItem>
-    </Flex>
-  );
-};
+const MinimalAppPage: React.FC = () => (
+  <Flex direction={{ default: 'column' }}>
+    <FlexItem>
+      <PluginInfoTable />
+    </FlexItem>
+    <FlexItem>
+      <FeatureFlagTable />
+    </FlexItem>
+    <FlexItem>
+      <TestExtensions />
+    </FlexItem>
+  </Flex>
+);
 
 export default MinimalAppPage;

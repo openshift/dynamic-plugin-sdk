@@ -23,12 +23,7 @@ export {
 } from '@monorepo/common';
 
 // Core components
-export {
-  PluginLoader,
-  PluginLoaderOptions,
-  PluginLoadListener,
-  PluginLoadResult,
-} from './runtime/PluginLoader';
+export { PluginLoaderOptions } from './runtime/PluginLoader';
 export { PluginStore, PluginStoreOptions } from './runtime/PluginStore';
 export {
   PluginStoreProvider,
@@ -64,6 +59,7 @@ export {
   PluginRegistrationMethod,
   PluginRuntimeMetadata,
   PluginManifest,
+  PendingPlugin,
   LoadedPlugin,
   FailedPlugin,
 } from './types/plugin';
@@ -71,6 +67,7 @@ export { PluginEntryModule } from './types/runtime';
 export {
   PluginEventType,
   PluginInfoEntry,
+  PendingPluginInfoEntry,
   LoadedPluginInfoEntry,
   FailedPluginInfoEntry,
   FeatureFlags,

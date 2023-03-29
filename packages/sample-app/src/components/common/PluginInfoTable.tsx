@@ -1,36 +1,23 @@
 import { usePluginStore, usePluginInfo } from '@openshift/dynamic-plugin-sdk';
-import type { LoadedPluginInfoEntry } from '@openshift/dynamic-plugin-sdk';
+import type { PluginInfoEntry } from '@openshift/dynamic-plugin-sdk';
 import {
   Bullseye,
   Button,
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
-  Flex,
-  FlexItem,
   Title,
-  Tooltip,
 } from '@patternfly/react-core';
-import { ModuleIcon, InfoCircleIcon } from '@patternfly/react-icons';
-import {
-  ActionsColumn,
-  TableComposable,
-  TableText,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-} from '@patternfly/react-table';
+import { ModuleIcon } from '@patternfly/react-icons';
+import { ActionsColumn, TableComposable, Thead, Tbody, Tr, Th, Td } from '@patternfly/react-table';
 import type { IAction } from '@patternfly/react-table';
-// eslint-disable-next-line camelcase
-import { global_info_color_100 } from '@patternfly/react-tokens';
 import * as React from 'react';
+import LabelWithTooltipIcon from './LabelWithTooltipIcon';
 
 const columnNames = {
   name: 'Name',
-  status: 'Status',
   version: 'Version',
+  status: 'Status',
   enabled: 'Enabled',
   actions: 'Actions',
 };
@@ -39,55 +26,32 @@ const columnTooltips = {
   enabled: 'Enabling a plugin puts all of its extensions into use. Disabling it does the opposite.',
 };
 
-const actionLabels = {
-  enable: 'Enable',
-  disable: 'Disable',
-  logManifest: 'Log plugin manifest',
-};
-
-type PluginEnabledStatusProps = {
-  entry: LoadedPluginInfoEntry;
-};
-
-const PluginEnabledStatus: React.FC<PluginEnabledStatusProps> = ({ entry }) => (
-  <Flex direction={{ default: 'row' }} spaceItems={{ default: 'spaceItemsSm' }}>
-    <FlexItem>{entry.enabled ? 'Yes' : 'No'}</FlexItem>
-    {!entry.enabled && entry.disableReason && (
-      <FlexItem>
-        <Tooltip content={entry.disableReason}>
-          <InfoCircleIcon color={global_info_color_100.var} />
-        </Tooltip>
-      </FlexItem>
-    )}
-  </Flex>
-);
+const getDropdownActions = (entry: PluginInfoEntry): IAction[] => [
+  {
+    title: 'Log plugin manifest',
+    // eslint-disable-next-line no-console
+    onClick: () => console.log(`${entry.manifest.name} manifest`, entry.manifest),
+  },
+];
 
 const PluginInfoTable: React.FC = () => {
   const pluginStore = usePluginStore();
-  const infoEntries = usePluginInfo().sort((a, b) => a.pluginName.localeCompare(b.pluginName));
-
-  const getDropdownActions = (entry: LoadedPluginInfoEntry): IAction[] => [
-    {
-      title: actionLabels.logManifest,
-      // eslint-disable-next-line no-console
-      onClick: () => console.log(entry.manifest),
-    },
-  ];
+  const entries = usePluginInfo().sort((a, b) => a.manifest.name.localeCompare(b.manifest.name));
 
   return (
     <TableComposable variant="compact">
       <Thead>
         <Tr>
           <Th>{columnNames.name}</Th>
-          <Th>{columnNames.status}</Th>
           <Th>{columnNames.version}</Th>
+          <Th>{columnNames.status}</Th>
           <Th info={{ tooltip: columnTooltips.enabled }}>{columnNames.enabled}</Th>
           <Th>{columnNames.actions}</Th>
           <Td />
         </Tr>
       </Thead>
       <Tbody>
-        {infoEntries.length === 0 ? (
+        {entries.length === 0 ? (
           <Tr>
             <Td colSpan={6}>
               <Bullseye>
@@ -104,39 +68,47 @@ const PluginInfoTable: React.FC = () => {
             </Td>
           </Tr>
         ) : (
-          infoEntries.map((entry) => (
-            <Tr key={entry.pluginName}>
-              <Td dataLabel={columnNames.name}>{entry.pluginName}</Td>
-              <Td dataLabel={columnNames.status}>{entry.status}</Td>
-              <Td dataLabel={columnNames.version}>
-                {entry.status === 'loaded' ? entry.manifest.version : '-'}
-              </Td>
-              <Td dataLabel={columnNames.enabled}>
-                {entry.status === 'loaded' ? <PluginEnabledStatus entry={entry} /> : '-'}
-              </Td>
-              <Td dataLabel={columnNames.actions} modifier="fitContent">
-                {entry.status === 'loaded' ? (
-                  <TableText>
-                    <Button
-                      variant="secondary"
-                      onClick={() =>
-                        entry.enabled
-                          ? pluginStore.disablePlugins([entry.pluginName], 'Disabled by user')
-                          : pluginStore.enablePlugins([entry.pluginName])
-                      }
-                    >
-                      {entry.enabled ? actionLabels.disable : actionLabels.enable}
-                    </Button>
-                  </TableText>
-                ) : null}
-              </Td>
-              <Td isActionCell>
-                {entry.status === 'loaded' ? (
-                  <ActionsColumn items={getDropdownActions(entry)} />
-                ) : null}
-              </Td>
-            </Tr>
-          ))
+          entries.map((p) => {
+            const statusTooltip = p.status === 'failed' ? p.errorMessage : null;
+            const enabledLabel = p.status === 'loaded' && p.enabled ? 'Yes' : 'No';
+            const enabledTooltip = p.status === 'loaded' && !p.enabled ? p.disableReason : null;
+            const toggleEnabledText = p.status === 'loaded' && p.enabled ? 'Disable' : 'Enable';
+
+            const togglePluginEnabled = () => {
+              if (p.status === 'loaded') {
+                if (p.enabled) {
+                  pluginStore.disablePlugins([p.manifest.name], 'Disabled by user');
+                } else {
+                  pluginStore.enablePlugins([p.manifest.name]);
+                }
+              }
+            };
+
+            return (
+              <Tr key={p.manifest.name}>
+                <Td dataLabel={columnNames.name}>{p.manifest.name}</Td>
+                <Td dataLabel={columnNames.version}>{p.manifest.version}</Td>
+                <Td dataLabel={columnNames.status}>
+                  <LabelWithTooltipIcon label={p.status} tooltipContent={statusTooltip} />
+                </Td>
+                <Td dataLabel={columnNames.enabled}>
+                  <LabelWithTooltipIcon label={enabledLabel} tooltipContent={enabledTooltip} />
+                </Td>
+                <Td dataLabel={columnNames.actions} modifier="fitContent">
+                  <Button
+                    isDisabled={p.status !== 'loaded'}
+                    variant="secondary"
+                    onClick={togglePluginEnabled}
+                  >
+                    {toggleEnabledText}
+                  </Button>
+                </Td>
+                <Td isActionCell>
+                  <ActionsColumn items={getDropdownActions(p)} />
+                </Td>
+              </Tr>
+            );
+          })
         )}
       </Tbody>
     </TableComposable>

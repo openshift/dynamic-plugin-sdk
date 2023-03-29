@@ -1,17 +1,25 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { AnyObject } from '@monorepo/common';
-import { consoleLogger } from '@monorepo/common';
+import { consoleLogger, ErrorWithCause } from '@monorepo/common';
 import * as _ from 'lodash-es';
 import { version as sdkVersion } from '../../package.json';
 import type { LoadedExtension } from '../types/extension';
-import type { PluginManifest, LoadedPlugin, FailedPlugin } from '../types/plugin';
+import type { PluginManifest, PendingPlugin, LoadedPlugin, FailedPlugin } from '../types/plugin';
 import type { PluginEntryModule } from '../types/runtime';
 import type { PluginInfoEntry, PluginStoreInterface, FeatureFlags } from '../types/store';
 import { PluginEventType } from '../types/store';
 import { decodeCodeRefs, getPluginModule } from './coderefs';
-import type { PluginLoader } from './PluginLoader';
+import { PluginLoader } from './PluginLoader';
+import type { PluginLoaderOptions } from './PluginLoader';
 
 export type PluginStoreOptions = Partial<{
+  /**
+   * Options passed to `PluginLoader` instance managed by the `PluginStore`.
+   *
+   * Default value: empty object.
+   */
+  loaderOptions: PluginLoaderOptions;
+
   /**
    * Control whether to enable plugins automatically once they are loaded.
    *
@@ -26,7 +34,12 @@ export type PluginStoreOptions = Partial<{
 export class PluginStore implements PluginStoreInterface {
   private readonly options: Required<PluginStoreOptions>;
 
-  private loader?: PluginLoader;
+  private readonly loader: PluginLoader;
+
+  private readonly pendingPromises = new Map<string, Promise<void>>();
+
+  /** Plugins that are currently being loaded. */
+  private readonly pendingPlugins = new Map<string, PendingPlugin>();
 
   /** Plugins that were successfully loaded and processed. */
   private readonly loadedPlugins = new Map<string, LoadedPlugin>();
@@ -47,64 +60,20 @@ export class PluginStore implements PluginStoreInterface {
 
   constructor(options: PluginStoreOptions = {}) {
     this.options = {
+      loaderOptions: options.loaderOptions ?? {},
       autoEnableLoadedPlugins: options.autoEnableLoadedPlugins ?? true,
     };
+
+    this.loader = new PluginLoader(this.options.loaderOptions);
 
     Object.values(PluginEventType).forEach((t) => {
       this.listeners.set(t, new Set());
     });
   }
 
-  /**
-   * Connect this {@link PluginStore} to the provided {@link PluginLoader}.
-   *
-   * This must be done before attempting to load any plugins.
-   *
-   * Returns a function for disconnecting from the {@link PluginLoader}.
-   */
-  setLoader(loader: PluginLoader): VoidFunction {
-    if (this.loader !== undefined) {
-      throw new Error('PluginLoader is already set');
-    }
-
-    this.loader = loader;
-
-    const unsubscribe = loader.subscribe((result) => {
-      if (!result.success) {
-        const { pluginName, errorMessage, errorCause } = result;
-
-        consoleLogger.error(..._.compact([errorMessage, errorCause]));
-
-        if (pluginName) {
-          this.registerFailedPlugin(pluginName, errorMessage, errorCause);
-        }
-
-        return;
-      }
-
-      const { pluginName, manifest, entryModule } = result;
-
-      this.addPlugin(manifest, entryModule);
-
-      if (this.options.autoEnableLoadedPlugins) {
-        this.enablePlugins([pluginName]);
-      }
-    });
-
-    return () => {
-      unsubscribe();
-      this.loader = undefined;
-    };
-  }
-
-  /**
-   * Returns `true` if this {@link PluginStore} is connected to a {@link PluginLoader}.
-   */
-  hasLoader() {
-    return this.loader !== undefined;
-  }
-
   subscribe(eventTypes: PluginEventType[], listener: VoidFunction): VoidFunction {
+    let isSubscribed = true;
+
     if (eventTypes.length === 0) {
       consoleLogger.warn('subscribe method called with empty eventTypes');
       return _.noop;
@@ -113,8 +82,6 @@ export class PluginStore implements PluginStoreInterface {
     eventTypes.forEach((t) => {
       this.listeners.get(t)?.add(listener);
     });
-
-    let isSubscribed = true;
 
     return () => {
       if (isSubscribed) {
@@ -140,26 +107,36 @@ export class PluginStore implements PluginStoreInterface {
   getPluginInfo() {
     const entries: PluginInfoEntry[] = [];
 
-    Array.from(this.loadedPlugins.entries()).forEach(([pluginName, plugin]) => {
+    Array.from(this.pendingPlugins.values()).forEach((plugin) => {
+      entries.push({
+        status: 'pending',
+        manifest: plugin.manifest,
+      });
+    });
+
+    Array.from(this.loadedPlugins.values()).forEach((plugin) => {
       entries.push({
         status: 'loaded',
-        pluginName,
         manifest: plugin.manifest,
         enabled: plugin.enabled,
         disableReason: plugin.disableReason,
       });
     });
 
-    Array.from(this.failedPlugins.entries()).forEach(([pluginName, plugin]) => {
+    Array.from(this.failedPlugins.values()).forEach((plugin) => {
       entries.push({
         status: 'failed',
-        pluginName,
+        manifest: plugin.manifest,
         errorMessage: plugin.errorMessage,
         errorCause: plugin.errorCause,
       });
     });
 
     return entries;
+  }
+
+  getFeatureFlags() {
+    return { ...this.featureFlags };
   }
 
   setFeatureFlags(newFlags: FeatureFlags) {
@@ -176,19 +153,53 @@ export class PluginStore implements PluginStoreInterface {
     }
   }
 
-  getFeatureFlags() {
-    return { ...this.featureFlags };
-  }
+  async loadPlugin(manifest: PluginManifest | string, forceReload?: boolean) {
+    let loadedManifest: PluginManifest;
 
-  async loadPlugin(baseURL: string, manifestNameOrObject?: string | PluginManifest) {
-    if (this.loader === undefined) {
-      consoleLogger.error('PluginLoader must be set before loading any plugins');
-      return;
+    try {
+      loadedManifest =
+        typeof manifest === 'string' ? await this.loader.loadPluginManifest(manifest) : manifest;
+    } catch (e) {
+      throw new ErrorWithCause('Failed to load plugin manifest', e);
     }
 
-    // TODO(vojtech): PluginLoader.loadPlugin is now properly async, we can consider
-    // removing PluginLoader.subscribe API in favor of directly handling the Promise
-    await this.loader.loadPlugin(baseURL, manifestNameOrObject);
+    try {
+      loadedManifest = this.loader.processPluginManifest(loadedManifest);
+    } catch (e) {
+      throw new ErrorWithCause('Failed to process plugin manifest', e);
+    }
+
+    const pluginName = loadedManifest.name;
+
+    if (this.pendingPlugins.has(pluginName)) {
+      return this.pendingPromises.get(pluginName);
+    }
+
+    if (this.loadedPlugins.has(pluginName) && !forceReload) {
+      return Promise.resolve();
+    }
+
+    this.addPendingPlugin(loadedManifest);
+
+    const promise = (async () => {
+      const result = await this.loader.loadPlugin(loadedManifest);
+
+      if (result.success) {
+        this.addLoadedPlugin(loadedManifest, result.entryModule);
+
+        if (this.options.autoEnableLoadedPlugins) {
+          this.enablePlugins([pluginName]);
+        }
+      } else {
+        this.addFailedPlugin(loadedManifest, result.errorMessage, result.errorCause);
+      }
+
+      this.pendingPromises.delete(pluginName);
+    })();
+
+    this.pendingPromises.set(pluginName, promise);
+
+    return promise;
   }
 
   private setPluginsEnabled(
@@ -261,15 +272,27 @@ export class PluginStore implements PluginStoreInterface {
     }
   }
 
+  private addPendingPlugin(manifest: PluginManifest) {
+    const pluginName = manifest.name;
+
+    this.pendingPlugins.set(pluginName, { manifest });
+    this.loadedPlugins.delete(pluginName);
+    this.failedPlugins.delete(pluginName);
+
+    this.invokeListeners(PluginEventType.PluginInfoChanged);
+    this.updateExtensions();
+
+    consoleLogger.info(`Loading plugin ${pluginName} version ${manifest.version}`);
+  }
+
   /**
    * Add a plugin to the {@link PluginStore}.
    *
    * Once added, the plugin is disabled by default. Enable it to put its extensions into use.
    */
-  private addPlugin(manifest: PluginManifest, entryModule: PluginEntryModule) {
+  private addLoadedPlugin(manifest: PluginManifest, entryModule: PluginEntryModule) {
     const pluginName = manifest.name;
     const buildHash = manifest.buildHash ?? uuidv4();
-    const reload = this.loadedPlugins.has(pluginName) || this.failedPlugins.has(pluginName);
 
     const loadedExtensions = _.cloneDeep(manifest.extensions).map<LoadedExtension>((e, index) =>
       decodeCodeRefs(
@@ -282,36 +305,36 @@ export class PluginStore implements PluginStoreInterface {
       ),
     );
 
-    this.loadedPlugins.set(pluginName, {
-      // TODO(vojtech): use deepFreeze on the manifest
+    const loadedPlugin: LoadedPlugin = {
+      // TODO(vojtech): use deepFreeze on the manifest and type it as DeepReadonly
       manifest: Object.freeze(manifest),
       loadedExtensions: loadedExtensions.map((e) => Object.freeze(e)),
       entryModule,
       enabled: false,
-    });
+    };
 
+    this.pendingPlugins.delete(pluginName);
+    this.loadedPlugins.set(pluginName, loadedPlugin);
     this.failedPlugins.delete(pluginName);
+
     this.invokeListeners(PluginEventType.PluginInfoChanged);
+    this.updateExtensions();
 
-    if (reload) {
-      this.updateExtensions();
-    }
-
-    consoleLogger.info(`Plugin ${pluginName} has been ${reload ? 'reloaded' : 'loaded'}`);
+    consoleLogger.info(`Plugin ${pluginName} has been loaded`);
   }
 
-  private registerFailedPlugin(pluginName: string, errorMessage: string, errorCause?: unknown) {
-    const reload = this.loadedPlugins.has(pluginName) || this.failedPlugins.has(pluginName);
+  private addFailedPlugin(manifest: PluginManifest, errorMessage: string, errorCause?: unknown) {
+    const pluginName = manifest.name;
 
+    this.pendingPlugins.delete(pluginName);
     this.loadedPlugins.delete(pluginName);
-    this.failedPlugins.set(pluginName, { errorMessage, errorCause });
+    this.failedPlugins.set(pluginName, { manifest, errorMessage, errorCause });
+
     this.invokeListeners(PluginEventType.PluginInfoChanged);
+    this.updateExtensions();
 
-    if (reload) {
-      this.updateExtensions();
-    }
-
-    consoleLogger.error(`Plugin ${pluginName} has failed to ${reload ? 'reload' : 'load'}`);
+    consoleLogger.error(`Plugin ${pluginName} has failed to load`);
+    consoleLogger.error(..._.compact([errorMessage, errorCause]));
   }
 
   async getExposedModule<TModule extends AnyObject>(pluginName: string, moduleName: string) {

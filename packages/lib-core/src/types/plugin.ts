@@ -19,6 +19,10 @@ export type PluginManifest = PluginRuntimeMetadata & {
   buildHash?: string;
 };
 
+export type PendingPlugin = {
+  manifest: Readonly<PluginManifest>;
+};
+
 export type LoadedPlugin = {
   manifest: Readonly<PluginManifest>;
   loadedExtensions: Readonly<LoadedExtension[]>;
@@ -28,6 +32,7 @@ export type LoadedPlugin = {
 };
 
 export type FailedPlugin = {
+  manifest: Readonly<PluginManifest>;
   errorMessage: string;
   errorCause?: unknown;
 };

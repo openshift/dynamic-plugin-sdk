@@ -2,6 +2,14 @@ module.exports = {
   // Ensure consistent use of file extension within the import path
   'import/extensions': 'off',
 
+  // Disallow unnecessary fragments
+  'react/jsx-no-useless-fragment': [
+    'error',
+    {
+      allowExpressions: true,
+    },
+  ],
+
   // Enforce a specific function type for function components
   'react/function-component-definition': [
     'error',

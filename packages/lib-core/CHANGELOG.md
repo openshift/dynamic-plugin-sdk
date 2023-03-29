@@ -1,6 +1,6 @@
 # Changelog for `@openshift/dynamic-plugin-sdk`
 
-## 3.0.0 - 2023-03-01
+## 3.0.0 - 2023-03-02
 
 > This release adds new mandatory field to plugin manifest: `baseURL`.
 > Use the `PluginLoader` option `postProcessManifest` to adapt existing manifests.

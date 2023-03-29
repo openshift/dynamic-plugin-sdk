@@ -19,7 +19,7 @@ const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({ error, er
       <TextContent>
         <Text component="h1">Oh no! Something went wrong.</Text>
         <Text component="h2">{error.name}</Text>
-        <Text component="p">Error message: {error.message || '(empty)'}</Text>
+        <Text component="p">Error message: {error.message ?? '(empty)'}</Text>
       </TextContent>
     </FlexItem>
     <FlexItem>
@@ -35,7 +35,7 @@ const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({ error, er
         <Text component="h3">Stack trace</Text>
       </TextContent>
       <CodeBlock>
-        <CodeBlockCode>{trimEmptyLines(error.stack || '')}</CodeBlockCode>
+        <CodeBlockCode>{trimEmptyLines(error.stack ?? '(empty)')}</CodeBlockCode>
       </CodeBlock>
     </FlexItem>
   </Flex>

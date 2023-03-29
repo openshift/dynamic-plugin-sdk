@@ -1,6 +1,6 @@
 # Changelog for `@openshift/dynamic-plugin-sdk-webpack`
 
-## 3.0.0 - 2023-03-01
+## 3.0.0 - 2023-03-02
 
 - Add base URL for plugin assets to plugin manifest ([#206])
 - Make `DynamicRemotePlugin` options `pluginMetadata` and `extensions` mandatory ([#207])
