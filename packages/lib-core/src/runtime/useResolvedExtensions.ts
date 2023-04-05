@@ -1,5 +1,5 @@
 import { consoleLogger } from '@monorepo/common';
-import * as _ from 'lodash-es';
+import { uniq } from 'lodash';
 import * as React from 'react';
 import type {
   Extension,
@@ -58,7 +58,7 @@ export const useResolvedExtensions = <TExtension extends Extension>(
             rejectedReasons,
           );
 
-          const failedPluginNames = _.uniq(
+          const failedPluginNames = uniq(
             rejectedReasons
               .filter(isExtensionCodeRefsResolutionError)
               .map((e) => e.extension.pluginName),

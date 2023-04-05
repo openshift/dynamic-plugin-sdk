@@ -1,6 +1,6 @@
 import type { AnyObject } from '@openshift/dynamic-plugin-sdk';
 import { consoleLogger } from '@openshift/dynamic-plugin-sdk';
-import * as _ from 'lodash-es';
+import { chunk, filter, flatten, map, merge, startCase } from 'lodash';
 import { plural } from 'pluralize';
 import type { Dispatch } from 'redux';
 import { kindToAbbr } from '../../k8s/k8s-resource';
@@ -27,7 +27,7 @@ export const createAPIActions = (dispatch: Dispatch): APIActions => ({
 
 const pluralizeKind = (kind: string): string => {
   // Use startCase to separate words so the last can be pluralized but remove spaces so as not to humanize
-  const pluralized = plural(_.startCase(kind)).replace(/\s+/g, '');
+  const pluralized = plural(startCase(kind)).replace(/\s+/g, '');
   // Handle special cases like DB -> DBs (instead of DBS).
   if (pluralized === `${kind}S`) {
     return `${kind}s`;
@@ -91,7 +91,7 @@ const batchResourcesRequest = (
 
     const safeResources: string[] = [];
     const adminResources: string[] = [];
-    const models = _.flatten(defineModels(resourceList));
+    const models = flatten(defineModels(resourceList));
     const coreResources = new Set([
       'roles',
       'rolebindings',
@@ -104,11 +104,11 @@ const batchResourcesRequest = (
     allResources.forEach((r) =>
       coreResources.has(r.split('/')[0]) ? adminResources.push(r) : safeResources.push(r),
     );
-    const configResources = _.filter(
+    const configResources = filter(
       models,
       (m) => m.apiGroup === 'config.openshift.io' && m.kind !== 'ClusterOperator',
     );
-    const clusterOperatorConfigResources = _.filter(
+    const clusterOperatorConfigResources = filter(
       models,
       (m) => m.apiGroup === 'operator.openshift.io',
     );
@@ -134,7 +134,7 @@ const getResources = async (
   const groupVersionMap = apiResourceData.groups.reduce(
     (acc: AnyObject, { name, versions, preferredVersion: { version } }) => {
       acc[name] = {
-        versions: _.map(versions, 'version'),
+        versions: map(versions, 'version'),
         preferredVersion: version,
       };
       return acc;
@@ -142,7 +142,7 @@ const getResources = async (
     {},
   );
   const all = ['/api/v1'].concat(
-    _.flatten(
+    flatten(
       apiResourceData.groups.map<string[]>((group) =>
         group.versions.map<string>((version) => `/apis/${version.groupVersion}`),
       ),
@@ -150,7 +150,7 @@ const getResources = async (
   );
 
   // let batchedData: APIResourceList[] = [];
-  const batches = _.chunk(all, API_DISCOVERY_REQUEST_BATCH_SIZE);
+  const batches = chunk(all, API_DISCOVERY_REQUEST_BATCH_SIZE);
   const allResources: DiscoveryResources[] = [];
   // eslint-disable-next-line no-restricted-syntax
   for (const batch of batches) {
@@ -165,7 +165,7 @@ const getResources = async (
   }
   // Dispatch action to indicate all batches were loaded
   dispatch(setBatchesInFlight(false));
-  return allResources.reduce((acc, curr) => _.merge(acc, curr));
+  return allResources.reduce((acc, curr) => merge(acc, curr));
 };
 
 const updateResources =

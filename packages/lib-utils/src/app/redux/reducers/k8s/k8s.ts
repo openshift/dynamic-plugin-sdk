@@ -1,6 +1,6 @@
 import { consoleLogger } from '@openshift/dynamic-plugin-sdk';
 import { Map as ImmutableMap, fromJS } from 'immutable';
-import * as _ from 'lodash-es';
+import { isEqual } from 'lodash';
 import { getReferenceForModel, getNamespacedResources, allModels } from '../../../../k8s/k8s-utils';
 import type { K8sModelCommon, K8sResourceCommon } from '../../../../types/k8s';
 import type { K8sState } from '../../../../types/redux';
@@ -192,7 +192,7 @@ export const sdkK8sReducer = (state: K8sState, action: K8sAction): K8sState => {
       if (currentJS.toJSON) {
         currentJS = currentJS.toJSON();
         currentJS.metadata.resourceVersion = k8sObjects?.metadata?.resourceVersion;
-        if (_.isEqual(currentJS, k8sObjects)) {
+        if (isEqual(currentJS, k8sObjects)) {
           // If the only thing that differs is resource version, don't fire an update.
           return state;
         }

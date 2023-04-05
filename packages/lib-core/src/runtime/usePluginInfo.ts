@@ -1,4 +1,4 @@
-import * as _ from 'lodash-es';
+import { isEqual } from 'lodash';
 import type { PluginInfoEntry, PluginStoreInterface } from '../types/store';
 import { PluginEventType } from '../types/store';
 import { usePluginSubscription } from './usePluginSubscription';
@@ -15,5 +15,5 @@ const getData = (pluginStore: PluginStoreInterface) => pluginStore.getPluginInfo
  * The hook's result is guaranteed to be referentially stable across re-renders.
  */
 export const usePluginInfo = (): PluginInfoEntry[] => {
-  return usePluginSubscription(eventTypes, getData, _.isEqual);
+  return usePluginSubscription(eventTypes, getData, isEqual);
 };

@@ -3,10 +3,10 @@ import type { WebpackSharedObject } from '@openshift/dynamic-plugin-sdk-webpack'
 import CopyPlugin from 'copy-webpack-plugin';
 import CSSMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import HTMLPlugin from 'html-webpack-plugin';
-import _ from 'lodash';
+import { escapeRegExp } from 'lodash';
 import MiniCSSExtractPlugin from 'mini-css-extract-plugin';
 import type { Configuration, WebpackPluginInstance } from 'webpack';
-import { EnvironmentPlugin, container } from 'webpack';
+import { EnvironmentPlugin, NormalModuleReplacementPlugin, container } from 'webpack';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 const isProd = process.env.NODE_ENV === 'production';
@@ -15,7 +15,7 @@ const analyzeBundles = process.env.ANALYZE_BUNDLES === 'true';
 const pathTo = (relativePath: string) => path.resolve(__dirname, relativePath);
 
 const getNodeModulesTest = (modulePaths: string[]) =>
-  new RegExp(`/node_modules/(${modulePaths.map(_.escapeRegExp).join('|')})/`);
+  new RegExp(`/node_modules/(${modulePaths.map(escapeRegExp).join('|')})/`);
 
 /**
  * Shared modules provided by the host application to its plugins.
@@ -46,6 +46,7 @@ const plugins: WebpackPluginInstance[] = [
   new EnvironmentPlugin({
     NODE_ENV: 'development',
   }),
+  new NormalModuleReplacementPlugin(/^lodash$/, 'lodash-es'),
   new container.ModuleFederationPlugin({
     shared: appSharedModules,
   }),

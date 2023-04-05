@@ -1,4 +1,4 @@
-import * as _ from 'lodash-es';
+import { identity } from 'lodash';
 
 /**
  * Return `true` if the given URL is absolute.
@@ -17,7 +17,7 @@ export const isAbsoluteURL = (url: string) => url.indexOf('://') > 0 || url.inde
 export const resolveURL = (
   base: string,
   to: string,
-  processURL: (url: URL) => URL = _.identity,
+  processURL: (url: URL) => URL = identity,
   getDocumentOrigin = () => window.location.origin,
 ) =>
   processURL(

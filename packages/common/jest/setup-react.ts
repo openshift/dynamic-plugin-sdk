@@ -3,6 +3,7 @@
 import '@testing-library/jest-dom';
 
 import { toHaveNoViolations } from 'jest-axe';
+import { noop } from 'lodash';
 
 expect.extend(toHaveNoViolations);
 
@@ -12,5 +13,4 @@ jest.mock('react', () => ({
 }));
 
 // Following APIs are not implemented in jsdom
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-Element.prototype.scrollTo = () => {};
+Element.prototype.scrollTo = noop;

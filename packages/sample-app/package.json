@@ -27,6 +27,7 @@
     "css-minimizer-webpack-plugin": "^3.4.1",
     "html-webpack-plugin": "^5.5.0",
     "http-server": "^14.1.0",
+    "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
     "mini-css-extract-plugin": "^2.6.0",
     "react": "^17.0.2",
