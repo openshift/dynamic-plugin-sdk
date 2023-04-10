@@ -11,6 +11,7 @@ import type {
   K8sResourceKindReference,
   GetGroupVersionKindForModel,
   K8sGroupVersionKind,
+  K8sResourceIdentifier,
 } from '../types/k8s';
 import type { WebSocketOptions } from '../web-socket/types';
 import { WebSocketFactory } from '../web-socket/WebSocketFactory';
@@ -36,7 +37,7 @@ const getQueryString = (queryParams: QueryParams) =>
     .map(([key, value = '']) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
     .join('&');
 
-const getK8sAPIPath = ({ apiGroup = 'core', apiVersion }: K8sModelCommon) => {
+export const getK8sAPIPath = ({ apiGroup = 'core', apiVersion }: K8sModelCommon) => {
   let path = '';
   const activeWorkspace = getActiveWorkspace();
   if (activeWorkspace) {
@@ -234,6 +235,35 @@ export const getGroupVersionKindForModel: GetGroupVersionKindForModel = ({
   apiVersion,
   kind,
 });
+
+/**
+ * Provides the K8sResourceIdentifier for the given K8sGroupVersionKind or K8sResourceKindReference.
+ * @param resource - object or string reference for group, version, kind. i.e `{ group, version, kind }` or `group~version~kind`.
+ * @returns The apiGroup, apiVersion, kind for the provided reference.
+ */
+export const getK8sResourceIdentifier = (
+  resource: K8sGroupVersionKind | K8sResourceKindReference,
+): K8sResourceIdentifier => {
+  let group;
+  let version;
+  let kind;
+
+  if (typeof resource === 'string') {
+    const referenceSplit = resource.split('~');
+    if (referenceSplit.length > 3) {
+      throw new Error('Provided reference is invalid.');
+    }
+    [group, version, kind] = referenceSplit;
+  } else {
+    ({ group, version, kind } = resource);
+  }
+
+  return {
+    apiGroup: group,
+    apiVersion: version,
+    kind,
+  };
+};
 
 /**
  * @deprecated - This will become obsolete when we move away from K8sResourceKindReference to K8sGroupVersionKind

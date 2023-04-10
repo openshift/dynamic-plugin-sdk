@@ -91,7 +91,8 @@ describe('useK8sWatchResources', () => {
     useSelectorMock
       .mockReturnValueOnce(ImmutableMap<string, K8sModelCommon>()) // Models have not loaded so allK8sModels is empty
       .mockReturnValueOnce(ImmutableMap<string, unknown>())
-      .mockReturnValueOnce(false);
+      .mockReturnValueOnce(false) // inFlight
+      .mockReturnValueOnce(false); // batchesInFlight
 
     const { result } = renderHook(() => useK8sWatchResources(watchedResourcesMock));
     const { application } = result.current;
@@ -106,7 +107,8 @@ describe('useK8sWatchResources', () => {
     useSelectorMock
       .mockReturnValueOnce(ImmutableMap<string, K8sModelCommon>()) // get resourceK8s
       .mockReturnValueOnce(ImmutableMap<string, unknown>())
-      .mockReturnValueOnce(true); // batchesInFlight: true to indicate that some batches of resources are still loading
+      .mockReturnValueOnce(true) // inFlight
+      .mockReturnValueOnce(true); // batchesInFlight
 
     const checkAllBatches = renderHook(() => useK8sWatchResources(watchedResourcesMock));
     const resultingApp = checkAllBatches.result.current.application;
@@ -120,7 +122,8 @@ describe('useK8sWatchResources', () => {
     useSelectorMock
       .mockReturnValueOnce(ImmutableMap<string, K8sModelCommon>()) // Models have loaded but do not contain "application" model
       .mockReturnValueOnce(ImmutableMap<string, unknown>())
-      .mockReturnValueOnce(false);
+      .mockReturnValueOnce(false) // inFlight
+      .mockReturnValueOnce(false); // batchesInFlight
 
     const { result } = renderHook(() => useK8sWatchResources(watchedResourcesMock));
     const { application } = result.current;
@@ -152,7 +155,8 @@ describe('useK8sWatchResources', () => {
     useSelectorMock
       .mockReturnValueOnce(ImmutableMap<string, K8sModelCommon>(allModelsMock)) // Mock models
       .mockReturnValueOnce(ImmutableMap<string, unknown>(resourceK8s))
-      .mockReturnValueOnce(false);
+      .mockReturnValueOnce(false) // inFlight
+      .mockReturnValueOnce(false); // batchesInFlight
     getWatchDataMock.mockReturnValue(mockWatchData);
     getReduxDataMock.mockReturnValue(resourceDataMock);
 

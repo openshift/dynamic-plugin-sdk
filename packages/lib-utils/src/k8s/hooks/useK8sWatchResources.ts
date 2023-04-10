@@ -10,6 +10,7 @@ import {
   getReferenceForModel,
   getGroupVersionKindForReference,
 } from '../k8s-utils';
+import { fetchModel } from './hook-utils';
 import type { GetWatchData } from './k8s-watch-types';
 import { getWatchData, getReduxData, NoModelError } from './k8s-watcher';
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';
@@ -47,6 +48,7 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
 ): WatchK8sResults<R> => {
   const resources = useDeepCompareMemoize(initResources, true);
   const modelsLoaded = useModelsLoaded();
+  const [retries, setRetries] = React.useState(<{ [key: string]: number }>{});
 
   const allK8sModels = useSelector<SDKStoreState, ImmutableMap<string, K8sModelCommon>>(
     (state: SDKStoreState) => state.k8s?.getIn(['RESOURCES', 'models']),
@@ -138,6 +140,7 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
           dispatch(k8sActions.stopK8sWatch(reduxIDs[k].id));
         }
       });
+      setRetries({});
     };
   }, [dispatch, reduxIDs]);
 
@@ -152,6 +155,10 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
 
   const resourceK8s = useSelector((state: SDKStoreState) => state.k8s, resourceK8sSelectorCreator);
 
+  const inFlight = useSelector<SDKStoreState, boolean>(({ k8s }) =>
+    k8s?.getIn(['RESOURCES', 'inFlight']),
+  );
+
   const batchesInFlight = useSelector<SDKStoreState, boolean>(({ k8s }) =>
     k8s?.getIn(['RESOURCES', 'batchesInFlight']),
   );
@@ -160,6 +167,10 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
     () =>
       Object.keys(resources).reduce<WatchK8sResults<R>>((acc, key) => {
         const accKey = key as keyof R;
+        if (reduxIDs?.[key].noModel && !inFlight && !batchesInFlight && retries[key] < 3) {
+          fetchModel(resources[key], dispatch);
+          setRetries({ ...retries, [key]: retries[key] + 1 });
+        }
         if (reduxIDs?.[key].noModel && !batchesInFlight) {
           acc[accKey] = {
             data: resources[key].isList ? [] : {},
@@ -180,7 +191,7 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
         }
         return acc;
       }, {} as WatchK8sResults<R>),
-    [resources, reduxIDs, resourceK8s, batchesInFlight],
+    [resources, reduxIDs, inFlight, batchesInFlight, retries, resourceK8s, dispatch],
   );
   return results;
 };

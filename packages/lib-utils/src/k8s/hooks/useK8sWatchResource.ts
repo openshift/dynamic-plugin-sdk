@@ -7,6 +7,7 @@ import type { K8sResourceCommon } from '../../types/k8s';
 import type { SDKStoreState } from '../../types/redux';
 import WorkspaceContext from '../../utils/WorkspaceContext';
 import type { WebSocketOptions } from '../../web-socket/types';
+import { fetchModel } from './hook-utils';
 import { getWatchData, getReduxData, NoModelError } from './k8s-watcher';
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 import { useK8sModel } from './useK8sModel';
@@ -41,6 +42,7 @@ export const useK8sWatchResource = <R extends K8sResourceCommon | K8sResourceCom
   const withFallback: WatchK8sResource = initResource || { kind: NOT_A_VALUE };
   const resource = useDeepCompareMemoize(withFallback, true);
   const modelsLoaded = useModelsLoaded();
+  const [retries, setRetries] = React.useState(0);
 
   const [k8sModel] = useK8sModel(resource.groupVersionKind || resource.kind);
 
@@ -59,12 +61,17 @@ export const useK8sWatchResource = <R extends K8sResourceCommon | K8sResourceCom
       if (watchData) {
         dispatch(k8sActions.stopK8sWatch(watchData.id));
       }
+      setRetries(0);
     };
   }, [dispatch, watchData, workspace]);
 
   const resourceK8s = useSelector<SDKStoreState, unknown>((state) =>
     watchData ? getReduxIdPayload(state, watchData.id) : null,
   ) as ImmutableMap<string, unknown>; // TODO: Store state based off of Immutable is problematic
+
+  const inFlight = useSelector<SDKStoreState, boolean>(({ k8s }) =>
+    k8s?.getIn(['RESOURCES', 'inFlight']),
+  );
 
   const batchesInFlight = useSelector<SDKStoreState, boolean>(({ k8s }) =>
     k8s?.getIn(['RESOURCES', 'batchesInFlight']),
@@ -76,6 +83,10 @@ export const useK8sWatchResource = <R extends K8sResourceCommon | K8sResourceCom
     }
     if (!resourceK8s) {
       const data = resource.isList ? [] : {};
+      if (!k8sModel && !inFlight && !batchesInFlight && retries < 3) {
+        fetchModel(resource, dispatch);
+        setRetries(retries + 1);
+      }
       return modelsLoaded && !k8sModel && !batchesInFlight
         ? [data, true, new NoModelError()]
         : [data, false, undefined];
@@ -85,5 +96,5 @@ export const useK8sWatchResource = <R extends K8sResourceCommon | K8sResourceCom
     const loaded = resourceK8s.get('loaded') as boolean;
     const loadError = resourceK8s.get('loadError');
     return [data, loaded, loadError];
-  }, [resource, resourceK8s, modelsLoaded, k8sModel, batchesInFlight]);
+  }, [resource, resourceK8s, k8sModel, inFlight, batchesInFlight, retries, modelsLoaded, dispatch]);
 };

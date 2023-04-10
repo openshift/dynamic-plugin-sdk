@@ -105,6 +105,10 @@ describe('useK8sWatchResource', () => {
     const haveModelsLoaded = false;
     useModelsLoadedMock.mockReturnValue(haveModelsLoaded);
     useDeepCompareMemoizeMock.mockReturnValue(watchedResourceMock);
+    useSelectorMock
+      .mockReturnValueOnce(null) // get resourceK8s
+      .mockReturnValueOnce(false) // inFlight
+      .mockReturnValueOnce(false); // batchesInFlight
 
     const { result } = renderHook(() => useK8sWatchResource(watchedResourceMock));
     let [data, loaded, error] = result.current;
@@ -117,7 +121,8 @@ describe('useK8sWatchResource', () => {
     useModelsLoadedMock.mockReturnValue(true);
     useSelectorMock
       .mockReturnValueOnce(null) // get resourceK8s
-      .mockReturnValueOnce(true); // batchesInFlight: true to indicate that some batches of resources are still loading
+      .mockReturnValueOnce(true) // inFlight
+      .mockReturnValueOnce(true); // batchesInFlight
 
     const checkAllBatches = renderHook(() => useK8sWatchResource(watchedResourceMock));
     [data, loaded, error] = checkAllBatches.result.current;
@@ -130,8 +135,8 @@ describe('useK8sWatchResource', () => {
     useDeepCompareMemoizeMock.mockReturnValue(watchedResourceMock);
     useSelectorMock
       .mockReturnValueOnce(null) // get resourceK8s
-      .mockReturnValueOnce(false); // batchesInFlight: true to indicate that some batches of resources are still loading
-
+      .mockReturnValueOnce(false) // inFlight
+      .mockReturnValueOnce(false); // batchesInFlight
     const { result } = renderHook(() => useK8sWatchResource(watchedResourceMock));
     const [data, loaded, error] = result.current;
 

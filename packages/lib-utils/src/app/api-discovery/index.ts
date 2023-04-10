@@ -25,7 +25,7 @@ export const createAPIActions = (dispatch: Dispatch): APIActions => ({
   receivedResources: (resource) => dispatch(receivedResources(resource)),
 });
 
-const pluralizeKind = (kind: string): string => {
+export const pluralizeKind = (kind: string): string => {
   // Use startCase to separate words so the last can be pluralized but remove spaces so as not to humanize
   const pluralized = plural(_.startCase(kind)).replace(/\s+/g, '');
   // Handle special cases like DB -> DBs (instead of DBS).
@@ -129,6 +129,7 @@ const batchResourcesRequest = (
 const getResources = async (
   preferenceList: string[],
   dispatch: Dispatch,
+  onlyPreferenceList = false,
 ): Promise<DiscoveryResources> => {
   const apiResourceData: APIResourceData = await commonFetchJSON('/apis');
   const groupVersionMap = apiResourceData.groups.reduce(
@@ -141,13 +142,15 @@ const getResources = async (
     },
     {},
   );
-  const all = ['/api/v1'].concat(
-    _.flatten(
-      apiResourceData.groups.map<string[]>((group) =>
-        group.versions.map<string>((version) => `/apis/${version.groupVersion}`),
-      ),
-    ).sort((api) => (preferenceList.find((item) => api.includes(`/apis/${item}`)) ? -1 : 0)),
-  );
+  const all = onlyPreferenceList
+    ? preferenceList
+    : ['/api/v1'].concat(
+        _.flatten(
+          apiResourceData.groups.map<string[]>((group) =>
+            group.versions.map<string>((version) => `/apis/${version.groupVersion}`),
+          ),
+        ).sort((api) => (preferenceList.find((item) => api.includes(`/apis/${item}`)) ? -1 : 0)),
+      );
 
   // let batchedData: APIResourceList[] = [];
   const batches = _.chunk(all, API_DISCOVERY_REQUEST_BATCH_SIZE);
@@ -163,19 +166,21 @@ const getResources = async (
     // Cache the resources whenever discovery completes to improve console load times.
     cacheResources(resources);
   }
-  // Dispatch action to indicate all batches were loaded
-  dispatch(setBatchesInFlight(false));
   return allResources.reduce((acc, curr) => _.merge(acc, curr));
 };
 
-const updateResources =
-  (preferenceList: string[]) =>
-  async (dispatch: Dispatch): Promise<DiscoveryResources> => {
+export const updateResources =
+  (preferenceList: string[], onlyPreferenceList = false) =>
+  async (dispatch: Dispatch): Promise<DiscoveryResources | undefined> => {
     dispatch(setResourcesInFlight(true));
     dispatch(setBatchesInFlight(true));
-
-    const resources = await getResources(preferenceList, dispatch);
-
+    let resources;
+    try {
+      resources = await getResources(preferenceList, dispatch, onlyPreferenceList);
+    } finally {
+      dispatch(setResourcesInFlight(false));
+      dispatch(setBatchesInFlight(false));
+    }
     return resources;
   };
 
