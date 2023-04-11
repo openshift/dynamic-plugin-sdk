@@ -1,17 +1,4 @@
 module.exports = {
-  // Disallow specified modules when loaded by import
-  'no-restricted-imports': [
-    'error',
-    {
-      patterns: [
-        {
-          group: ['lodash-es', 'lodash-es/*'],
-          message: 'Use lodash instead.',
-        },
-      ],
-    },
-  ],
-
   // Prefer a specific import scope, using destructured members
   'lodash/import-scope': ['error', 'member'],
 

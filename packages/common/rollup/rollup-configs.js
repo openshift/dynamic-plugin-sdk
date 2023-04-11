@@ -84,8 +84,7 @@ export const tsBuildConfig = ({
     fs.readFileSync(path.resolve(process.cwd(), 'tsconfig.json'), 'utf-8'),
   );
 
-  /** @param {boolean} esmFormat */
-  const getBuildPlugins = (esmFormat) => [
+  const getBuildPlugins = () => [
     nodeResolve(),
     commonjs(),
     json({
@@ -103,7 +102,6 @@ export const tsBuildConfig = ({
     }),
     optimizeLodashImports({
       appendDotJs: false,
-      useLodashEs: esmFormat,
     }),
     analyzer({
       root: rootDir,
@@ -120,7 +118,7 @@ export const tsBuildConfig = ({
       banner,
     },
     external,
-    plugins: getBuildPlugins(false),
+    plugins: getBuildPlugins(),
   };
 
   /** @type {import('rollup').RollupOptions} */
@@ -132,7 +130,7 @@ export const tsBuildConfig = ({
       banner,
     },
     external,
-    plugins: getBuildPlugins(true),
+    plugins: getBuildPlugins(),
   };
 
   const configs = [];

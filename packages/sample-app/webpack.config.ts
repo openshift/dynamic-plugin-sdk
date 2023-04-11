@@ -6,7 +6,7 @@ import HTMLPlugin from 'html-webpack-plugin';
 import { escapeRegExp } from 'lodash';
 import MiniCSSExtractPlugin from 'mini-css-extract-plugin';
 import type { Configuration, WebpackPluginInstance } from 'webpack';
-import { EnvironmentPlugin, NormalModuleReplacementPlugin, container } from 'webpack';
+import { EnvironmentPlugin, container } from 'webpack';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 const isProd = process.env.NODE_ENV === 'production';
@@ -46,7 +46,6 @@ const plugins: WebpackPluginInstance[] = [
   new EnvironmentPlugin({
     NODE_ENV: 'development',
   }),
-  new NormalModuleReplacementPlugin(/^lodash$/, 'lodash-es'),
   new container.ModuleFederationPlugin({
     shared: appSharedModules,
   }),
