@@ -22,6 +22,19 @@ const watchedResourcesMock = {
   },
 };
 
+const clusterWatchedResourcesMock = {
+  clusterRoleBinding: {
+    isList: false,
+    groupVersionKind: {
+      group: 'rbac.authorization.k8s.io',
+      version: 'v1',
+      kind: 'ClusterRoleBinding',
+    },
+    name: 'test',
+    namespace: '',
+  },
+};
+
 const resourceModelMock: K8sModelCommon | undefined = {
   apiGroup: 'appstudio.redhat.com',
   apiVersion: 'v1alpha1',
@@ -31,8 +44,18 @@ const resourceModelMock: K8sModelCommon | undefined = {
   plural: 'applications',
 };
 
+const clusterResourceModelMock: K8sModelCommon | undefined = {
+  apiGroup: 'rbac.authorization.k8s.io',
+  apiVersion: 'v1',
+  crd: false,
+  kind: 'ClusterRoleBinding',
+  namespaced: false,
+  plural: 'ClusterRoleBindings',
+};
+
 const allModelsMock: ImmutableMap<string, K8sModelCommon> = ImmutableMap<string, K8sModelCommon>({
   'appstudio.redhat.com~v1alpha1~Application': resourceModelMock,
+  'rbac.authorization.k8s.io~v1~ClusterRoleBinding': clusterResourceModelMock,
 });
 
 const resourceDataMock: K8sResourceCommon = {
@@ -50,8 +73,22 @@ const resourceDataMock: K8sResourceCommon = {
   status: {},
 };
 
-// Mock modules
+const clusterResourceDataMock: K8sResourceCommon = {
+  apiVersion: 'rbac.authorization.k8s.io/v1',
+  kind: 'ClusterRoleBinding',
+  metadata: {
+    creationTimestamp: '2023-04-08T13:41:21Z',
+    generation: 1,
+    name: 'test',
+    namespace: '',
+    resourceVersion: '414209692',
+    uid: '602ad43f-1a71-4f71-9314-d93bffbc0762',
+  },
+  spec: {},
+  status: {},
+};
 
+// Mock modules
 jest.mock('react-redux', () => ({
   useDispatch: jest.fn(() => jest.fn()),
   useSelector: jest.fn(),
@@ -162,6 +199,41 @@ describe('useK8sWatchResources', () => {
     expect(loaded).toEqual(true);
     expect(loadError).toEqual('');
     expect(data as K8sResourceCommon).toMatchObject(resourceDataMock);
+    expect(useSelectorMock).toHaveBeenCalled();
+  });
+
+  test('should return data for the watched cluster resource', () => {
+    useDeepCompareMemoizeMock.mockReturnValue(clusterWatchedResourcesMock);
+    const ID_MOCK = 'rbac.authorization.k8s.io~v1~ClusterRoleBinding---{"ns":"","name":"test"}';
+    const mockWatchData: WatchData = {
+      id: ID_MOCK,
+      action: jest.fn(),
+    };
+    const payload = {
+      [ID_MOCK]: {
+        data: clusterResourceDataMock,
+        loaded: true,
+        loadError: '',
+      },
+    };
+    const resourceK8s: ImmutableMap<string, unknown> = ImmutableMap(fromJS(payload));
+
+    jest.mock('./usePrevious', () => ({
+      usePrevious: jest.fn(() => undefined),
+    }));
+    useSelectorMock
+      .mockReturnValueOnce(ImmutableMap<string, K8sModelCommon>(allModelsMock)) // Mock models
+      .mockReturnValueOnce(ImmutableMap<string, unknown>(resourceK8s))
+      .mockReturnValueOnce(false);
+    getWatchDataMock.mockReturnValue(mockWatchData);
+    getReduxDataMock.mockReturnValue(clusterResourceDataMock);
+
+    const { result } = renderHook(() => useK8sWatchResources(clusterWatchedResourcesMock));
+    const { clusterRoleBinding } = result.current;
+    const { data, loaded, loadError } = clusterRoleBinding;
+    expect(loaded).toEqual(true);
+    expect(loadError).toEqual('');
+    expect(data as K8sResourceCommon).toMatchObject(clusterResourceDataMock);
     expect(useSelectorMock).toHaveBeenCalled();
   });
 });

@@ -17,7 +17,7 @@ const WorkspaceContext = createContext<ReturnType<typeof workspaceState>>({
   subscribe: () => '',
   unsubscribe: () => undefined,
   getState: () => ({
-    subscribtions: {},
+    subscriptions: {},
     activeWorkspace: null,
   }),
 });

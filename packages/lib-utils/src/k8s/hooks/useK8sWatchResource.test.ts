@@ -22,6 +22,17 @@ const watchedResourceMock: WatchK8sResource = {
   namespace: 'test-ns',
 };
 
+const clusterWatchedResourceMock: WatchK8sResource = {
+  isList: false,
+  groupVersionKind: {
+    group: 'rbac.authorization.k8s.io',
+    version: 'v1',
+    kind: 'ClusterRoleBinding',
+  },
+  name: 'test',
+  namespace: '',
+};
+
 const resourceModelMock: K8sModelCommon | undefined = {
   apiGroup: 'appstudio.redhat.com',
   apiVersion: 'v1alpha1',
@@ -29,6 +40,15 @@ const resourceModelMock: K8sModelCommon | undefined = {
   kind: 'Application',
   namespaced: true,
   plural: 'applications',
+};
+
+const clusterResourceModelMock: K8sModelCommon | undefined = {
+  apiGroup: 'rbac.authorization.k8s.io',
+  apiVersion: 'v1',
+  crd: false,
+  kind: 'ClusterRoleBinding',
+  namespaced: false,
+  plural: 'clusterrolebindings',
 };
 
 const resourceDataMock: K8sResourceCommon = {
@@ -41,6 +61,21 @@ const resourceDataMock: K8sResourceCommon = {
     namespace: 'vnambiar',
     resourceVersion: '414309692',
     uid: '602ad43f-1a71-4e71-9314-d93bffbc0762',
+  },
+  spec: {},
+  status: {},
+};
+
+const clusterResourceDataMock: K8sResourceCommon = {
+  apiVersion: 'rbac.authorization.k8s.io/v1',
+  kind: 'ClusterRoleBinding',
+  metadata: {
+    creationTimestamp: '2023-04-08T13:41:21Z',
+    generation: 1,
+    name: 'test',
+    namespace: '',
+    resourceVersion: '4143229692',
+    uid: '602ad43f-1a71-4e71-9214-d93bffbc0762',
   },
   spec: {},
   status: {},
@@ -164,6 +199,35 @@ describe('useK8sWatchResource', () => {
     const resourceData = data as K8sResourceCommon;
 
     expect(resourceData).toMatchObject(resourceDataMock);
+
+    expect(loaded).toEqual(true);
+    expect(error).toEqual('');
+  });
+
+  test('should return data for a cluster scoped resource resource', () => {
+    const mockWatchData: WatchData = {
+      id: 'rbac.authorization.k8s.io~v1~ClusterRoleBinding---{"ns":"","name":"test"}',
+      action: jest.fn(),
+    };
+    const payload = {
+      data: clusterResourceDataMock,
+      loaded: true,
+      loadError: '',
+    };
+    const reduxIdPayload: ImmutableMap<string, unknown> = ImmutableMap(payload);
+    useSelectorMock.mockReturnValue(reduxIdPayload); // get resourceK8s
+    getReduxDataMock.mockReturnValue(clusterResourceDataMock);
+    useDeepCompareMemoizeMock.mockReturnValue(clusterWatchedResourceMock);
+    useK8sModelMock.mockReturnValue([clusterResourceModelMock, false] as [K8sModelCommon, boolean]);
+    getWatchDataMock.mockReturnValue(mockWatchData);
+
+    const { result } = renderHook(() => useK8sWatchResource(clusterResourceModelMock));
+    const [data, loaded, error] = result.current;
+
+    expect(useSelectorMock).toHaveBeenCalled();
+    const resourceData = data as K8sResourceCommon;
+
+    expect(resourceData).toMatchObject(clusterResourceDataMock);
 
     expect(loaded).toEqual(true);
     expect(error).toEqual('');

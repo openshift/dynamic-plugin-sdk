@@ -36,15 +36,27 @@ const getQueryString = (queryParams: QueryParams) =>
     .map(([key, value = '']) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
     .join('&');
 
-const getK8sAPIPath = ({ apiGroup = 'core', apiVersion }: K8sModelCommon) => {
-  let path = '';
+const getApiPath = (isLegacy: boolean, apiGroup: string, apiVersion: string) => {
+  return isLegacy ? `/api/${apiVersion}` : `/apis/${apiGroup}/${apiVersion}`;
+};
+
+const getK8sAPIPath = ({ apiGroup = 'core', apiVersion, namespaced }: K8sModelCommon) => {
+  const isClusterScoped = namespaced !== true;
+  const isLegacy = apiGroup === 'core' && apiVersion === 'v1';
+  const apiPath = getApiPath(isLegacy, apiGroup, apiVersion);
+
+  // check for cluster scoped resources first and don't include workspace url strings
+  if (isClusterScoped) {
+    return apiPath;
+  }
+
+  // The active workspace is prepended to resource urls
   const activeWorkspace = getActiveWorkspace();
   if (activeWorkspace) {
-    path += `/workspaces/${activeWorkspace}`;
+    return `/workspaces/${activeWorkspace}/${apiPath}`;
   }
-  const isLegacy = apiGroup === 'core' && apiVersion === 'v1';
-  path += isLegacy ? `/api/${apiVersion}` : `/apis/${apiGroup}/${apiVersion}`;
-  return path;
+
+  return '';
 };
 
 /**

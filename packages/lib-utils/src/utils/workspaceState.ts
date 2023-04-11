@@ -26,7 +26,6 @@ export const workspaceState = () => {
   // add subscriber (hook) to registry
   function subscribe(event: UpdateEvents, onUpdate: () => void) {
     const id = uuidv4();
-    // const id = `${Date.now()}${Math.random()}`;
     subscriptions[event][id] = onUpdate;
     // trigger initial update to get the initial data
     onUpdate();
