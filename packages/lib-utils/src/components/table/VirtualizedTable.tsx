@@ -3,7 +3,7 @@ import type { AnyObject } from '@openshift/dynamic-plugin-sdk';
 import type { IAction } from '@patternfly/react-table';
 import { ActionsColumn, Tbody, Td, Th, Thead, Tr, TableComposable } from '@patternfly/react-table';
 import { AutoSizer, WindowScroller } from '@patternfly/react-virtualized-extension';
-import * as _ from 'lodash-es';
+import { get, isEmpty, isString } from 'lodash';
 import * as React from 'react';
 import type { Size, WindowScrollerChildProps } from 'react-virtualized';
 import type { LoadError } from '../status';
@@ -139,10 +139,10 @@ const VirtualizedTable = <D extends AnyObject>({
   const sortData = (index = activeSortIndex, direction = activeSortDirection) => {
     if (direction && direction !== 'none') {
       // back compatibility with sort column attribute defined as a string + transforms: [sortable]
-      const columnSort = _.isString(columns[index].sort) ? columns[index].sort : undefined;
+      const columnSort = isString(columns[index].sort) ? columns[index].sort : undefined;
       return initialData?.sort((objA, objB) => {
-        const a = columnSort ? _.get(objA, String(columnSort)) : Object.values(objA)[index];
-        const b = columnSort ? _.get(objB, String(columnSort)) : Object.values(objB)[index];
+        const a = columnSort ? get(objA, String(columnSort)) : Object.values(objA)[index];
+        const b = columnSort ? get(objB, String(columnSort)) : Object.values(objB)[index];
         return compareData(a, b, direction);
       });
     }
@@ -202,7 +202,7 @@ const VirtualizedTable = <D extends AnyObject>({
       CustomEmptyState={CustomEmptyState}
       loaded={loaded}
       loadError={loadError}
-      noData={!data || _.isEmpty(data)}
+      noData={!data || isEmpty(data)}
       CustomNoDataEmptyState={CustomNoDataEmptyState}
     >
       <div role="grid" aria-label={ariaLabel} aria-rowcount={data?.length || 0}>

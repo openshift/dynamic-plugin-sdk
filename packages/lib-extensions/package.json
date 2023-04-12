@@ -9,11 +9,13 @@
     "directory": "packages/lib-extensions"
   },
   "files": [
-    "dist/index.js",
+    "dist/index.cjs.js",
+    "dist/index.esm.js",
     "dist/index.d.ts",
     "dist/build-metadata.json"
   ],
-  "main": "dist/index.js",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "prepack": "yarn build",

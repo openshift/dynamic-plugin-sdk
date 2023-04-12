@@ -7,7 +7,7 @@ import {
   Label,
   DropdownPosition,
 } from '@patternfly/react-core';
-import * as _ from 'lodash-es';
+import { isEmpty } from 'lodash';
 import React from 'react';
 import type { K8sResourceCommon } from '../../types/k8s';
 import type { BreadcrumbProp, ActionButtonProp, ActionMenuProps } from './utils';
@@ -59,7 +59,7 @@ export const DetailsPageHeader: React.SFC<DetailsPageHeaderProps> = ({
       </Split>
       <Split hasGutter className="pf-u-mb-sm pf-u-mr-sm">
         {/** Icon for details page heading (before title) */}
-        {pageHeading && !_.isEmpty(pageHeading?.iconBeforeTitle) && (
+        {pageHeading && !isEmpty(pageHeading?.iconBeforeTitle) && (
           <SplitItem className="pf-u-mt-auto pf-u-mb-auto">
             {pageHeading?.iconBeforeTitle}
           </SplitItem>
@@ -73,11 +73,11 @@ export const DetailsPageHeader: React.SFC<DetailsPageHeaderProps> = ({
           </SplitItem>
         )}
         {/** Icon for details page heading (after title) */}
-        {pageHeading && !_.isEmpty(pageHeading?.iconAfterTitle) && (
+        {pageHeading && !isEmpty(pageHeading?.iconAfterTitle) && (
           <SplitItem className="pf-u-mt-auto pf-u-mb-auto">{pageHeading?.iconAfterTitle}</SplitItem>
         )}
         {/* Optional details page heading label */}
-        {!_.isEmpty(pageHeading) && !_.isEmpty(pageHeading?.label) && (
+        {!isEmpty(pageHeading) && !isEmpty(pageHeading?.label) && (
           <SplitItem>
             <Label
               href={pageHeading?.label?.href}
@@ -91,7 +91,7 @@ export const DetailsPageHeader: React.SFC<DetailsPageHeaderProps> = ({
         )}
         <SplitItem isFilled />
         {/* Optional action buttons */}
-        {!_.isEmpty(actionButtons) && Array.isArray(actionButtons) && (
+        {!isEmpty(actionButtons) && Array.isArray(actionButtons) && (
           <SplitItem>
             <ActionButtons actionButtons={actionButtons} />
           </SplitItem>

@@ -8,7 +8,7 @@ import {
   DropdownItem,
 } from '@patternfly/react-core';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
-import * as _ from 'lodash-es';
+import { isEmpty } from 'lodash';
 import React from 'react';
 import './ActionMenu.css';
 
@@ -82,7 +82,7 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
   const [dropdownActionItems, setDropdownActionItems] = React.useState<any[]>([]);
 
   React.useEffect(() => {
-    if (!_.isEmpty(groupedActions)) {
+    if (!isEmpty(groupedActions)) {
       setIsGrouped(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -138,12 +138,12 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
 
   React.useEffect(() => {
     let ddActionItems: JSX.Element[] = [];
-    if (!_.isEmpty(actions)) {
+    if (!isEmpty(actions)) {
       ddActionItems = actions.map((action: Action) => {
         return dropdownActionItem(action as Action);
       });
     }
-    if (!_.isEmpty(groupedActions)) {
+    if (!isEmpty(groupedActions)) {
       ddActionItems = groupedActions.map((action: GroupedActions) => {
         // Grouped Actions
         return (

@@ -4,7 +4,7 @@ import {
   DescriptionListTerm,
   Skeleton,
 } from '@patternfly/react-core';
-import * as _ from 'lodash-es';
+import { get } from 'lodash';
 
 import React from 'react';
 
@@ -28,7 +28,7 @@ const DetailsItem: React.FC<DetailsItemProps> = ({
   resource,
   path = '',
 }) => {
-  const objValue = _.get(resource, path);
+  const objValue = get(resource, path);
 
   if (hideEmpty && objValue === undefined && !children) {
     return null;

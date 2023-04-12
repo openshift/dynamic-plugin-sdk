@@ -12,7 +12,7 @@ import {
   ToolbarItemVariant,
 } from '@patternfly/react-core';
 import { FilterIcon } from '@patternfly/react-icons';
-import { debounce, omit } from 'lodash-es';
+import { debounce, omit } from 'lodash';
 import * as React from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { parseFiltersFromURL, setFiltersToURL } from '../../utils/url-sync';

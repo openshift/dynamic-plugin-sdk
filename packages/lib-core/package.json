@@ -9,12 +9,14 @@
     "directory": "packages/lib-core"
   },
   "files": [
-    "dist/index.js",
+    "dist/index.cjs.js",
+    "dist/index.esm.js",
     "dist/index.d.ts",
     "dist/build-metadata.json",
     "CHANGELOG.md"
   ],
-  "main": "dist/index.js",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "prepack": "yarn build",
@@ -28,7 +30,7 @@
     "react": "^17 || ^18"
   },
   "dependencies": {
-    "lodash-es": "^4.17.21",
+    "lodash": "^4.17.21",
     "semver": "^7.3.7",
     "uuid": "^8.3.2",
     "yup": "^0.32.11"

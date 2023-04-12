@@ -1,4 +1,10 @@
 module.exports = {
+  // Prefer a specific import scope, using destructured members
+  'lodash/import-scope': ['error', 'member'],
+
+  // Enforce a maximum number of classes per file
+  'max-classes-per-file': 'off',
+
   // Enforce a convention in the order of require() / import statements
   'import/order': [
     'error',
@@ -13,9 +19,6 @@ module.exports = {
 
   // When there is only a single export from a module, prefer using default export over named export
   'import/prefer-default-export': 'off',
-
-  // Enforce a maximum number of classes per file
-  'max-classes-per-file': 'off',
 
   // Replaced by lib-restricted-external-imports, see the replacement rule documentation for details
   'import/no-extraneous-dependencies': 'off',

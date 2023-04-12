@@ -1,5 +1,5 @@
 import { LabelGroup, Label, Text } from '@patternfly/react-core';
-import * as _ from 'lodash-es';
+import { isEmpty } from 'lodash';
 import * as React from 'react';
 
 /** Type mapping label keys to hrefs */
@@ -29,7 +29,7 @@ export const LabelList: React.FC<LabelListProps> = ({
 }) => {
   const defaultColor = 'purple';
 
-  return _.isEmpty(labels) || !labels ? (
+  return isEmpty(labels) || !labels ? (
     <Text>No labels</Text>
   ) : (
     <LabelGroup defaultIsOpen={expand}>

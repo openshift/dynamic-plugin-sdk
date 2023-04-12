@@ -2,7 +2,7 @@ import { useExtensions, useResolvedExtensions } from '@openshift/dynamic-plugin-
 import type { LoadedExtension } from '@openshift/dynamic-plugin-sdk';
 import { isModelFeatureFlag, isTelemetryListener } from '@openshift/dynamic-plugin-sdk-extensions';
 import { Card, CardBody, Flex, FlexItem, Gallery, GalleryItem } from '@patternfly/react-core';
-import * as _ from 'lodash-es';
+import { truncate } from 'lodash';
 import * as React from 'react';
 import FeatureFlagTable from '../common/FeatureFlagTable';
 import LabelWithTooltipIcon from '../common/LabelWithTooltipIcon';
@@ -18,7 +18,7 @@ const ExtensionGallery: React.FC<ExtensionGalleryProps> = ({ extensions }) => (
       <GalleryItem key={e.uid}>
         <Card isCompact>
           <CardBody>
-            <LabelWithTooltipIcon label={e.type} tooltipContent={_.truncate(e.uid)} />
+            <LabelWithTooltipIcon label={e.type} tooltipContent={truncate(e.uid)} />
           </CardBody>
         </Card>
       </GalleryItem>
