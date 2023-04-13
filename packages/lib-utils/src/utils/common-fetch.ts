@@ -1,5 +1,8 @@
 import { CustomError, applyDefaults, applyOverrides } from '@openshift/dynamic-plugin-sdk';
 import { getUtilsConfig } from '../config';
+import { K8sStatusError } from '../k8s/k8s-errors';
+import { isK8sStatus } from '../k8s/k8s-utils';
+import type { K8sStatus } from '../types/k8s';
 
 export type FetchOptionArgs = [
   requestInit?: RequestInit,
@@ -65,10 +68,14 @@ export const commonFetchJSON = async <TResult>(
     timeout,
     isK8sAPIRequest,
   );
+  const responseText: string = await response.clone().text();
+  const data: K8sStatus | TResult = JSON.parse(responseText);
 
-  const responseText = await response.text();
+  if (isK8sStatus(data)) {
+    throw new K8sStatusError(data);
+  }
 
-  return response.ok ? JSON.parse(responseText) : null;
+  return data;
 };
 
 const commonFetchJSONWithBody = <TResult>(

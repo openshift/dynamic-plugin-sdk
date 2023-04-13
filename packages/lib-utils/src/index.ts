@@ -35,7 +35,9 @@ export {
   getK8sResourceURL,
   getActiveWorkspace,
   setActiveWorkspaceLocalStorage,
+  isK8sStatus,
 } from './k8s/k8s-utils';
+export { K8sStatusError } from './k8s/k8s-errors';
 export { createAPIActions, initAPIDiscovery } from './app/api-discovery';
 export { InitAPIDiscovery, DiscoveryResources, APIActions } from './types/api-discovery';
 export {
@@ -44,6 +46,7 @@ export {
   K8sGroupVersionKind,
   K8sResourceIdentifier,
   K8sResourceKindReference,
+  K8sStatus,
   K8sVerb,
   GetGroupVersionKindForModel,
   GroupVersionKind,
