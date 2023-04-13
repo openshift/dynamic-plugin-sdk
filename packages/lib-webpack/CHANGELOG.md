@@ -1,5 +1,10 @@
 # Changelog for `@openshift/dynamic-plugin-sdk-webpack`
 
+## 3.0.1 - 2023-04-13
+
+- Fix bug in `DynamicRemotePlugin` that occurs with webpack `createChildCompiler` usage ([#213])
+- Support CommonJS build output and improve generated Lodash imports ([#215])
+
 ## 3.0.0 - 2023-03-02
 
 - Add base URL for plugin assets to plugin manifest ([#206])
@@ -23,3 +28,5 @@
 [#199]: https://github.com/openshift/dynamic-plugin-sdk/pull/199
 [#206]: https://github.com/openshift/dynamic-plugin-sdk/pull/206
 [#207]: https://github.com/openshift/dynamic-plugin-sdk/pull/207
+[#213]: https://github.com/openshift/dynamic-plugin-sdk/pull/213
+[#215]: https://github.com/openshift/dynamic-plugin-sdk/pull/215
