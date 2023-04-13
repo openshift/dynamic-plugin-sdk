@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { AnyObject } from '@monorepo/common';
 import { consoleLogger, ErrorWithCause } from '@monorepo/common';
-import * as _ from 'lodash-es';
+import { cloneDeep, compact, isEqual, noop, pickBy } from 'lodash';
 import { version as sdkVersion } from '../../package.json';
 import type { LoadedExtension } from '../types/extension';
 import type { PluginManifest, PendingPlugin, LoadedPlugin, FailedPlugin } from '../types/plugin';
@@ -76,7 +76,7 @@ export class PluginStore implements PluginStoreInterface {
 
     if (eventTypes.length === 0) {
       consoleLogger.warn('subscribe method called with empty eventTypes');
-      return _.noop;
+      return noop;
     }
 
     eventTypes.forEach((t) => {
@@ -144,10 +144,10 @@ export class PluginStore implements PluginStoreInterface {
 
     this.featureFlags = {
       ...this.featureFlags,
-      ..._.pickBy(newFlags, (value) => typeof value === 'boolean'),
+      ...pickBy(newFlags, (value) => typeof value === 'boolean'),
     };
 
-    if (!_.isEqual(prevFeatureFlags, this.featureFlags)) {
+    if (!isEqual(prevFeatureFlags, this.featureFlags)) {
       this.updateExtensions();
       this.invokeListeners(PluginEventType.FeatureFlagsChanged);
     }
@@ -267,7 +267,7 @@ export class PluginStore implements PluginStoreInterface {
       [],
     );
 
-    if (!_.isEqual(prevExtensions, this.extensions)) {
+    if (!isEqual(prevExtensions, this.extensions)) {
       this.invokeListeners(PluginEventType.ExtensionsChanged);
     }
   }
@@ -294,7 +294,7 @@ export class PluginStore implements PluginStoreInterface {
     const pluginName = manifest.name;
     const buildHash = manifest.buildHash ?? uuidv4();
 
-    const loadedExtensions = _.cloneDeep(manifest.extensions).map<LoadedExtension>((e, index) =>
+    const loadedExtensions = cloneDeep(manifest.extensions).map<LoadedExtension>((e, index) =>
       decodeCodeRefs(
         {
           ...e,
@@ -334,7 +334,7 @@ export class PluginStore implements PluginStoreInterface {
     this.updateExtensions();
 
     consoleLogger.error(`Plugin ${pluginName} has failed to load`);
-    consoleLogger.error(..._.compact([errorMessage, errorCause]));
+    consoleLogger.error(...compact([errorMessage, errorCause]));
   }
 
   async getExposedModule<TModule extends AnyObject>(pluginName: string, moduleName: string) {

@@ -1,4 +1,4 @@
-import { tsLibConfig } from '../common/rollup-configs';
+import { tsBuildConfig } from '../common/rollup/rollup-configs';
 import pkg from './package.json';
 
-export default tsLibConfig(pkg, 'src/index.ts');
+export default tsBuildConfig({ pkg, format: 'cjs-and-esm' });

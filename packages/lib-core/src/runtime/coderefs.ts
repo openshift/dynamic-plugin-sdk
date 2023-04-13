@@ -1,6 +1,6 @@
 import type { AnyObject } from '@monorepo/common';
 import { CustomError, ErrorWithCause, visitDeep } from '@monorepo/common';
-import * as _ from 'lodash-es';
+import { cloneDeep, has, identity, isEqual, isPlainObject } from 'lodash';
 import type {
   EncodedCodeRef,
   CodeRef,
@@ -26,13 +26,13 @@ export const isExtensionCodeRefsResolutionError = (
 const codeRefSymbol = Symbol('CodeRef');
 
 const isEncodedCodeRef = (obj: unknown): obj is EncodedCodeRef =>
-  _.isPlainObject(obj) &&
-  _.isEqual(Object.getOwnPropertyNames(obj), ['$codeRef']) &&
+  isPlainObject(obj) &&
+  isEqual(Object.getOwnPropertyNames(obj), ['$codeRef']) &&
   typeof (obj as EncodedCodeRef).$codeRef === 'string';
 
 const isCodeRef = (obj: unknown): obj is CodeRef =>
   typeof obj === 'function' &&
-  _.isEqual(Object.getOwnPropertySymbols(obj), [codeRefSymbol]) &&
+  isEqual(Object.getOwnPropertySymbols(obj), [codeRefSymbol]) &&
   (obj as unknown as Record<symbol, boolean>)[codeRefSymbol] === true;
 
 /**
@@ -58,7 +58,7 @@ const parseEncodedCodeRef = (
 export const getPluginModule = async <TModule extends AnyObject>(
   moduleName: string,
   entryModule: PluginEntryModule,
-  formatErrorMessage: (message: string) => string = _.identity,
+  formatErrorMessage: (message: string) => string = identity,
 ) => {
   try {
     const moduleFactory = await entryModule.get(moduleName);
@@ -75,7 +75,7 @@ const createCodeRef =
   (
     encodedCodeRef: EncodedCodeRef,
     entryModule: PluginEntryModule,
-    formatErrorMessage: (message: string) => string = _.identity,
+    formatErrorMessage: (message: string) => string = identity,
   ): CodeRef =>
   async () => {
     const refData = parseEncodedCodeRef(encodedCodeRef);
@@ -88,7 +88,7 @@ const createCodeRef =
 
     const referencedModule = await getPluginModule(moduleName, entryModule, formatErrorMessage);
 
-    if (!_.has(referencedModule, exportName)) {
+    if (!has(referencedModule, exportName)) {
       throw new Error(formatErrorMessage(`Missing module export '${moduleName}.${exportName}'`));
     }
 
@@ -139,7 +139,7 @@ export const decodeCodeRefs = (extension: LoadedExtension, entryModule: PluginEn
 export const resolveCodeRefValues = async <TExtension extends Extension>(
   extension: LoadedExtension<TExtension>,
 ) => {
-  const clonedProperties = _.cloneDeep(extension.properties);
+  const clonedProperties = cloneDeep(extension.properties);
   const resolutions: Promise<void>[] = [];
   const resolutionErrors: unknown[] = [];
 

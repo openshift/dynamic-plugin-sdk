@@ -1,5 +1,5 @@
 import { Button, Flex, FlexItem, Tooltip } from '@patternfly/react-core';
-import * as _ from 'lodash-es';
+import { isEmpty, map } from 'lodash';
 import React from 'react';
 
 export type ActionButtonProp = {
@@ -42,8 +42,8 @@ const ActionButton: React.FC<ActionButtonProp> = ({
 
 export const ActionButtons: React.SFC<ActionButtonsProps> = ({ actionButtons }) => (
   <Flex>
-    {_.map(actionButtons, (actionButton, i) => {
-      if (!_.isEmpty(actionButton)) {
+    {map(actionButtons, (actionButton, i) => {
+      if (!isEmpty(actionButton)) {
         return (
           <FlexItem key={actionButton.id || i}>
             <ActionButton

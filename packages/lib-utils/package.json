@@ -1,6 +1,6 @@
 {
   "name": "@openshift/dynamic-plugin-sdk-utils",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "Provides React focused dynamic plugin SDK utilities",
   "license": "Apache-2.0",
   "repository": {
@@ -9,12 +9,14 @@
     "directory": "packages/lib-utils"
   },
   "files": [
-    "dist/index.js",
+    "dist/index.cjs.js",
+    "dist/index.esm.js",
     "dist/index.d.ts",
     "dist/index.css",
     "dist/build-metadata.json"
   ],
-  "main": "dist/index.js",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "prepack": "yarn build",
@@ -42,7 +44,7 @@
   },
   "dependencies": {
     "immutable": "^3.8.2",
-    "lodash-es": "^4.17.21",
+    "lodash": "^4.17.21",
     "pluralize": "^8.0.0",
     "typesafe-actions": "^4.4.2",
     "uuid": "^8.3.2"

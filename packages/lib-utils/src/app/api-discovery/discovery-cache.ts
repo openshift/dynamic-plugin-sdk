@@ -1,5 +1,5 @@
 import { consoleLogger } from '@openshift/dynamic-plugin-sdk';
-import * as _ from 'lodash-es';
+import { keyBy, merge, mergeWith } from 'lodash';
 import { getReferenceForModel } from '../../k8s/k8s-utils';
 import type { DiscoveryResources } from '../../types/api-discovery';
 import type { K8sModelCommon } from '../../types/k8s';
@@ -7,7 +7,7 @@ import type { K8sModelCommon } from '../../types/k8s';
 const SDK_API_DISCOVERY_RESOURCES_LOCAL_STORAGE_KEY = 'sdk/api-discovery-resources';
 
 const mergeByKey = (prev: K8sModelCommon[], next: K8sModelCommon[]) =>
-  Object.values(_.merge(_.keyBy(prev, getReferenceForModel), _.keyBy(next, getReferenceForModel)));
+  Object.values(merge(keyBy(prev, getReferenceForModel), keyBy(next, getReferenceForModel)));
 
 const getLocalResources = () => {
   try {
@@ -29,7 +29,7 @@ const setLocalResources = (resources: DiscoveryResources[]) => {
 export const cacheResources = (resources: DiscoveryResources[]) => {
   const allResources = [...[getLocalResources()], ...resources].reduce(
     (acc, curr) =>
-      _.mergeWith(acc, curr, (first, second) => {
+      mergeWith(acc, curr, (first, second) => {
         if (Array.isArray(first) && first[0]?.constructor?.name === 'Object') {
           return mergeByKey(first, second);
         }
