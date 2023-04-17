@@ -433,7 +433,7 @@ export type K8sStatus = K8sResourceIdentifier & {
 export class K8sStatusError extends CustomError {
     constructor(statusObject: K8sStatus);
     // (undocumented)
-    statusObject: K8sStatus;
+    readonly statusObject: K8sStatus;
 }
 
 // @public (undocumented)
