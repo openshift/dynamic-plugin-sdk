@@ -710,13 +710,13 @@ export type UseK8sModels = () => [{
 export const useK8sModels: UseK8sModels;
 
 // @public
-export const useK8sWatchResource: <R extends K8sResourceCommon | K8sResourceCommon[]>(initResource: WatchK8sResource | null, options?: Partial<WebSocketOptions & RequestInit & {
+export const useK8sWatchResource: <R extends K8sResourceCommon | K8sResourceCommon[]>(initResource: WatchK8sResource | null, initModel?: K8sModelCommon | undefined, options?: Partial<WebSocketOptions & RequestInit & {
     wsPrefix?: string | undefined;
     pathPrefix?: string | undefined;
 }> | undefined) => WatchK8sResult<R>;
 
 // @public
-export const useK8sWatchResources: <R extends ResourcesObject>(initResources: WatchK8sResources<R>, options?: Partial<WebSocketOptions & RequestInit & {
+export const useK8sWatchResources: <R extends ResourcesObject>(initResources: WatchK8sResources<R>, initModels?: K8sModelCommon[] | undefined, options?: Partial<WebSocketOptions & RequestInit & {
     wsPrefix?: string | undefined;
     pathPrefix?: string | undefined;
 }> | undefined) => WatchK8sResults<R>;

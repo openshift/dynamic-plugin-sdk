@@ -3,7 +3,7 @@ import * as React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import * as k8sActions from '../../app/redux/actions/k8s';
 import { getReduxIdPayload } from '../../app/redux/reducers/k8s/selector';
-import type { K8sResourceCommon } from '../../types/k8s';
+import type { K8sModelCommon, K8sResourceCommon } from '../../types/k8s';
 import type { SDKStoreState } from '../../types/redux';
 import WorkspaceContext from '../../utils/WorkspaceContext';
 import type { WebSocketOptions } from '../../web-socket/types';
@@ -18,6 +18,7 @@ const NOT_A_VALUE = '__not-a-value__';
 /**
  * Hook that retrieves the k8s resource along with status for loaded and error.
  * @param initResource - options needed to watch for resource.
+ * @param initModel - static model to pull information from when watching a resource.
  * @param options - WS and fetch options passed down to WSFactory @see {@link WebSocketFactory} and when pulling the first item.
  * @returns An array with first item as resource(s), second item as loaded status and third item as error state if any.
  *
@@ -34,15 +35,19 @@ const NOT_A_VALUE = '__not-a-value__';
  */
 export const useK8sWatchResource = <R extends K8sResourceCommon | K8sResourceCommon[]>(
   initResource: WatchK8sResource | null,
+  initModel?: K8sModelCommon,
   options?: Partial<WebSocketOptions & RequestInit & { wsPrefix?: string; pathPrefix?: string }>,
 ): WatchK8sResult<R> => {
   const workspaceContext = React.useContext(WorkspaceContext);
   const workspace = workspaceContext.getState().activeWorkspace;
   const withFallback: WatchK8sResource = initResource || { kind: NOT_A_VALUE };
   const resource = useDeepCompareMemoize(withFallback, true);
-  const modelsLoaded = useModelsLoaded();
 
-  const [k8sModel] = useK8sModel(resource.groupVersionKind || resource.kind);
+  const storedModelsLoaded = useModelsLoaded();
+  const modelsLoaded = initModel ? true : storedModelsLoaded;
+
+  const [storedK8sModel] = useK8sModel(resource.groupVersionKind || resource.kind);
+  const k8sModel = initModel || storedK8sModel;
 
   const watchData = React.useMemo(
     () => getWatchData(resource, k8sModel, options),
