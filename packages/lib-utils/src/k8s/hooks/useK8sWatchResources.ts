@@ -61,7 +61,7 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
       return transformGroupVersionKindToReference(getReferenceForModel(model));
     }),
   );
-  const allK8sModels = initModelsMap || storedK8sModels;
+  const allK8sModels = initModels ? initModelsMap : storedK8sModels;
 
   const prevK8sModels = usePrevious(allK8sModels);
   const prevResources = usePrevious(resources);
