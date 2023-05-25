@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { AnyObject } from '@monorepo/common';
 import { consoleLogger, ErrorWithCause } from '@monorepo/common';
-import * as _ from 'lodash-es';
+import { identity, noop } from 'lodash';
 import * as semver from 'semver';
 import { DEFAULT_REMOTE_ENTRY_CALLBACK } from '../constants';
 import type { ResourceFetch } from '../types/fetch';
@@ -163,8 +163,8 @@ export class PluginLoader {
       fetchImpl: options.fetchImpl ?? basicFetch,
       fixedPluginDependencyResolutions: options.fixedPluginDependencyResolutions ?? {},
       sharedScope: options.sharedScope ?? {},
-      postProcessManifest: options.postProcessManifest ?? _.identity,
-      getPluginEntryModule: options.getPluginEntryModule ?? _.noop,
+      postProcessManifest: options.postProcessManifest ?? identity,
+      getPluginEntryModule: options.getPluginEntryModule ?? noop,
     };
 
     this.registerPluginEntryCallback();

@@ -1,5 +1,5 @@
 import { CustomError } from '@openshift/dynamic-plugin-sdk';
-import * as _ from 'lodash-es';
+import { isEmpty } from 'lodash';
 import * as k8sActions from '../../app/redux/actions/k8s';
 import type { K8sModelCommon } from '../../types/k8s';
 import type { WebSocketOptions } from '../../web-socket/types';
@@ -15,7 +15,7 @@ export class NoModelError extends CustomError {
 
 export const makeReduxID = (k8sKind: K8sModelCommon, query: Query) => {
   let queryString = '';
-  if (!_.isEmpty(query)) {
+  if (!isEmpty(query)) {
     queryString = `---${JSON.stringify(query)}`;
   }
 
@@ -25,15 +25,15 @@ export const makeReduxID = (k8sKind: K8sModelCommon, query: Query) => {
 export const makeQuery: MakeQuery = (namespace, labelSelector, fieldSelector, name, limit) => {
   const query: Query = {};
 
-  if (!_.isEmpty(labelSelector)) {
+  if (!isEmpty(labelSelector)) {
     query.labelSelector = labelSelector;
   }
 
-  if (!_.isEmpty(namespace)) {
+  if (!isEmpty(namespace)) {
     query.ns = namespace;
   }
 
-  if (!_.isEmpty(name)) {
+  if (!isEmpty(name)) {
     query.name = name;
   }
 

@@ -1,6 +1,6 @@
 import { DEFAULT_REMOTE_ENTRY_CALLBACK } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
 import type { EncodedExtension } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
-import * as _ from 'lodash';
+import { isEmpty, mapValues } from 'lodash';
 import * as yup from 'yup';
 import { WebpackPluginInstance, Compiler, container } from 'webpack';
 import type { PluginBuildMetadata } from '../types/plugin';
@@ -173,7 +173,7 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
       name: jsonp ? entryCallbackName : containerName,
     };
 
-    const containerModules = _.mapValues(
+    const containerModules = mapValues(
       pluginMetadata.exposedModules ?? {},
       (moduleRequest, moduleName) => ({
         import: moduleRequest,
@@ -196,7 +196,7 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
 
     // ModuleFederationPlugin does not generate a container entry when the provided
     // exposes option is empty; we fix that by invoking the ContainerPlugin manually
-    if (_.isEmpty(containerModules)) {
+    if (isEmpty(containerModules)) {
       new container.ContainerPlugin({
         name: containerName,
         library: containerLibrary,

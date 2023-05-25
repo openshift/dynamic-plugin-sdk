@@ -1,5 +1,19 @@
 # Changelog for `@openshift/dynamic-plugin-sdk`
 
+## 4.0.0 - 2023-04-13
+
+> This release removes the `PluginLoader` export. Pass the former `PluginLoader`
+> options object as `loaderOptions` when creating the `PluginStore`.
+
+- Modify `PluginStore.loadPlugin` signature to accept plugin manifest ([#212])
+- Ensure `PluginStore.loadPlugin` returns the same Promise for pending plugins ([#212])
+- Treat `PluginLoader` as an implementation detail of `PluginStore` ([#212])
+- Replace `entryCallbackName` loader option with `entryCallbackSettings.name` ([#212])
+- Add `entryCallbackSettings.autoRegisterCallback` loader option ([#212])
+- Support tracking pending plugins via `PluginStore.getPluginInfo` ([#212])
+- Provide access to raw plugin manifest in all `PluginInfoEntry` objects ([#212])
+- Support CommonJS build output and improve generated Lodash imports ([#215])
+
 ## 3.0.0 - 2023-03-02
 
 > This release adds new mandatory field to plugin manifest: `baseURL`.
@@ -39,3 +53,5 @@
 [#204]: https://github.com/openshift/dynamic-plugin-sdk/pull/204
 [#207]: https://github.com/openshift/dynamic-plugin-sdk/pull/207
 [#208]: https://github.com/openshift/dynamic-plugin-sdk/pull/208
+[#212]: https://github.com/openshift/dynamic-plugin-sdk/pull/212
+[#215]: https://github.com/openshift/dynamic-plugin-sdk/pull/215

@@ -15,7 +15,7 @@ module.exports = {
     ...require('./all-bases').settings,
   },
 
-  plugins: ['promise', 'node'],
+  plugins: ['promise', 'node', 'lodash'],
 
   rules: require('../rules/all-bases'),
 };

@@ -1,5 +1,5 @@
 import { consoleLogger } from '@openshift/dynamic-plugin-sdk';
-import * as _ from 'lodash-es';
+import { filter, get, omit } from 'lodash';
 import type { Dispatch } from 'redux';
 import type { ActionType as Action } from 'typesafe-actions';
 import { action } from 'typesafe-actions';
@@ -126,7 +126,7 @@ export const watchK8sList =
           }
         : {};
 
-      const queryParameters = _.omit(queryWithCluster, 'ns');
+      const queryParameters = omit(queryWithCluster, 'ns');
 
       const { labelSelector } = queryParameters;
       if (labelSelector) {
@@ -194,7 +194,7 @@ export const watchK8sList =
           return;
         }
 
-        if (!_.get(k8skind, 'verbs', ['watch']).includes('watch')) {
+        if (!get(k8skind, 'verbs', ['watch']).includes('watch')) {
           consoleLogger.warn(
             'Resource does not support watching, falling back to polling.',
             k8skind,
@@ -257,7 +257,7 @@ export const watchK8sList =
         })
         .onBulkMessage((events: MessageDataType[]) =>
           [updateListFromWS, extraAction].forEach((f) => {
-            const safeEvents = _.filter(
+            const safeEvents = filter(
               events,
               (e: MessageDataType): e is K8sModelCommon & K8sEvent => typeof e !== 'string',
             );
@@ -329,7 +329,7 @@ export const watchK8sObject =
     POLLs[id] = window.setInterval(poller, 30 * 1000);
     poller();
 
-    if (!_.get(k8sType, 'verbs', ['watch']).includes('watch')) {
+    if (!get(k8sType, 'verbs', ['watch']).includes('watch')) {
       consoleLogger.warn('Resource does not support watching', k8sType);
       return;
     }

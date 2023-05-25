@@ -1,38 +1,36 @@
-import * as _ from 'lodash-es';
+import { defaultsDeep, forOwn, isPlainObject } from 'lodash';
 import type { AnyObject } from '../types/common';
 
 /**
  * Create new object by recursively assigning property defaults to `obj`.
  */
 export const applyDefaults = <TObject>(obj: TObject, defaults: unknown): TObject =>
-  _.defaultsDeep({}, obj, defaults);
+  defaultsDeep({}, obj, defaults);
 
 /**
  * Create new object by recursively assigning property overrides to `obj`.
  */
 export const applyOverrides = <TObject>(obj: TObject, overrides: unknown): TObject =>
-  _.defaultsDeep({}, overrides, obj);
+  defaultsDeep({}, overrides, obj);
 
 /**
- * Recursive equivalent of {@link _.forOwn} function that traverses plain objects and arrays.
+ * Recursive equivalent of Lodash `forOwn` function that traverses objects and arrays.
  */
 export const visitDeep = <TValue>(
   obj: AnyObject,
   predicate: (value: unknown) => value is TValue,
   valueCallback: (value: TValue, key: string, container: AnyObject) => void,
-  isPlainObject: (obj: unknown) => obj is AnyObject = (o): o is AnyObject => _.isPlainObject(o),
+  isObject: (obj: unknown) => obj is AnyObject = (o): o is AnyObject => isPlainObject(o),
 ) => {
-  const visitValue = (value: unknown, key: string, container: AnyObject) => {
+  forOwn(obj, (value: unknown, key: string, container: AnyObject) => {
     if (predicate(value)) {
       valueCallback(value, key, container);
-    } else if (isPlainObject(value)) {
-      visitDeep(value, predicate, valueCallback, isPlainObject);
+    } else if (isObject(value)) {
+      visitDeep(value, predicate, valueCallback, isObject);
     } else if (Array.isArray(value)) {
       value.forEach((element) => {
-        visitDeep(element, predicate, valueCallback, isPlainObject);
+        visitDeep(element, predicate, valueCallback, isObject);
       });
     }
-  };
-
-  _.forOwn(obj, visitValue);
+  });
 };

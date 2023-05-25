@@ -1,4 +1,4 @@
-import * as _ from 'lodash-es';
+import { isEqualWith } from 'lodash';
 import * as React from 'react';
 import type { Extension, LoadedExtension, ExtensionPredicate } from '../types/extension';
 import type { PluginStoreInterface } from '../types/store';
@@ -10,7 +10,7 @@ const eventTypes = [PluginEventType.ExtensionsChanged];
 const getData = (pluginStore: PluginStoreInterface) => pluginStore.getExtensions();
 
 const isSameData = (prevData: LoadedExtension[], nextData: LoadedExtension[]) =>
-  _.isEqualWith(prevData, nextData, (a, b) => a === b);
+  isEqualWith(prevData, nextData, (a, b) => a === b);
 
 /**
  * React hook for consuming extensions which are currently in use.

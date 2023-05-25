@@ -1,5 +1,5 @@
 import { Map as ImmutableMap } from 'immutable';
-import * as _ from 'lodash-es';
+import { isEmpty, toArray } from 'lodash';
 import type {
   K8sModelCommon,
   K8sResourceCommon,
@@ -100,7 +100,7 @@ export const getK8sResourceURL = (
     resourcePath += `/${path}`;
   }
 
-  if (queryParams && !_.isEmpty(queryParams)) {
+  if (queryParams && !isEmpty(queryParams)) {
     resourcePath += `?${getQueryString(queryParams)}`;
   }
 
@@ -125,11 +125,11 @@ const requirementToString = (requirement: MatchExpression): string => {
   }
 
   if (requirement.operator === 'In') {
-    return `${requirement.key} in (${_.toArray(requirement.values).join(',')})`;
+    return `${requirement.key} in (${toArray(requirement.values).join(',')})`;
   }
 
   if (requirement.operator === 'NotIn') {
-    return `${requirement.key} notin (${_.toArray(requirement.values).join(',')})`;
+    return `${requirement.key} notin (${toArray(requirement.values).join(',')})`;
   }
 
   if (requirement.operator === 'GreaterThan') {

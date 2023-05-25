@@ -1,4 +1,4 @@
-import * as _ from 'lodash-es';
+import { noop } from 'lodash';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type LogFunction = (message?: any, ...optionalParams: any[]) => void;
@@ -15,7 +15,7 @@ const isProdEnv = process.env.NODE_ENV === 'production';
  */
 export const consoleLogger: Logger = {
   /* eslint-disable no-console */
-  info: isProdEnv ? _.noop : console.info,
+  info: isProdEnv ? noop : console.info,
   warn: console.warn,
   error: console.error,
   /* eslint-enable no-console */

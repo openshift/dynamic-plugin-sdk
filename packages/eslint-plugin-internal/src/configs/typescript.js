@@ -12,7 +12,10 @@ module.exports = {
           '@typescript-eslint/parser': ['.ts', '.tsx'],
         },
         'import/resolver': {
-          typescript: { alwaysTryTypes: true },
+          typescript: {
+            alwaysTryTypes: true,
+            project: 'packages/*/tsconfig.json',
+          },
         },
       },
 
