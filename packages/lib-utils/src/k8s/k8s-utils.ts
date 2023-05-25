@@ -1,5 +1,5 @@
 import { Map as ImmutableMap } from 'immutable';
-import { isEmpty, toArray } from 'lodash';
+import { isEmpty, isPlainObject, toArray } from 'lodash';
 import type {
   K8sModelCommon,
   K8sResourceCommon,
@@ -24,7 +24,7 @@ const ACTIVE_WORKSPACE_KEY = 'sdk/active-workspace';
  * @returns true if data is of the K8sStatus type, otherwise false.
  */
 export const isK8sStatus = (data: unknown): data is K8sStatus =>
-  (data as K8sStatus).kind === 'Status';
+  isPlainObject(data) && (data as K8sStatus).kind === 'Status';
 
 /**
  * @returns the activeWorkspace as a string or null

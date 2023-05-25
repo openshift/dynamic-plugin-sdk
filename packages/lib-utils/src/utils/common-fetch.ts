@@ -67,7 +67,7 @@ export const commonFetchJSON = async <TResult>(
     timeout,
     isK8sAPIRequest,
   );
-  const responseText: string = await response.text();
+  const responseText = await response.text();
   const data = JSON.parse(responseText);
 
   if (isK8sAPIRequest && isK8sStatus(data)) {
