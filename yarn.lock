@@ -2570,6 +2570,67 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@module-federation/node@npm:^0.14.0":
+  version: 0.14.7
+  resolution: "@module-federation/node@npm:0.14.7"
+  dependencies:
+    "@module-federation/utilities": 1.7.6
+    encoding: ^0.1.13
+    node-fetch: ^2.6.7
+  peerDependencies:
+    next: ^12||^13
+    react: ^16||^17||^18
+    react-dom: ^16||^17||^18
+    webpack: ^5.40.0
+  peerDependenciesMeta:
+    next:
+      optional: true
+    react:
+      optional: true
+    react-dom:
+      optional: true
+  checksum: cc4b263ec4ce7796117f1e85e2339e61c2039183a43843c31788282e76a8ad9dddcade8260ca04d01c3b47485d4fd5e940516fbfa5df3a9ba68634a567b82444
+  languageName: node
+  linkType: hard
+
+"@module-federation/utilities@npm:1.7.6":
+  version: 1.7.6
+  resolution: "@module-federation/utilities@npm:1.7.6"
+  peerDependencies:
+    next: ^12 || ^13
+    react: ^16 || ^17 || ^18
+    react-dom: ^16 || ^17 || ^18
+    webpack: ^5.40.0
+  peerDependenciesMeta:
+    next:
+      optional: true
+    react:
+      optional: true
+    react-dom:
+      optional: true
+  checksum: 45689375a36174b84da546608e4564c6347f1e70ce2a736cf5c1019ade9633a415eb095a212681dbf92b97d4eaffb6345c685268d8edf08c944e17cace3c476d
+  languageName: node
+  linkType: hard
+
+"@module-federation/utilities@npm:^1.8.0":
+  version: 1.8.0
+  resolution: "@module-federation/utilities@npm:1.8.0"
+  peerDependencies:
+    next: ^12 || ^13
+    react: ^16 || ^17 || ^18
+    react-dom: ^16 || ^17 || ^18
+    webpack: ^5.40.0
+  peerDependenciesMeta:
+    next:
+      optional: true
+    react:
+      optional: true
+    react-dom:
+      optional: true
+  checksum: a1d00244ef2e6975b2873fb9866eb99df13ba8e18397653860070a67d21d9613d1cbae81258228b14f46bd8e3cff57ef7f9be3f62dbbacdcdb99f4e214959217
+  languageName: node
+  linkType: hard
+
 "@monorepo/common@workspace:packages/common":
   version: 0.0.0-use.local
   resolution: "@monorepo/common@workspace:packages/common"
@@ -9226,7 +9287,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"encoding@npm:^0.1.12":
+"encoding@npm:^0.1.12, encoding@npm:^0.1.13":
   version: 0.1.13
   resolution: "encoding@npm:0.1.13"
   dependencies:

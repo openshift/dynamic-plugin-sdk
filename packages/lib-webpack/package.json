@@ -28,6 +28,7 @@
     "webpack": "^5.75.0"
   },
   "dependencies": {
+    "@module-federation/node": "^0.14.0",
     "lodash": "^4.17.21",
     "yup": "^0.32.11"
   },
