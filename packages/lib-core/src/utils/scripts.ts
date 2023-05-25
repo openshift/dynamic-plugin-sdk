@@ -1,7 +1,14 @@
+import type { PluginManifest } from '../shared-webpack';
+
 /**
  * Load a script from the given URL by injecting new HTML `script` element into the document.
  */
-export const injectScriptElement = (url: string, id: string, getDocument = () => document) =>
+export const injectScriptElement = (
+  url: string,
+  _manifest: PluginManifest,
+  id: string,
+  getDocument = () => document,
+) =>
   new Promise<void>((resolve, reject) => {
     const script = getDocument().createElement('script');
 
@@ -23,5 +30,13 @@ export const injectScriptElement = (url: string, id: string, getDocument = () =>
 /**
  * Get the corresponding HTML `script` element or `null` if not present in the document.
  */
-export const getScriptElement = (id: string, getDocument = () => document) =>
-  Array.from(getDocument().scripts).find((script) => script.id === id) ?? null;
+export const getScriptElement = (id: string, getDocument = () => document) => {
+  let document;
+  try {
+    document = getDocument();
+    return Array.from(document.scripts).find((script) => script.id === id) ?? null;
+  } catch {
+    // Cover environments that do co not contain document
+    return null;
+  }
+};

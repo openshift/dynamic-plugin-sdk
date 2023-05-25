@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { AnyObject } from '@monorepo/common';
 import { consoleLogger, ErrorWithCause } from '@monorepo/common';
-import { identity, noop } from 'lodash';
+import { identity } from 'lodash';
 import * as semver from 'semver';
 import { DEFAULT_REMOTE_ENTRY_CALLBACK } from '../constants';
 import type { ResourceFetch } from '../types/fetch';
@@ -141,7 +141,17 @@ export type PluginLoaderOptions = Partial<{
    *
    * By default, this function does nothing.
    */
-  getPluginEntryModule: (manifest: PluginManifest) => PluginEntryModule | void;
+  getPluginEntryModule: (manifest: PluginManifest) => Promise<PluginEntryModule | void>;
+
+  /**
+   * Function that handles script injection
+   *
+   * This option is relevant if the script injection promise needs to be altered.
+   *
+   * For example, if the "script" injection is executed in Node.js environment rather than browser.
+   */
+
+  injectScript(url: string, manifest: PluginManifest, id?: string): Promise<void>;
 }>;
 
 /**
@@ -164,7 +174,8 @@ export class PluginLoader {
       fixedPluginDependencyResolutions: options.fixedPluginDependencyResolutions ?? {},
       sharedScope: options.sharedScope ?? {},
       postProcessManifest: options.postProcessManifest ?? identity,
-      getPluginEntryModule: options.getPluginEntryModule ?? noop,
+      getPluginEntryModule: options.getPluginEntryModule ?? (() => Promise.resolve()),
+      injectScript: options.injectScript ?? injectScriptElement,
     };
 
     this.registerPluginEntryCallback();
@@ -297,11 +308,12 @@ export class PluginLoader {
           scriptElement.remove();
         }
 
-        return injectScriptElement(
+        return this.options.injectScript(
           resolveURL(manifest.baseURL, scriptName, (url) => {
             url.searchParams.set('cacheBuster', uuidv4());
             return url;
           }),
+          manifest,
           scriptID,
         );
       }),
@@ -332,7 +344,7 @@ export class PluginLoader {
     const entryModule =
       manifest.registrationMethod === 'callback'
         ? data.entryCallbackModule
-        : this.options.getPluginEntryModule(manifest);
+        : await this.options.getPluginEntryModule(manifest);
 
     if (!entryModule) {
       throw new Error(`Failed to retrieve entry module of plugin ${pluginName}`);
@@ -471,12 +483,14 @@ export class PluginLoader {
       consoleLogger.info(`Plugin entry callback ${callbackName} will not be registered`);
       return;
     }
+    // do not use window because of possible non browser runtime
+    const g: global = global;
 
-    if (typeof window[callbackName] === 'function') {
+    if (typeof g[callbackName] === 'function') {
       consoleLogger.warn(`Plugin entry callback ${callbackName} is already registered`);
       return;
     }
 
-    window[callbackName] = this.createPluginEntryCallback();
+    g[callbackName] = this.createPluginEntryCallback();
   }
 }

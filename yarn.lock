@@ -2612,25 +2612,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@module-federation/utilities@npm:^1.8.0":
-  version: 1.8.0
-  resolution: "@module-federation/utilities@npm:1.8.0"
-  peerDependencies:
-    next: ^12 || ^13
-    react: ^16 || ^17 || ^18
-    react-dom: ^16 || ^17 || ^18
-    webpack: ^5.40.0
-  peerDependenciesMeta:
-    next:
-      optional: true
-    react:
-      optional: true
-    react-dom:
-      optional: true
-  checksum: a1d00244ef2e6975b2873fb9866eb99df13ba8e18397653860070a67d21d9613d1cbae81258228b14f46bd8e3cff57ef7f9be3f62dbbacdcdb99f4e214959217
-  languageName: node
-  linkType: hard
-
 "@monorepo/common@workspace:packages/common":
   version: 0.0.0-use.local
   resolution: "@monorepo/common@workspace:packages/common"
@@ -2952,6 +2933,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openshift/dynamic-plugin-sdk-webpack@portal:../lib-webpack::locator=%40monorepo%2Fsample-app%40workspace%3Apackages%2Fsample-app"
   dependencies:
+    "@module-federation/node": ^0.14.0
     lodash: ^4.17.21
     yup: ^0.32.11
   peerDependencies:
@@ -2963,6 +2945,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openshift/dynamic-plugin-sdk-webpack@portal:../lib-webpack::locator=%40monorepo%2Fsample-plugin%40workspace%3Apackages%2Fsample-plugin"
   dependencies:
+    "@module-federation/node": ^0.14.0
     lodash: ^4.17.21
     yup: ^0.32.11
   peerDependencies:
@@ -2974,6 +2957,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openshift/dynamic-plugin-sdk-webpack@workspace:packages/lib-webpack"
   dependencies:
+    "@module-federation/node": ^0.14.0
     lodash: ^4.17.21
     yup: ^0.32.11
   peerDependencies:
