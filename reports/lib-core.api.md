@@ -158,7 +158,8 @@ export type PluginLoaderOptions = Partial<{
     fixedPluginDependencyResolutions: Record<string, string>;
     sharedScope: AnyObject;
     postProcessManifest: (manifest: PluginManifest) => PluginManifest;
-    getPluginEntryModule: (manifest: PluginManifest) => PluginEntryModule | void;
+    getPluginEntryModule: (manifest: PluginManifest) => Promise<PluginEntryModule | void>;
+    injectScript(url: string, manifest: PluginManifest, id?: string): Promise<void>;
 }>;
 
 // @public (undocumented)

@@ -29,6 +29,8 @@ export type DynamicRemotePluginOptions = {
     entryCallbackSettings?: PluginEntryCallbackSettings;
     entryScriptFilename?: string;
     pluginManifestFilename?: string;
+    isServer?: boolean;
+    emitServer?: boolean;
 };
 
 // @public (undocumented)
