@@ -1,4 +1,5 @@
 import { Map as ImmutableMap } from 'immutable';
+import { keyBy } from 'lodash';
 import * as React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import * as k8sActions from '../../app/redux/actions/k8s';
@@ -25,6 +26,7 @@ import type {
 /**
  * Hook that retrieves the k8s resources along with their respective status for loaded and error.
  * @param initResources - resources need to be watched as key-value pair, wherein key will be unique to resource and value will be options needed to watch for the respective resource.
+ * @param initModels - static models to pull information from when watching resources.
  * @param options - WS and fetch options passed down to WSFactory @see {@link WebSocketFactory} and when pulling the first item.
  * @returns A map where keys are as provided in initResources and value has three properties data, loaded and error.
  *
@@ -43,14 +45,23 @@ import type {
  */
 export const useK8sWatchResources = <R extends ResourcesObject>(
   initResources: WatchK8sResources<R>,
+  initModels?: K8sModelCommon[],
   options?: Partial<WebSocketOptions & RequestInit & { wsPrefix?: string; pathPrefix?: string }>,
 ): WatchK8sResults<R> => {
   const resources = useDeepCompareMemoize(initResources, true);
-  const modelsLoaded = useModelsLoaded();
 
-  const allK8sModels = useSelector<SDKStoreState, ImmutableMap<string, K8sModelCommon>>(
+  const storedModelsLoaded = useModelsLoaded();
+  const modelsLoaded = initModels ? true : storedModelsLoaded;
+
+  const storedK8sModels = useSelector<SDKStoreState, ImmutableMap<string, K8sModelCommon>>(
     (state: SDKStoreState) => state.k8s?.getIn(['RESOURCES', 'models']),
   );
+  const initModelsMap = ImmutableMap(
+    keyBy(initModels, (model) => {
+      return transformGroupVersionKindToReference(getReferenceForModel(model));
+    }),
+  );
+  const allK8sModels = initModels ? initModelsMap : storedK8sModels;
 
   const prevK8sModels = usePrevious(allK8sModels);
   const prevResources = usePrevious(resources);

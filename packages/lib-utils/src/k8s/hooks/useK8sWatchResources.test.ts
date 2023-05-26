@@ -164,4 +164,39 @@ describe('useK8sWatchResources', () => {
     expect(data as K8sResourceCommon).toMatchObject(resourceDataMock);
     expect(useSelectorMock).toHaveBeenCalled();
   });
+
+  test('should return data for the watched resource from provided static models', () => {
+    const ID_MOCK = 'appstudio.redhat.com~v1alpha1~Application---{"ns":"test-ns","name":"test"}';
+    const mockWatchData: WatchData = {
+      id: ID_MOCK,
+      action: jest.fn(),
+    };
+    const payload = {
+      [ID_MOCK]: {
+        data: resourceDataMock,
+        loaded: true,
+        loadError: '',
+      },
+    };
+    const resourceK8s: ImmutableMap<string, unknown> = ImmutableMap(fromJS(payload));
+    const initModels: K8sModelCommon[] = [resourceModelMock];
+
+    jest.mock('./usePrevious', () => ({
+      usePrevious: jest.fn(() => undefined),
+    }));
+    useSelectorMock
+      .mockReturnValueOnce(ImmutableMap()) // Mock empty models
+      .mockReturnValueOnce(resourceK8s)
+      .mockReturnValueOnce(false);
+    getWatchDataMock.mockReturnValue(mockWatchData);
+    getReduxDataMock.mockReturnValue(resourceDataMock);
+
+    const { result } = renderHook(() => useK8sWatchResources(watchedResourcesMock, initModels));
+    const { application } = result.current;
+    const { data, loaded, loadError } = application;
+    expect(loaded).toEqual(true);
+    expect(loadError).toEqual('');
+    expect(data as K8sResourceCommon).toMatchObject(resourceDataMock);
+    expect(useSelectorMock).toHaveBeenCalled();
+  });
 });
