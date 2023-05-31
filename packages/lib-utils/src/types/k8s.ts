@@ -14,6 +14,16 @@ export type K8sResourceIdentifier = {
   kind: string;
 };
 
+/**
+ * K8s status object used when Kubernetes cannot handle a request.
+ */
+export type K8sStatus = K8sResourceIdentifier & {
+  code: number;
+  message: string;
+  reason: string;
+  status: string;
+};
+
 export type K8sModelCommon = K8sResourceIdentifier & {
   plural: string;
   propagationPolicy?: 'Foreground' | 'Background';

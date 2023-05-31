@@ -10,6 +10,7 @@ import type { ActionType as ActionType_2 } from 'typesafe-actions';
 import type { AnyAction } from 'redux';
 import type { AnyObject } from '@openshift/dynamic-plugin-sdk';
 import { Context } from 'react';
+import { CustomError } from '@openshift/dynamic-plugin-sdk';
 import type { Dispatch } from 'redux';
 import { DropdownPosition } from '@patternfly/react-core';
 import type { EitherNotBoth } from '@openshift/dynamic-plugin-sdk';
@@ -292,6 +293,9 @@ export type InitAPIDiscovery = (store: Store<unknown, ActionType_2<AnyAction>>, 
 export const initAPIDiscovery: InitAPIDiscovery;
 
 // @public
+export const isK8sStatus: (data: unknown) => data is K8sStatus;
+
+// @public
 export const isUtilsConfigSet: () => boolean;
 
 // @public (undocumented)
@@ -416,6 +420,21 @@ export type K8sResourceUpdateOptions<TResource extends K8sResourceCommon> = K8sR
 
 // @public (undocumented)
 export type K8sState = Map_2<string, unknown>;
+
+// @public
+export type K8sStatus = K8sResourceIdentifier & {
+    code: number;
+    message: string;
+    reason: string;
+    status: string;
+};
+
+// @public
+export class K8sStatusError extends CustomError {
+    constructor(status: K8sStatus);
+    // (undocumented)
+    readonly status: K8sStatus;
+}
 
 // @public (undocumented)
 export const k8sUpdateResource: <TResource extends K8sResourceCommon, TUpdatedResource extends TResource = TResource>({ model, resource, queryOptions, fetchOptions, }: K8sResourceUpdateOptions<TResource>) => Promise<TUpdatedResource>;

@@ -1,5 +1,5 @@
 import { Map as ImmutableMap } from 'immutable';
-import { isEmpty, toArray } from 'lodash';
+import { isEmpty, isPlainObject, toArray } from 'lodash';
 import type {
   K8sModelCommon,
   K8sResourceCommon,
@@ -11,11 +11,20 @@ import type {
   K8sResourceKindReference,
   GetGroupVersionKindForModel,
   K8sGroupVersionKind,
+  K8sStatus,
 } from '../types/k8s';
 import type { WebSocketOptions } from '../web-socket/types';
 import { WebSocketFactory } from '../web-socket/WebSocketFactory';
 
 const ACTIVE_WORKSPACE_KEY = 'sdk/active-workspace';
+
+/**
+ * Validates if the provided unknown data is of the K8sStatus type.
+ * @param data - the unknown data to check.
+ * @returns true if data is of the K8sStatus type, otherwise false.
+ */
+export const isK8sStatus = (data: unknown): data is K8sStatus =>
+  isPlainObject(data) && (data as K8sStatus).kind === 'Status';
 
 /**
  * @returns the activeWorkspace as a string or null
