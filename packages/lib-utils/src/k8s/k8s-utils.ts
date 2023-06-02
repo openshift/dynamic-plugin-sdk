@@ -1,10 +1,11 @@
 import { Map as ImmutableMap } from 'immutable';
-import { isEmpty, isPlainObject, toArray } from 'lodash';
+import { isEmpty, isPlainObject, pick, toArray } from 'lodash';
 import type {
   K8sModelCommon,
   K8sResourceCommon,
   QueryOptions,
   QueryParams,
+  QueryParamsCreate,
   Selector,
   MatchExpression,
   MatchLabels,
@@ -17,6 +18,13 @@ import type { WebSocketOptions } from '../web-socket/types';
 import { WebSocketFactory } from '../web-socket/WebSocketFactory';
 
 const ACTIVE_WORKSPACE_KEY = 'sdk/active-workspace';
+
+const FILTERED_CREATE_QUERY_PARAMS: Array<keyof QueryParamsCreate> = [
+  'pretty',
+  'dryRun',
+  'fieldManager',
+  'fieldValidation',
+];
 
 /**
  * Validates if the provided unknown data is of the K8sStatus type.
@@ -65,13 +73,16 @@ const getK8sAPIPath = ({ apiGroup = 'core', apiVersion }: K8sModelCommon) => {
  * @param queryOptions.name - name, if omitted resource.metadata.name
  * @param queryOptions.path - additional path you want on the end
  * @param queryOptions.queryParams - any additional query params you way want
+ * @param method - the intended HTTP method the resulting URL will be serviced with (if any)
  */
 export const getK8sResourceURL = (
   model: K8sModelCommon,
   resource?: K8sResourceCommon,
   queryOptions: QueryOptions = {},
+  method: Request['method'] = 'GET',
 ) => {
   const { ns, name, path, queryParams } = queryOptions;
+  const upperCasedMethod = method.toUpperCase();
   let resourcePath = getK8sAPIPath(model);
 
   if (resource?.metadata?.namespace) {
@@ -86,22 +97,27 @@ export const getK8sResourceURL = (
 
   resourcePath += `/${model.plural}`;
 
-  if (resource?.metadata?.name) {
-    resourcePath += `/${encodeURIComponent(resource.metadata.name)}`;
-  } else if (name) {
-    resourcePath += `/${encodeURIComponent(name)}`;
-  }
+  if (upperCasedMethod !== 'POST') {
+    if (resource?.metadata?.name) {
+      resourcePath += `/${encodeURIComponent(resource.metadata.name)}`;
+    } else if (name) {
+      resourcePath += `/${encodeURIComponent(name)}`;
+    }
 
-  if (resource?.metadata?.name && name && resource.metadata.name !== name) {
-    throw new Error('Resource payload name vs. query options name mismatch');
+    if (resource?.metadata?.name && name && resource.metadata.name !== name) {
+      throw new Error('Resource payload name vs. query options name mismatch');
+    }
   }
 
   if (path) {
     resourcePath += `/${path}`;
   }
 
-  if (queryParams && !isEmpty(queryParams)) {
-    resourcePath += `?${getQueryString(queryParams)}`;
+  const filteredQueryParams =
+    upperCasedMethod === 'POST' ? pick(queryParams, FILTERED_CREATE_QUERY_PARAMS) : queryParams;
+
+  if (filteredQueryParams && !isEmpty(filteredQueryParams)) {
+    resourcePath += `?${getQueryString(filteredQueryParams)}`;
   }
 
   return resourcePath;

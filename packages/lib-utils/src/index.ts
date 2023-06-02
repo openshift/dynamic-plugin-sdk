@@ -52,6 +52,7 @@ export {
   GroupVersionKind,
   QueryOptions,
   QueryParams,
+  QueryParamsCreate,
   Patch,
   Operator,
   OwnerReference,

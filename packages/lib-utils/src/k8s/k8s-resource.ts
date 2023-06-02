@@ -62,7 +62,7 @@ export const k8sCreateResource = <
   fetchOptions = {},
 }: K8sResourceUpdateOptions<TResource>): Promise<TCreatedResource> =>
   commonFetchJSON.post<TCreatedResource>(
-    getK8sResourceURL(model, resource, queryOptions),
+    getK8sResourceURL(model, resource, queryOptions, 'POST'),
     resource,
     fetchOptions.requestInit,
     fetchOptions.timeout,
