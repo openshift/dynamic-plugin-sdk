@@ -65,7 +65,7 @@ const ListView = <D extends AnyObject>({
   Row,
   virtualized,
   CustomEmptyState,
-  emptyStateDescription,
+  emptyStateDescription = 'No matching data found',
   CustomNoDataEmptyState,
   'aria-label': ariaLabel,
   actionButtons,
