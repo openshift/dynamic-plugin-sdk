@@ -90,7 +90,7 @@ const ListView = <D extends AnyObject>({
         filters.map((filter) => filter.id),
       );
     }
-    if (filters) {
+    if (filters?.length > 0) {
       setFilteredData(
         onFilter
           ? onFilter(filterValues.current, activeFilter)
