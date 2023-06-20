@@ -65,7 +65,7 @@ const ListView = <D extends AnyObject>({
   Row,
   virtualized,
   CustomEmptyState,
-  emptyStateDescription,
+  emptyStateDescription = 'No matching data found',
   CustomNoDataEmptyState,
   'aria-label': ariaLabel,
   actionButtons,
@@ -90,7 +90,7 @@ const ListView = <D extends AnyObject>({
         filters.map((filter) => filter.id),
       );
     }
-    if (filters) {
+    if (filters?.length > 0) {
       setFilteredData(
         onFilter
           ? onFilter(filterValues.current, activeFilter)
