@@ -1,5 +1,6 @@
 import type { PluginManifest } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
-import { WebpackPluginInstance, Compiler, Compilation, sources, WebpackError } from 'webpack';
+import type { WebpackPluginInstance, Compiler } from 'webpack';
+import { Compilation, sources, WebpackError } from 'webpack';
 import { findPluginChunks } from '../utils/plugin-chunks';
 
 type InputManifestData = Omit<PluginManifest, 'baseURL' | 'loadScripts' | 'buildHash'>;
@@ -16,7 +17,7 @@ export class GenerateManifestPlugin implements WebpackPluginInstance {
 
   apply(compiler: Compiler) {
     const { containerName, manifestFilename, manifestData, transformManifest } = this.options;
-    const publicPath = compiler.options.output.publicPath;
+    const { publicPath } = compiler.options.output;
 
     if (!publicPath) {
       throw new Error(
@@ -24,16 +25,22 @@ export class GenerateManifestPlugin implements WebpackPluginInstance {
       );
     }
 
+    /**
+     * The manifest has to be generated within the emit hook after the webpack hashes the assets.
+     */
     compiler.hooks.thisCompilation.tap(GenerateManifestPlugin.name, (compilation) => {
       compilation.hooks.processAssets.tap(
         {
           name: GenerateManifestPlugin.name,
-          stage: Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
+          // Using one of the later asset processing stages to ensure all assets
+          // are already added to the compilation by other webpack plugins
+          stage: Compilation.PROCESS_ASSETS_STAGE_SUMMARIZE
         },
         () => {
           const { entryChunk, runtimeChunk } = findPluginChunks(containerName, compilation);
+          const pluginChunks = runtimeChunk ? [runtimeChunk, entryChunk] : [entryChunk];
 
-          const loadScripts = (runtimeChunk ? [runtimeChunk, entryChunk] : [entryChunk]).reduce<
+          const loadScripts = pluginChunks.reduce<
             string[]
           >((acc, chunk) => [...acc, ...chunk.files], []);
 
@@ -49,7 +56,7 @@ export class GenerateManifestPlugin implements WebpackPluginInstance {
             new sources.RawSource(Buffer.from(JSON.stringify(manifest, null, 2))),
           );
 
-          const warnings: string[] = [];
+          const warnings = [];
 
           if (manifest.extensions.length === 0) {
             warnings.push('Plugin has no extensions');
@@ -64,7 +71,7 @@ export class GenerateManifestPlugin implements WebpackPluginInstance {
             error.file = manifestFilename;
             compilation.warnings.push(error);
           });
-        },
+        }
       );
     });
   }
