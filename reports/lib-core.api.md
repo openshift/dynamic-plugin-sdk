@@ -137,6 +137,17 @@ export type PluginEntryModule = {
 };
 
 // @public (undocumented)
+export type PluginErrorDetails = {
+    message: string;
+    cause?: unknown;
+} & ({
+    loadError: true;
+} | {
+    loadError: false;
+    reportedBy: string;
+});
+
+// @public (undocumented)
 export enum PluginEventType {
     ExtensionsChanged = "ExtensionsChanged",
     FeatureFlagsChanged = "FeatureFlagsChanged",
@@ -201,6 +212,8 @@ export class PluginStore implements PluginStoreInterface {
     // (undocumented)
     loadPlugin(manifest: PluginManifest | string, forceReload?: boolean): Promise<void>;
     // (undocumented)
+    reportPluginError(pluginName: string, reportedBy: string, errorMessage: string, errorCause?: unknown): void;
+    // (undocumented)
     readonly sdkVersion: string;
     // (undocumented)
     setFeatureFlags(newFlags: FeatureFlags): void;
@@ -220,12 +233,14 @@ export type PluginStoreInterface = {
     enablePlugins: (pluginNames: string[]) => void;
     disablePlugins: (pluginNames: string[], disableReason?: string) => void;
     getExposedModule: <TModule extends AnyObject>(pluginName: string, moduleName: string) => Promise<TModule>;
+    reportPluginError: (pluginName: string, reportedBy: string, errorMessage: string, errorCause?: unknown) => void;
 };
 
 // @public (undocumented)
 export type PluginStoreOptions = Partial<{
     loaderOptions: PluginLoaderOptions;
     autoEnableLoadedPlugins: boolean;
+    pluginErrorHandler: (manifest: PluginManifest, errorDetails: PluginErrorDetails) => void;
 }>;
 
 // @public

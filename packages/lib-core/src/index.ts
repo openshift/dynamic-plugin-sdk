@@ -24,7 +24,7 @@ export {
 
 // Core components
 export { PluginLoaderOptions } from './runtime/PluginLoader';
-export { PluginStore, PluginStoreOptions } from './runtime/PluginStore';
+export { PluginStore, PluginStoreOptions, PluginErrorDetails } from './runtime/PluginStore';
 export {
   PluginStoreProvider,
   PluginStoreProviderProps,

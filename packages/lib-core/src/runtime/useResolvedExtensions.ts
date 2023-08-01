@@ -1,5 +1,4 @@
 import { consoleLogger } from '@monorepo/common';
-import { uniq } from 'lodash';
 import * as React from 'react';
 import type {
   Extension,
@@ -8,7 +7,7 @@ import type {
   ExtensionPredicate,
 } from '../types/extension';
 import { settleAllPromises } from '../utils/promise';
-import { isExtensionCodeRefsResolutionError, resolveCodeRefValues } from './coderefs';
+import { resolveCodeRefValues } from './coderefs';
 import { usePluginStore } from './PluginStoreContext';
 import { useExtensions } from './useExtensions';
 
@@ -48,30 +47,41 @@ export const useResolvedExtensions = <TExtension extends Extension>(
   const [errors, setErrors] = React.useState<unknown[]>([]);
 
   React.useEffect(() => {
+    const pluginErrors: { [pluginName: string]: unknown[] } = {};
+
     // eslint-disable-next-line promise/catch-or-return -- this Promise never rejects
-    settleAllPromises(extensions.map(resolveCodeRefValues)).then(
-      ([fulfilledValues, rejectedReasons]) => {
-        // eslint-disable-next-line promise/always-return -- this Promise is handled inline
-        if (rejectedReasons.length > 0) {
-          consoleLogger.error(
-            `useResolvedExtensions has detected ${rejectedReasons.length} errors`,
-            rejectedReasons,
+    settleAllPromises(
+      extensions.map((e) =>
+        resolveCodeRefValues(e, (resolutionErrors) => {
+          pluginErrors[e.pluginName] ??= [];
+          pluginErrors[e.pluginName].push(...resolutionErrors);
+        }),
+      ),
+    ).then(([fulfilledValues]) => {
+      const failedPluginNames = Object.keys(pluginErrors);
+      const allResolutionErrors = Object.values(pluginErrors).flat();
+
+      // eslint-disable-next-line promise/always-return -- this Promise is handled inline
+      if (failedPluginNames.length > 0) {
+        consoleLogger.error(
+          `Detected ${allResolutionErrors.length} code reference resolution errors`,
+          allResolutionErrors,
+        );
+
+        failedPluginNames.forEach((pluginName) => {
+          pluginStore.reportPluginError(
+            pluginName,
+            'useResolvedExtensions',
+            'Code reference resolution errors',
+            pluginErrors[pluginName],
           );
+        });
+      }
 
-          const failedPluginNames = uniq(
-            rejectedReasons
-              .filter(isExtensionCodeRefsResolutionError)
-              .map((e) => e.extension.pluginName),
-          );
-
-          pluginStore.disablePlugins(failedPluginNames, 'Code reference resolution errors');
-        }
-
-        setResolved(true);
-        setResolvedExtensions(fulfilledValues);
-        setErrors(rejectedReasons);
-      },
-    );
+      setResolved(true);
+      setResolvedExtensions(fulfilledValues);
+      setErrors(allResolutionErrors);
+    });
 
     return () => {
       setResolved(false);

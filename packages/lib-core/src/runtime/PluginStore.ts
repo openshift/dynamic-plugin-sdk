@@ -12,6 +12,16 @@ import { decodeCodeRefs, getPluginModule } from './coderefs';
 import { PluginLoader } from './PluginLoader';
 import type { PluginLoaderOptions } from './PluginLoader';
 
+export type PluginErrorDetails = { message: string; cause?: unknown } & (
+  | {
+      loadError: true;
+    }
+  | {
+      loadError: false;
+      reportedBy: string;
+    }
+);
+
 export type PluginStoreOptions = Partial<{
   /**
    * Options passed to `PluginLoader` instance managed by the `PluginStore`.
@@ -26,6 +36,19 @@ export type PluginStoreOptions = Partial<{
    * Default value: `true`.
    */
   autoEnableLoadedPlugins: boolean;
+
+  /**
+   * Custom plugin error handler.
+   *
+   * The `errorDetails.loadError` property indicates the type of the error:
+   * - if `true`, the error has occurred while loading the given plugin
+   * - if `false`, the error was reported for an already loaded plugin
+   *
+   * By default, this function does nothing.
+   *
+   * @see {@link PluginStoreInterface.reportPluginError}
+   */
+  pluginErrorHandler: (manifest: PluginManifest, errorDetails: PluginErrorDetails) => void;
 }>;
 
 /**
@@ -62,6 +85,7 @@ export class PluginStore implements PluginStoreInterface {
     this.options = {
       loaderOptions: options.loaderOptions ?? {},
       autoEnableLoadedPlugins: options.autoEnableLoadedPlugins ?? true,
+      pluginErrorHandler: options.pluginErrorHandler ?? noop,
     };
 
     this.loader = new PluginLoader(this.options.loaderOptions);
@@ -192,6 +216,12 @@ export class PluginStore implements PluginStoreInterface {
         }
       } else {
         this.addFailedPlugin(loadedManifest, result.errorMessage, result.errorCause);
+
+        this.options.pluginErrorHandler(loadedManifest, {
+          message: result.errorMessage,
+          cause: result.errorCause,
+          loadError: true,
+        });
       }
 
       this.pendingPromises.delete(pluginName);
@@ -214,7 +244,7 @@ export class PluginStore implements PluginStoreInterface {
         consoleLogger.warn(
           `Attempt to ${
             enabled ? 'enable' : 'disable'
-          } plugin ${pluginName} which is not loaded yet`,
+          } plugin ${pluginName} which is not currently loaded`,
         );
         return;
       }
@@ -333,14 +363,16 @@ export class PluginStore implements PluginStoreInterface {
     this.invokeListeners(PluginEventType.PluginInfoChanged);
     this.updateExtensions();
 
-    consoleLogger.error(`Plugin ${pluginName} has failed to load`);
-    consoleLogger.error(...compact([errorMessage, errorCause]));
+    consoleLogger.error(
+      `Plugin ${pluginName} has failed to load`,
+      ...compact([errorMessage, errorCause]),
+    );
   }
 
   async getExposedModule<TModule extends AnyObject>(pluginName: string, moduleName: string) {
     if (!this.loadedPlugins.has(pluginName)) {
       throw new Error(
-        `Attempt to get module '${moduleName}' of plugin ${pluginName} which is not loaded yet`,
+        `Attempt to get module '${moduleName}' of plugin ${pluginName} which is not currently loaded`,
       );
     }
 
@@ -354,5 +386,29 @@ export class PluginStore implements PluginStoreInterface {
     );
 
     return referencedModule;
+  }
+
+  reportPluginError(
+    pluginName: string,
+    reportedBy: string,
+    errorMessage: string,
+    errorCause?: unknown,
+  ) {
+    if (!this.loadedPlugins.has(pluginName)) {
+      consoleLogger.warn(
+        `Attempt to report error for plugin ${pluginName} which is not currently loaded`,
+      );
+      return;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const plugin = this.loadedPlugins.get(pluginName)!;
+
+    this.options.pluginErrorHandler(plugin.manifest, {
+      message: errorMessage,
+      cause: errorCause,
+      loadError: false,
+      reportedBy,
+    });
   }
 }

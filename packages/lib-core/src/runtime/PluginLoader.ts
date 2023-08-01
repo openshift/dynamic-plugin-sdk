@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { AnyObject } from '@monorepo/common';
-import { consoleLogger, ErrorWithCause } from '@monorepo/common';
+import { consoleLogger } from '@monorepo/common';
 import { identity, noop } from 'lodash';
 import * as semver from 'semver';
 import { DEFAULT_REMOTE_ENTRY_CALLBACK } from '../constants';
@@ -308,10 +308,12 @@ export class PluginLoader {
     );
 
     if (rejectedReasons.length > 0) {
-      throw new ErrorWithCause(
-        `Detected ${rejectedReasons.length} errors while loading plugin scripts`,
+      consoleLogger.error(
+        `Detected ${rejectedReasons.length} errors while loading scripts of plugin ${pluginName}`,
         rejectedReasons,
       );
+
+      throw rejectedReasons;
     }
 
     if (manifest.registrationMethod === 'callback' && !data.entryCallbackFired) {
@@ -409,15 +411,18 @@ export class PluginLoader {
           (depName) => !resolutions.has(depName),
         );
 
-        const pendingDepInfo =
-          pendingDepNames.length > 0
-            ? `${pendingDepNames.length} pending resolutions (${pendingDepNames.join(',')})`
-            : `no pending resolutions`;
+        const pendingDepInfo = `${pendingDepNames.length} pending resolutions`;
 
         if (resolutionErrors.length > 0) {
-          const errorTitle = `Detected ${resolutionErrors.length} resolution errors with ${pendingDepInfo}`;
+          const errorMessage = `Detected ${resolutionErrors.length} dependency resolution errors with ${pendingDepInfo}`;
+
+          consoleLogger.error(
+            `${errorMessage} while loading plugin ${pluginName}`,
+            resolutionErrors,
+          );
+
           setResolutionComplete();
-          reject(new Error(`${errorTitle}:\n\n${resolutionErrors.join('\n')}`));
+          reject(new Error(errorMessage));
           return;
         }
 

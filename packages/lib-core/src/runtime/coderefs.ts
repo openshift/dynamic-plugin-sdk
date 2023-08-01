@@ -1,5 +1,5 @@
 import type { AnyObject } from '@monorepo/common';
-import { CustomError, ErrorWithCause, visitDeep } from '@monorepo/common';
+import { ErrorWithCause, visitDeep } from '@monorepo/common';
 import { cloneDeep, has, identity, isEqual, isPlainObject } from 'lodash';
 import type {
   EncodedCodeRef,
@@ -9,16 +9,6 @@ import type {
   ResolvedExtension,
 } from '../types/extension';
 import type { PluginEntryModule } from '../types/runtime';
-
-class ExtensionCodeRefsResolutionError extends CustomError {
-  constructor(readonly extension: LoadedExtension, readonly causes: unknown[]) {
-    super();
-  }
-}
-
-export const isExtensionCodeRefsResolutionError = (
-  e: unknown,
-): e is ExtensionCodeRefsResolutionError => e instanceof ExtensionCodeRefsResolutionError;
 
 /**
  * Indicates that the given function is a {@link CodeRef} function.
@@ -126,18 +116,22 @@ export const decodeCodeRefs = (extension: LoadedExtension, entryModule: PluginEn
 };
 
 /**
- * In the extension's `properties` object, replace all {@link CodeRef} functions
- * with the corresponding values by resolving the associated Promises.
+ * In the extension's `properties` object, replace all {@link CodeRef} functions with
+ * the corresponding values by resolving the associated Promises.
  *
- * This is an asynchronous operation that completes when all of the associated
- * Promises are either resolved or rejected. If there were no resolution errors,
- * the resulting Promise resolves with the updated extension.
+ * This is an asynchronous operation that completes when all of the associated Promises
+ * are either resolved or rejected. Each code reference resolution error will cause the
+ * associated value to be set to `undefined`.
  *
- * The updated extension is a new object; its `properties` are cloned in order
- * to preserve the original structure of decoded extensions.
+ * The resulting Promise resolves with the updated extension; its `properties` object
+ * is cloned in order to preserve the original structure of decoded extensions.
+ *
+ * The resulting Promise never rejects. Use the `onResolutionErrors` callback to handle
+ * code reference resolution errors.
  */
 export const resolveCodeRefValues = async <TExtension extends Extension>(
   extension: LoadedExtension<TExtension>,
+  onResolutionErrors: (errors: unknown[]) => void,
 ) => {
   const clonedProperties = cloneDeep(extension.properties);
   const resolutions: Promise<void>[] = [];
@@ -162,7 +156,7 @@ export const resolveCodeRefValues = async <TExtension extends Extension>(
   await Promise.allSettled(resolutions);
 
   if (resolutionErrors.length > 0) {
-    throw new ExtensionCodeRefsResolutionError(extension, resolutionErrors);
+    onResolutionErrors(resolutionErrors);
   }
 
   return {

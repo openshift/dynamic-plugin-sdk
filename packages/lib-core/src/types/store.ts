@@ -144,4 +144,21 @@ export type PluginStoreInterface = {
     pluginName: string,
     moduleName: string,
   ) => Promise<TModule>;
+
+  /**
+   * Notify the `PluginStore` that an error has occurred while processing the given plugin
+   * or its extensions.
+   *
+   * If a plugin with the given name is currently loaded, this method will pass provided
+   * error details to the custom plugin error handler registered with the `PluginStore`.
+   *
+   * The `reportedBy` argument indicates which code has reported the error. For example,
+   * the `useResolvedExtensions` hook sets this value to `"useResolvedExtensions"`.
+   */
+  reportPluginError: (
+    pluginName: string,
+    reportedBy: string,
+    errorMessage: string,
+    errorCause?: unknown,
+  ) => void;
 };
