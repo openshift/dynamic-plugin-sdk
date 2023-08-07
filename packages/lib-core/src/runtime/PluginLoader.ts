@@ -5,7 +5,8 @@ import { identity, noop } from 'lodash';
 import * as semver from 'semver';
 import { DEFAULT_REMOTE_ENTRY_CALLBACK } from '../constants';
 import type { ResourceFetch } from '../types/fetch';
-import type { PluginManifest, TransformPluginManifest } from '../types/plugin';
+import type { PluginLoadResult, PluginLoaderInterface } from '../types/loader';
+import type { PluginManifest } from '../types/plugin';
 import type { PluginEntryModule, PluginEntryCallback } from '../types/runtime';
 import { basicFetch } from '../utils/basic-fetch';
 import { settleAllPromises } from '../utils/promise';
@@ -25,17 +26,6 @@ type PluginLoadData = {
   entryCallbackFired?: boolean;
   entryCallbackModule?: PluginEntryModule;
 };
-
-type PluginLoadResult =
-  | {
-      success: true;
-      entryModule: PluginEntryModule;
-    }
-  | {
-      success: false;
-      errorMessage: string;
-      errorCause?: unknown;
-    };
 
 type DependencyResolution =
   | {
@@ -129,7 +119,7 @@ export type PluginLoaderOptions = Partial<{
    *
    * By default, no transformation is performed on the manifest.
    */
-  transformPluginManifest: TransformPluginManifest;
+  transformPluginManifest: (manifest: PluginManifest) => PluginManifest;
 
   /**
    * Provide access to the plugin's entry module.
@@ -147,7 +137,7 @@ export type PluginLoaderOptions = Partial<{
 /**
  * Loads plugin assets from remote sources.
  */
-export class PluginLoader {
+export class PluginLoader implements PluginLoaderInterface {
   private readonly options: Required<PluginLoaderOptions>;
 
   /** Plugins processed by this loader. */
@@ -176,29 +166,18 @@ export class PluginLoader {
     });
   }
 
-  /**
-   * Load plugin manifest from the given URL.
-   */
   async loadPluginManifest(manifestURL: string) {
     const response = await this.options.fetchImpl(manifestURL, { cache: 'no-cache' });
     const responseText = await response.text();
+    const manifest = this.options.transformPluginManifest(JSON.parse(responseText));
 
-    return JSON.parse(responseText) as PluginManifest;
+    pluginManifestSchema.strict(true).validateSync(manifest, { abortEarly: false });
+
+    return manifest;
   }
 
   /**
-   * Transform and validate the given plugin manifest.
-   */
-  processPluginManifest(manifest: PluginManifest) {
-    const processedManifest = this.options.transformPluginManifest(manifest);
-
-    pluginManifestSchema.strict(true).validateSync(processedManifest, { abortEarly: false });
-
-    return processedManifest;
-  }
-
-  /**
-   * Load plugin from the given manifest.
+   * @inheritDoc
    *
    * Plugins using the `callback` registration method are expected to call the global entry
    * callback function created via {@link registerPluginEntryCallback} method, passing two
@@ -207,8 +186,6 @@ export class PluginLoader {
    * For plugins using the `custom` registration method, the `getPluginEntryModule` function
    * is expected to return the entry module of the given plugin. If not implemented properly,
    * plugins using the `custom` registration method will fail to load.
-   *
-   * The resulting Promise never rejects.
    */
   async loadPlugin(manifest: PluginManifest): Promise<PluginLoadResult> {
     const pluginName = manifest.name;

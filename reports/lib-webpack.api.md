@@ -29,7 +29,7 @@ export type DynamicRemotePluginOptions = {
     entryCallbackSettings?: PluginEntryCallbackSettings;
     entryScriptFilename?: string;
     pluginManifestFilename?: string;
-    transformPluginManifest?: TransformPluginManifest;
+    transformPluginManifest?: (manifest: PluginManifest) => PluginManifest;
 };
 
 // @public (undocumented)
@@ -106,11 +106,6 @@ export type PluginRuntimeMetadata = {
 // @public
 export type ReplaceProperties<T, R> = {
     [K in keyof T]: K extends keyof R ? R[K] : T[K];
-};
-
-// @public (undocumented)
-export type TransformPluginManifest = (manifest: PluginManifest) => PluginManifest & {
-    [customProperty: string]: unknown;
 };
 
 // @public

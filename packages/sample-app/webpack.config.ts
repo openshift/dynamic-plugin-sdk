@@ -14,7 +14,7 @@ const analyzeBundles = process.env.ANALYZE_BUNDLES === 'true';
 
 const pathTo = (relativePath: string) => path.resolve(__dirname, relativePath);
 
-const getNodeModulesTest = (modulePaths: string[]) =>
+export const getNodeModulesTest = (modulePaths: string[]) =>
   new RegExp(`/node_modules/(${modulePaths.map(escapeRegExp).join('|')})/`);
 
 /**
@@ -50,10 +50,9 @@ const plugins: WebpackPluginInstance[] = [
     shared: appSharedModules,
   }),
   new HTMLPlugin({
-    filename: isProd ? '[name].[contenthash].html' : '[name].html',
     template: pathTo('src/app-index.html.ejs'),
-    title: 'Minimal Plugin Host Application',
-    chunks: ['app-minimal'],
+    title: 'Sample Plugin Host Application',
+    chunks: ['app'],
   }),
   new CopyPlugin({
     patterns: [{ from: 'src/images/favicon.png', to: 'images' }],
@@ -63,7 +62,7 @@ const plugins: WebpackPluginInstance[] = [
 const config: Configuration = {
   mode: isProd ? 'production' : 'development',
   entry: {
-    'app-minimal': './src/app-minimal.tsx',
+    app: './src/app.tsx',
   },
   output: {
     path: pathTo('dist'),
@@ -106,11 +105,11 @@ const config: Configuration = {
       {
         test: /\.(svg|png|jpg|jpeg|gif)$/,
         include: [
-          pathTo('src'),
           getNodeModulesTest([
             '@patternfly/react-core/dist/styles/assets/images',
             '@patternfly/react-styles/css/assets/images',
           ]),
+          pathTo('src'),
         ],
         type: 'asset',
         parser: {
@@ -125,11 +124,11 @@ const config: Configuration = {
       {
         test: /\.(css)$/,
         include: [
-          pathTo('src'),
           getNodeModulesTest([
             '@patternfly/react-core/dist/styles',
             '@patternfly/react-styles/css',
           ]),
+          pathTo('src'),
         ],
         use: [isProd ? MiniCSSExtractPlugin.loader : 'style-loader', 'css-loader'],
       },

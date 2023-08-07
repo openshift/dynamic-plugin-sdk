@@ -1,7 +1,4 @@
-import type {
-  PluginManifest,
-  TransformPluginManifest,
-} from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
+import type { PluginManifest } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
 import { WebpackPluginInstance, Compiler, Compilation, sources, WebpackError } from 'webpack';
 import { findPluginChunks } from '../utils/plugin-chunks';
 
@@ -11,7 +8,7 @@ type GenerateManifestPluginOptions = {
   containerName: string;
   manifestFilename: string;
   manifestData: InputManifestData;
-  transformManifest: TransformPluginManifest;
+  transformManifest: (manifest: PluginManifest) => PluginManifest;
 };
 
 export class GenerateManifestPlugin implements WebpackPluginInstance {

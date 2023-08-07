@@ -1,7 +1,7 @@
 import { DEFAULT_REMOTE_ENTRY_CALLBACK } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
 import type {
   EncodedExtension,
-  TransformPluginManifest,
+  PluginManifest,
 } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
 import { identity, isEmpty, mapValues } from 'lodash';
 import * as yup from 'yup';
@@ -126,9 +126,11 @@ export type DynamicRemotePluginOptions = {
   /**
    * Transform the plugin manifest before emitting the asset to webpack compilation.
    *
+   * Environment specific properties should be set via the `customProperties` object.
+   *
    * By default, no transformation is performed on the manifest.
    */
-  transformPluginManifest?: TransformPluginManifest;
+  transformPluginManifest?: (manifest: PluginManifest) => PluginManifest;
 };
 
 export class DynamicRemotePlugin implements WebpackPluginInstance {

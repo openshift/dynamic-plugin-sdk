@@ -70,10 +70,20 @@ const config: Configuration = {
       },
       {
         test: /\.(svg|png|jpg|jpeg|gif)$/,
-        type: 'asset/resource',
+        include: pathTo('src'),
+        type: 'asset',
+        parser: {
+          dataUrlCondition: {
+            maxSize: 50 * 1024, // Files smaller than 50 kB will be inlined as data URLs
+          },
+        },
+        generator: {
+          filename: isProd ? 'images/[contenthash][ext]' : 'images/[name][ext]',
+        },
       },
       {
         test: /\.(css)$/,
+        include: pathTo('src'),
         use: ['style-loader', 'css-loader'],
       },
     ],

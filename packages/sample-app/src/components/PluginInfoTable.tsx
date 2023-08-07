@@ -18,6 +18,7 @@ const columnNames = {
   name: 'Name',
   version: 'Version',
   status: 'Status',
+  extensions: 'Extensions',
   enabled: 'Enabled',
   actions: 'Actions',
 };
@@ -39,12 +40,13 @@ const PluginInfoTable: React.FC = () => {
   const entries = usePluginInfo().sort((a, b) => a.manifest.name.localeCompare(b.manifest.name));
 
   return (
-    <TableComposable variant="compact">
+    <TableComposable variant="compact" data-test-id="plugin-table">
       <Thead>
         <Tr>
           <Th>{columnNames.name}</Th>
           <Th>{columnNames.version}</Th>
           <Th>{columnNames.status}</Th>
+          <Th>{columnNames.extensions}</Th>
           <Th info={{ tooltip: columnTooltips.enabled }}>{columnNames.enabled}</Th>
           <Th>{columnNames.actions}</Th>
           <Td />
@@ -53,7 +55,7 @@ const PluginInfoTable: React.FC = () => {
       <Tbody>
         {entries.length === 0 ? (
           <Tr>
-            <Td colSpan={6}>
+            <Td colSpan={7}>
               <Bullseye>
                 <EmptyState>
                   <EmptyStateIcon icon={ModuleIcon} />
@@ -91,6 +93,7 @@ const PluginInfoTable: React.FC = () => {
                 <Td dataLabel={columnNames.status}>
                   <LabelWithTooltipIcon label={p.status} tooltipContent={statusTooltip} />
                 </Td>
+                <Td dataLabel={columnNames.extensions}>{p.manifest.extensions.length}</Td>
                 <Td dataLabel={columnNames.enabled}>
                   <LabelWithTooltipIcon label={enabledLabel} tooltipContent={enabledTooltip} />
                 </Td>

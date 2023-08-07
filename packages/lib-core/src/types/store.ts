@@ -113,6 +113,9 @@ export type PluginStoreInterface = {
    * plugin is still loading when this method is invoked, the same Promise instance that
    * represents the load operation is returned.
    *
+   * The resulting Promise rejects only when the plugin manifest cannot be loaded or
+   * processed by the `PluginLoader` implementation.
+   *
    * Use the `subscribe` method to respond to events emitted by the `PluginStore`.
    *
    * Be advised that any plugin modules which are already loaded by the host application
