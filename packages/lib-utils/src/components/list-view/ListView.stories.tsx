@@ -31,7 +31,7 @@ const Template: ComponentStory<typeof ListView> = (args) => {
       <div style={{ overflowY: 'auto' }}>
         <ListView
           {...args}
-          onSelect={(e, isRowSelected, selectedData) =>
+          onSelect={(event, isRowSelected, selectedData) =>
             isRowSelected
               ? setSelected([...new Set([...selected, ...selectedData.map((i) => String(i.name))])])
               : setSelected(

@@ -6,7 +6,7 @@ import {
   DropdownToggle,
   KebabToggle,
   DropdownItem,
-} from '@patternfly/react-core';
+} from '@patternfly/react-core/deprecated';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import { isEmpty } from 'lodash';
 import React from 'react';
@@ -164,11 +164,19 @@ export const ActionMenu: React.FC<ActionMenuProps> = ({
       position={position}
       toggle={
         variant === ActionMenuVariant.DROPDOWN ? (
-          <DropdownToggle id={`toggle-menu-${label}`} onToggle={onToggle} isDisabled={isDisabled}>
+          <DropdownToggle
+            id={`toggle-menu-${label}`}
+            onToggle={(event, open) => onToggle(open)}
+            isDisabled={isDisabled}
+          >
             {label}
           </DropdownToggle>
         ) : (
-          <KebabToggle id={`toggle-menu-${label}`} onToggle={onToggle} isDisabled={isDisabled} />
+          <KebabToggle
+            id={`toggle-menu-${label}`}
+            onToggle={(event, open) => onToggle(open)}
+            isDisabled={isDisabled}
+          />
         )
       }
       isOpen={isOpen}

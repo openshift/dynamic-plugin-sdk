@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { TextContent, Text, TextVariants } from '@patternfly/react-core';
+import { TextContent, Text, TextVariants, Icon } from '@patternfly/react-core';
 import { CheckCircleIcon } from '@patternfly/react-icons';
 import type { ComponentStory, ComponentMeta } from '@storybook/react';
 import React from 'react';
@@ -100,7 +100,11 @@ Primary.args = {
   pageHeading: {
     label: {
       name: 'Ready',
-      icon: <CheckCircleIcon color="#3E8635" />,
+      icon: (
+        <Icon status="success">
+          <CheckCircleIcon />
+        </Icon>
+      ),
     },
   },
   actionButtons: [

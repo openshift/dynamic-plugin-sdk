@@ -37,7 +37,7 @@ describe('VirtualizedTable - non-virtualized', () => {
       );
       expect(screen.getByTestId(`col-branches-${index}`).textContent).toEqual(item.branches);
     });
-    expect(container.getElementsByClassName('pf-c-table__sort-indicator')).toHaveLength(3);
+    expect(container.getElementsByClassName('pf-v5-c-table__sort-indicator')).toHaveLength(3);
     expect(screen.queryByTestId('check-row-0')).toEqual(null);
     expect(screen.queryByTestId('check-all-rows')).toEqual(null);
     expect(screen.getByTestId('col-name-0').textContent).toEqual(data[0].name);
@@ -166,11 +166,11 @@ describe('VirtualizedTable - non-virtualized', () => {
       />,
     );
     expect(onEdit).toHaveBeenCalledTimes(0);
-    fireEvent.click(container.getElementsByClassName('pf-c-dropdown__toggle')[0]);
+    fireEvent.click(container.getElementsByClassName('pf-v5-c-menu-toggle')[0]);
     fireEvent.click(screen.getByText('Edit'));
     expect(onEdit).toHaveBeenCalledTimes(1);
     expect(onDelete).toHaveBeenCalledTimes(0);
-    fireEvent.click(container.getElementsByClassName('pf-c-dropdown__toggle')[0]);
+    fireEvent.click(container.getElementsByClassName('pf-v5-c-menu-toggle')[0]);
     fireEvent.click(screen.getByText('Delete'));
     expect(onDelete).toHaveBeenCalledTimes(1);
   });

@@ -144,7 +144,7 @@ const VirtualizedTableBody = <D extends AnyObject>({
                 rowIndex: index,
                 onSelect: (event, isSelected) => onSelect?.(event, isSelected, [rowArgs.obj]),
                 isSelected: isRowSelected?.(rowArgs.obj) || false,
-                disable: !!(rowArgs?.obj as Record<string, unknown>)?.disable,
+                isDisabled: !!(rowArgs?.obj as Record<string, unknown>)?.disable,
               }}
             />
           )}

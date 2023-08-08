@@ -1,7 +1,6 @@
 import {
   Button,
   Card,
-  CardActions,
   CardBody,
   CardHeader,
   CardTitle,
@@ -10,9 +9,9 @@ import {
 } from '@patternfly/react-core';
 import { CloseIcon } from '@patternfly/react-icons';
 import * as React from 'react';
+import { useLocalStorage } from '../../hooks';
 import '@patternfly/react-styles/css/utilities/Display/display.css';
 import '@patternfly/react-styles/css/utilities/Spacing/spacing.css';
-import { useLocalStorage } from '../../hooks';
 
 export type GettingStartedCardProps = {
   cardClassName?: string;
@@ -51,19 +50,25 @@ const GettingStartedCard: React.FC<GettingStartedCardProps> = ({
           </SplitItem>
         )}
         <SplitItem isFilled>
-          <CardHeader>
+          <CardHeader
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...(isDismissable && {
+              actions: {
+                actions: (
+                  <Button
+                    variant="plain"
+                    aria-label="Hide card"
+                    onClick={() => setStorageKeys({ ...keys, [localStorageKey]: true })}
+                  >
+                    <CloseIcon />
+                  </Button>
+                ),
+                hasNoOffset: false,
+                className: undefined,
+              },
+            })}
+          >
             <CardTitle>{title}</CardTitle>
-            {isDismissable && (
-              <CardActions>
-                <Button
-                  variant="plain"
-                  aria-label="Hide card"
-                  onClick={() => setStorageKeys({ ...keys, [localStorageKey]: true })}
-                >
-                  <CloseIcon />
-                </Button>
-              </CardActions>
-            )}
           </CardHeader>
           <CardBody>{children}</CardBody>
         </SplitItem>
