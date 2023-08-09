@@ -76,22 +76,17 @@ export type QueryOptions = Partial<{
   queryParams: QueryParams;
 }>;
 
-export type QueryParamsCreate = Partial<{
+export type QueryParams = Partial<{
+  watch: string;
+  labelSelector: string;
+  fieldSelector: string;
+  resourceVersion: string;
   pretty: string;
   dryRun: string;
   fieldManager: string;
   fieldValidation: string;
+  [key: string]: string;
 }>;
-
-export type QueryParams = Partial<
-  QueryParamsCreate & {
-    watch: string;
-    labelSelector: string;
-    fieldSelector: string;
-    resourceVersion: string;
-    [key: string]: string;
-  }
->;
 
 export type Patch = {
   op: string;

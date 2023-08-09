@@ -1,7 +1,7 @@
 import type { K8sModelCommon, K8sResourceCommon, QueryOptions } from '../types/k8s';
 import { getK8sResourceURL } from './k8s-utils';
 
-const resourceModelMock: K8sModelCommon | undefined = {
+const resourceModelMock: K8sModelCommon = {
   apiGroup: 'appstudio.redhat.com',
   apiVersion: 'v1alpha1',
   kind: 'Application',
@@ -51,7 +51,7 @@ describe('k8s-utils', () => {
     });
 
     test('should omit name from URL path and query params when method is "POST"', () => {
-      expect(getK8sResourceURL(resourceModelMock, resourceDataMock, queryOptionsMock, 'POST')).toBe(
+      expect(getK8sResourceURL(resourceModelMock, resourceDataMock, queryOptionsMock, true)).toBe(
         '/apis/appstudio.redhat.com/v1alpha1/namespaces/foobar/applications/path?pretty=true&dryRun=true',
       );
     });
