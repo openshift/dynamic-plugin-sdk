@@ -81,6 +81,10 @@ export type QueryParams = Partial<{
   labelSelector: string;
   fieldSelector: string;
   resourceVersion: string;
+  pretty: string;
+  dryRun: string;
+  fieldManager: string;
+  fieldValidation: string;
   [key: string]: string;
 }>;
 

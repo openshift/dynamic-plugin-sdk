@@ -240,7 +240,7 @@ export function getActiveWorkspace(): string | null;
 export type GetGroupVersionKindForModel = (model: K8sModelCommon) => K8sResourceIdentifier;
 
 // @public
-export const getK8sResourceURL: (model: K8sModelCommon, resource?: K8sResourceCommon | undefined, queryOptions?: QueryOptions) => string;
+export const getK8sResourceURL: (model: K8sModelCommon, resource?: K8sResourceCommon | undefined, queryOptions?: QueryOptions, isCreate?: boolean) => string;
 
 // @public (undocumented)
 export const GettingStartedCard: React_2.FC<GettingStartedCardProps>;
@@ -576,6 +576,10 @@ export type QueryParams = Partial<{
     labelSelector: string;
     fieldSelector: string;
     resourceVersion: string;
+    pretty: string;
+    dryRun: string;
+    fieldManager: string;
+    fieldValidation: string;
     [key: string]: string;
 }>;
 
