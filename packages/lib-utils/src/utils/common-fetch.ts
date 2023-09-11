@@ -70,7 +70,7 @@ export const commonFetchJSON = async <TResult>(
   const responseText = await response.text();
   const data = JSON.parse(responseText);
 
-  if (isK8sAPIRequest && isK8sStatus(data) && data.status.toLowerCase() !== 'success') {
+  if (isK8sAPIRequest && isK8sStatus(data) && data.status !== 'Success') {
     throw new K8sStatusError(data);
   }
 
