@@ -17,7 +17,7 @@ export const pluginBuildMetadataSchema = pluginRuntimeMetadataSchema.shape({
  */
 const pluginModuleFederationSettingsSchema = yup.object().required().shape({
   libraryType: yup.string(),
-  sharedScope: yup.string(),
+  sharedScopeName: yup.string(),
 });
 
 /**

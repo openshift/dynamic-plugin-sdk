@@ -4,7 +4,7 @@ import * as yup from 'yup';
 import type { PluginRegistrationMethod } from './types/plugin';
 
 /**
- * Schema for a valid SemVer string.
+ * Schema for a valid semver string.
  *
  * @see https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
  */
@@ -99,6 +99,7 @@ export const pluginRuntimeMetadataSchema = yup.object().required().shape({
   name: pluginNameSchema,
   version: semverStringSchema,
   // TODO(vojtech): Yup lacks native support for map-like structures with arbitrary keys
+  // TODO(vojtech): we need to validate dependency values as semver ranges
   dependencies: yup.object(),
   customProperties: yup.object(),
 });

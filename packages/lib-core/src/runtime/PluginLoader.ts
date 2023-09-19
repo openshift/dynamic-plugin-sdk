@@ -5,7 +5,7 @@ import { identity, noop } from 'lodash';
 import * as semver from 'semver';
 import { DEFAULT_REMOTE_ENTRY_CALLBACK } from '../constants';
 import type { ResourceFetch } from '../types/fetch';
-import type { PluginManifest } from '../types/plugin';
+import type { PluginManifest, TransformPluginManifest } from '../types/plugin';
 import type { PluginEntryModule, PluginEntryCallback } from '../types/runtime';
 import { basicFetch } from '../utils/basic-fetch';
 import { settleAllPromises } from '../utils/promise';
@@ -125,11 +125,11 @@ export type PluginLoaderOptions = Partial<{
   sharedScope: AnyObject;
 
   /**
-   * Post-process the plugin manifest.
+   * Transform the plugin manifest.
    *
-   * By default, no post-processing is performed on the manifest.
+   * By default, no transformation is performed on the manifest.
    */
-  postProcessManifest: (manifest: PluginManifest) => PluginManifest;
+  transformPluginManifest: TransformPluginManifest;
 
   /**
    * Provide access to the plugin's entry module.
@@ -163,7 +163,7 @@ export class PluginLoader {
       fetchImpl: options.fetchImpl ?? basicFetch,
       fixedPluginDependencyResolutions: options.fixedPluginDependencyResolutions ?? {},
       sharedScope: options.sharedScope ?? {},
-      postProcessManifest: options.postProcessManifest ?? identity,
+      transformPluginManifest: options.transformPluginManifest ?? identity,
       getPluginEntryModule: options.getPluginEntryModule ?? noop,
     };
 
@@ -187,10 +187,10 @@ export class PluginLoader {
   }
 
   /**
-   * Post-process and validate the given plugin manifest.
+   * Transform and validate the given plugin manifest.
    */
   processPluginManifest(manifest: PluginManifest) {
-    const processedManifest = this.options.postProcessManifest(manifest);
+    const processedManifest = this.options.transformPluginManifest(manifest);
 
     pluginManifestSchema.strict(true).validateSync(processedManifest, { abortEarly: false });
 

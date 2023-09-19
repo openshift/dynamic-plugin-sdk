@@ -29,6 +29,7 @@ export type DynamicRemotePluginOptions = {
     entryCallbackSettings?: PluginEntryCallbackSettings;
     entryScriptFilename?: string;
     pluginManifestFilename?: string;
+    transformPluginManifest?: TransformPluginManifest;
 };
 
 // @public (undocumented)
@@ -76,11 +77,23 @@ export type PluginEntryCallbackSettings = Partial<{
     pluginID: string;
 }>;
 
+// @public (undocumented)
+export type PluginManifest = PluginRuntimeMetadata & {
+    baseURL: string;
+    extensions: Extension[];
+    loadScripts: string[];
+    registrationMethod: PluginRegistrationMethod;
+    buildHash?: string;
+};
+
 // @public
 export type PluginModuleFederationSettings = Partial<{
     libraryType: string;
-    sharedScope: string;
+    sharedScopeName: string;
 }>;
+
+// @public (undocumented)
+export type PluginRegistrationMethod = 'callback' | 'custom';
 
 // @public (undocumented)
 export type PluginRuntimeMetadata = {
@@ -93,6 +106,11 @@ export type PluginRuntimeMetadata = {
 // @public
 export type ReplaceProperties<T, R> = {
     [K in keyof T]: K extends keyof R ? R[K] : T[K];
+};
+
+// @public (undocumented)
+export type TransformPluginManifest = (manifest: PluginManifest) => PluginManifest & {
+    [customProperty: string]: unknown;
 };
 
 // @public

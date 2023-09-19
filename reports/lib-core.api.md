@@ -157,7 +157,7 @@ export type PluginLoaderOptions = Partial<{
     fetchImpl: ResourceFetch;
     fixedPluginDependencyResolutions: Record<string, string>;
     sharedScope: AnyObject;
-    postProcessManifest: (manifest: PluginManifest) => PluginManifest;
+    transformPluginManifest: TransformPluginManifest;
     getPluginEntryModule: (manifest: PluginManifest) => PluginEntryModule | void;
 }>;
 
@@ -248,6 +248,11 @@ export type ResolvedExtension<TExtension extends Extension = Extension> = Replac
 
 // @public
 export type ResourceFetch = (url: string, requestInit?: RequestInit, isK8sAPIRequest?: boolean) => Promise<Response>;
+
+// @public (undocumented)
+export type TransformPluginManifest = (manifest: PluginManifest) => PluginManifest & {
+    [customProperty: string]: unknown;
+};
 
 // @public
 export const useExtensions: <TExtension extends Extension<string, AnyObject>>(predicate?: ExtensionPredicate<TExtension> | undefined) => LoadedExtension<TExtension>[];
