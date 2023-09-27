@@ -1,12 +1,5 @@
-import {
-  Split,
-  SplitItem,
-  TextContent,
-  Text,
-  TextVariants,
-  Label,
-  DropdownPosition,
-} from '@patternfly/react-core';
+import { Split, SplitItem, TextContent, Text, TextVariants, Label } from '@patternfly/react-core';
+import { DropdownPosition } from '@patternfly/react-core/deprecated';
 import { isEmpty } from 'lodash';
 import React from 'react';
 import type { K8sResourceCommon } from '../../types/k8s';

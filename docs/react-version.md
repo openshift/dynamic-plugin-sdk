@@ -8,17 +8,17 @@ use a React version that is officially supported by your PatternFly major versio
 Host applications will typically provide React specific modules such as `react` and `react-dom`
 to their plugins via webpack shared scope object.
 
-## PatternFly 4 example
+## PatternFly 5 example
 
-The [manifest][pf-react-core-4.276.6] for `@patternfly/react-core` package version `4.276.6`
-contains the following peer dependencies:
+The [manifest][pf-react-core-5.0.0] for `@patternfly/react-core` package version `5.0.0` contains
+the following peer dependencies:
 
 ```
-"react": "^16.8 || ^17 || ^18",
-"react-dom": "^16.8 || ^17 || ^18"
+"react": "^17 || ^18",
+"react-dom": "^17 || ^18"
 ```
 
-This combines officially supported React versions (`^16.8 || ^17`) and newer React versions for
-the sake of technical compatibility (`^18`) into a single version range.
+This combines officially supported React versions (`^18`) and older and/or newer React versions
+for the sake of technical compatibility (`^17`) into a single version range.
 
-[pf-react-core-4.276.6]: https://github.com/patternfly/patternfly-react/blob/%40patternfly/react-core%404.276.6/packages/react-core/package.json
+[pf-react-core-5.0.0]: https://github.com/patternfly/patternfly-react/blob/v5.0.0/packages/react-core/package.json

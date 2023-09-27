@@ -90,7 +90,7 @@ describe('DetailsItem', () => {
       );
       expect(screen.getByText('myLabel')).toBeInTheDocument();
       expect(screen.queryByText(customDefault)).not.toBeInTheDocument();
-      expect(container.querySelector('.pf-c-skeleton')).toBeInTheDocument();
+      expect(container.querySelector('.pf-v5-c-skeleton')).toBeInTheDocument();
     });
   });
 });

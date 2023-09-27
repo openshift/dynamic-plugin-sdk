@@ -1,4 +1,11 @@
-import { Alert, EmptyState, EmptyStateBody, Spinner, Text, Title } from '@patternfly/react-core';
+import {
+  Alert,
+  EmptyState,
+  EmptyStateBody,
+  Spinner,
+  Text,
+  EmptyStateHeader,
+} from '@patternfly/react-core';
 import * as React from 'react';
 
 export type LoadError = {
@@ -17,7 +24,7 @@ export const AccessDenied: React.FC<AccessDeniedProps> = ({
   message = 'Insufficient access rights.',
 }) => (
   <EmptyState>
-    <Title headingLevel="h2">Restricted Access</Title>
+    <EmptyStateHeader titleText="Restricted Access" headingLevel="h2" />
     <EmptyStateBody>
       <Text>You don&apos;t have access to this section due to cluster policy.</Text>
       {message && (
@@ -64,7 +71,7 @@ export const StatusBox: React.FC<StatusBoxProps> = ({
       case 404:
         return (
           <EmptyState>
-            <Title headingLevel="h1">404: Not Found</Title>
+            <EmptyStateHeader titleText="404: Not Found" headingLevel="h1" />
           </EmptyState>
         );
       case 403:
@@ -75,7 +82,7 @@ export const StatusBox: React.FC<StatusBoxProps> = ({
 
     return (
       <EmptyState>
-        <Title headingLevel="h1">{loadErrorMsg}</Title>
+        <EmptyStateHeader titleText={<>{loadErrorMsg}</>} headingLevel="h1" />
         <EmptyStateBody>{emptyStateDescription}</EmptyStateBody>
       </EmptyState>
     );

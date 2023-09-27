@@ -12,7 +12,7 @@ import type { AnyObject } from '@openshift/dynamic-plugin-sdk';
 import { Context } from 'react';
 import { CustomError } from '@openshift/dynamic-plugin-sdk';
 import type { Dispatch } from 'redux';
-import { DropdownPosition } from '@patternfly/react-core';
+import { DropdownPosition } from '@patternfly/react-core/deprecated';
 import type { EitherNotBoth } from '@openshift/dynamic-plugin-sdk';
 import type { IAction } from '@patternfly/react-table';
 import type { ICell } from '@patternfly/react-table';

@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { DropdownPosition } from '@patternfly/react-core';
+import { DropdownPosition } from '@patternfly/react-core/deprecated';
 import type { ComponentStory, ComponentMeta } from '@storybook/react';
 import React from 'react';
 import { ActionMenu, ActionMenuVariant } from './ActionMenu';
