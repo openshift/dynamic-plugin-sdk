@@ -1,15 +1,22 @@
 import { WebpackPluginInstance, Compiler, WebpackError } from 'webpack';
 import { findPluginChunks } from '../utils/plugin-chunks';
 
+type ValidateCompilationPluginOptions = {
+  containerName: string;
+  jsonpLibraryType: boolean;
+};
+
 export class ValidateCompilationPlugin implements WebpackPluginInstance {
-  constructor(private readonly containerName: string, private readonly jsonpLibraryType: boolean) {}
+  constructor(private readonly options: ValidateCompilationPluginOptions) {}
 
   apply(compiler: Compiler) {
+    const { containerName, jsonpLibraryType } = this.options;
+
     compiler.hooks.done.tap(ValidateCompilationPlugin.name, ({ compilation }) => {
-      const { runtimeChunk } = findPluginChunks(this.containerName, compilation);
+      const { runtimeChunk } = findPluginChunks(containerName, compilation);
 
       if (runtimeChunk) {
-        const errorMessage = this.jsonpLibraryType
+        const errorMessage = jsonpLibraryType
           ? 'Detected separate runtime chunk while using jsonp library type.\n' +
             'This configuration is not allowed since it will cause issues when reloading plugins at runtime.\n' +
             'Please update your webpack configuration to avoid emitting a separate runtime chunk.'
@@ -19,7 +26,7 @@ export class ValidateCompilationPlugin implements WebpackPluginInstance {
 
         const error = new WebpackError(errorMessage);
         error.chunk = runtimeChunk;
-        (this.jsonpLibraryType ? compilation.errors : compilation.warnings).push(error);
+        (jsonpLibraryType ? compilation.errors : compilation.warnings).push(error);
       }
     });
   }

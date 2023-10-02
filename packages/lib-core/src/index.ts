@@ -59,6 +59,7 @@ export {
   PluginRegistrationMethod,
   PluginRuntimeMetadata,
   PluginManifest,
+  TransformPluginManifest,
   PendingPlugin,
   LoadedPlugin,
   FailedPlugin,

@@ -36,3 +36,7 @@ export type FailedPlugin = {
   errorMessage: string;
   errorCause?: unknown;
 };
+
+export type TransformPluginManifest = (manifest: PluginManifest) => PluginManifest & {
+  [customProperty: string]: unknown;
+};

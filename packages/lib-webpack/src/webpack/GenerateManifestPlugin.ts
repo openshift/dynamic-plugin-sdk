@@ -1,17 +1,24 @@
-import type { PluginManifest } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
+import type {
+  PluginManifest,
+  TransformPluginManifest,
+} from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
 import { WebpackPluginInstance, Compiler, Compilation, sources, WebpackError } from 'webpack';
 import { findPluginChunks } from '../utils/plugin-chunks';
 
 type InputManifestData = Omit<PluginManifest, 'baseURL' | 'loadScripts' | 'buildHash'>;
 
+type GenerateManifestPluginOptions = {
+  containerName: string;
+  manifestFilename: string;
+  manifestData: InputManifestData;
+  transformManifest: TransformPluginManifest;
+};
+
 export class GenerateManifestPlugin implements WebpackPluginInstance {
-  constructor(
-    private readonly containerName: string,
-    private readonly manifestFilename: string,
-    private readonly manifestData: InputManifestData,
-  ) {}
+  constructor(private readonly options: GenerateManifestPluginOptions) {}
 
   apply(compiler: Compiler) {
+    const { containerName, manifestFilename, manifestData, transformManifest } = this.options;
     const publicPath = compiler.options.output.publicPath;
 
     if (!publicPath) {
@@ -27,21 +34,21 @@ export class GenerateManifestPlugin implements WebpackPluginInstance {
           stage: Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
         },
         () => {
-          const { entryChunk, runtimeChunk } = findPluginChunks(this.containerName, compilation);
+          const { entryChunk, runtimeChunk } = findPluginChunks(containerName, compilation);
 
           const loadScripts = (runtimeChunk ? [runtimeChunk, entryChunk] : [entryChunk]).reduce<
             string[]
           >((acc, chunk) => [...acc, ...chunk.files], []);
 
-          const manifest: PluginManifest = {
-            ...this.manifestData,
+          const manifest = transformManifest({
+            ...manifestData,
             baseURL: compilation.getAssetPath(publicPath, {}),
             loadScripts,
             buildHash: compilation.fullHash,
-          };
+          });
 
           compilation.emitAsset(
-            this.manifestFilename,
+            manifestFilename,
             new sources.RawSource(Buffer.from(JSON.stringify(manifest, null, 2))),
           );
 
@@ -57,7 +64,7 @@ export class GenerateManifestPlugin implements WebpackPluginInstance {
 
           warnings.forEach((message) => {
             const error = new WebpackError(message);
-            error.file = this.manifestFilename;
+            error.file = manifestFilename;
             compilation.warnings.push(error);
           });
         },
