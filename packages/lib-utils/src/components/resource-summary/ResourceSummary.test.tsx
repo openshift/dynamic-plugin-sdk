@@ -63,7 +63,7 @@ describe('ResourceSummary', () => {
 
     expect(screen.queryByText('Namespace')).not.toBeInTheDocument();
     expect(screen.queryByText('No owner')).not.toBeInTheDocument();
-    expect(container.querySelectorAll('.pf-c-skeleton').length).toEqual(0);
+    expect(container.querySelectorAll('.pf-v5-c-skeleton').length).toEqual(0);
   });
 
   it('displays with missing owner', () => {
@@ -94,6 +94,6 @@ describe('ResourceSummary', () => {
     expect(screen.queryByText('demo-workspace')).not.toBeInTheDocument();
     expect(screen.getByText('Loading Name')).toBeInTheDocument();
     expect(screen.getByText('Loading Labels')).toBeInTheDocument();
-    expect(container.querySelectorAll('.pf-c-skeleton').length).toBeGreaterThan(0);
+    expect(container.querySelectorAll('.pf-v5-c-skeleton').length).toBeGreaterThan(0);
   });
 });

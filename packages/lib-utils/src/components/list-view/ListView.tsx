@@ -3,14 +3,12 @@ import {
   Pagination,
   PaginationVariant,
   SearchInput,
-  Select,
-  SelectOption,
-  SelectVariant,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
   ToolbarItemVariant,
 } from '@patternfly/react-core';
+import { Select, SelectOption, SelectVariant } from '@patternfly/react-core/deprecated';
 import { FilterIcon } from '@patternfly/react-icons';
 import { debounce, omit } from 'lodash';
 import * as React from 'react';
@@ -18,8 +16,8 @@ import { useSearchParams, useLocation } from 'react-router-dom';
 import { parseFiltersFromURL, setFiltersToURL } from '../../utils/url-sync';
 import { ActionButtons } from '../details-page-header/utils/ActionButtons';
 import type { ActionButtonProp } from '../details-page-header/utils/ActionButtons';
-import type { VirtualizedTableProps } from '../table/VirtualizedTable';
 import VirtualizedTable from '../table/VirtualizedTable';
+import type { VirtualizedTableProps } from '../table/VirtualizedTable';
 import FilterChips from './FilterChips';
 import './list-view.css';
 
@@ -142,8 +140,8 @@ const ListView = <D extends AnyObject>({
                   <Select
                     toggleIcon={<FilterIcon />}
                     variant={SelectVariant.single}
-                    onToggle={(value) => setFilterSelectExpanded(value)}
-                    onSelect={(e, selection) => {
+                    onToggle={(event, value) => setFilterSelectExpanded(value)}
+                    onSelect={(event, selection) => {
                       setActiveFilter(filters.find((item) => item.id === selection));
                       setFilterSelectExpanded(false);
                       inputValue.current = activeFilter
@@ -164,7 +162,7 @@ const ListView = <D extends AnyObject>({
               <ToolbarItem variant={ToolbarItemVariant['search-filter']} key="search-filter">
                 <SearchInput
                   className="dps-list-view__search"
-                  onChange={(value) => {
+                  onChange={(event, value) => {
                     if (useURL) {
                       setUseURL(false);
                     }
@@ -184,11 +182,11 @@ const ListView = <D extends AnyObject>({
                 itemCount={(filters ? filteredData : data).length}
                 perPage={pagination.limit}
                 page={calculatePage(pagination.limit, pagination.offset)}
-                onSetPage={(e, page) =>
+                onSetPage={(event, page) =>
                   setPagination({ ...pagination, offset: calculateOffset(page, pagination.limit) })
                 }
-                onPerPageSelect={(e, value) => setPagination({ limit: value, offset: 0 })}
-                titles={{ paginationTitle: 'Above table pagination' }}
+                onPerPageSelect={(event, value) => setPagination({ limit: value, offset: 0 })}
+                titles={{ paginationAriaLabel: 'Above table pagination' }}
               />
             </ToolbarItem>
           )}
@@ -241,11 +239,11 @@ const ListView = <D extends AnyObject>({
           itemCount={(filters ? filteredData : data).length}
           perPage={pagination.limit}
           page={calculatePage(pagination.limit, pagination.offset)}
-          onSetPage={(e, page) =>
+          onSetPage={(event, page) =>
             setPagination({ ...pagination, offset: calculateOffset(page, pagination.limit) })
           }
-          onPerPageSelect={(e, value) => setPagination({ limit: value, offset: 0 })}
-          titles={{ paginationTitle: 'Below table pagination' }}
+          onPerPageSelect={(event, value) => setPagination({ limit: value, offset: 0 })}
+          titles={{ paginationAriaLabel: 'Below table pagination' }}
         />
       )}
     </>

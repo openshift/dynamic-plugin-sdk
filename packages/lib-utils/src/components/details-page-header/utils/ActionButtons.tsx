@@ -35,7 +35,7 @@ const ActionButton: React.FC<ActionButtonProp> = ({
       >
         {children}
       </Button>
-      {tooltip ? <Tooltip id={id} content={tooltip} reference={tooltipRef} /> : null}
+      {tooltip ? <Tooltip id={id} content={tooltip} triggerRef={tooltipRef} /> : null}
     </>
   );
 };

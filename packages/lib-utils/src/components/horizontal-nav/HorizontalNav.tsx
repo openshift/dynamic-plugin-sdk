@@ -50,7 +50,7 @@ const HorizontalNavTabs: React.FC<HorizontalNavProps> = ({
     <Tabs
       mountOnEnter
       activeKey={activeTabKey}
-      onSelect={(e, eventKey) => {
+      onSelect={(event, eventKey) => {
         setActiveTabKey(eventKey);
         if (location?.pathname && navigate) {
           const currentPathName = location.pathname;

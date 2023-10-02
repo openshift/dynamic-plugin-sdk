@@ -1,15 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { AnyObject } from '@openshift/dynamic-plugin-sdk';
 import type { IAction } from '@patternfly/react-table';
-import { ActionsColumn, Tbody, Td, Th, Thead, Tr, TableComposable } from '@patternfly/react-table';
+import { ActionsColumn, Tbody, Td, Th, Thead, Tr, Table } from '@patternfly/react-table';
 import { AutoSizer, WindowScroller } from '@patternfly/react-virtualized-extension';
 import { get, isEmpty, isString } from 'lodash';
 import * as React from 'react';
 import type { Size, WindowScrollerChildProps } from 'react-virtualized';
 import type { LoadError } from '../status';
 import { StatusBox } from '../status';
-import type { RowProps, TableColumn } from './VirtualizedTableBody';
 import VirtualizedTableBody, { RowMemo } from './VirtualizedTableBody';
+import type { RowProps, TableColumn } from './VirtualizedTableBody';
 
 export type VirtualizedTableProps<D> = {
   /** Optional flag indicating that filters are applied to data. */
@@ -206,7 +206,7 @@ const VirtualizedTable = <D extends AnyObject>({
       CustomNoDataEmptyState={CustomNoDataEmptyState}
     >
       <div role="grid" aria-label={ariaLabel} aria-rowcount={data?.length || 0}>
-        <TableComposable aria-label={ariaLabel} role="presentation" gridBreakPoint="">
+        <Table aria-label={ariaLabel} role="presentation" gridBreakPoint="">
           <Thead>
             <Tr>
               {onSelect && (
@@ -262,7 +262,7 @@ const VirtualizedTable = <D extends AnyObject>({
                         rowIndex: index,
                         onSelect: (event, isSelected) => onSelect?.(event, isSelected, [item]),
                         isSelected: isRowSelected?.(item) || false,
-                        disable: !!(item as Record<string, unknown>)?.disable,
+                        isDisabled: !!(item as Record<string, unknown>)?.disable,
                       }}
                       data-testid={`check-row-${index}`}
                     />
@@ -284,7 +284,7 @@ const VirtualizedTable = <D extends AnyObject>({
               ))}
             </Tbody>
           )}
-        </TableComposable>
+        </Table>
       </div>
     </StatusBox>
   );
