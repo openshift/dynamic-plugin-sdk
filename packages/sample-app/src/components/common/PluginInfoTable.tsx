@@ -5,11 +5,11 @@ import {
   Button,
   EmptyState,
   EmptyStateBody,
+  EmptyStateHeader,
   EmptyStateIcon,
-  Title,
 } from '@patternfly/react-core';
 import { ModuleIcon } from '@patternfly/react-icons';
-import { ActionsColumn, TableComposable, Thead, Tbody, Tr, Th, Td } from '@patternfly/react-table';
+import { ActionsColumn, Table, Thead, Tbody, Tr, Th, Td } from '@patternfly/react-table';
 import type { IAction } from '@patternfly/react-table';
 import * as React from 'react';
 import LabelWithTooltipIcon from './LabelWithTooltipIcon';
@@ -39,7 +39,7 @@ const PluginInfoTable: React.FC = () => {
   const entries = usePluginInfo().sort((a, b) => a.manifest.name.localeCompare(b.manifest.name));
 
   return (
-    <TableComposable variant="compact">
+    <Table variant="compact">
       <Thead>
         <Tr>
           <Th>{columnNames.name}</Th>
@@ -56,10 +56,11 @@ const PluginInfoTable: React.FC = () => {
             <Td colSpan={6}>
               <Bullseye>
                 <EmptyState>
-                  <EmptyStateIcon icon={ModuleIcon} />
-                  <Title headingLevel="h2" size="md">
-                    No plugins detected
-                  </Title>
+                  <EmptyStateHeader
+                    titleText="No plugins detected"
+                    icon={<EmptyStateIcon icon={ModuleIcon} />}
+                    headingLevel="h2"
+                  />
                   <EmptyStateBody>
                     Check browser console for errors if plugins don&apos;t show up here.
                   </EmptyStateBody>
@@ -111,7 +112,7 @@ const PluginInfoTable: React.FC = () => {
           })
         )}
       </Tbody>
-    </TableComposable>
+    </Table>
   );
 };
 

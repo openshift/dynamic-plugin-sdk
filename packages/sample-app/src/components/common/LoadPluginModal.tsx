@@ -1,5 +1,16 @@
 import { usePluginStore } from '@openshift/dynamic-plugin-sdk';
-import { Button, Checkbox, Form, FormGroup, Modal, TextInput } from '@patternfly/react-core';
+import {
+  Button,
+  Checkbox,
+  Form,
+  FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+  Modal,
+  TextInput
+} from '@patternfly/react-core';
+import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { isValidURL } from '../../utils';
 
@@ -10,6 +21,8 @@ type LoadPluginModalProps = {
 export type LoadPluginModalRefProps = {
   open: VoidFunction;
 };
+
+export type validate = 'success' | 'warning' | 'error' | 'default';
 
 const LoadPluginModal = React.forwardRef<LoadPluginModalRefProps, LoadPluginModalProps>(
   ({ defaultManifestURL = 'http://localhost:9001/plugin-manifest.json' }, ref) => {
@@ -22,7 +35,7 @@ const LoadPluginModal = React.forwardRef<LoadPluginModalRefProps, LoadPluginModa
     const pluginStore = usePluginStore();
 
     const onManifestURLChange = React.useCallback(
-      (value: string) => {
+      (event, value: string) => {
         setManifestURL(value);
         setManifestURLValid(isValidURL(value));
       },
@@ -30,7 +43,7 @@ const LoadPluginModal = React.forwardRef<LoadPluginModalRefProps, LoadPluginModa
     );
 
     const onForceReloadChange = React.useCallback(
-      (value: boolean) => {
+      (event, value: boolean) => {
         setForceReload(value);
       },
       [setForceReload],
@@ -73,13 +86,7 @@ const LoadPluginModal = React.forwardRef<LoadPluginModalRefProps, LoadPluginModa
         ]}
       >
         <Form>
-          <FormGroup
-            fieldId="plugin-manifest-url"
-            label="Manifest URL"
-            isRequired
-            helperTextInvalid="Must be a valid URL"
-            validated={manifestURLValid ? 'success' : 'error'}
-          >
+          <FormGroup fieldId="plugin-manifest-url" label="Manifest URL" isRequired>
             <TextInput
               id="plugin-manifest-url"
               type="text"
@@ -88,6 +95,15 @@ const LoadPluginModal = React.forwardRef<LoadPluginModalRefProps, LoadPluginModa
               onChange={onManifestURLChange}
               validated={manifestURLValid ? 'success' : 'error'}
             />
+            {!manifestURLValid && (
+              <FormHelperText>
+                <HelperText>
+                  <HelperTextItem icon={<ExclamationCircleIcon />} variant="error">
+                    Must be a valid URL
+                  </HelperTextItem>
+                </HelperText>
+              </FormHelperText>
+            )}
           </FormGroup>
           <FormGroup fieldId="plugin-load-options" label="Options">
             <Checkbox

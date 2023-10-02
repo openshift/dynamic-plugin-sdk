@@ -2695,11 +2695,11 @@ __metadata:
     "@openshift/dynamic-plugin-sdk": "portal:../lib-core"
     "@openshift/dynamic-plugin-sdk-extensions": "portal:../lib-extensions"
     "@openshift/dynamic-plugin-sdk-webpack": "portal:../lib-webpack"
-    "@patternfly/react-core": ^4.202.16
-    "@patternfly/react-icons": ^4.53.16
-    "@patternfly/react-styles": ^4.52.16
-    "@patternfly/react-table": ^4.71.16
-    "@patternfly/react-tokens": ^4.58.5
+    "@patternfly/react-core": ^5.1.0
+    "@patternfly/react-icons": ^5.1.0
+    "@patternfly/react-styles": ^5.1.0
+    "@patternfly/react-table": ^5.1.0
+    "@patternfly/react-tokens": ^5.1.0
     "@types/webpack-bundle-analyzer": ~4.6.0
     copy-webpack-plugin: ^10.2.4
     css-loader: ^6.7.1
@@ -2726,8 +2726,8 @@ __metadata:
     "@openshift/dynamic-plugin-sdk": "portal:../lib-core"
     "@openshift/dynamic-plugin-sdk-extensions": "portal:../lib-extensions"
     "@openshift/dynamic-plugin-sdk-webpack": "portal:../lib-webpack"
-    "@patternfly/react-core": ^4.202.16
-    "@patternfly/react-table": ^4.71.16
+    "@patternfly/react-core": ^5.1.0
+    "@patternfly/react-table": ^5.1.0
     css-loader: ^6.7.1
     css-minimizer-webpack-plugin: ^3.4.1
     http-server: ^14.1.0
@@ -2990,24 +2990,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-core@npm:^4.202.16, @patternfly/react-core@npm:^4.206.5":
-  version: 4.206.5
-  resolution: "@patternfly/react-core@npm:4.206.5"
-  dependencies:
-    "@patternfly/react-icons": ^4.57.5
-    "@patternfly/react-styles": ^4.56.5
-    "@patternfly/react-tokens": ^4.58.5
-    focus-trap: 6.2.2
-    react-dropzone: 9.0.0
-    tippy.js: 5.1.2
-    tslib: ^2.0.0
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0
-    react-dom: ^16.8.0 || ^17.0.0
-  checksum: 33beebdc2ad101d31618f4d0910d9a7be40f4fcdaf85f4f32203b3921883b79d88875b3b8d149e8ba4fe4d4ec7630a8aae84c204adef0dd4d67801548f212dd4
-  languageName: node
-  linkType: hard
-
 "@patternfly/react-core@npm:^5.0.0, @patternfly/react-core@npm:^5.1.0":
   version: 5.1.0
   resolution: "@patternfly/react-core@npm:5.1.0"
@@ -3026,16 +3008,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-icons@npm:^4.53.16, @patternfly/react-icons@npm:^4.57.5":
-  version: 4.57.5
-  resolution: "@patternfly/react-icons@npm:4.57.5"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0
-    react-dom: ^16.8.0 || ^17.0.0
-  checksum: 21b8b2ebec053d3d64456e962473b17a2b5a49d3296ea8bcf0d39ecae1b2a8321cf444a53c812a7374aaa09e67c936e0360fd655bd1e574ff60dccc6cc19dc0f
-  languageName: node
-  linkType: hard
-
 "@patternfly/react-icons@npm:^5.0.0, @patternfly/react-icons@npm:^5.1.0":
   version: 5.1.0
   resolution: "@patternfly/react-icons@npm:5.1.0"
@@ -3048,36 +3020,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-styles@npm:^4.52.16, @patternfly/react-styles@npm:^4.56.5":
-  version: 4.56.5
-  resolution: "@patternfly/react-styles@npm:4.56.5"
-  checksum: dad6189824cbd03ae1da99e1bf254647d0ff92cf8820d822ce4889311503d75b078be339581e5f7fcde09b72c5bede98b6ce46734db854132b1a91b755ceef2f
-  languageName: node
-  linkType: hard
-
 "@patternfly/react-styles@npm:^5.0.0, @patternfly/react-styles@npm:^5.1.0":
   version: 5.1.0
   resolution: "@patternfly/react-styles@npm:5.1.0"
   dependencies:
     "@patternfly/patternfly": 5.0.2
   checksum: 0dd938f8f537f7a39e23b00a7d038c98f902bd705d5771e77969fb1281140dcd783190aa5f0d70be0bca28276da3533714e09518a6cf0fcef9a5d2f91a2b0859
-  languageName: node
-  linkType: hard
-
-"@patternfly/react-table@npm:^4.71.16":
-  version: 4.75.5
-  resolution: "@patternfly/react-table@npm:4.75.5"
-  dependencies:
-    "@patternfly/react-core": ^4.206.5
-    "@patternfly/react-icons": ^4.57.5
-    "@patternfly/react-styles": ^4.56.5
-    "@patternfly/react-tokens": ^4.58.5
-    lodash: ^4.17.19
-    tslib: ^2.0.0
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0
-    react-dom: ^16.8.0 || ^17.0.0
-  checksum: 9a3349c78f5c5b7c43eb45d635e76c907298ea36b9f358b145a7990f163ccb8cb0deab19ea7da040fcc8fac77ac1c326b395693c4577366cde7ae7501ae1497b
   languageName: node
   linkType: hard
 
@@ -3095,13 +3043,6 @@ __metadata:
     react: ^17 || ^18
     react-dom: ^17 || ^18
   checksum: 34d2831b685f349587b8e82da54a5573a34b3b82880a86f6ab96451916b6455c3667f17e7f64d4c04538bb9c17405d9b86cafc0a6b3a4da5c49252658a73e694
-  languageName: node
-  linkType: hard
-
-"@patternfly/react-tokens@npm:^4.58.5":
-  version: 4.58.5
-  resolution: "@patternfly/react-tokens@npm:4.58.5"
-  checksum: afe371fb9bbfb18ecb7018a964c2ff1bb37dde4d9f778a0bfa113fc2b6ddf732299a1c54f510052a71b85185192dce8138f0edc152d88591cd49d84c76becea1
   languageName: node
   linkType: hard
 
@@ -6630,15 +6571,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"attr-accept@npm:^1.1.3":
-  version: 1.1.3
-  resolution: "attr-accept@npm:1.1.3"
-  dependencies:
-    core-js: ^2.5.0
-  checksum: 836c0e863719c0355e8ad4214e4c81f24dd9e724233153200189732da691f73e6f13316b8ac456d75749a89780f0da67e44387e46dfc3fd9a517a84a0e45acbc
-  languageName: node
-  linkType: hard
-
 "attr-accept@npm:^2.2.2":
   version: 2.2.2
   resolution: "attr-accept@npm:2.2.2"
@@ -8237,13 +8169,6 @@ __metadata:
   version: 3.23.4
   resolution: "core-js-pure@npm:3.23.4"
   checksum: 54afc79508ded6c1b59aacdf32fc1621f0246b10401e6228e7b145fe3960335c8863580e6ce8560bb8004aa69ea2328a5baa11d2e15965b6333b8fd839657601
-  languageName: node
-  linkType: hard
-
-"core-js@npm:^2.5.0":
-  version: 2.6.12
-  resolution: "core-js@npm:2.6.12"
-  checksum: 44fa9934a85f8c78d61e0c8b7b22436330471ffe59ec5076fe7f324d6e8cf7f824b14b1c81ca73608b13bdb0fef035bd820989bf059767ad6fa13123bb8bd016
   languageName: node
   linkType: hard
 
@@ -10455,15 +10380,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"file-selector@npm:^0.1.8":
-  version: 0.1.19
-  resolution: "file-selector@npm:0.1.19"
-  dependencies:
-    tslib: ^2.0.1
-  checksum: 5b105a3ede9139729ada72d6653ae3f4387a7bf2585e8700f9fa53f22457d1f88304fdde9ad7b43b694a5610d67058302257f448a75248fc2225880bca6df5df
-  languageName: node
-  linkType: hard
-
 "file-selector@npm:^0.6.0":
   version: 0.6.0
   resolution: "file-selector@npm:0.6.0"
@@ -10629,15 +10545,6 @@ __metadata:
   dependencies:
     tslib: ^1.9.3
   checksum: 3b25b06bb8e23a3a826a8eda89e547593a688486df531db92f6b767d96d397dc1efed4529ec3a44cb3ec1fbdd44abe50a30d0ce498f732501b36f5f18b619003
-  languageName: node
-  linkType: hard
-
-"focus-trap@npm:6.2.2":
-  version: 6.2.2
-  resolution: "focus-trap@npm:6.2.2"
-  dependencies:
-    tabbable: ^5.1.4
-  checksum: 0bab3fbd8ca83724dbfeceed47a4fb99bd8f6d193ca8c3948fb0f1eff8554f718de017c25107cb3c52aa7761fd47150441d3a21eb6cd009d9b8698149ab05e98
   languageName: node
   linkType: hard
 
@@ -13991,7 +13898,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loose-envify@npm:^1.0.0, loose-envify@npm:^1.1.0, loose-envify@npm:^1.2.0, loose-envify@npm:^1.3.1, loose-envify@npm:^1.4.0":
+"loose-envify@npm:^1.1.0, loose-envify@npm:^1.2.0, loose-envify@npm:^1.3.1, loose-envify@npm:^1.4.0":
   version: 1.4.0
   resolution: "loose-envify@npm:1.4.0"
   dependencies:
@@ -15860,13 +15767,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"popper.js@npm:^1.16.0":
-  version: 1.16.1
-  resolution: "popper.js@npm:1.16.1"
-  checksum: c56ae5001ec50a77ee297a8061a0221d99d25c7348d2e6bcd3e45a0d0f32a1fd81bca29d46cb0d4bdf13efb77685bd6a0ce93f9eb3c608311a461f945fffedbe
-  languageName: node
-  linkType: hard
-
 "portfinder@npm:^1.0.28":
   version: 1.0.28
   resolution: "portfinder@npm:1.0.28"
@@ -16531,18 +16431,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types-extra@npm:^1.1.0":
-  version: 1.1.1
-  resolution: "prop-types-extra@npm:1.1.1"
-  dependencies:
-    react-is: ^16.3.2
-    warning: ^4.0.0
-  peerDependencies:
-    react: ">=0.14.0"
-  checksum: ebf1c048687bb538457f91a3610abb36ca0f50587a6afae80443a9e65b9db96882d18c3511175a8967fad4ca5dcd804913bbc241d7b5160c74cf69aacdd054f0
-  languageName: node
-  linkType: hard
-
 "prop-types@npm:^15.0.0, prop-types@npm:^15.6.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
@@ -16841,20 +16729,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dropzone@npm:9.0.0":
-  version: 9.0.0
-  resolution: "react-dropzone@npm:9.0.0"
-  dependencies:
-    attr-accept: ^1.1.3
-    file-selector: ^0.1.8
-    prop-types: ^15.6.2
-    prop-types-extra: ^1.1.0
-  peerDependencies:
-    react: ">=0.14.0"
-  checksum: 03fd7fb78b49045c2c30d3841fbab30ba8513e03c69103527c9c1895c4298ca1ad76a6f9ba82acd5f505d9b713c4a0b2dedf248d891c9da639aa18004c35fee2
-  languageName: node
-  linkType: hard
-
 "react-dropzone@npm:^14.2.3":
   version: 14.2.3
   resolution: "react-dropzone@npm:14.2.3"
@@ -16920,7 +16794,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-is@npm:^16.13.1, react-is@npm:^16.3.2, react-is@npm:^16.6.0, react-is@npm:^16.7.0, react-is@npm:^16.8.1":
+"react-is@npm:^16.13.1, react-is@npm:^16.6.0, react-is@npm:^16.7.0, react-is@npm:^16.8.1":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
   checksum: f7a19ac3496de32ca9ae12aa030f00f14a3d45374f1ceca0af707c831b2a6098ef0d6bdae51bd437b0a306d7f01d4677fcc8de7c0d331eb47ad0f46130e53c5f
@@ -19019,13 +18893,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tabbable@npm:^5.1.4":
-  version: 5.2.1
-  resolution: "tabbable@npm:5.2.1"
-  checksum: d26e9eeb880c4c78b59244bac2c931ad46f6c64a01e5c15ba6da348dc86442222912733846a9e63373342a81fa15d4afb31267606b38431510d10b0fb9ec9bba
-  languageName: node
-  linkType: hard
-
 "tabbable@npm:^6.1.2":
   version: 6.2.0
   resolution: "tabbable@npm:6.2.0"
@@ -19306,15 +19173,6 @@ __metadata:
   version: 1.0.3
   resolution: "tiny-warning@npm:1.0.3"
   checksum: da62c4acac565902f0624b123eed6dd3509bc9a8d30c06e017104bedcf5d35810da8ff72864400ad19c5c7806fc0a8323c68baf3e326af7cb7d969f846100d71
-  languageName: node
-  linkType: hard
-
-"tippy.js@npm:5.1.2":
-  version: 5.1.2
-  resolution: "tippy.js@npm:5.1.2"
-  dependencies:
-    popper.js: ^1.16.0
-  checksum: bcf51d3263a8ad9410704bdc6ebf7b0fa9e1f05e74e6ca6d9ef7a3c5540a3f0ff4ba08febf738b8e6205d91b10ebe7f26dc4186f7165114a2c4f8d464f608909
   languageName: node
   linkType: hard
 
@@ -20355,15 +20213,6 @@ __metadata:
   dependencies:
     makeerror: 1.0.12
   checksum: ad7a257ea1e662e57ef2e018f97b3c02a7240ad5093c392186ce0bcf1f1a60bbadd520d073b9beb921ed99f64f065efb63dfc8eec689a80e569f93c1c5d5e16c
-  languageName: node
-  linkType: hard
-
-"warning@npm:^4.0.0":
-  version: 4.0.3
-  resolution: "warning@npm:4.0.3"
-  dependencies:
-    loose-envify: ^1.0.0
-  checksum: 4f2cb6a9575e4faf71ddad9ad1ae7a00d0a75d24521c193fa464f30e6b04027bd97aa5d9546b0e13d3a150ab402eda216d59c1d0f2d6ca60124d96cd40dfa35c
   languageName: node
   linkType: hard
 

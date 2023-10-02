@@ -33,7 +33,7 @@ const PageHeader: React.FC = () => {
         </PageToggleButton>
       </MastheadToggle>
       <MastheadMain>
-        <MastheadBrand>
+        <MastheadBrand component="a">
           <Brand src={pfLogo} alt="PatternFly logo" />
         </MastheadBrand>
       </MastheadMain>
@@ -43,7 +43,7 @@ const PageHeader: React.FC = () => {
             <ToolbarGroup>
               <ToolbarItem variant="label">{document.title}</ToolbarItem>
             </ToolbarGroup>
-            <ToolbarGroup variant="button-group" alignment={{ default: 'alignRight' }}>
+            <ToolbarGroup variant="button-group" align={{ default: 'alignRight' }}>
               <ToolbarItem>
                 <Button
                   variant="primary"

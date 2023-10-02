@@ -1,6 +1,6 @@
 import { useFeatureFlag } from '@openshift/dynamic-plugin-sdk';
 import { Button } from '@patternfly/react-core';
-import { TableComposable, Thead, Tbody, Tr, Th, Td } from '@patternfly/react-table';
+import { Table, Thead, Tbody, Tr, Th, Td } from '@patternfly/react-table';
 import * as React from 'react';
 
 const columnNames = {
@@ -17,7 +17,7 @@ const FeatureFlagTable: React.FC = () => {
   }, [flag, setFlag]);
 
   return (
-    <TableComposable variant="compact">
+    <Table variant="compact">
       <Thead>
         <Tr>
           <Th>{columnNames.name}</Th>
@@ -34,7 +34,7 @@ const FeatureFlagTable: React.FC = () => {
           </Td>
         </Tr>
       </Tbody>
-    </TableComposable>
+    </Table>
   );
 };
 

@@ -1,7 +1,5 @@
-import { Flex, FlexItem, Tooltip } from '@patternfly/react-core';
+import { Flex, FlexItem, Icon, Tooltip } from '@patternfly/react-core';
 import { InfoCircleIcon } from '@patternfly/react-icons';
-// eslint-disable-next-line camelcase
-import { global_info_color_100 } from '@patternfly/react-tokens';
 import * as React from 'react';
 
 type LabelWithTooltipIconProps = {
@@ -19,7 +17,9 @@ const LabelWithTooltipIcon: React.FC<LabelWithTooltipIconProps> = ({ label, tool
       <FlexItem>{label}</FlexItem>
       <FlexItem>
         <Tooltip content={tooltipContent}>
-          <InfoCircleIcon color={global_info_color_100.var} />
+          <Icon status="info">
+            <InfoCircleIcon />
+          </Icon>
         </Tooltip>
       </FlexItem>
     </Flex>
