@@ -426,7 +426,7 @@ export type K8sStatus = K8sResourceIdentifier & {
     code: number;
     message: string;
     reason: string;
-    status: string;
+    status: 'Success' | 'Failure';
 };
 
 // @public

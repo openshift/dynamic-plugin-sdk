@@ -21,7 +21,7 @@ export type K8sStatus = K8sResourceIdentifier & {
   code: number;
   message: string;
   reason: string;
-  status: string;
+  status: 'Success' | 'Failure';
 };
 
 export type K8sModelCommon = K8sResourceIdentifier & {
