@@ -1,7 +1,7 @@
 import { usePluginStore } from '@openshift/dynamic-plugin-sdk';
 import { Button, Checkbox, Form, FormGroup, Modal, TextInput } from '@patternfly/react-core';
 import * as React from 'react';
-import { isValidURL } from '../../utils';
+import { isValidURL } from '../utils';
 
 type LoadPluginModalProps = {
   defaultManifestURL?: string;
@@ -64,7 +64,13 @@ const LoadPluginModal = React.forwardRef<LoadPluginModalRefProps, LoadPluginModa
         isOpen={isModalOpen}
         disableFocusTrap
         actions={[
-          <Button key="load" variant="primary" onClick={loadPlugin} isDisabled={!manifestURLValid}>
+          <Button
+            key="load"
+            variant="primary"
+            onClick={loadPlugin}
+            isDisabled={!manifestURLValid}
+            data-test-id="plugin-modal-load"
+          >
             Load
           </Button>,
           <Button key="cancel" variant="secondary" onClick={closeModal}>
@@ -87,6 +93,7 @@ const LoadPluginModal = React.forwardRef<LoadPluginModalRefProps, LoadPluginModa
               value={manifestURL}
               onChange={onManifestURLChange}
               validated={manifestURLValid ? 'success' : 'error'}
+              data-test-id="plugin-modal-url"
             />
           </FormGroup>
           <FormGroup fieldId="plugin-load-options" label="Options">

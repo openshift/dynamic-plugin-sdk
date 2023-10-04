@@ -14,7 +14,7 @@ import {
 } from '@patternfly/react-core';
 import { BarsIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import pfLogo from '../../images/pfColorLogo.svg';
+import pfLogo from '../images/pfColorLogo.svg';
 import LoadPluginModal from './LoadPluginModal';
 import type { LoadPluginModalRefProps } from './LoadPluginModal';
 
@@ -48,7 +48,7 @@ const PageHeader: React.FC = () => {
                 <Button
                   variant="primary"
                   onClick={openLoadPluginModal}
-                  data-test-id="load-plugin-button"
+                  data-test-id="plugin-modal-open"
                 >
                   Load plugin
                 </Button>

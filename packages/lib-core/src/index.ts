@@ -24,7 +24,7 @@ export {
 
 // Core components
 export { PluginLoaderOptions } from './runtime/PluginLoader';
-export { PluginStore, PluginStoreOptions } from './runtime/PluginStore';
+export { PluginStore, PluginStoreOptions, PluginStoreLoaderSettings } from './runtime/PluginStore';
 export {
   PluginStoreProvider,
   PluginStoreProviderProps,
@@ -37,8 +37,11 @@ export {
   useResolvedExtensions,
   UseResolvedExtensionsResult,
 } from './runtime/useResolvedExtensions';
-export { useFeatureFlag, UseFeatureFlagResult } from './runtime/useFeatureFlag';
 export { usePluginInfo } from './runtime/usePluginInfo';
+export { useFeatureFlag, UseFeatureFlagResult } from './runtime/useFeatureFlag';
+
+// Testing utilities
+export { TestPluginStore } from './testing/TestPluginStore';
 
 // Core types
 export {
@@ -55,11 +58,11 @@ export {
   ExtractExtensionProperties,
 } from './types/extension';
 export { ResourceFetch } from './types/fetch';
+export { PluginLoadResult, PluginLoaderInterface } from './types/loader';
 export {
   PluginRegistrationMethod,
   PluginRuntimeMetadata,
   PluginManifest,
-  TransformPluginManifest,
   PendingPlugin,
   LoadedPlugin,
   FailedPlugin,

@@ -1,7 +1,7 @@
 {
   "name": "@monorepo/common",
   "version": "0.0.0-fixed",
-  "description": "Common code, types and configs used by monorepo packages",
+  "description": "Common code and configuration used by all monorepo packages",
   "private": true,
   "main": "src/index.ts",
   "scripts": {

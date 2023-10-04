@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { AnyObject } from '../../types';
+import type { AnyObject } from '../types';
 import ErrorBoundaryFallback from './ErrorBoundaryFallback';
 
 export type ErrorBoundaryFallbackProps = {
@@ -26,14 +26,14 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
     this.state = { hasError: false };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     this.setState({ hasError: true, error, errorInfo });
 
     // eslint-disable-next-line no-console
     console.error('Error in a child component', error);
   }
 
-  render() {
+  override render() {
     const { hasError } = this.state;
     const { children } = this.props;
 

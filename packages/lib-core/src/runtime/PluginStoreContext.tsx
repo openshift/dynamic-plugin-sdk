@@ -1,8 +1,7 @@
 import * as React from 'react';
 import type { PluginStoreInterface } from '../types/store';
-import type { PluginStore } from './PluginStore';
 
-const PluginStoreContext = React.createContext<PluginStore | undefined>(undefined);
+const PluginStoreContext = React.createContext<PluginStoreInterface | undefined>(undefined);
 
 /**
  * React Context provider for passing the {@link PluginStore} down the component tree.
@@ -12,13 +11,13 @@ export const PluginStoreProvider: React.FC<PluginStoreProviderProps> = ({ store,
 );
 
 export type PluginStoreProviderProps = React.PropsWithChildren<{
-  store: PluginStore;
+  store: PluginStoreInterface;
 }>;
 
 /**
  * React hook that provides access to the {@link PluginStore} functionality.
  */
-export const usePluginStore = (): PluginStoreInterface => {
+export const usePluginStore = () => {
   const store = React.useContext(PluginStoreContext);
 
   if (store === undefined) {

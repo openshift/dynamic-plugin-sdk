@@ -147,6 +147,12 @@ export enum PluginEventType {
 export type PluginInfoEntry = PendingPluginInfoEntry | LoadedPluginInfoEntry | FailedPluginInfoEntry;
 
 // @public (undocumented)
+export type PluginLoaderInterface = {
+    loadPluginManifest: (manifestURL: string) => Promise<PluginManifest>;
+    loadPlugin: (manifest: PluginManifest) => Promise<PluginLoadResult>;
+};
+
+// @public (undocumented)
 export type PluginLoaderOptions = Partial<{
     canLoadPlugin: (manifest: PluginManifest, reload: boolean) => boolean;
     canReloadScript: (manifest: PluginManifest, scriptName: string) => boolean;
@@ -157,9 +163,19 @@ export type PluginLoaderOptions = Partial<{
     fetchImpl: ResourceFetch;
     fixedPluginDependencyResolutions: Record<string, string>;
     sharedScope: AnyObject;
-    transformPluginManifest: TransformPluginManifest;
+    transformPluginManifest: (manifest: PluginManifest) => PluginManifest;
     getPluginEntryModule: (manifest: PluginManifest) => PluginEntryModule | void;
 }>;
+
+// @public (undocumented)
+export type PluginLoadResult = {
+    success: true;
+    entryModule: PluginEntryModule;
+} | {
+    success: false;
+    errorMessage: string;
+    errorCause?: unknown;
+};
 
 // @public (undocumented)
 export type PluginManifest = PluginRuntimeMetadata & {
@@ -183,7 +199,12 @@ export type PluginRuntimeMetadata = {
 
 // @public
 export class PluginStore implements PluginStoreInterface {
-    constructor(options?: PluginStoreOptions);
+    constructor(options?: PluginStoreOptions & PluginStoreLoaderSettings);
+    // (undocumented)
+    protected addFailedPlugin(manifest: PluginManifest, errorMessage: string, errorCause?: unknown): void;
+    protected addLoadedPlugin(manifest: PluginManifest, entryModule: PluginEntryModule): void;
+    // (undocumented)
+    protected addPendingPlugin(manifest: PluginManifest): void;
     // (undocumented)
     disablePlugins(pluginNames: string[], disableReason?: string): void;
     // (undocumented)
@@ -223,8 +244,14 @@ export type PluginStoreInterface = {
 };
 
 // @public (undocumented)
+export type PluginStoreLoaderSettings = EitherNotBoth<{
+    loaderOptions?: PluginLoaderOptions;
+}, {
+    loader: PluginLoaderInterface;
+}>;
+
+// @public (undocumented)
 export type PluginStoreOptions = Partial<{
-    loaderOptions: PluginLoaderOptions;
     autoEnableLoadedPlugins: boolean;
 }>;
 
@@ -233,7 +260,7 @@ export const PluginStoreProvider: React_2.FC<PluginStoreProviderProps>;
 
 // @public (undocumented)
 export type PluginStoreProviderProps = React_2.PropsWithChildren<{
-    store: PluginStore;
+    store: PluginStoreInterface;
 }>;
 
 // @public
@@ -249,10 +276,15 @@ export type ResolvedExtension<TExtension extends Extension = Extension> = Replac
 // @public
 export type ResourceFetch = (url: string, requestInit?: RequestInit, isK8sAPIRequest?: boolean) => Promise<Response>;
 
-// @public (undocumented)
-export type TransformPluginManifest = (manifest: PluginManifest) => PluginManifest & {
-    [customProperty: string]: unknown;
-};
+// @public
+export class TestPluginStore extends PluginStore {
+    // (undocumented)
+    addFailedPlugin(manifest: PluginManifest, errorMessage: string, errorCause?: unknown): void;
+    // (undocumented)
+    addLoadedPlugin(manifest: PluginManifest, entryModule: PluginEntryModule): void;
+    // (undocumented)
+    addPendingPlugin(manifest: PluginManifest): void;
+}
 
 // @public
 export const useExtensions: <TExtension extends Extension<string, AnyObject>>(predicate?: ExtensionPredicate<TExtension> | undefined) => LoadedExtension<TExtension>[];

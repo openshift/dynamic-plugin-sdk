@@ -21,5 +21,8 @@ yarn lint
 # Run unit tests
 yarn test
 
+# Run Cypress component tests
+yarn test-component
+
 # Upload code coverage
 ./prow-codecov.sh 2>/dev/null

@@ -1,8 +1,0 @@
-{
-  "extends": "@monorepo/common/tsconfig-bases/app-react-esm.json",
-  "compilerOptions": {
-    "types": ["cypress"]
-  },
-  "include": ["**/*.ts"],
-  "exclude": ["node_modules"]
-}

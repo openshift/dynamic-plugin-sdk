@@ -21,8 +21,11 @@ yarn build-samples
 Xvfb :99 -screen 0 1920x1080x24 2>&1 > /dev/null &
 export DISPLAY=':99.0'
 
-# Start servers for sample app and sample plugin, run E2E tests and shut down the servers
-yarn test-e2e-ci
+export CYPRESS_CRASH_REPORTS=0
+export CYPRESS_COMMERCIAL_RECOMMENDATIONS=0
+
+# Start servers for sample app and sample plugin and run Cypress E2E tests
+yarn test-e2e
 
 # Kill the Xvfb background process
 pkill Xvfb
