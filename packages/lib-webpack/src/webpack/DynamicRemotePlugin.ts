@@ -4,6 +4,7 @@ import type {
   PluginManifest,
 } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
 import { identity, isEmpty, mapValues } from 'lodash';
+import * as semver from 'semver';
 import * as yup from 'yup';
 import { WebpackPluginInstance, Compiler, container } from 'webpack';
 import type { PluginBuildMetadata } from '../types/plugin';
@@ -149,13 +150,28 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
     };
 
     try {
-      dynamicRemotePluginAdaptedOptionsSchema
-        .strict(true)
-        .validateSync(this.adaptedOptions, { abortEarly: false });
+      dynamicRemotePluginAdaptedOptionsSchema.validateSync(this.adaptedOptions, {
+        strict: true,
+        abortEarly: false,
+      });
     } catch (e) {
       throw new Error(
         `Invalid ${DynamicRemotePlugin.name} options:\n` +
           (e as yup.ValidationError).errors.join('\n'),
+      );
+    }
+
+    // TODO(vojtech): remove this code once the validation library supports this natively
+    const invalidDepNames = Object.entries(
+      this.adaptedOptions.pluginMetadata.dependencies ?? {},
+    ).reduce<string[]>(
+      (acc, [depName, versionRange]) => (semver.validRange(versionRange) ? acc : [...acc, depName]),
+      [],
+    );
+
+    if (invalidDepNames.length > 0) {
+      throw new Error(
+        `Dependency values must be valid semver ranges: ${invalidDepNames.join(', ')}`,
       );
     }
   }
