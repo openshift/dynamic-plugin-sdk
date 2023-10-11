@@ -171,7 +171,7 @@ export class PluginLoader implements PluginLoaderInterface {
     const responseText = await response.text();
     const manifest = this.options.transformPluginManifest(JSON.parse(responseText));
 
-    pluginManifestSchema.strict(true).validateSync(manifest, { abortEarly: false });
+    pluginManifestSchema.validateSync(manifest, { strict: true, abortEarly: false });
 
     return manifest;
   }

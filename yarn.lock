@@ -2881,6 +2881,7 @@ __metadata:
   resolution: "@openshift/dynamic-plugin-sdk-webpack@portal:../lib-webpack::locator=%40monorepo%2Fsample-app%40workspace%3Apackages%2Fsample-app"
   dependencies:
     lodash: ^4.17.21
+    semver: ^7.3.7
     yup: ^0.32.11
   peerDependencies:
     webpack: ^5.75.0
@@ -2892,6 +2893,7 @@ __metadata:
   resolution: "@openshift/dynamic-plugin-sdk-webpack@portal:../lib-webpack::locator=%40monorepo%2Fsample-plugin%40workspace%3Apackages%2Fsample-plugin"
   dependencies:
     lodash: ^4.17.21
+    semver: ^7.3.7
     yup: ^0.32.11
   peerDependencies:
     webpack: ^5.75.0
@@ -2903,6 +2905,7 @@ __metadata:
   resolution: "@openshift/dynamic-plugin-sdk-webpack@workspace:packages/lib-webpack"
   dependencies:
     lodash: ^4.17.21
+    semver: ^7.3.7
     yup: ^0.32.11
   peerDependencies:
     webpack: ^5.75.0
