@@ -165,7 +165,8 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
     const invalidDepNames = Object.entries(
       this.adaptedOptions.pluginMetadata.dependencies ?? {},
     ).reduce<string[]>(
-      (acc, [depName, versionRange]) => (semver.validRange(versionRange) ? acc : [...acc, depName]),
+      (acc, [depName, versionRange]) =>
+        versionRange && semver.validRange(versionRange) ? acc : [...acc, depName],
       [],
     );
 
