@@ -17,7 +17,7 @@ export class PatchEntryCallbackPlugin implements WebpackPluginInstance {
       compilation.hooks.processAssets.tap(
         {
           name: PatchEntryCallbackPlugin.name,
-          stage: Compilation.PROCESS_ASSETS_STAGE_ADDITIONS,
+          stage: Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE,
         },
         () => {
           const { entryChunk } = findPluginChunks(containerName, compilation);
