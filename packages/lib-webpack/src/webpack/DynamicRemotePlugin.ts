@@ -109,7 +109,8 @@ export type DynamicRemotePluginOptions = {
   /**
    * Customize the filename of the generated plugin entry script.
    *
-   * We recommend using the `[fullhash]` placeholder in production builds.
+   * We recommend using `[contenthash]` or `[fullhash]` placeholder in production builds,
+   * e.g. `plugin-entry.[contenthash].min.js`.
    *
    * Default value: `plugin-entry.js`.
    *

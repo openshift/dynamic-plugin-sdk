@@ -25,24 +25,22 @@ export class GenerateManifestPlugin implements WebpackPluginInstance {
       );
     }
 
-    /**
-     * The manifest has to be generated within the emit hook after the webpack hashes the assets.
-     */
     compiler.hooks.thisCompilation.tap(GenerateManifestPlugin.name, (compilation) => {
       compilation.hooks.processAssets.tap(
         {
           name: GenerateManifestPlugin.name,
           // Using one of the later asset processing stages to ensure all assets
           // are already added to the compilation by other webpack plugins
-          stage: Compilation.PROCESS_ASSETS_STAGE_SUMMARIZE
+          stage: Compilation.PROCESS_ASSETS_STAGE_SUMMARIZE,
         },
         () => {
           const { entryChunk, runtimeChunk } = findPluginChunks(containerName, compilation);
           const pluginChunks = runtimeChunk ? [runtimeChunk, entryChunk] : [entryChunk];
 
-          const loadScripts = pluginChunks.reduce<
-            string[]
-          >((acc, chunk) => [...acc, ...chunk.files], []);
+          const loadScripts = pluginChunks.reduce<string[]>(
+            (acc, chunk) => [...acc, ...chunk.files],
+            [],
+          );
 
           const manifest = transformManifest({
             ...manifestData,
@@ -56,7 +54,7 @@ export class GenerateManifestPlugin implements WebpackPluginInstance {
             new sources.RawSource(Buffer.from(JSON.stringify(manifest, null, 2))),
           );
 
-          const warnings = [];
+          const warnings: string[] = [];
 
           if (manifest.extensions.length === 0) {
             warnings.push('Plugin has no extensions');
@@ -71,7 +69,7 @@ export class GenerateManifestPlugin implements WebpackPluginInstance {
             error.file = manifestFilename;
             compilation.warnings.push(error);
           });
-        }
+        },
       );
     });
   }

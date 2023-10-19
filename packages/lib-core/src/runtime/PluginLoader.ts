@@ -274,29 +274,25 @@ export class PluginLoader implements PluginLoaderInterface {
           scriptElement.remove();
         }
 
-        return injectScriptElement(
-          resolveURL(manifest.baseURL, scriptName, (url) => {
-            url.searchParams.set('cacheBuster', uuidv4());
-            return url;
-          }),
-          scriptID,
-        );
+        const scriptURL = resolveURL(manifest.baseURL, scriptName, (url) => {
+          url.searchParams.set('cacheBuster', uuidv4());
+          return url;
+        });
+
+        return injectScriptElement(scriptURL, scriptID);
       }),
     );
 
     if (rejectedReasons.length > 0) {
-      throw new ErrorWithCause(
-        `Detected ${rejectedReasons.length} errors while loading plugin scripts`,
-        rejectedReasons,
-      );
+      throw new ErrorWithCause('Detected errors while loading scripts', rejectedReasons);
     }
 
     if (manifest.registrationMethod === 'callback' && !data.entryCallbackFired) {
-      throw new Error(`Scripts of plugin ${pluginName} loaded without entry callback`);
+      throw new Error('Scripts loaded without a plugin entry callback');
     }
 
     if (manifest.registrationMethod === 'callback' && !data.entryCallbackModule) {
-      throw new Error(`Entry callback for plugin ${pluginName} called without entry module`);
+      throw new Error('Plugin entry callback called without an entry module');
     }
   }
 
@@ -382,27 +378,23 @@ export class PluginLoader implements PluginLoaderInterface {
           }
         });
 
+        if (resolutionErrors.length > 0) {
+          setResolutionComplete();
+          reject(new ErrorWithCause('Detected dependency resolution errors', resolutionErrors));
+          return;
+        }
+
         const pendingDepNames = Object.keys(dependencies).filter(
           (depName) => !resolutions.has(depName),
         );
 
-        const pendingDepInfo =
-          pendingDepNames.length > 0
-            ? `${pendingDepNames.length} pending resolutions (${pendingDepNames.join(',')})`
-            : `no pending resolutions`;
-
-        if (resolutionErrors.length > 0) {
-          const errorTitle = `Detected ${resolutionErrors.length} resolution errors with ${pendingDepInfo}`;
-          setResolutionComplete();
-          reject(new Error(`${errorTitle}:\n\n${resolutionErrors.join('\n')}`));
-          return;
-        }
-
-        consoleLogger.info(`Plugin ${pluginName} has ${pendingDepInfo}`);
-
         if (pendingDepNames.length === 0) {
           setResolutionComplete();
           resolve();
+        } else {
+          consoleLogger.info(
+            `Plugin ${pluginName} has ${pendingDepNames.length} pending dependency resolutions`,
+          );
         }
       };
 
@@ -418,7 +410,7 @@ export class PluginLoader implements PluginLoaderInterface {
   private createPluginEntryCallback(): PluginEntryCallback {
     return (pluginName, entryModule) => {
       if (!this.plugins.has(pluginName)) {
-        consoleLogger.warn('Received entry callback for unknown plugin');
+        consoleLogger.warn(`Received entry callback for unknown plugin ${pluginName}`);
         return;
       }
 
