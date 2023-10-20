@@ -54,11 +54,9 @@ export const useResolvedExtensions = <TExtension extends Extension>(
   predicate?: ExtensionPredicate<TExtension>,
   options: UseResolvedExtensionsOptions = {},
 ): UseResolvedExtensionsResult<TExtension> => {
-  const hookOptions: Required<UseResolvedExtensionsOptions> = {
-    includeExtensionsWithResolutionErrors: options.includeExtensionsWithResolutionErrors ?? false,
-  };
+  const includeExtensionsWithResolutionErrors =
+    options.includeExtensionsWithResolutionErrors ?? false;
 
-  const { includeExtensionsWithResolutionErrors } = hookOptions;
   const extensions = useExtensions(predicate);
 
   const [resolvedExtensions, setResolvedExtensions] = React.useState<
@@ -69,23 +67,19 @@ export const useResolvedExtensions = <TExtension extends Extension>(
   const [errors, setErrors] = React.useState<unknown[]>([]);
 
   React.useEffect(() => {
-    const pluginErrors: { [pluginName: string]: unknown[] } = {};
+    const allResolutionErrors: unknown[] = [];
     const failedExtensionUIDs: string[] = [];
 
     // eslint-disable-next-line promise/catch-or-return -- this Promise never rejects
     settleAllPromises(
       extensions.map((e) =>
         resolveCodeRefValues(e, (resolutionErrors) => {
-          pluginErrors[e.pluginName] ??= [];
-          pluginErrors[e.pluginName].push(...resolutionErrors);
+          allResolutionErrors.push(...resolutionErrors);
           failedExtensionUIDs.push(e.uid);
         }),
       ),
     ).then(([fulfilledValues]) => {
-      const failedPluginNames = Object.keys(pluginErrors);
-      const allResolutionErrors = Object.values(pluginErrors).flat();
-
-      if (failedPluginNames.length > 0) {
+      if (allResolutionErrors.length > 0) {
         consoleLogger.error(
           'useResolvedExtensions has detected code reference resolution errors',
           allResolutionErrors,
