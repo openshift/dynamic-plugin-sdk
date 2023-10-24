@@ -227,7 +227,7 @@ export class PluginStore implements PluginStoreInterface {
         consoleLogger.warn(
           `Attempt to ${
             enabled ? 'enable' : 'disable'
-          } plugin ${pluginName} which is not loaded yet`,
+          } plugin ${pluginName} which is not currently loaded`,
         );
         return;
       }
@@ -346,7 +346,7 @@ export class PluginStore implements PluginStoreInterface {
   async getExposedModule<TModule extends AnyObject>(pluginName: string, moduleName: string) {
     if (!this.loadedPlugins.has(pluginName)) {
       throw new Error(
-        `Attempt to get module '${moduleName}' of plugin ${pluginName} which is not loaded yet`,
+        `Attempt to get module '${moduleName}' of plugin ${pluginName} which is not currently loaded`,
       );
     }
 

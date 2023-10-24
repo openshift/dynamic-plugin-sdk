@@ -302,7 +302,12 @@ export const usePluginInfo: () => PluginInfoEntry[];
 export const usePluginStore: () => PluginStoreInterface;
 
 // @public
-export const useResolvedExtensions: <TExtension extends Extension<string, AnyObject>>(predicate?: ExtensionPredicate<TExtension> | undefined) => UseResolvedExtensionsResult<TExtension>;
+export const useResolvedExtensions: <TExtension extends Extension<string, AnyObject>>(predicate?: ExtensionPredicate<TExtension> | undefined, options?: UseResolvedExtensionsOptions) => UseResolvedExtensionsResult<TExtension>;
+
+// @public (undocumented)
+export type UseResolvedExtensionsOptions = Partial<{
+    includeExtensionsWithResolutionErrors: boolean;
+}>;
 
 // @public (undocumented)
 export type UseResolvedExtensionsResult<TExtension extends Extension> = [

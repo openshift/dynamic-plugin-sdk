@@ -6,7 +6,7 @@ import { CustomError } from './CustomError';
  * This shouldn't be needed once https://github.com/tc39/proposal-error-cause receives widespread support.
  */
 export class ErrorWithCause extends CustomError {
-  constructor(message: string, readonly cause?: unknown) {
+  constructor(message: string, readonly cause: unknown) {
     super(message);
   }
 }

@@ -36,6 +36,7 @@ export { useExtensions } from './runtime/useExtensions';
 export {
   useResolvedExtensions,
   UseResolvedExtensionsResult,
+  UseResolvedExtensionsOptions,
 } from './runtime/useResolvedExtensions';
 export { usePluginInfo } from './runtime/usePluginInfo';
 export { useFeatureFlag, UseFeatureFlagResult } from './runtime/useFeatureFlag';
