@@ -3,7 +3,8 @@
 # To build this image, run the following command in project root directory:
 #   docker build -t ci-operator-buildroot --progress plain - < docker/Dockerfile.ci-operator-buildroot
 
-FROM quay.io/centos/centos:stream8
+# Base image is quay.io/centos/centos:stream8 pinned to a specific build.
+FROM quay.io/centos/centos@sha256:b1f6889548eda34b2ddc8c2f50a49bf9924164814308e41e90a07e3b30e0db7f
 
 # Disable color output to make log files more readable.
 ENV NO_COLOR=1
@@ -12,7 +13,7 @@ ENV NO_COLOR=1
 # Note that ci-operator requires git to be installed on the system.
 # https://docs.ci.openshift.org/docs/architecture/ci-operator/#build-root-image
 RUN dnf update -y && \
-    dnf install -y git python jq openssl procps-ng && \
+    dnf install -y git python2 jq openssl && \
     git config --system --add safe.directory '*' && \
     git config --system advice.detachedHead false
 
