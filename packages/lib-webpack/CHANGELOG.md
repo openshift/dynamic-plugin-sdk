@@ -1,5 +1,17 @@
 # Changelog for `@openshift/dynamic-plugin-sdk-webpack`
 
+## 4.0.0 - 2023-11-03
+
+> Any custom properties in the plugin manifest should be set via the `customProperties` object.
+> Use the `DynamicRemotePlugin` option `transformPluginManifest` to add such custom properties
+> to the generated plugin manifest.
+
+- Add `transformPluginManifest` option to `DynamicRemotePlugin` ([#236])
+- Rename `sharedScope` to `sharedScopeName` in `moduleFederationSettings` ([#236])
+- Validate values of plugin metadata `dependencies` object as semver ranges ([#239])
+- Disallow empty strings as values of plugin metadata `dependencies` object ([#240])
+- Fix bug in `DynamicRemotePlugin` where `buildHash` in plugin manifest is not generated properly ([#227])
+
 ## 3.0.1 - 2023-04-13
 
 - Fix bug in `DynamicRemotePlugin` that occurs with webpack `createChildCompiler` usage ([#213])
@@ -30,3 +42,7 @@
 [#207]: https://github.com/openshift/dynamic-plugin-sdk/pull/207
 [#213]: https://github.com/openshift/dynamic-plugin-sdk/pull/213
 [#215]: https://github.com/openshift/dynamic-plugin-sdk/pull/215
+[#227]: https://github.com/openshift/dynamic-plugin-sdk/pull/227
+[#236]: https://github.com/openshift/dynamic-plugin-sdk/pull/236
+[#239]: https://github.com/openshift/dynamic-plugin-sdk/pull/239
+[#240]: https://github.com/openshift/dynamic-plugin-sdk/pull/240

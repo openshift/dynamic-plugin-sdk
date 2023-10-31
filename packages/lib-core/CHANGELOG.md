@@ -1,5 +1,16 @@
 # Changelog for `@openshift/dynamic-plugin-sdk`
 
+## 5.0.0 - 2023-11-03
+
+> This release adds the ability to provide your own plugin loader implementation when creating
+> the `PluginStore`. Note that the `useResolvedExtensions` hook does not automatically disable
+> plugins whose extensions have code reference resolution errors.
+
+- Rename `postProcessManifest` loader option to `transformPluginManifest` ([#236])
+- Support passing custom plugin loader implementation to `PluginStore` ([#232])
+- Add `TestPluginStore` intended for React component testing purposes ([#232])
+- Add options to `useResolvedExtensions` hook to customize its default behavior ([#241])
+
 ## 4.0.0 - 2023-04-13
 
 > This release removes the `PluginLoader` export. Pass the former `PluginLoader`
@@ -55,3 +66,6 @@
 [#208]: https://github.com/openshift/dynamic-plugin-sdk/pull/208
 [#212]: https://github.com/openshift/dynamic-plugin-sdk/pull/212
 [#215]: https://github.com/openshift/dynamic-plugin-sdk/pull/215
+[#232]: https://github.com/openshift/dynamic-plugin-sdk/pull/232
+[#236]: https://github.com/openshift/dynamic-plugin-sdk/pull/236
+[#241]: https://github.com/openshift/dynamic-plugin-sdk/pull/241
