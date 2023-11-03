@@ -3,8 +3,7 @@
 # To build this image, run the following command in project root directory:
 #   docker build -t ci-operator-buildroot --progress plain - < docker/Dockerfile.ci-operator-buildroot
 
-# Base image is quay.io/centos/centos:stream8 pinned to a specific build.
-FROM quay.io/centos/centos@sha256:b1f6889548eda34b2ddc8c2f50a49bf9924164814308e41e90a07e3b30e0db7f
+FROM quay.io/centos/centos:stream8
 
 # Disable color output to make log files more readable.
 ENV NO_COLOR=1
