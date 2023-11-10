@@ -12,76 +12,13 @@ import type { AnyObject } from '@openshift/dynamic-plugin-sdk';
 import { Context } from 'react';
 import { CustomError } from '@openshift/dynamic-plugin-sdk';
 import type { Dispatch } from 'redux';
-import { DropdownPosition } from '@patternfly/react-core/deprecated';
 import type { EitherNotBoth } from '@openshift/dynamic-plugin-sdk';
-import type { IAction } from '@patternfly/react-table';
-import type { ICell } from '@patternfly/react-table';
 import type { Map as Map_2 } from 'immutable';
 import type { PluginStore } from '@openshift/dynamic-plugin-sdk';
 import * as React_2 from 'react';
 import { default as React_3 } from 'react';
-import type { ReactElement } from 'react';
 import type { ResourceFetch } from '@openshift/dynamic-plugin-sdk';
-import type { SortByDirection } from '@patternfly/react-table';
 import type { Store } from 'redux';
-import { Tab } from '@patternfly/react-core';
-import type { TdProps } from '@patternfly/react-table';
-import type { ThProps } from '@patternfly/react-table';
-import { useLocation } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-
-// @public (undocumented)
-export type Action = {
-    id: string;
-    label: React_3.ReactNode;
-    description?: string;
-    cta: ActionCTA;
-    isDisabled?: boolean;
-    tooltip?: string;
-    icon?: React_3.ReactNode;
-};
-
-// @public (undocumented)
-export type ActionButtonProp = {
-    id?: string;
-    label?: string;
-    callback: (event: React_3.MouseEvent) => void;
-    isDisabled?: boolean;
-    tooltip?: string;
-    variant?: 'primary' | 'secondary' | 'tertiary' | 'link';
-};
-
-// @public (undocumented)
-export type ActionCTA = {
-    callback: (event: React_3.MouseEvent<any> | React_3.KeyboardEvent | MouseEvent) => void;
-} | {
-    href: string;
-    external?: boolean;
-};
-
-// @public (undocumented)
-export type ActionMenuOptions = {
-    isDisabled?: boolean;
-    variant?: ActionMenuVariant;
-    label?: string;
-    position?: DropdownPosition;
-    displayLabelBeforeIcon?: boolean;
-};
-
-// @public (undocumented)
-export type ActionMenuProps = EitherNotBoth<{
-    actions: Action[];
-}, {
-    groupedActions: GroupedActions[];
-}> & ActionMenuOptions;
-
-// @public (undocumented)
-export enum ActionMenuVariant {
-    // (undocumented)
-    DROPDOWN = "default",
-    // (undocumented)
-    KEBAB = "plain"
-}
 
 // @public (undocumented)
 export enum ActionType {
@@ -133,14 +70,6 @@ export type AppInitSDKProps = {
 };
 
 // @public (undocumented)
-export type BreadcrumbProp = {
-    name: string;
-    path: string;
-    uuid?: string;
-    id?: string;
-};
-
-// @public (undocumented)
 export type BulkMessageHandler = GenericHandler<MessageDataType[]>;
 
 // @public (undocumented)
@@ -168,37 +97,6 @@ export const createAPIActions: (dispatch: Dispatch) => APIActions;
 export type DestroyHandler = GenericHandler<unknown | undefined>;
 
 // @public (undocumented)
-export const DetailsItem: React_3.FC<DetailsItemProps>;
-
-// @public (undocumented)
-export const DetailsItemList: React_3.FC;
-
-// @public (undocumented)
-export type DetailsItemProps = {
-    defaultValue?: string;
-    hideEmpty?: boolean;
-    loaded?: boolean;
-    label: string;
-    resource?: K8sResourceCommon;
-    path?: string | string[];
-};
-
-// @public (undocumented)
-export const DetailsPage: (props: Omit<DetailsPageProps, keyof WithRouterProps>) => JSX.Element;
-
-// @public (undocumented)
-export type DetailsPageHeaderProps = {
-    breadcrumbs: BreadcrumbProp[];
-    actionButtons?: ActionButtonProp[];
-    pageHeading?: PageHeading;
-    obj?: K8sResourceCommon;
-    actionMenu?: ActionMenuProps;
-};
-
-// @public (undocumented)
-export type DetailsPageProps = HorizontalNavProps & DetailsPageHeaderProps;
-
-// @public (undocumented)
 export type DiscoveryResources = {
     adminResources: string[];
     allResources: string[];
@@ -219,12 +117,6 @@ export type DiscoveryResources = {
 export type ErrorHandler = GenericHandler<Event>;
 
 // @public (undocumented)
-export type FilterItem = {
-    label: string;
-    id: string;
-};
-
-// @public (undocumented)
 export type FilterValue = Partial<{
     selected: string[];
     all: string[];
@@ -242,49 +134,11 @@ export type GetGroupVersionKindForModel = (model: K8sModelCommon) => K8sResource
 // @public
 export const getK8sResourceURL: (model: K8sModelCommon, resource?: K8sResourceCommon | undefined, queryOptions?: QueryOptions, isCreate?: boolean) => string;
 
-// @public (undocumented)
-export const GettingStartedCard: React_2.FC<GettingStartedCardProps>;
-
-// @public (undocumented)
-export type GettingStartedCardProps = {
-    cardClassName?: string;
-    imgAlt?: string;
-    imgClassName?: string;
-    imgSrc?: string;
-    isDismissable?: boolean;
-    localStorageKey: string;
-    title: string;
-};
-
 // @public
 export const getUtilsConfig: () => UtilsConfig;
 
-// @public (undocumented)
-export type GroupedActions = {
-    groupId: string;
-    groupLabel?: string;
-    groupActions: Action[];
-};
-
 // @public @deprecated (undocumented)
 export type GroupVersionKind = string;
-
-// @public (undocumented)
-export const HorizontalNav: (props: Omit<HorizontalNavProps, keyof WithRouterProps>) => JSX.Element;
-
-// @public (undocumented)
-export type HorizontalNavProps = {
-    ariaLabel?: string;
-    tabs: Tab[];
-} & WithRouterProps;
-
-// @public (undocumented)
-export const HorizontalNavTabs: React_3.FC<HorizontalNavProps>;
-
-// @public
-export type HrefForLabels = {
-    [key: string]: string;
-};
 
 // @public (undocumented)
 export type InitAPIDiscovery = (store: Store<unknown, ActionType_2<AnyAction>>, preferenceList?: string[]) => void;
@@ -443,34 +297,6 @@ export const k8sUpdateResource: <TResource extends K8sResourceCommon, TUpdatedRe
 export type K8sVerb = 'create' | 'get' | 'list' | 'update' | 'patch' | 'delete' | 'deletecollection' | 'watch';
 
 // @public (undocumented)
-export const LabelList: React_2.FC<LabelListProps>;
-
-// @public (undocumented)
-export type LabelListProps = {
-    labels?: Record<string, string>;
-    icon?: React_2.ReactNode;
-    color?: 'blue' | 'cyan' | 'green' | 'orange' | 'purple' | 'red' | 'grey';
-    hrefForLabels?: HrefForLabels;
-    expand?: boolean;
-};
-
-// @public (undocumented)
-export const ListView: <D extends AnyObject>({ columns, data, filters, isRowSelected, onSelect, onFilter, loadError, loaded, rowActions, Row, virtualized, CustomEmptyState, emptyStateDescription, CustomNoDataEmptyState, "aria-label": ariaLabel, actionButtons, }: ListViewProps<D>) => JSX.Element;
-
-// @public (undocumented)
-export type ListViewProps<D> = VirtualizedTableProps<D> & {
-    onFilter?: (filterValues: Record<string, string[]>, activeFilter?: FilterItem) => D[];
-    filters?: FilterItem[];
-    actionButtons?: ActionButtonProp[];
-};
-
-// @public (undocumented)
-export type LoadError = {
-    message: string;
-    status: number;
-};
-
-// @public (undocumented)
 export type MatchExpression = {
     key: string;
     operator: Operator | string;
@@ -515,18 +341,6 @@ export enum Operator {
 }
 
 // @public (undocumented)
-export const OverviewPage: React_3.FC<OverViewPageProps>;
-
-// @public (undocumented)
-export type OverViewPageProps = {
-    loaded?: boolean;
-    loadError?: LoadError;
-    resource: K8sResourceCommon;
-    rightColumn?: ReactElement;
-    additionalErrorDescription?: string;
-};
-
-// @public (undocumented)
 export type OwnerReference = {
     apiVersion: string;
     kind: string;
@@ -534,20 +348,6 @@ export type OwnerReference = {
     uid: string;
     controller?: boolean;
     blockOwnerDeletion?: boolean;
-};
-
-// @public (undocumented)
-export type PageHeading = {
-    title?: string;
-    label?: {
-        name: string;
-        key?: string;
-        icon?: React_3.ReactNode;
-        href?: string;
-        color?: 'blue' | 'cyan' | 'green' | 'orange' | 'purple' | 'red' | 'grey';
-    };
-    iconBeforeTitle?: React_3.ReactNode;
-    iconAfterTitle?: React_3.ReactNode;
 };
 
 // @public (undocumented)
@@ -589,21 +389,6 @@ export const ReduxExtensionProvider: React_2.FC;
 // @public (undocumented)
 export type ResourcesObject = {
     [key: string]: K8sResourceCommon | K8sResourceCommon[];
-};
-
-// @public (undocumented)
-export const ResourceSummary: React_3.FC<ResourceSummaryProps>;
-
-// @public (undocumented)
-export type ResourceSummaryProps = {
-    resource?: K8sResourceCommon;
-    loaded?: boolean;
-};
-
-// @public (undocumented)
-export type RowProps<D> = {
-    obj: D;
-    index: number;
 };
 
 // @public
@@ -698,26 +483,6 @@ export function setActiveWorkspaceLocalStorage(workspace: string): void;
 // @public
 export const setUtilsConfig: (c: UtilsConfig) => void;
 
-export { Tab }
-
-// @public (undocumented)
-export type TableColumn<D> = ICell & {
-    id: string;
-    sort?: ((data: D[], sortDirection: SortByDirection) => D[]) | ThProps['sort'] | string;
-    visibility?: string[];
-};
-
-// @public (undocumented)
-export type TablePagination = {
-    limit: number;
-    offset: number;
-};
-
-// @public (undocumented)
-export const Td: React_2.ForwardRefExoticComponent<Omit<TdProps, "ref"> & {
-    className?: string | undefined;
-} & React_2.RefAttributes<HTMLTableCellElement>>;
-
 // @public (undocumented)
 export type UseK8sModel = (groupVersionKind: K8sResourceKindReference | K8sGroupVersionKind) => [K8sModelCommon, boolean];
 
@@ -754,27 +519,6 @@ export type UtilsConfig = {
         wsPrefix?: string;
         pathPrefix?: string;
     }) => Promise<WebSocketAppSettings>;
-};
-
-// @public (undocumented)
-export type VirtualizedTableProps<D> = {
-    areFiltersApplied?: boolean;
-    rowActions?: IAction[];
-    data: D[];
-    loaded: boolean;
-    loadError?: LoadError;
-    columns: TableColumn<D>[];
-    Row: React_2.ComponentType<RowProps<D>>;
-    loadErrorDefaultText?: string;
-    isRowSelected?: (item: D) => boolean;
-    onSelect?: (event: React_2.FormEvent<HTMLInputElement>, isRowSelected: boolean, data: D[]) => void;
-    pagination?: TablePagination;
-    CustomNoDataEmptyState?: React_2.ReactElement;
-    CustomEmptyState?: React_2.ReactElement;
-    emptyStateDescription?: string;
-    'aria-label'?: string;
-    scrollNode?: HTMLElement;
-    virtualized?: boolean;
 };
 
 // @public (undocumented)
@@ -875,13 +619,6 @@ export enum WebSocketState {
     // (undocumented)
     OPENED = "open"
 }
-
-// @public (undocumented)
-export type WithRouterProps = {
-    params?: Record<string, string>;
-    navigate?: ReturnType<typeof useNavigate>;
-    location?: ReturnType<typeof useLocation>;
-};
 
 // @public
 export const WorkspaceContext: Context<    {

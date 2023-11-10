@@ -29,11 +29,6 @@
   "peerDependencies": {
     "@openshift/dynamic-plugin-sdk": "^4 || ^5",
     "@openshift/dynamic-plugin-sdk-extensions": "^1.4.0",
-    "@patternfly/react-core": "^5.1.0",
-    "@patternfly/react-icons": "^5.1.0",
-    "@patternfly/react-styles": "^5.1.0",
-    "@patternfly/react-table": "^5.1.0",
-    "@patternfly/react-virtualized-extension": "^5.0.0",
     "react": "^17 || ^18",
     "react-redux": "^7.2.2",
     "react-router": "^5.2.1",
