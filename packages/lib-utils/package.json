@@ -1,6 +1,6 @@
 {
   "name": "@openshift/dynamic-plugin-sdk-utils",
-  "version": "5.0.0",
+  "version": "4.1.0",
   "description": "Provides React focused dynamic plugin SDK utilities",
   "license": "Apache-2.0",
   "repository": {
