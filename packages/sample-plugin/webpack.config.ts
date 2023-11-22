@@ -38,7 +38,7 @@ const plugins: WebpackPluginInstance[] = [
     pluginMetadata,
     extensions,
     sharedModules: pluginSharedModules,
-    entryScriptFilename: isProd ? 'plugin-entry.[contenthash].min.js' : 'plugin-entry.js',
+    entryScriptFilename: isProd ? 'plugin-entry.[fullhash].min.js' : 'plugin-entry.js',
   }),
 ];
 
