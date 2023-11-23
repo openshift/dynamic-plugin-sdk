@@ -30,8 +30,8 @@ export class GenerateManifestPlugin implements WebpackPluginInstance {
         {
           name: GenerateManifestPlugin.name,
           // Using one of the later asset processing stages to ensure all assets
-          // are already added to the compilation by other webpack plugins
-          stage: Compilation.PROCESS_ASSETS_STAGE_SUMMARIZE,
+          // are already added and optimized within the given webpack compilation
+          stage: Compilation.PROCESS_ASSETS_STAGE_ANALYSE,
         },
         () => {
           const { entryChunk, runtimeChunk } = findPluginChunks(containerName, compilation);
@@ -49,9 +49,15 @@ export class GenerateManifestPlugin implements WebpackPluginInstance {
             buildHash: compilation.fullHash,
           });
 
+          const manifestContent = JSON.stringify(
+            manifest,
+            null,
+            compiler.options.mode === 'production' ? undefined : 2,
+          );
+
           compilation.emitAsset(
             manifestFilename,
-            new sources.RawSource(Buffer.from(JSON.stringify(manifest, null, 2))),
+            new sources.RawSource(Buffer.from(manifestContent)),
           );
 
           const warnings: string[] = [];
