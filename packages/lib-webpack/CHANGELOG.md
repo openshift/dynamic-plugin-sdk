@@ -1,5 +1,9 @@
 # Changelog for `@openshift/dynamic-plugin-sdk-webpack`
 
+## 4.0.1 - 2023-11-27
+
+- Fix bug in `DynamicRemotePlugin` where the plugin manifest may refer to incorrect entry script ([#250])
+
 ## 4.0.0 - 2023-11-03
 
 > Any custom properties in the plugin manifest should be set via the `customProperties` object.
@@ -46,3 +50,4 @@
 [#236]: https://github.com/openshift/dynamic-plugin-sdk/pull/236
 [#239]: https://github.com/openshift/dynamic-plugin-sdk/pull/239
 [#240]: https://github.com/openshift/dynamic-plugin-sdk/pull/240
+[#250]: https://github.com/openshift/dynamic-plugin-sdk/pull/250
