@@ -16,9 +16,14 @@ export type PluginLoaderInterface = {
   /**
    * Load plugin manifest from the given URL.
    *
-   * This should include transforming and validating the manifest object as necessary.
+   * This should include validating the manifest object as necessary.
    */
   loadPluginManifest: (manifestURL: string) => Promise<PluginManifest>;
+
+  /**
+   * Transform the plugin manifest before loading the associated plugin.
+   */
+  transformPluginManifest: (manifest: PluginManifest) => PluginManifest;
 
   /**
    * Load plugin from the given manifest.
