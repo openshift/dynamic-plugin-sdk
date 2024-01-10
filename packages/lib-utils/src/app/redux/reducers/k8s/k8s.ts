@@ -204,6 +204,15 @@ export const sdkK8sReducer = (state: K8sState, action: K8sAction): K8sState => {
       });
     }
 
+    case ActionType.ClearError: {
+      const { k8sObjects, id } = action.payload;
+      return state.mergeIn([id], {
+        loadError: '',
+        loaded: true,
+        data: k8sObjects,
+      });
+    }
+
     case ActionType.StopWatchK8s:
       return state.delete(action.payload.id);
 

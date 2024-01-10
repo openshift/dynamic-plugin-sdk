@@ -19,6 +19,7 @@ export enum ActionType {
   StartWatchK8sObject = 'startWatchK8sObject',
   StartWatchK8sList = 'startWatchK8sList',
   ModifyObject = 'modifyObject',
+  ClearError = 'clearError',
   StopWatchK8s = 'stopWatchK8s',
 
   Errored = 'errored',
@@ -43,6 +44,8 @@ export const startWatchK8sList = (id: string, query: Query) =>
   action(ActionType.StartWatchK8sList, { id, query });
 export const modifyObject = (id: string, k8sObjects: K8sResourceCommon) =>
   action(ActionType.ModifyObject, { id, k8sObjects });
+export const clearError = (id: string, k8sObjects: K8sResourceCommon) =>
+  action(ActionType.ClearError, { id, k8sObjects });
 export const stopWatchK8s = (id: string) => action(ActionType.StopWatchK8s, { id });
 
 export const errored = (id: string, k8sObjects: unknown) =>
@@ -280,7 +283,7 @@ export const watchK8sObject =
       WebSocketOptions & RequestInit & { wsPrefix?: string; pathPrefix?: string }
     > = {},
   ): ThunkDispatchFunction =>
-  (dispatch) => {
+  (dispatch, state) => {
     if (id in REF_COUNTS) {
       REF_COUNTS[id] += 1;
       return;
@@ -319,7 +322,13 @@ export const watchK8sObject =
         },
       })
         .then(
-          (o: K8sResourceCommon) => dispatch(modifyObject(id, o)),
+          (o: K8sResourceCommon) => {
+            const loadError = state().k8s.getIn([id, 'loadError']);
+            if (loadError) {
+              return dispatch(clearError(id, o));
+            }
+            return dispatch(modifyObject(id, o));
+          },
           (e: unknown) => dispatch(errored(id, e)),
         )
         .catch((err: Error) => {
@@ -356,6 +365,7 @@ const k8sActions = {
   startWatchK8sObject,
   startWatchK8sList,
   modifyObject,
+  clearError,
   stopWatchK8s,
   errored,
   loaded,
