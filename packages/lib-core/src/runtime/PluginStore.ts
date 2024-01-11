@@ -171,6 +171,8 @@ export class PluginStore implements PluginStoreInterface {
       throw new ErrorWithCause('Failed to load plugin manifest', e);
     }
 
+    loadedManifest = this.loader.transformPluginManifest(loadedManifest);
+
     const pluginName = loadedManifest.name;
 
     if (this.pendingPlugins.has(pluginName)) {

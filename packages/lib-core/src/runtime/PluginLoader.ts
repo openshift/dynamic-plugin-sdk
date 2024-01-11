@@ -115,7 +115,7 @@ export type PluginLoaderOptions = Partial<{
   sharedScope: AnyObject;
 
   /**
-   * Transform the plugin manifest.
+   * Transform the plugin manifest before loading the associated plugin.
    *
    * By default, no transformation is performed on the manifest.
    */
@@ -168,12 +168,15 @@ export class PluginLoader implements PluginLoaderInterface {
 
   async loadPluginManifest(manifestURL: string) {
     const response = await this.options.fetchImpl(manifestURL, { cache: 'no-cache' });
-    const responseText = await response.text();
-    const manifest = this.options.transformPluginManifest(JSON.parse(responseText));
+    const manifest = JSON.parse(await response.text());
 
     pluginManifestSchema.validateSync(manifest, { strict: true, abortEarly: false });
 
     return manifest;
+  }
+
+  transformPluginManifest(manifest: PluginManifest) {
+    return this.options.transformPluginManifest(manifest);
   }
 
   /**

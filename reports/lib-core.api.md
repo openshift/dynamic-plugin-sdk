@@ -149,6 +149,7 @@ export type PluginInfoEntry = PendingPluginInfoEntry | LoadedPluginInfoEntry | F
 // @public (undocumented)
 export type PluginLoaderInterface = {
     loadPluginManifest: (manifestURL: string) => Promise<PluginManifest>;
+    transformPluginManifest: (manifest: PluginManifest) => PluginManifest;
     loadPlugin: (manifest: PluginManifest) => Promise<PluginLoadResult>;
 };
 
