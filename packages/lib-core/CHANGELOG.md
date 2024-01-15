@@ -1,5 +1,9 @@
 # Changelog for `@openshift/dynamic-plugin-sdk`
 
+## 5.0.1 - 2024-01-15
+
+- Ensure `transformPluginManifest` is always called before loading a plugin ([#253])
+
 ## 5.0.0 - 2023-11-03
 
 > This release adds the ability to provide your own plugin loader implementation when creating
@@ -69,3 +73,4 @@
 [#232]: https://github.com/openshift/dynamic-plugin-sdk/pull/232
 [#236]: https://github.com/openshift/dynamic-plugin-sdk/pull/236
 [#241]: https://github.com/openshift/dynamic-plugin-sdk/pull/241
+[#253]: https://github.com/openshift/dynamic-plugin-sdk/pull/253
