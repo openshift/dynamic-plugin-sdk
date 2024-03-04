@@ -1,7 +1,7 @@
 import type { PluginManifest } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
 import type { WebpackPluginInstance, Compiler } from 'webpack';
 import { Compilation, sources, WebpackError } from 'webpack';
-import { findPluginChunks } from '../utils/plugin-chunks';
+import { findPluginChunks, getChunkFiles } from '../utils/plugin-chunks';
 
 type InputManifestData = Omit<PluginManifest, 'baseURL' | 'loadScripts' | 'buildHash'>;
 
@@ -38,7 +38,7 @@ export class GenerateManifestPlugin implements WebpackPluginInstance {
           const pluginChunks = runtimeChunk ? [runtimeChunk, entryChunk] : [entryChunk];
 
           const loadScripts = pluginChunks.reduce<string[]>(
-            (acc, chunk) => [...acc, ...chunk.files],
+            (acc, chunk) => [...acc, ...getChunkFiles(chunk, compilation)],
             [],
           );
 

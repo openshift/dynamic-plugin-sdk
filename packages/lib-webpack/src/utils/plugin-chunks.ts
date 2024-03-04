@@ -1,4 +1,4 @@
-import { Compilation, Chunk } from 'webpack';
+import { Compilation, Chunk, AssetInfo } from 'webpack';
 
 export const findPluginChunks = (
   containerName: string,
@@ -27,3 +27,18 @@ export const findPluginChunks = (
 
   return { entryChunk, runtimeChunk };
 };
+
+export const getChunkFiles = (
+  chunk: Chunk,
+  compilation: Compilation,
+  includeFile = (assetInfo: AssetInfo) => !assetInfo.development && !assetInfo.hotModuleReplacement,
+) =>
+  Array.from(chunk.files).filter((fileName) => {
+    const assetInfo = compilation.assetsInfo.get(fileName);
+
+    if (!assetInfo) {
+      throw new Error(`Missing asset information for ${fileName}`);
+    }
+
+    return includeFile(assetInfo);
+  });

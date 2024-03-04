@@ -1,5 +1,5 @@
 import { WebpackPluginInstance, Compiler, Compilation, sources, WebpackError } from 'webpack';
-import { findPluginChunks } from '../utils/plugin-chunks';
+import { findPluginChunks, getChunkFiles } from '../utils/plugin-chunks';
 
 type PatchEntryCallbackPluginOptions = {
   containerName: string;
@@ -22,7 +22,7 @@ export class PatchEntryCallbackPlugin implements WebpackPluginInstance {
         () => {
           const { entryChunk } = findPluginChunks(containerName, compilation);
 
-          entryChunk.files.forEach((fileName) => {
+          getChunkFiles(entryChunk, compilation).forEach((fileName) => {
             compilation.updateAsset(fileName, (source) => {
               const newSource = new sources.ReplaceSource(source);
               const fromIndex = source.source().toString().indexOf(`${callbackName}(`);
