@@ -1,5 +1,9 @@
 # Changelog for `@openshift/dynamic-plugin-sdk-webpack`
 
+## 4.0.2 - 2024-03-05
+
+- Exclude non-user-facing chunk files like `[id].[fullhash].hot-update.js` from processing ([#256])
+
 ## 4.0.1 - 2023-11-27
 
 - Fix bug in `DynamicRemotePlugin` where the plugin manifest may refer to incorrect entry script ([#250])
@@ -51,3 +55,4 @@
 [#239]: https://github.com/openshift/dynamic-plugin-sdk/pull/239
 [#240]: https://github.com/openshift/dynamic-plugin-sdk/pull/240
 [#250]: https://github.com/openshift/dynamic-plugin-sdk/pull/250
+[#256]: https://github.com/openshift/dynamic-plugin-sdk/pull/256
