@@ -30,5 +30,9 @@ export {
   PluginEntryCallbackSettings,
 } from './webpack/DynamicRemotePlugin';
 
+export * from './webpack/GenerateManifestPlugin';
+export * from './webpack/ValidateCompilationPlugin';
+
 export { PluginBuildMetadata } from './types/plugin';
 export { WebpackSharedConfig, WebpackSharedObject } from './types/webpack';
+export * from './yup-schemas';
