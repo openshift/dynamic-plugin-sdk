@@ -51,6 +51,27 @@ export type PluginModuleFederationSettings = Partial<{
    * @see https://webpack.js.org/plugins/module-federation-plugin/#sharescope
    */
   sharedScopeName: string;
+
+  /**
+   * Override the implementation of core webpack module federation plugin(s) to use
+   * for the webpack build.
+   *
+   * If not specified, standard webpack provided implementation of the given plugin
+   * will be used.
+   *
+   * @see https://github.com/module-federation/universe/tree/main/packages/enhanced
+   */
+  pluginOverride: Partial<{
+    /**
+     * Custom `ModuleFederationPlugin` implementation.
+     */
+    ModuleFederationPlugin: typeof container.ModuleFederationPlugin;
+
+    /**
+     * Custom `ContainerPlugin` implementation.
+     */
+    ContainerPlugin: typeof container.ContainerPlugin;
+  }>;
 }>;
 
 /**
@@ -195,6 +216,11 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
     const moduleFederationLibraryType = moduleFederationSettings.libraryType ?? 'jsonp';
     const moduleFederationSharedScope = moduleFederationSettings.sharedScopeName ?? 'default';
 
+    const {
+      ModuleFederationPlugin = container.ModuleFederationPlugin,
+      ContainerPlugin = container.ContainerPlugin,
+    } = moduleFederationSettings.pluginOverride ?? {};
+
     const entryCallbackName = entryCallbackSettings.name ?? DEFAULT_REMOTE_ENTRY_CALLBACK;
     const entryCallbackPluginID = entryCallbackSettings.pluginID ?? pluginMetadata.name;
 
@@ -217,7 +243,7 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
     compiler.options.output.uniqueName ??= containerName;
 
     // Generate webpack federated module container assets
-    new container.ModuleFederationPlugin({
+    new ModuleFederationPlugin({
       name: containerName,
       library: containerLibrary,
       filename: entryScriptFilename,
@@ -229,7 +255,7 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
     // ModuleFederationPlugin does not generate a container entry when the provided
     // exposes option is empty; we fix that by invoking the ContainerPlugin manually
     if (isEmpty(containerModules)) {
-      new container.ContainerPlugin({
+      new ContainerPlugin({
         name: containerName,
         library: containerLibrary,
         filename: entryScriptFilename,

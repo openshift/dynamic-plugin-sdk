@@ -5,6 +5,7 @@
 ```ts
 
 import { Compiler } from 'webpack';
+import { container } from 'webpack';
 import { WebpackPluginInstance } from 'webpack';
 
 // @public
@@ -90,6 +91,10 @@ export type PluginManifest = PluginRuntimeMetadata & {
 export type PluginModuleFederationSettings = Partial<{
     libraryType: string;
     sharedScopeName: string;
+    pluginOverride: Partial<{
+        ModuleFederationPlugin: typeof container.ModuleFederationPlugin;
+        ContainerPlugin: typeof container.ContainerPlugin;
+    }>;
 }>;
 
 // @public (undocumented)
