@@ -1,5 +1,9 @@
 # Changelog for `@openshift/dynamic-plugin-sdk-webpack`
 
+## 4.1.0 - 2024-04-26
+
+- Allow overriding core webpack module federation plugins used by DynamicRemotePlugin ([#259])
+
 ## 4.0.2 - 2024-03-05
 
 - Exclude non-user-facing chunk files like `[id].[fullhash].hot-update.js` from processing ([#256])
@@ -56,3 +60,4 @@
 [#240]: https://github.com/openshift/dynamic-plugin-sdk/pull/240
 [#250]: https://github.com/openshift/dynamic-plugin-sdk/pull/250
 [#256]: https://github.com/openshift/dynamic-plugin-sdk/pull/256
+[#259]: https://github.com/openshift/dynamic-plugin-sdk/pull/259
