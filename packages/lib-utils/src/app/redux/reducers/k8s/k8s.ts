@@ -159,7 +159,7 @@ export const sdkK8sReducer = (state: K8sState, action: K8sAction): K8sState => {
       return state.set(
         action.payload.id,
         ImmutableMap({
-          loadError: '',
+          loadError: undefined,
           loaded: false,
           data: {},
         }),
@@ -173,7 +173,7 @@ export const sdkK8sReducer = (state: K8sState, action: K8sAction): K8sState => {
       // We mergeDeep instead of overwriting state because it's possible to add filters before load/watching
       return state.mergeDeep({
         [action.payload.id]: {
-          loadError: '',
+          loadError: undefined,
           // has the data set been loaded successfully
           loaded: false,
           // Canonical data
@@ -198,7 +198,7 @@ export const sdkK8sReducer = (state: K8sState, action: K8sAction): K8sState => {
         }
       }
       return state.mergeIn([id], {
-        loadError: '',
+        loadError: undefined,
         loaded: true,
         data: k8sObjects,
       });
@@ -214,7 +214,7 @@ export const sdkK8sReducer = (state: K8sState, action: K8sAction): K8sState => {
       /* Don't overwrite data or loaded state if there was an error. Better to
        * keep stale data around than to suddenly have it disappear on a user.
        */
-      return state.setIn([action.payload.id, 'loadError'], action.payload.k8sObjects);
+      return state.setIn([action.payload.id, 'loadError'], action.payload.error);
 
     case ActionType.Loaded:
       if (!getK8sDataById(state, action.payload.id)) {
@@ -223,7 +223,7 @@ export const sdkK8sReducer = (state: K8sState, action: K8sAction): K8sState => {
       consoleLogger.info(`loaded ${action.payload.id}`);
       // eslint-disable-next-line no-param-reassign
       state = state.mergeDeep({
-        [action.payload.id]: { loaded: true, loadError: '' },
+        [action.payload.id]: { loaded: true, loadError: undefined },
       });
       newList = loadList(getK8sDataById(state, action.payload.id), action.payload.k8sObjects);
       break;

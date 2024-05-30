@@ -1,4 +1,4 @@
-import { consoleLogger } from '@openshift/dynamic-plugin-sdk';
+import { CustomError, consoleLogger } from '@openshift/dynamic-plugin-sdk';
 import { filter, get, omit } from 'lodash';
 import type { Dispatch } from 'redux';
 import type { ActionType as Action } from 'typesafe-actions';
@@ -45,8 +45,8 @@ export const modifyObject = (id: string, k8sObjects: K8sResourceCommon) =>
   action(ActionType.ModifyObject, { id, k8sObjects });
 export const stopWatchK8s = (id: string) => action(ActionType.StopWatchK8s, { id });
 
-export const errored = (id: string, k8sObjects: unknown) =>
-  action(ActionType.Errored, { id, k8sObjects });
+export const errored = (id: string, error: Error | undefined) =>
+  action(ActionType.Errored, { id, error });
 export const filterList = (id: string, name: string, value: FilterValue) =>
   action(ActionType.FilterList, { id, name, value });
 type LoadedAction = typeof loaded;
@@ -220,7 +220,7 @@ export const watchK8sList =
           return;
         }
 
-        dispatch(errored(id, e));
+        dispatch(errored(id, typeof e === 'string' ? new CustomError(e) : (e as Error)));
 
         if (!POLLs[id]) {
           POLLs[id] = window.setTimeout(pollAndWatch, 15 * 1000);
@@ -320,7 +320,8 @@ export const watchK8sObject =
       })
         .then(
           (o: K8sResourceCommon) => dispatch(modifyObject(id, o)),
-          (e: unknown) => dispatch(errored(id, e)),
+          (e: unknown) =>
+            dispatch(errored(id, typeof e === 'string' ? new CustomError(e) : (e as Error))),
         )
         .catch((err: Error) => {
           consoleLogger.error(err);

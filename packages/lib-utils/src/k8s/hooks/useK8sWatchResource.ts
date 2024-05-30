@@ -80,15 +80,15 @@ export const useK8sWatchResource = <R extends K8sResourceCommon | K8sResourceCom
       return [undefined, true, undefined];
     }
     if (!resourceK8s) {
-      const data = resource.isList ? [] : {};
+      const data = (resource.isList ? [] : undefined) as WatchK8sResult<R>[0];
       return modelsLoaded && !k8sModel && !batchesInFlight
         ? [data, true, new NoModelError()]
         : [data, false, undefined];
     }
 
-    const data = getReduxData(resourceK8s.get('data'), resource);
-    const loaded = resourceK8s.get('loaded') as boolean;
-    const loadError = resourceK8s.get('loadError');
+    const data = getReduxData(resourceK8s.get('data'), resource) as WatchK8sResult<R>[0];
+    const loaded = resourceK8s.get('loaded') as WatchK8sResult<R>[1];
+    const loadError = resourceK8s.get('loadError') as WatchK8sResult<R>[2];
     return [data, loaded, loadError];
   }, [resource, resourceK8s, modelsLoaded, k8sModel, batchesInFlight]);
 };
