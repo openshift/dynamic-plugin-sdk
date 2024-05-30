@@ -173,18 +173,26 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
         const accKey = key as keyof R;
         if (reduxIDs?.[key].noModel && !batchesInFlight) {
           acc[accKey] = {
-            data: resources[key].isList ? [] : {},
+            data: resources[key].isList ? [] : undefined,
             loaded: true,
             loadError: new NoModelError(),
           } as WatchK8sResultsObject<R[typeof key]>;
         } else if (reduxIDs && resourceK8s?.has(reduxIDs?.[key].id)) {
-          const data = getReduxData(resourceK8s.getIn([reduxIDs[key].id, 'data']), resources[key]);
-          const loaded = resourceK8s.getIn([reduxIDs[key].id, 'loaded']);
-          const loadError = resourceK8s.getIn([reduxIDs[key].id, 'loadError']);
-          acc[accKey] = { data, loaded, loadError };
+          const data = getReduxData(
+            resourceK8s.getIn([reduxIDs[key].id, 'data']),
+            resources[key],
+          ) as WatchK8sResultsObject<R[typeof key]>['data'];
+          const loaded = resourceK8s.getIn([reduxIDs[key].id, 'loaded']) as WatchK8sResultsObject<
+            R[typeof key]
+          >['loaded'];
+          const loadError = resourceK8s.getIn([
+            reduxIDs[key].id,
+            'loadError',
+          ]) as WatchK8sResultsObject<R[typeof key]>['loadError'];
+          acc[accKey] = { data, loaded, loadError } as WatchK8sResultsObject<R[typeof key]>;
         } else {
           acc[accKey] = {
-            data: resources[key].isList ? [] : {},
+            data: resources[key].isList ? [] : undefined,
             loaded: false,
             loadError: undefined,
           } as WatchK8sResultsObject<R[typeof key]>;

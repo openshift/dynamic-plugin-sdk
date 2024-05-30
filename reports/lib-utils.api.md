@@ -394,6 +394,12 @@ export type ResourcesObject = {
 // @public
 export const SDKReducers: Readonly<{
     k8s: (state: K8sState, action: {
+        type: import("../actions/k8s").ActionType.Loaded;
+        payload: {
+            id: string;
+            k8sObjects: K8sResourceCommon[];
+        };
+    } | {
         type: import("../actions/k8s").ActionType.StartWatchK8sObject;
         payload: {
             id: string;
@@ -419,13 +425,7 @@ export const SDKReducers: Readonly<{
         type: import("../actions/k8s").ActionType.Errored;
         payload: {
             id: string;
-            k8sObjects: unknown;
-        };
-    } | {
-        type: import("../actions/k8s").ActionType.Loaded;
-        payload: {
-            id: string;
-            k8sObjects: K8sResourceCommon[];
+            error: Error | undefined;
         };
     } | {
         type: import("../actions/k8s").ActionType.BulkAddToList;
@@ -545,9 +545,9 @@ export type WatchK8sResources<R extends ResourcesObject> = {
 
 // @public (undocumented)
 export type WatchK8sResult<R extends K8sResourceCommon | K8sResourceCommon[]> = [
-data: R,
-loaded: boolean,
-loadError: unknown
+data: WatchK8sResultsObject<R>['data'],
+loaded: WatchK8sResultsObject<R>['loaded'],
+loadError: WatchK8sResultsObject<R>['loadError']
 ];
 
 // @public (undocumented)
@@ -557,9 +557,9 @@ export type WatchK8sResults<R extends ResourcesObject> = {
 
 // @public (undocumented)
 export type WatchK8sResultsObject<R extends K8sResourceCommon | K8sResourceCommon[]> = {
-    data: R;
+    data?: R;
     loaded: boolean;
-    loadError: unknown;
+    loadError?: Error;
 };
 
 // @public

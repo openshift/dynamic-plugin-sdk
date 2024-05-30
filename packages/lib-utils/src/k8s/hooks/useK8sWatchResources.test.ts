@@ -97,7 +97,7 @@ describe('useK8sWatchResources', () => {
     const { application } = result.current;
     const { data, loaded, loadError } = application;
 
-    expect(data).toMatchObject({});
+    expect(data).toBeUndefined();
     expect(loaded).toEqual(false);
     expect(loadError).toBeUndefined();
 
@@ -111,7 +111,7 @@ describe('useK8sWatchResources', () => {
     const checkAllBatches = renderHook(() => useK8sWatchResources(watchedResourcesMock));
     const resultingApp = checkAllBatches.result.current.application;
 
-    expect(resultingApp.data).toMatchObject({});
+    expect(resultingApp.data).toBeUndefined();
     expect(resultingApp.loaded).toEqual(false);
     expect(resultingApp.loadError).toBeUndefined();
   });
@@ -126,7 +126,7 @@ describe('useK8sWatchResources', () => {
     const { application } = result.current;
     const { data, loaded, loadError } = application;
 
-    expect(data).toMatchObject({});
+    expect(data).toBeUndefined();
     expect(loaded).toEqual(true);
     expect((loadError as NoModelError).message).toEqual('Model does not exist');
   });
@@ -141,7 +141,7 @@ describe('useK8sWatchResources', () => {
       [ID_MOCK]: {
         data: resourceDataMock,
         loaded: true,
-        loadError: '',
+        loadError: undefined,
       },
     };
     const resourceK8s: ImmutableMap<string, unknown> = ImmutableMap(fromJS(payload));
@@ -160,7 +160,7 @@ describe('useK8sWatchResources', () => {
     const { application } = result.current;
     const { data, loaded, loadError } = application;
     expect(loaded).toEqual(true);
-    expect(loadError).toEqual('');
+    expect(loadError).toBeUndefined();
     expect(data as K8sResourceCommon).toMatchObject(resourceDataMock);
     expect(useSelectorMock).toHaveBeenCalled();
   });
@@ -175,7 +175,7 @@ describe('useK8sWatchResources', () => {
       [ID_MOCK]: {
         data: resourceDataMock,
         loaded: true,
-        loadError: '',
+        loadError: undefined,
       },
     };
     const resourceK8s: ImmutableMap<string, unknown> = ImmutableMap(fromJS(payload));
@@ -195,7 +195,7 @@ describe('useK8sWatchResources', () => {
     const { application } = result.current;
     const { data, loaded, loadError } = application;
     expect(loaded).toEqual(true);
-    expect(loadError).toEqual('');
+    expect(loadError).toBeUndefined();
     expect(data as K8sResourceCommon).toMatchObject(resourceDataMock);
     expect(useSelectorMock).toHaveBeenCalled();
   });

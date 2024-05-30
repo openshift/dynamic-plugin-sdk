@@ -109,7 +109,7 @@ describe('useK8sWatchResource', () => {
     const { result } = renderHook(() => useK8sWatchResource(watchedResourceMock));
     let [data, loaded, error] = result.current;
 
-    expect(data).toMatchObject({});
+    expect(data).toBeUndefined();
     expect(loaded).toEqual(false);
     expect(error).toBeUndefined();
 
@@ -121,7 +121,7 @@ describe('useK8sWatchResource', () => {
 
     const checkAllBatches = renderHook(() => useK8sWatchResource(watchedResourceMock));
     [data, loaded, error] = checkAllBatches.result.current;
-    expect(data).toMatchObject({});
+    expect(data).toBeUndefined();
     expect(loaded).toEqual(false);
     expect(error).toBeUndefined();
   });
@@ -135,7 +135,7 @@ describe('useK8sWatchResource', () => {
     const { result } = renderHook(() => useK8sWatchResource(watchedResourceMock));
     const [data, loaded, error] = result.current;
 
-    expect(data).toMatchObject({});
+    expect(data).toBeUndefined();
     expect(loaded).toEqual(true);
     expect((error as NoModelError).message).toEqual('Model does not exist');
   });
@@ -148,7 +148,7 @@ describe('useK8sWatchResource', () => {
     const payload = {
       data: resourceDataMock,
       loaded: true,
-      loadError: '',
+      loadError: undefined,
     };
     const reduxIdPayload: ImmutableMap<string, unknown> = ImmutableMap(payload);
     useSelectorMock.mockReturnValue(reduxIdPayload); // get resourceK8s
@@ -166,7 +166,7 @@ describe('useK8sWatchResource', () => {
     expect(resourceData).toMatchObject(resourceDataMock);
 
     expect(loaded).toEqual(true);
-    expect(error).toEqual('');
+    expect(error).toBeUndefined();
   });
 
   test('should return data for the watched resource from provided static model', () => {
@@ -177,7 +177,7 @@ describe('useK8sWatchResource', () => {
     const payload = {
       data: resourceDataMock,
       loaded: true,
-      loadError: '',
+      loadError: undefined,
     };
     const reduxIdPayload: ImmutableMap<string, unknown> = ImmutableMap(payload);
     useSelectorMock.mockReturnValue(reduxIdPayload); // get resourceK8s
@@ -196,6 +196,6 @@ describe('useK8sWatchResource', () => {
     expect(resourceData).toMatchObject(resourceDataMock);
 
     expect(loaded).toEqual(true);
-    expect(error).toEqual('');
+    expect(error).toBeUndefined();
   });
 });
