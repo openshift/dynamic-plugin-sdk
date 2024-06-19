@@ -25,6 +25,8 @@ export enum ActionType {
     // (undocumented)
     BulkAddToList = "bulkAddToList",
     // (undocumented)
+    ClearError = "clearError",
+    // (undocumented)
     Errored = "errored",
     // (undocumented)
     FilterList = "filterList",
@@ -406,6 +408,12 @@ export const SDKReducers: Readonly<{
         };
     } | {
         type: import("../actions/k8s").ActionType.ModifyObject;
+        payload: {
+            id: string;
+            k8sObjects: K8sResourceCommon;
+        };
+    } | {
+        type: import("../actions/k8s").ActionType.ClearError;
         payload: {
             id: string;
             k8sObjects: K8sResourceCommon;
