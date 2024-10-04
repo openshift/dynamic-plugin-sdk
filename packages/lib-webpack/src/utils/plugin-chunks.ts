@@ -19,7 +19,19 @@ export const findPluginChunks = (
     return { entryChunk };
   }
 
-  const runtimeChunk = allChunks.find((chunk) => chunk.name === entryChunk.runtime);
+  const runtimeChunk = allChunks.find((chunk) => {
+      /**
+       * In webpack chunk runtime can be one of undefined, string and a SortableSet.
+       * 
+       * If runtime is a SortableSet, a different check is needed.
+       */
+      if (typeof entryChunk.runtime === 'string') {
+        return chunk.name === entryChunk.runtime;
+      } else if (entryChunk.runtime) {
+        return entryChunk.runtime.has(chunk.name);
+      }
+    }
+  );
 
   if (!runtimeChunk) {
     throw new Error(`Cannot find runtime chunk for entry chunk ${containerName}`);
@@ -34,7 +46,7 @@ export const getChunkFiles = (
   includeFile = (assetInfo: AssetInfo) => !assetInfo.development && !assetInfo.hotModuleReplacement,
 ) =>
   Array.from(chunk.files).filter((fileName) => {
-    const assetInfo = compilation.assetsInfo.get(fileName);
+    const assetInfo = compilation.getAsset(fileName);
 
     if (!assetInfo) {
       throw new Error(`Missing asset information for ${fileName}`);
