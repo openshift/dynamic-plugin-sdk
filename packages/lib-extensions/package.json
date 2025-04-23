@@ -28,7 +28,7 @@
   "peerDependencies": {
     "@openshift/dynamic-plugin-sdk": "^4 || ^5",
     "react": "^17 || ^18",
-    "react-redux": "^7.2.2",
+    "react-redux": "^7 || ^8",
     "react-router": "^5.2.1",
     "redux": "^4.1.2"
   },

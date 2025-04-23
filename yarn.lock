@@ -1397,7 +1397,7 @@ __metadata:
   peerDependencies:
     "@openshift/dynamic-plugin-sdk": ^4 || ^5
     react: ^17 || ^18
-    react-redux: ^7.2.2
+    react-redux: ^7 || ^8
     react-router: ^5.2.1
     redux: ^4.1.2
   peerDependenciesMeta:
@@ -1416,7 +1416,7 @@ __metadata:
   peerDependencies:
     "@openshift/dynamic-plugin-sdk": ^4 || ^5
     react: ^17 || ^18
-    react-redux: ^7.2.2
+    react-redux: ^7 || ^8
     react-router: ^5.2.1
     redux: ^4.1.2
   peerDependenciesMeta:
@@ -1435,7 +1435,7 @@ __metadata:
   peerDependencies:
     "@openshift/dynamic-plugin-sdk": ^4 || ^5
     react: ^17 || ^18
-    react-redux: ^7.2.2
+    react-redux: ^7 || ^8
     react-router: ^5.2.1
     redux: ^4.1.2
   peerDependenciesMeta:
@@ -1461,10 +1461,7 @@ __metadata:
     "@openshift/dynamic-plugin-sdk": ^4 || ^5
     "@openshift/dynamic-plugin-sdk-extensions": ^1.4.0
     react: ^17 || ^18
-    react-redux: ^7.2.2
-    react-router: ^5.2.1
-    react-router-dom: ^6.3.0
-    react-virtualized: ^9.22.3
+    react-redux: ^7 || ^8
     redux: ^4.1.2
     redux-thunk: ^2.4.1
   languageName: unknown
