@@ -46,7 +46,7 @@ RUN npm install -g yarn
 
 # Install Cypress related dependencies.
 # https://docs.cypress.io/app/get-started/install-cypress#Linux-Prerequisites
-RUN dnf install -y xorg-x11-server-Xvfb gtk3-devel nss alsa-lib gtk2-devel libnotify-devel GConf2 libXScrnSaver
+RUN dnf install -y xorg-x11-server-Xvfb gtk3-devel nss alsa-lib
 
 # Clean up temporary files.
 RUN dnf clean all
