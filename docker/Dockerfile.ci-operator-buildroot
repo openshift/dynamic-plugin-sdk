@@ -12,7 +12,7 @@ ENV NO_COLOR=1
 # Note that ci-operator requires git to be installed on the system.
 # https://docs.ci.openshift.org/docs/architecture/ci-operator/#build-root-image
 RUN dnf update -y && \
-    dnf install -y git jq openssl && \
+    dnf install -y git jq openssl procps-ng && \
     git config --system --add safe.directory '*' && \
     git config --system advice.detachedHead false
 
