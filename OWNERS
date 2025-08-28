@@ -7,5 +7,6 @@ reviewers:
 approvers:
   - andrewballantyne
   - florkbr
+  - logonoff
   - vojtechszocs
 component: Dynamic Plugin SDK
