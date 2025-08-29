@@ -30,6 +30,7 @@ export type LoadedPlugin = {
   entryModule: PluginEntryModule;
   enabled: boolean;
   disableReason?: string;
+  customInfo?: AnyObject;
 };
 
 export type FailedPlugin = {

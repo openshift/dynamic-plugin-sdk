@@ -36,7 +36,7 @@ export type PendingPluginInfoEntry = {
 
 export type LoadedPluginInfoEntry = {
   status: 'loaded';
-} & Pick<LoadedPlugin, 'manifest' | 'enabled' | 'disableReason'>;
+} & Pick<LoadedPlugin, 'manifest' | 'enabled' | 'disableReason' | 'customInfo'>;
 
 export type FailedPluginInfoEntry = {
   status: 'failed';
@@ -49,7 +49,7 @@ export type PluginInfoEntry =
 
 export type FeatureFlags = { [flagName: string]: boolean };
 
-export type PluginStoreInterface = {
+export type PluginStoreInterface<TCustomPluginInfo = AnyObject> = {
   /**
    * Version of the `@openshift/dynamic-plugin-sdk` package.
    */
@@ -147,4 +147,31 @@ export type PluginStoreInterface = {
     pluginName: string,
     moduleName: string,
   ) => Promise<TModule>;
+
+  /**
+   * Set custom information for a loaded plugin.
+   *
+   * The provided data will be merged with existing `customInfo` of the plugin.
+   *
+   * Note that updates will dispatch the {@link PluginEventType.PluginInfoChanged}
+   * event, invoking any registered listeners and thus triggering re-renders of
+   * any React components using the `usePluginInfo` hook.
+   *
+   * If the plugin is not loaded, this method does nothing.
+   *
+   * This is a generic method which can be used by host applications to associate
+   * custom data with a loaded plugin. For example, the sample app uses it to
+   * store information about what the plugin had for lunch (see `app.tsx`).
+   */
+  setCustomPluginInfo: (pluginName: string, data: TCustomPluginInfo) => void;
+
+  /**
+   * Find a loaded plugin by its name. Returns `undefined` if the plugin is not loaded.
+   */
+  findLoadedPlugin: (pluginName: string) => LoadedPlugin | undefined;
+
+  /**
+   * Get the manifest of a loaded plugin, or `undefined` if the plugin is not loaded.
+   */
+  getLoadedPluginManifest: (pluginName: string) => PluginManifest | undefined;
 };
