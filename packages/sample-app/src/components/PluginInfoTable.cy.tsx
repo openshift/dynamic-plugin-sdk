@@ -81,4 +81,28 @@ describe('PluginInfoTable', () => {
       cy.wrap(entry).its('enabled').should('be.false');
     });
   });
+
+  it('Allows plugins to eat burgers for lunch (via custom plugin info)', () => {
+    cy.getPluginStore().then((pluginStore) => {
+      pluginStore.addLoadedPlugin(mockPluginManifest({ name: 'test' }), mockPluginEntryModule());
+      pluginStore.enablePlugins(['test']);
+    });
+
+    cy.get('[data-test-id="plugin-table"]')
+      .find('tbody > tr')
+      .within(() => {
+        cy.get('td[data-label="Name"]').should('contain.text', 'test');
+        cy.get('td[data-label="Status"]').should('contain.text', 'loaded');
+        cy.get('td[data-label="Lunch"]').should('contain.text', '');
+        cy.get('[data-testid="actions-column"] button').click();
+        cy.get('button').contains('Have burger for lunch').click();
+        cy.get('td[data-label="Lunch"]').should('contain.text', 'burger');
+      });
+
+    cy.getPluginStore().then((pluginStore) => {
+      const entry = pluginStore.getPluginInfo()[0];
+
+      cy.wrap(entry).its('customInfo.lunch').should('equal', 'burger');
+    });
+  });
 });
