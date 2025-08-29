@@ -98,12 +98,13 @@ export type LoadedPlugin = {
     entryModule: PluginEntryModule;
     enabled: boolean;
     disableReason?: string;
+    customInfo?: AnyObject;
 };
 
 // @public (undocumented)
 export type LoadedPluginInfoEntry = {
     status: 'loaded';
-} & Pick<LoadedPlugin, 'manifest' | 'enabled' | 'disableReason'>;
+} & Pick<LoadedPlugin, 'manifest' | 'enabled' | 'disableReason' | 'customInfo'>;
 
 // @public (undocumented)
 export type LogFunction = (message?: any, ...optionalParams: any[]) => void;
@@ -205,7 +206,7 @@ export type PluginRuntimeMetadata = {
 };
 
 // @public
-export class PluginStore implements PluginStoreInterface {
+export class PluginStore<TCustomPluginInfo = AnyObject> implements PluginStoreInterface<TCustomPluginInfo> {
     constructor(options?: PluginStoreOptions & PluginStoreLoaderSettings);
     // (undocumented)
     protected addFailedPlugin(manifest: PluginManifest, errorMessage: string, errorCause?: unknown): void;
@@ -217,6 +218,8 @@ export class PluginStore implements PluginStoreInterface {
     // (undocumented)
     enablePlugins(pluginNames: string[]): void;
     // (undocumented)
+    findLoadedPlugin(pluginName: string): LoadedPlugin | undefined;
+    // (undocumented)
     getExposedModule<TModule extends AnyObject>(pluginName: string, moduleName: string): Promise<TModule>;
     // (undocumented)
     getExtensions(): LoadedExtension<Extension<string, AnyObject>>[];
@@ -225,11 +228,15 @@ export class PluginStore implements PluginStoreInterface {
         [x: string]: boolean;
     };
     // (undocumented)
+    getLoadedPluginManifest(pluginName: string): Readonly<PluginManifest> | undefined;
+    // (undocumented)
     getPluginInfo(): PluginInfoEntry[];
     // (undocumented)
     loadPlugin(manifest: PluginManifest | string, forceReload?: boolean): Promise<void>;
     // (undocumented)
     readonly sdkVersion: string;
+    // (undocumented)
+    setCustomPluginInfo(pluginName: string, data: TCustomPluginInfo): void;
     // (undocumented)
     setFeatureFlags(newFlags: FeatureFlags): void;
     // (undocumented)
@@ -237,7 +244,7 @@ export class PluginStore implements PluginStoreInterface {
 }
 
 // @public (undocumented)
-export type PluginStoreInterface = {
+export type PluginStoreInterface<TCustomPluginInfo = AnyObject> = {
     readonly sdkVersion: string;
     subscribe: (eventTypes: PluginEventType[], listener: VoidFunction) => VoidFunction;
     getExtensions: () => LoadedExtension[];
@@ -248,6 +255,9 @@ export type PluginStoreInterface = {
     enablePlugins: (pluginNames: string[]) => void;
     disablePlugins: (pluginNames: string[], disableReason?: string) => void;
     getExposedModule: <TModule extends AnyObject>(pluginName: string, moduleName: string) => Promise<TModule>;
+    setCustomPluginInfo: (pluginName: string, data: TCustomPluginInfo) => void;
+    findLoadedPlugin: (pluginName: string) => LoadedPlugin | undefined;
+    getLoadedPluginManifest: (pluginName: string) => PluginManifest | undefined;
 };
 
 // @public (undocumented)
@@ -306,7 +316,7 @@ export type UseFeatureFlagResult = [currentValue: boolean, setValue: (newValue: 
 export const usePluginInfo: () => PluginInfoEntry[];
 
 // @public
-export const usePluginStore: () => PluginStoreInterface;
+export const usePluginStore: () => PluginStoreInterface<AnyObject>;
 
 // @public
 export const useResolvedExtensions: <TExtension extends Extension<string, AnyObject>>(predicate?: ExtensionPredicate<TExtension> | undefined, options?: UseResolvedExtensionsOptions) => UseResolvedExtensionsResult<TExtension>;
