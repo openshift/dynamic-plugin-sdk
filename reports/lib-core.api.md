@@ -15,7 +15,7 @@ export const applyDefaults: <TObject>(obj: TObject, defaults: unknown) => TObjec
 // @public
 export const applyOverrides: <TObject>(obj: TObject, overrides: unknown) => TObject;
 
-// @public (undocumented)
+// @public
 export type CodeRef<TValue = unknown> = () => Promise<TValue>;
 
 // @public (undocumented)
@@ -38,7 +38,7 @@ export type EitherNotBoth<TypeA, TypeB> = (TypeA & Never<TypeB>) | (TypeB & Neve
 // @public
 export type EitherOrNone<TypeA, TypeB> = EitherNotBoth<TypeA, TypeB> | (Never<TypeA> & Never<TypeB>);
 
-// @public (undocumented)
+// @public
 export type EncodedCodeRef = {
     $codeRef: string;
 };
@@ -48,7 +48,7 @@ export type EncodedExtension<TExtension extends Extension = Extension> = Replace
     properties: ReplaceProperties<ExtractExtensionProperties<TExtension>, MapCodeRefsToEncodedCodeRefs<ExtractExtensionProperties<TExtension>>>;
 }>;
 
-// @public (undocumented)
+// @public
 export type Extension<TType extends string = string, TProperties extends AnyObject = AnyObject> = {
     type: TType;
     properties: TProperties;
@@ -62,10 +62,10 @@ export type ExtensionFlags = Partial<{
     disallowed: string[];
 }>;
 
-// @public (undocumented)
+// @public
 export type ExtensionPredicate<TExtension extends Extension> = (e: Extension) => e is TExtension;
 
-// @public (undocumented)
+// @public
 export type ExtractExtensionProperties<T> = T extends Extension<any, infer TProperties> ? TProperties : never;
 
 // @public (undocumented)
@@ -85,7 +85,7 @@ export type FeatureFlags = {
     [flagName: string]: boolean;
 };
 
-// @public (undocumented)
+// @public
 export type LoadedExtension<TExtension extends Extension = Extension> = TExtension & {
     pluginName: string;
     uid: string;
@@ -276,7 +276,7 @@ export type ReplaceProperties<T, R> = {
     [K in keyof T]: K extends keyof R ? R[K] : T[K];
 };
 
-// @public (undocumented)
+// @public
 export type ResolvedExtension<TExtension extends Extension = Extension> = ReplaceProperties<TExtension, {
     properties: ReplaceProperties<ExtractExtensionProperties<TExtension>, MapCodeRefsToValues<ExtractExtensionProperties<TExtension>>>;
 }>;

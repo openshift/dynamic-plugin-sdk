@@ -11,7 +11,7 @@ import { WebpackPluginInstance } from 'webpack';
 // @public
 export type AnyObject = Record<string, unknown>;
 
-// @public (undocumented)
+// @public
 export type CodeRef<TValue = unknown> = () => Promise<TValue>;
 
 // @public (undocumented)
@@ -36,7 +36,7 @@ export type DynamicRemotePluginOptions = {
     transformPluginManifest?: (manifest: PluginManifest) => PluginManifest;
 };
 
-// @public (undocumented)
+// @public
 export type EncodedCodeRef = {
     $codeRef: string;
 };
@@ -46,7 +46,7 @@ export type EncodedExtension<TExtension extends Extension = Extension> = Replace
     properties: ReplaceProperties<ExtractExtensionProperties<TExtension>, MapCodeRefsToEncodedCodeRefs<ExtractExtensionProperties<TExtension>>>;
 }>;
 
-// @public (undocumented)
+// @public
 export type Extension<TType extends string = string, TProperties extends AnyObject = AnyObject> = {
     type: TType;
     properties: TProperties;
@@ -60,7 +60,7 @@ export type ExtensionFlags = Partial<{
     disallowed: string[];
 }>;
 
-// @public (undocumented)
+// @public
 export type ExtractExtensionProperties<T> = T extends Extension<any, infer TProperties> ? TProperties : never;
 
 // @public (undocumented)
