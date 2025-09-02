@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { AnyObject, EitherNotBoth } from '@monorepo/common';
 import { consoleLogger, ErrorWithCause } from '@monorepo/common';
-import { cloneDeep, compact, isEqual, noop, pickBy } from 'lodash';
+import { cloneDeep, compact, isEqual, merge, noop, pickBy } from 'lodash';
 import { version as sdkVersion } from '../../package.json';
 import type { LoadedExtension } from '../types/extension';
 import type { PluginLoaderInterface } from '../types/loader';
@@ -40,7 +40,9 @@ export type PluginStoreOptions = Partial<{
 /**
  * Manages plugins and their extensions.
  */
-export class PluginStore implements PluginStoreInterface {
+export class PluginStore<TCustomPluginInfo = AnyObject>
+  implements PluginStoreInterface<TCustomPluginInfo>
+{
   private readonly options: Required<PluginStoreOptions>;
 
   private readonly loader: PluginLoaderInterface;
@@ -112,6 +114,27 @@ export class PluginStore implements PluginStoreInterface {
     return [...this.extensions];
   }
 
+  setCustomPluginInfo(pluginName: string, data: TCustomPluginInfo) {
+    const plugin = this.findLoadedPlugin(pluginName);
+
+    if (!plugin) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `Attempt to set custom data for plugin ${pluginName} that has not been loaded yet`,
+      );
+      return;
+    }
+
+    const oldData = plugin.customInfo;
+    const newData = merge({}, plugin.customInfo, data);
+
+    if (!isEqual(oldData, newData)) {
+      plugin.customInfo = newData;
+
+      this.invokeListeners(PluginEventType.PluginInfoChanged);
+    }
+  }
+
   getPluginInfo() {
     const entries: PluginInfoEntry[] = [];
 
@@ -128,6 +151,7 @@ export class PluginStore implements PluginStoreInterface {
         manifest: plugin.manifest,
         enabled: plugin.enabled,
         disableReason: plugin.disableReason,
+        customInfo: plugin.customInfo,
       });
     });
 
@@ -141,6 +165,16 @@ export class PluginStore implements PluginStoreInterface {
     });
 
     return entries;
+  }
+
+  findLoadedPlugin(pluginName: string) {
+    return Array.from(this.loadedPlugins.values()).find(
+      (entry) => entry.manifest.name === pluginName,
+    );
+  }
+
+  getLoadedPluginManifest(pluginName: string) {
+    return this.findLoadedPlugin(pluginName)?.manifest;
   }
 
   getFeatureFlags() {
@@ -324,6 +358,7 @@ export class PluginStore implements PluginStoreInterface {
       loadedExtensions: loadedExtensions.map((e) => Object.freeze(e)),
       entryModule,
       enabled: false,
+      customInfo: {},
     };
 
     this.pendingPlugins.delete(pluginName);

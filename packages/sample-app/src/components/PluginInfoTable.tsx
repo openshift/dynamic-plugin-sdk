@@ -20,24 +20,34 @@ const columnNames = {
   status: 'Status',
   extensions: 'Extensions',
   enabled: 'Enabled',
+  lunch: 'Lunch',
   actions: 'Actions',
 };
 
 const columnTooltips = {
   enabled: 'Enabling a plugin puts all of its extensions into use. Disabling it does the opposite.',
+  lunch: 'What the plugin had for lunch (custom info set by sample-app)',
 };
-
-const getDropdownActions = (entry: PluginInfoEntry): IAction[] => [
-  {
-    title: 'Log plugin manifest',
-    // eslint-disable-next-line no-console
-    onClick: () => console.log(`${entry.manifest.name} manifest`, entry.manifest),
-  },
-];
 
 const PluginInfoTable: React.FC = () => {
   const pluginStore = usePluginStore();
   const entries = usePluginInfo().sort((a, b) => a.manifest.name.localeCompare(b.manifest.name));
+
+  const getDropdownActions = React.useCallback(
+    (entry: PluginInfoEntry): IAction[] => [
+      {
+        title: 'Log plugin manifest',
+        // eslint-disable-next-line no-console
+        onClick: () => console.log(`${entry.manifest.name} manifest`, entry.manifest),
+      },
+      {
+        title: 'Have burger for lunch',
+        isDisabled: entry.status !== 'loaded',
+        onClick: () => pluginStore.setCustomPluginInfo(entry.manifest.name, { lunch: 'burger' }),
+      },
+    ],
+    [pluginStore],
+  );
 
   return (
     <TableComposable variant="compact" data-test-id="plugin-table">
@@ -48,6 +58,7 @@ const PluginInfoTable: React.FC = () => {
           <Th>{columnNames.status}</Th>
           <Th>{columnNames.extensions}</Th>
           <Th info={{ tooltip: columnTooltips.enabled }}>{columnNames.enabled}</Th>
+          <Th info={{ tooltip: columnTooltips.lunch }}>{columnNames.lunch}</Th>
           <Th>{columnNames.actions}</Th>
           <Td />
         </Tr>
@@ -97,6 +108,9 @@ const PluginInfoTable: React.FC = () => {
                 <Td dataLabel={columnNames.enabled}>
                   <LabelWithTooltipIcon label={enabledLabel} tooltipContent={enabledTooltip} />
                 </Td>
+                <Td dataLabel={columnNames.lunch}>
+                  {p.status === 'loaded' ? (p.customInfo?.lunch as string) : '-'}
+                </Td>
                 <Td dataLabel={columnNames.actions} modifier="fitContent">
                   <Button
                     isDisabled={p.status !== 'loaded'}
@@ -106,7 +120,7 @@ const PluginInfoTable: React.FC = () => {
                     {toggleEnabledText}
                   </Button>
                 </Td>
-                <Td isActionCell>
+                <Td isActionCell data-testid="actions-column">
                   <ActionsColumn items={getDropdownActions(p)} />
                 </Td>
               </Tr>
