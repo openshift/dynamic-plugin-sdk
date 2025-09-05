@@ -3,7 +3,7 @@ import type {
   EncodedExtension,
   PluginManifest,
 } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
-import { identity, isEmpty, mapValues } from 'lodash';
+import { identity, isEmpty, mapValues, intersection } from 'lodash';
 import * as semver from 'semver';
 import * as yup from 'yup';
 import { WebpackPluginInstance, Compiler, container } from 'webpack';
@@ -184,9 +184,10 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
     }
 
     // TODO(vojtech): remove this code once the validation library supports this natively
-    const invalidDepNames = Object.entries(
-      this.adaptedOptions.pluginMetadata.dependencies ?? {},
-    ).reduce<string[]>(
+    const invalidDepNames = Object.entries({
+      ...(this.adaptedOptions.pluginMetadata.optionalDependencies ?? {}),
+      ...(this.adaptedOptions.pluginMetadata.dependencies ?? {}),
+    }).reduce<string[]>(
       (acc, [depName, versionRange]) =>
         versionRange && semver.validRange(versionRange) ? acc : [...acc, depName],
       [],
@@ -195,6 +196,19 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
     if (invalidDepNames.length > 0) {
       throw new Error(
         `Dependency values must be valid semver ranges: ${invalidDepNames.join(', ')}`,
+      );
+    }
+
+    const overlapDependencyNames = intersection(
+      Object.keys(this.adaptedOptions.pluginMetadata.optionalDependencies ?? {}),
+      Object.keys(this.adaptedOptions.pluginMetadata.dependencies ?? {}),
+    );
+
+    if (overlapDependencyNames.length > 0) {
+      throw new Error(
+        `Detected overlap between dependencies and optionalDependencies: ${overlapDependencyNames.join(
+          ', ',
+        )}`,
       );
     }
   }
@@ -272,6 +286,7 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
         name: pluginMetadata.name,
         version: pluginMetadata.version,
         dependencies: pluginMetadata.dependencies,
+        optionalDependencies: pluginMetadata.optionalDependencies,
         customProperties: pluginMetadata.customProperties,
         extensions,
         registrationMethod: jsonp ? 'callback' : 'custom',
