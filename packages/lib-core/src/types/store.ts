@@ -6,6 +6,9 @@ export enum PluginEventType {
   /**
    * Triggers when the list of extensions, which are currently in use, changes.
    *
+   * See the `getExtensions` function for details on evaluating extensions which are
+   * currently in use.
+   *
    * Associated data getter: {@link PluginStoreInterface.getExtensions}
    */
   ExtensionsChanged = 'ExtensionsChanged',
@@ -14,9 +17,11 @@ export enum PluginEventType {
    * Triggers on changes which have an impact on current plugin information:
    * - plugin was successfully loaded, processed and added to the `PluginStore`
    * - plugin failed to load, or there was an error while processing the plugin
-   * - plugin was enabled or disabled (*)
+   * - plugin was enabled or disabled
+   * - plugin's custom data has changed
    *
-   * (*) this may trigger event {@link PluginEventType.ExtensionsChanged}
+   * This may also trigger event {@link PluginEventType.ExtensionsChanged} in response
+   * to enabling or disabling a plugin.
    *
    * Associated data getter: {@link PluginStoreInterface.getPluginInfo}
    */
@@ -25,19 +30,37 @@ export enum PluginEventType {
   /**
    * Triggers when feature flags have changed.
    *
+   * This may also trigger event {@link PluginEventType.ExtensionsChanged} in response
+   * to re-evaluating extensions which are currently in use based on new feature flags.
+   *
    * Associated data getter: {@link PluginStoreInterface.getFeatureFlags}
    */
   FeatureFlagsChanged = 'FeatureFlagsChanged',
 }
 
+/**
+ * Information on a plugin in `pending` state.
+ *
+ * Plugins in this state are currently being loaded.
+ */
 export type PendingPluginInfoEntry = {
   status: 'pending';
 } & Pick<PendingPlugin, 'manifest'>;
 
+/**
+ * Information on a plugin in `loaded` state.
+ *
+ * Plugins in this state were successfully loaded and processed.
+ */
 export type LoadedPluginInfoEntry = {
   status: 'loaded';
-} & Pick<LoadedPlugin, 'manifest' | 'enabled' | 'disableReason' | 'customInfo'>;
+} & Pick<LoadedPlugin, 'manifest' | 'enabled' | 'disableReason' | 'customData'>;
 
+/**
+ * Information on a plugin in `failed` state.
+ *
+ * Plugins in this state failed to load or get processed properly.
+ */
 export type FailedPluginInfoEntry = {
   status: 'failed';
 } & Pick<FailedPlugin, 'manifest' | 'errorMessage' | 'errorCause'>;
@@ -47,11 +70,20 @@ export type PluginInfoEntry =
   | LoadedPluginInfoEntry
   | FailedPluginInfoEntry;
 
+/**
+ * Feature flags used to control enablement of all extensions.
+ */
+// TODO(vojtech): we may need to change value type to `boolean | undefined` and update
+// related code, including PluginStore.setFeatureFlags method and useFeatureFlag hook.
+// The value `undefined` should be interpreted as "flag value resolution in progress".
 export type FeatureFlags = { [flagName: string]: boolean };
 
-export type PluginStoreInterface<TCustomPluginInfo = AnyObject> = {
+/**
+ * Common interface implemented by the `PluginStore`.
+ */
+export type PluginStoreInterface = {
   /**
-   * Version of the `@openshift/dynamic-plugin-sdk` package.
+   * Current build version of the `@openshift/dynamic-plugin-sdk` package.
    */
   readonly sdkVersion: string;
 
@@ -73,18 +105,26 @@ export type PluginStoreInterface<TCustomPluginInfo = AnyObject> = {
    * If you need to enhance or modify existing extension objects after the associated
    * plugin has been loaded and processed, we recommend using a custom React hook which
    * calls `useExtensions` or `useResolvedExtensions` and returns new extension object
-   * instances.
+   * instances. In other words, we strongly discourage modifying the original extension
+   * objects managed by the `PluginStore`.
    *
    * This method always returns a new array instance.
    */
   getExtensions: () => LoadedExtension[];
 
   /**
-   * Get current information about plugins.
+   * Get current information on all plugins.
    *
    * This method always returns a new array instance.
    */
   getPluginInfo: () => PluginInfoEntry[];
+
+  /**
+   * Get current information on the given plugin.
+   *
+   * Returns `undefined` if the plugin is not found.
+   */
+  findPluginInfo: (pluginName: string) => PluginInfoEntry | undefined;
 
   /**
    * Get current feature flags.
@@ -94,18 +134,19 @@ export type PluginStoreInterface<TCustomPluginInfo = AnyObject> = {
   getFeatureFlags: () => FeatureFlags;
 
   /**
-   * Merge the entries of `newFlags` with current feature flags (non-boolean values
-   * will be discarded).
+   * Set current feature flags by merging them with `newFlags`.
+   *
+   * Entries with non-boolean values will be discarded.
    */
   setFeatureFlags: (newFlags: FeatureFlags) => void;
 
   /**
    * Start loading a plugin from the given manifest.
    *
-   * The plugin manifest can be provided directly as an object or referenced via URL.
+   * The plugin manifest can be provided as an object or referenced via URL.
    *
    * Depending on the plugin's current load status, this method works as follows:
-   * - plugin is loading - do nothing
+   * - plugin is still loading - do nothing
    * - plugin has been loaded - reload only if `forceReload` is `true`
    * - plugin has failed to load - always reload
    *
@@ -141,7 +182,9 @@ export type PluginStoreInterface<TCustomPluginInfo = AnyObject> = {
   disablePlugins: (pluginNames: string[], disableReason?: string) => void;
 
   /**
-   * Get a specific module exposed by the given plugin.
+   * Get a module exposed by the given plugin.
+   *
+   * The plugin is expected to be loaded by the `PluginStore`.
    */
   getExposedModule: <TModule extends AnyObject>(
     pluginName: string,
@@ -149,29 +192,16 @@ export type PluginStoreInterface<TCustomPluginInfo = AnyObject> = {
   ) => Promise<TModule>;
 
   /**
-   * Set custom information for a loaded plugin.
+   * Set custom data for the given plugin by merging with existing `customData` object
+   * associated with the plugin.
    *
-   * The provided data will be merged with existing `customInfo` of the plugin.
+   * This method can be used by host applications to augment the existing plugin runtime
+   * information as needed.
    *
-   * Note that updates will dispatch the {@link PluginEventType.PluginInfoChanged}
-   * event, invoking any registered listeners and thus triggering re-renders of
-   * any React components using the `usePluginInfo` hook.
-   *
-   * If the plugin is not loaded, this method does nothing.
-   *
-   * This is a generic method which can be used by host applications to associate
-   * custom data with a loaded plugin. For example, the sample app uses it to
-   * store information about what the plugin had for lunch (see `app.tsx`).
+   * The plugin is expected to be loaded by the `PluginStore`.
    */
-  setCustomPluginInfo: (pluginName: string, data: TCustomPluginInfo) => void;
-
-  /**
-   * Find a loaded plugin by its name. Returns `undefined` if the plugin is not loaded.
-   */
-  findLoadedPlugin: (pluginName: string) => LoadedPlugin | undefined;
-
-  /**
-   * Get the manifest of a loaded plugin, or `undefined` if the plugin is not loaded.
-   */
-  getLoadedPluginManifest: (pluginName: string) => PluginManifest | undefined;
+  setCustomPluginData: <TCustomData = AnyObject>(
+    pluginName: string,
+    customData: TCustomData,
+  ) => void;
 };

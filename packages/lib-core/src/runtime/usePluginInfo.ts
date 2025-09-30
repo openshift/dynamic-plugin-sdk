@@ -8,7 +8,7 @@ const eventTypes = [PluginEventType.PluginInfoChanged];
 const getData = (pluginStore: PluginStoreInterface) => pluginStore.getPluginInfo();
 
 /**
- * React hook for consuming current information about plugins.
+ * React hook for consuming current information on all plugins.
  *
  * This hook re-renders the component whenever the plugin information changes.
  *

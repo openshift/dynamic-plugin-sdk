@@ -108,8 +108,8 @@ export type DynamicRemotePluginOptions = {
    * Modules shared between the host application and its plugins at runtime.
    *
    * It is the host application's responsibility to initialize and maintain its shared
-   * scope object, and to communicate information about application provided modules to
-   * its plugins.
+   * scope object, and to communicate information on application provided modules to its
+   * plugins.
    *
    * Default value: empty object.
    */

@@ -42,7 +42,7 @@ export type PluginLoaderOptions = Partial<{
    *
    * The `reload` argument indicates whether an already loaded plugin is to be reloaded.
    *
-   * By default, all plugins are allowed to be loaded.
+   * By default, all plugins are allowed to be loaded and reloaded.
    */
   canLoadPlugin: (manifest: PluginManifest, reload: boolean) => boolean;
 
