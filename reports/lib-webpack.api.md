@@ -15,6 +15,9 @@ export type AnyObject = Record<string, unknown>;
 export type CodeRef<TValue = unknown> = () => Promise<TValue>;
 
 // @public (undocumented)
+export type CodeRefsToEncodedCodeRefs<T> = T extends CodeRef ? EncodedCodeRef : T extends (infer U)[] ? CodeRefsToEncodedCodeRefs<U>[] : T extends object ? MapCodeRefsToEncodedCodeRefs<T> : T;
+
+// @public (undocumented)
 export class DynamicRemotePlugin implements WebpackPluginInstance {
     constructor(options: DynamicRemotePluginOptions);
     // (undocumented)
@@ -61,8 +64,8 @@ export type ExtensionFlags = Partial<{
 export type ExtractExtensionProperties<T> = T extends Extension<any, infer TProperties> ? TProperties : never;
 
 // @public (undocumented)
-export type MapCodeRefsToEncodedCodeRefs<T> = {
-    [K in keyof T]: T[K] extends CodeRef ? EncodedCodeRef : MapCodeRefsToEncodedCodeRefs<T[K]>;
+export type MapCodeRefsToEncodedCodeRefs<T extends object> = {
+    [K in keyof T]: CodeRefsToEncodedCodeRefs<T[K]>;
 };
 
 // @public (undocumented)

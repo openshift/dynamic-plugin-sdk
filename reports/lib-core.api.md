@@ -18,6 +18,12 @@ export const applyOverrides: <TObject>(obj: TObject, overrides: unknown) => TObj
 // @public (undocumented)
 export type CodeRef<TValue = unknown> = () => Promise<TValue>;
 
+// @public (undocumented)
+export type CodeRefsToEncodedCodeRefs<T> = T extends CodeRef ? EncodedCodeRef : T extends (infer U)[] ? CodeRefsToEncodedCodeRefs<U>[] : T extends object ? MapCodeRefsToEncodedCodeRefs<T> : T;
+
+// @public (undocumented)
+export type CodeRefsToValues<T> = T extends CodeRef<infer TValue> ? TValue : T extends (infer U)[] ? CodeRefsToValues<U>[] : T extends object ? MapCodeRefsToValues<T> : T;
+
 // @public
 export const consoleLogger: Logger;
 
@@ -106,13 +112,13 @@ export type LogFunction = (message?: any, ...optionalParams: any[]) => void;
 export type Logger = Record<'info' | 'warn' | 'error', LogFunction>;
 
 // @public (undocumented)
-export type MapCodeRefsToEncodedCodeRefs<T> = {
-    [K in keyof T]: T[K] extends CodeRef ? EncodedCodeRef : MapCodeRefsToEncodedCodeRefs<T[K]>;
+export type MapCodeRefsToEncodedCodeRefs<T extends object> = {
+    [K in keyof T]: CodeRefsToEncodedCodeRefs<T[K]>;
 };
 
 // @public (undocumented)
-export type MapCodeRefsToValues<T> = {
-    [K in keyof T]: T[K] extends CodeRef<infer TValue> ? TValue : MapCodeRefsToValues<T[K]>;
+export type MapCodeRefsToValues<T extends object> = {
+    [K in keyof T]: CodeRefsToValues<T[K]>;
 };
 
 // @public
