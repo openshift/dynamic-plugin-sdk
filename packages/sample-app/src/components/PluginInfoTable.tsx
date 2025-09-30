@@ -29,10 +29,6 @@ const columnTooltips = {
   lunch: 'What the plugin had for lunch (Custom data associated with the plugin.)',
 };
 
-type PluginCustomData = {
-  lunch: string;
-};
-
 const PluginInfoTable: React.FC = () => {
   const pluginStore = usePluginStore();
   const entries = usePluginInfo().sort((a, b) => a.manifest.name.localeCompare(b.manifest.name));
@@ -50,7 +46,7 @@ const PluginInfoTable: React.FC = () => {
         title: 'Have burger for lunch',
         isDisabled: entry.status !== 'loaded',
         onClick: () => {
-          pluginStore.setCustomPluginData<PluginCustomData>(entry.manifest.name, {
+          pluginStore.setCustomPluginData(entry.manifest.name, {
             lunch: 'burger',
           });
         },
@@ -119,9 +115,7 @@ const PluginInfoTable: React.FC = () => {
                   <LabelWithTooltipIcon label={enabledLabel} tooltipContent={enabledTooltip} />
                 </Td>
                 <Td dataLabel={columnNames.lunch}>
-                  {p.status === 'loaded'
-                    ? (p.customData as PluginCustomData).lunch ?? '(no lunch yet)'
-                    : '-'}
+                  {p.status === 'loaded' ? p.customData.lunch ?? '(plugin is hungry)' : '-'}
                 </Td>
                 <Td dataLabel={columnNames.actions} modifier="fitContent">
                   <Button

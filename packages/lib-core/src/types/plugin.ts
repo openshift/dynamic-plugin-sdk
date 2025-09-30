@@ -50,6 +50,24 @@ export type PluginManifest = PluginRuntimeMetadata & {
 };
 
 /**
+ * This interface can be augmented by the host application to add types to
+ * the `customData` property of {@link LoadedPlugin} and its derived types.
+ *
+ * Usage:
+ * ```ts
+ * // openshift.d.ts
+ * import '@openshift/dynamic-plugin-sdk';
+ * declare module '@openshift/dynamic-plugin-sdk' {
+ *   interface CustomPluginData {
+ *     lunch: string; // What the plugin had for lunch
+ *   }
+ * }
+ * ```
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface CustomPluginData extends AnyObject {}
+
+/**
  * Internal entry on a plugin in `pending` state.
  */
 export type PendingPlugin = {
@@ -65,7 +83,7 @@ export type LoadedPlugin = {
   entryModule: PluginEntryModule;
   enabled: boolean;
   disableReason?: string;
-  customData: AnyObject;
+  customData: CustomPluginData;
 };
 
 /**

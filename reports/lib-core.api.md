@@ -33,6 +33,10 @@ export class CustomError extends Error {
 }
 
 // @public
+export interface CustomPluginData extends AnyObject {
+}
+
+// @public
 export type EitherNotBoth<TypeA, TypeB> = (TypeA & Never<TypeB>) | (TypeB & Never<TypeA>);
 
 // @public
@@ -98,7 +102,7 @@ export type LoadedPlugin = {
     entryModule: PluginEntryModule;
     enabled: boolean;
     disableReason?: string;
-    customData: AnyObject;
+    customData: CustomPluginData;
 };
 
 // @public
@@ -235,7 +239,7 @@ export class PluginStore implements PluginStoreInterface {
     // (undocumented)
     readonly sdkVersion: string;
     // (undocumented)
-    setCustomPluginData<TCustomData = AnyObject>(pluginName: string, customData: TCustomData): void;
+    setCustomPluginData(pluginName: string, customData: CustomPluginData): void;
     // (undocumented)
     setFeatureFlags(newFlags: FeatureFlags): void;
     // (undocumented)
@@ -255,7 +259,7 @@ export type PluginStoreInterface = {
     enablePlugins: (pluginNames: string[]) => void;
     disablePlugins: (pluginNames: string[], disableReason?: string) => void;
     getExposedModule: <TModule extends AnyObject>(pluginName: string, moduleName: string) => Promise<TModule>;
-    setCustomPluginData: <TCustomData = AnyObject>(pluginName: string, customData: TCustomData) => void;
+    setCustomPluginData: (pluginName: string, customData: CustomPluginData) => void;
 };
 
 // @public (undocumented)

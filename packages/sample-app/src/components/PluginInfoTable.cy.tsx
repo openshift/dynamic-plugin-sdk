@@ -93,7 +93,7 @@ describe('PluginInfoTable', () => {
       .within(() => {
         cy.get('td[data-label="Name"]').should('contain.text', 'test');
         cy.get('td[data-label="Status"]').should('contain.text', 'loaded');
-        cy.get('td[data-label="Lunch"]').should('be.empty');
+        cy.get('td[data-label="Lunch"]').should('contain.text', '(plugin is hungry)');
       });
 
     cy.get('[data-test-id="plugin-table"]')
