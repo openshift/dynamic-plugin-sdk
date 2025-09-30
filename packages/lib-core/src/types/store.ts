@@ -1,6 +1,12 @@
 import type { AnyObject } from '@monorepo/common';
 import type { LoadedExtension } from './extension';
-import type { PluginManifest, PendingPlugin, LoadedPlugin, FailedPlugin } from './plugin';
+import type {
+  PluginManifest,
+  PendingPlugin,
+  LoadedPlugin,
+  FailedPlugin,
+  CustomPluginData,
+} from './plugin';
 
 export enum PluginEventType {
   /**
@@ -197,8 +203,5 @@ export type PluginStoreInterface = {
    *
    * The plugin is expected to be loaded by the `PluginStore`.
    */
-  setCustomPluginData: <TCustomData = AnyObject>(
-    pluginName: string,
-    customData: TCustomData,
-  ) => void;
+  setCustomPluginData: (pluginName: string, customData: CustomPluginData) => void;
 };
