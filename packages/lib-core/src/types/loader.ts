@@ -12,11 +12,14 @@ export type PluginLoadResult =
       errorCause?: unknown;
     };
 
+/**
+ * Common interface implemented by the `PluginLoader`.
+ */
 export type PluginLoaderInterface = {
   /**
-   * Load plugin manifest from the given URL.
+   * Load a plugin manifest from the given URL.
    *
-   * This should include validating the manifest object as necessary.
+   * The implementation should validate the manifest object as necessary.
    */
   loadPluginManifest: (manifestURL: string) => Promise<PluginManifest>;
 
@@ -26,7 +29,7 @@ export type PluginLoaderInterface = {
   transformPluginManifest: (manifest: PluginManifest) => PluginManifest;
 
   /**
-   * Load plugin from the given manifest.
+   * Load a plugin from the given manifest.
    *
    * The resulting Promise never rejects; any plugin load error(s) will be contained
    * within the {@link PluginLoadResult} object.

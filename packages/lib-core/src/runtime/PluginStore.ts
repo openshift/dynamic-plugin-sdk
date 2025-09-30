@@ -40,9 +40,7 @@ export type PluginStoreOptions = Partial<{
 /**
  * Manages plugins and their extensions.
  */
-export class PluginStore<TCustomPluginInfo = AnyObject>
-  implements PluginStoreInterface<TCustomPluginInfo>
-{
+export class PluginStore implements PluginStoreInterface {
   private readonly options: Required<PluginStoreOptions>;
 
   private readonly loader: PluginLoaderInterface;
@@ -114,27 +112,6 @@ export class PluginStore<TCustomPluginInfo = AnyObject>
     return [...this.extensions];
   }
 
-  setCustomPluginInfo(pluginName: string, data: TCustomPluginInfo) {
-    const plugin = this.findLoadedPlugin(pluginName);
-
-    if (!plugin) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        `Attempt to set custom data for plugin ${pluginName} that has not been loaded yet`,
-      );
-      return;
-    }
-
-    const oldData = plugin.customInfo;
-    const newData = merge({}, plugin.customInfo, data);
-
-    if (!isEqual(oldData, newData)) {
-      plugin.customInfo = newData;
-
-      this.invokeListeners(PluginEventType.PluginInfoChanged);
-    }
-  }
-
   getPluginInfo() {
     const entries: PluginInfoEntry[] = [];
 
@@ -151,7 +128,7 @@ export class PluginStore<TCustomPluginInfo = AnyObject>
         manifest: plugin.manifest,
         enabled: plugin.enabled,
         disableReason: plugin.disableReason,
-        customInfo: plugin.customInfo,
+        customData: plugin.customData,
       });
     });
 
@@ -167,14 +144,8 @@ export class PluginStore<TCustomPluginInfo = AnyObject>
     return entries;
   }
 
-  findLoadedPlugin(pluginName: string) {
-    return Array.from(this.loadedPlugins.values()).find(
-      (entry) => entry.manifest.name === pluginName,
-    );
-  }
-
-  getLoadedPluginManifest(pluginName: string) {
-    return this.findLoadedPlugin(pluginName)?.manifest;
+  findPluginInfo(pluginName: string) {
+    return this.getPluginInfo().find((entry) => entry.manifest.name === pluginName);
   }
 
   getFeatureFlags() {
@@ -190,8 +161,8 @@ export class PluginStore<TCustomPluginInfo = AnyObject>
     };
 
     if (!isEqual(prevFeatureFlags, this.featureFlags)) {
-      this.updateExtensions();
       this.invokeListeners(PluginEventType.FeatureFlagsChanged);
+      this.updateExtensions();
     }
   }
 
@@ -281,8 +252,8 @@ export class PluginStore<TCustomPluginInfo = AnyObject>
     });
 
     if (updateRequired) {
-      this.updateExtensions();
       this.invokeListeners(PluginEventType.PluginInfoChanged);
+      this.updateExtensions();
     }
   }
 
@@ -358,7 +329,7 @@ export class PluginStore<TCustomPluginInfo = AnyObject>
       loadedExtensions: loadedExtensions.map((e) => Object.freeze(e)),
       entryModule,
       enabled: false,
-      customInfo: {},
+      customData: {},
     };
 
     this.pendingPlugins.delete(pluginName);
@@ -397,5 +368,24 @@ export class PluginStore<TCustomPluginInfo = AnyObject>
     );
 
     return referencedModule;
+  }
+
+  setCustomPluginData<TCustomData = AnyObject>(pluginName: string, customData: TCustomData) {
+    if (!this.loadedPlugins.has(pluginName)) {
+      consoleLogger.warn(
+        `Attempt to set custom data for plugin ${pluginName} which is not currently loaded`,
+      );
+      return;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const plugin = this.loadedPlugins.get(pluginName)!;
+    const prevData = plugin.customData;
+
+    plugin.customData = merge({}, plugin.customData, customData);
+
+    if (!isEqual(prevData, plugin.customData)) {
+      this.invokeListeners(PluginEventType.PluginInfoChanged);
+    }
   }
 }

@@ -1,5 +1,12 @@
 import type { AnyObject, ReplaceProperties } from '@monorepo/common';
 
+/**
+ * An extension's feature flag settings.
+ *
+ * In order for an extension to be in use:
+ * - for every flag name in `required` list - flag value must be `true`
+ * - for every flag name in `disallowed` list - flag value must be `false`
+ */
 export type ExtensionFlags = Partial<{
   required: string[];
   disallowed: string[];
@@ -8,11 +15,23 @@ export type ExtensionFlags = Partial<{
 /**
  * An extension of your application.
  *
- * Each extension instance has a `type` and the corresponding parameters
- * represented by the `properties` object.
+ * Each extension instance extends the application's functionality in a specific way.
+ * A plugin consists of one or more extension instances that, combined together, adapt
+ * or extend the base application's functionality.
  *
- * Each extension may specify `flags` referencing feature flags which
- * are required and/or disallowed in order to put this extension into effect.
+ * The `type` property determines the kind of the extension, while the `properties`
+ * object contains data and/or code necessary to interpret the given extension type.
+ *
+ * We recommend using a structured extension type format, for example:
+ * ```js
+ * app.page/route // adds new route that renders the given page component
+ * app.page/resource/list // adds new list page for the given resource
+ * app.page/resource/details // adds new details page for the given resource
+ * ```
+ *
+ * Extensions may also use feature flags to express condition(s) of their enablement.
+ *
+ * @see {@link ExtensionFlags}
  */
 export type Extension<TType extends string = string, TProperties extends AnyObject = AnyObject> = {
   type: TType;
@@ -23,6 +42,10 @@ export type Extension<TType extends string = string, TProperties extends AnyObje
 
 /**
  * Runtime extension interface, exposing additional metadata.
+ *
+ * The value of `uid` property is guaranteed to be unique for each extension instance.
+ * This value can be used when rendering associated React JSX elements that require the
+ * `key` prop.
  */
 export type LoadedExtension<TExtension extends Extension = Extension> = TExtension & {
   pluginName: string;
@@ -30,20 +53,21 @@ export type LoadedExtension<TExtension extends Extension = Extension> = TExtensi
 };
 
 /**
- * TS type guard to narrow type of the given extension to `E`.
+ * Type guard that acts as a predicate to filter extensions of a specific type.
  */
 export type ExtensionPredicate<TExtension extends Extension> = (e: Extension) => e is TExtension;
 
 /**
- * Code reference, encoded as an object literal.
+ * Code reference, encoded as an object literal for JSON serialization purposes.
  *
- * The value of the `$codeRef` property should be formatted as `moduleName.exportName`
- * (referring to a named export) or `moduleName` (referring to the `default` export).
+ * The value of `$codeRef` property should be one of the following:
+ * - `moduleName.exportName` - refers to the given module's named export
+ * - `moduleName` - refers to the given module's `default` export
  */
 export type EncodedCodeRef = { $codeRef: string };
 
 /**
- * Code reference, represented by a function that returns a promise for the object `T`.
+ * Code reference, represented as an async function that returns the expected value.
  */
 export type CodeRef<TValue = unknown> = () => Promise<TValue>;
 
@@ -72,7 +96,7 @@ export type MapCodeRefsToEncodedCodeRefs<T extends object> = {
 };
 
 /**
- * Infer the properties of extension `E`.
+ * Infer the properties type from extension type `T`.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ExtractExtensionProperties<T> = T extends Extension<any, infer TProperties>
@@ -80,9 +104,7 @@ export type ExtractExtensionProperties<T> = T extends Extension<any, infer TProp
   : never;
 
 /**
- * Update `CodeRef` properties of extension `E` to the referenced object types.
- *
- * This also coerces `E` type to `LoadedExtension` interface for runtime consumption.
+ * Modify `TExtension` type by replacing `CodeRef<T>` property values with `T` values.
  */
 export type ResolvedExtension<TExtension extends Extension = Extension> = ReplaceProperties<
   TExtension,
@@ -94,6 +116,9 @@ export type ResolvedExtension<TExtension extends Extension = Extension> = Replac
   }
 >;
 
+/**
+ * Modify `TExtension` type by replacing `CodeRef` property values with `EncodedCodeRef` values.
+ */
 export type EncodedExtension<TExtension extends Extension = Extension> = ReplaceProperties<
   TExtension,
   {

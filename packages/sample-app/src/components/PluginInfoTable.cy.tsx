@@ -82,7 +82,7 @@ describe('PluginInfoTable', () => {
     });
   });
 
-  it('Allows plugins to eat burgers for lunch (via custom plugin info)', () => {
+  it('Allows to set custom plugin data', () => {
     cy.getPluginStore().then((pluginStore) => {
       pluginStore.addLoadedPlugin(mockPluginManifest({ name: 'test' }), mockPluginEntryModule());
       pluginStore.enablePlugins(['test']);
@@ -93,16 +93,21 @@ describe('PluginInfoTable', () => {
       .within(() => {
         cy.get('td[data-label="Name"]').should('contain.text', 'test');
         cy.get('td[data-label="Status"]').should('contain.text', 'loaded');
-        cy.get('td[data-label="Lunch"]').should('contain.text', '');
-        cy.get('[data-testid="actions-column"] button').click();
+        cy.get('td[data-label="Lunch"]').should('be.empty');
+      });
+
+    cy.get('[data-test-id="plugin-table"]')
+      .find('tbody > tr')
+      .within(() => {
+        cy.get('[data-test-id="plugin-table-actions-column"] button').click();
         cy.get('button').contains('Have burger for lunch').click();
-        cy.get('td[data-label="Lunch"]').should('contain.text', 'burger');
       });
 
     cy.getPluginStore().then((pluginStore) => {
       const entry = pluginStore.getPluginInfo()[0];
 
-      cy.wrap(entry).its('customInfo.lunch').should('equal', 'burger');
+      cy.wrap(entry).its('status').should('equal', 'loaded');
+      cy.wrap(entry).its('customData.lunch').should('equal', 'burger');
     });
   });
 });

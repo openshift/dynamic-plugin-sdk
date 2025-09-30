@@ -41,7 +41,7 @@ export type EncodedCodeRef = {
     $codeRef: string;
 };
 
-// @public (undocumented)
+// @public
 export type EncodedExtension<TExtension extends Extension = Extension> = ReplaceProperties<TExtension, {
     properties: ReplaceProperties<ExtractExtensionProperties<TExtension>, MapCodeRefsToEncodedCodeRefs<ExtractExtensionProperties<TExtension>>>;
 }>;
@@ -54,7 +54,7 @@ export type Extension<TType extends string = string, TProperties extends AnyObje
     [customProperty: string]: unknown;
 };
 
-// @public (undocumented)
+// @public
 export type ExtensionFlags = Partial<{
     required: string[];
     disallowed: string[];
@@ -81,7 +81,7 @@ export type PluginEntryCallbackSettings = Partial<{
     pluginID: string;
 }>;
 
-// @public (undocumented)
+// @public
 export type PluginManifest = PluginRuntimeMetadata & {
     baseURL: string;
     extensions: Extension[];
@@ -100,10 +100,10 @@ export type PluginModuleFederationSettings = Partial<{
     }>;
 }>;
 
-// @public (undocumented)
+// @public
 export type PluginRegistrationMethod = 'callback' | 'custom';
 
-// @public (undocumented)
+// @public
 export type PluginRuntimeMetadata = {
     name: string;
     version: string;
