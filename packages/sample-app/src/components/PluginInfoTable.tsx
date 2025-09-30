@@ -26,7 +26,7 @@ const columnNames = {
 
 const columnTooltips = {
   enabled: 'Enabling a plugin puts all of its extensions into use. Disabling it does the opposite.',
-  lunch: 'What the plugin had for lunch? (Custom data associated with the plugin.)',
+  lunch: 'What the plugin had for lunch (Custom data associated with the plugin.)',
 };
 
 type PluginCustomData = {

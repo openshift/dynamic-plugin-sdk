@@ -73,9 +73,6 @@ export type PluginInfoEntry =
 /**
  * Feature flags used to control enablement of all extensions.
  */
-// TODO(vojtech): we may need to change value type to `boolean | undefined` and update
-// related code, including PluginStore.setFeatureFlags method and useFeatureFlag hook.
-// The value `undefined` should be interpreted as "flag value resolution in progress".
 export type FeatureFlags = { [flagName: string]: boolean };
 
 /**
