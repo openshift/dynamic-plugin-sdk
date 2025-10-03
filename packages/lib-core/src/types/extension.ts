@@ -23,14 +23,28 @@ export type EncodedCodeRef = { $codeRef: string };
 
 export type CodeRef<TValue = unknown> = () => Promise<TValue>;
 
-// TODO(vojtech): apply the recursive part only on object properties or array elements
-export type MapCodeRefsToValues<T> = {
-  [K in keyof T]: T[K] extends CodeRef<infer TValue> ? TValue : MapCodeRefsToValues<T[K]>;
+export type CodeRefsToValues<T> = T extends CodeRef<infer TValue>
+  ? TValue
+  : T extends (infer U)[]
+  ? CodeRefsToValues<U>[]
+  : T extends object
+  ? MapCodeRefsToValues<T>
+  : T;
+
+export type MapCodeRefsToValues<T extends object> = {
+  [K in keyof T]: CodeRefsToValues<T[K]>;
 };
 
-// TODO(vojtech): apply the recursive part only on object properties or array elements
-export type MapCodeRefsToEncodedCodeRefs<T> = {
-  [K in keyof T]: T[K] extends CodeRef ? EncodedCodeRef : MapCodeRefsToEncodedCodeRefs<T[K]>;
+export type CodeRefsToEncodedCodeRefs<T> = T extends CodeRef
+  ? EncodedCodeRef
+  : T extends (infer U)[]
+  ? CodeRefsToEncodedCodeRefs<U>[]
+  : T extends object
+  ? MapCodeRefsToEncodedCodeRefs<T>
+  : T;
+
+export type MapCodeRefsToEncodedCodeRefs<T extends object> = {
+  [K in keyof T]: CodeRefsToEncodedCodeRefs<T[K]>;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

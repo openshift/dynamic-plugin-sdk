@@ -16,6 +16,7 @@ export {
   Extension,
   ExtensionFlags,
   EncodedExtension,
+  CodeRefsToEncodedCodeRefs,
   MapCodeRefsToEncodedCodeRefs,
   ExtractExtensionProperties,
   PluginRegistrationMethod,

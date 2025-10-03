@@ -54,6 +54,8 @@ export {
   EncodedExtension,
   LoadedExtension,
   ResolvedExtension,
+  CodeRefsToValues,
+  CodeRefsToEncodedCodeRefs,
   MapCodeRefsToEncodedCodeRefs,
   MapCodeRefsToValues,
   ExtractExtensionProperties,
