@@ -1,11 +1,17 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { AnyObject, EitherNotBoth } from '@monorepo/common';
 import { consoleLogger, ErrorWithCause } from '@monorepo/common';
-import { cloneDeep, compact, isEqual, noop, pickBy } from 'lodash';
+import { cloneDeep, compact, isEqual, merge, noop, pickBy } from 'lodash';
 import { version as sdkVersion } from '../../package.json';
 import type { LoadedExtension } from '../types/extension';
 import type { PluginLoaderInterface } from '../types/loader';
-import type { PluginManifest, PendingPlugin, LoadedPlugin, FailedPlugin } from '../types/plugin';
+import type {
+  PluginManifest,
+  PendingPlugin,
+  LoadedPlugin,
+  FailedPlugin,
+  CustomPluginData,
+} from '../types/plugin';
 import type { PluginEntryModule } from '../types/runtime';
 import type { PluginInfoEntry, PluginStoreInterface, FeatureFlags } from '../types/store';
 import { PluginEventType } from '../types/store';
@@ -128,6 +134,7 @@ export class PluginStore implements PluginStoreInterface {
         manifest: plugin.manifest,
         enabled: plugin.enabled,
         disableReason: plugin.disableReason,
+        customData: plugin.customData,
       });
     });
 
@@ -143,6 +150,10 @@ export class PluginStore implements PluginStoreInterface {
     return entries;
   }
 
+  findPluginInfo(pluginName: string) {
+    return this.getPluginInfo().find((entry) => entry.manifest.name === pluginName);
+  }
+
   getFeatureFlags() {
     return { ...this.featureFlags };
   }
@@ -156,8 +167,8 @@ export class PluginStore implements PluginStoreInterface {
     };
 
     if (!isEqual(prevFeatureFlags, this.featureFlags)) {
-      this.updateExtensions();
       this.invokeListeners(PluginEventType.FeatureFlagsChanged);
+      this.updateExtensions();
     }
   }
 
@@ -247,8 +258,8 @@ export class PluginStore implements PluginStoreInterface {
     });
 
     if (updateRequired) {
-      this.updateExtensions();
       this.invokeListeners(PluginEventType.PluginInfoChanged);
+      this.updateExtensions();
     }
   }
 
@@ -324,6 +335,7 @@ export class PluginStore implements PluginStoreInterface {
       loadedExtensions: loadedExtensions.map((e) => Object.freeze(e)),
       entryModule,
       enabled: false,
+      customData: {},
     };
 
     this.pendingPlugins.delete(pluginName);
@@ -362,5 +374,24 @@ export class PluginStore implements PluginStoreInterface {
     );
 
     return referencedModule;
+  }
+
+  setCustomPluginData(pluginName: string, customData: CustomPluginData) {
+    if (!this.loadedPlugins.has(pluginName)) {
+      consoleLogger.warn(
+        `Attempt to set custom data for plugin ${pluginName} which is not currently loaded`,
+      );
+      return;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const plugin = this.loadedPlugins.get(pluginName)!;
+    const prevData = plugin.customData;
+
+    plugin.customData = merge({}, plugin.customData, customData);
+
+    if (!isEqual(prevData, plugin.customData)) {
+      this.invokeListeners(PluginEventType.PluginInfoChanged);
+    }
   }
 }

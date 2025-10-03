@@ -11,7 +11,7 @@ import { WebpackPluginInstance } from 'webpack';
 // @public
 export type AnyObject = Record<string, unknown>;
 
-// @public (undocumented)
+// @public
 export type CodeRef<TValue = unknown> = () => Promise<TValue>;
 
 // @public (undocumented)
@@ -36,17 +36,17 @@ export type DynamicRemotePluginOptions = {
     transformPluginManifest?: (manifest: PluginManifest) => PluginManifest;
 };
 
-// @public (undocumented)
+// @public
 export type EncodedCodeRef = {
     $codeRef: string;
 };
 
-// @public (undocumented)
+// @public
 export type EncodedExtension<TExtension extends Extension = Extension> = ReplaceProperties<TExtension, {
     properties: ReplaceProperties<ExtractExtensionProperties<TExtension>, MapCodeRefsToEncodedCodeRefs<ExtractExtensionProperties<TExtension>>>;
 }>;
 
-// @public (undocumented)
+// @public
 export type Extension<TType extends string = string, TProperties extends AnyObject = AnyObject> = {
     type: TType;
     properties: TProperties;
@@ -54,13 +54,13 @@ export type Extension<TType extends string = string, TProperties extends AnyObje
     [customProperty: string]: unknown;
 };
 
-// @public (undocumented)
+// @public
 export type ExtensionFlags = Partial<{
     required: string[];
     disallowed: string[];
 }>;
 
-// @public (undocumented)
+// @public
 export type ExtractExtensionProperties<T> = T extends Extension<any, infer TProperties> ? TProperties : never;
 
 // @public (undocumented)
@@ -81,7 +81,7 @@ export type PluginEntryCallbackSettings = Partial<{
     pluginID: string;
 }>;
 
-// @public (undocumented)
+// @public
 export type PluginManifest = PluginRuntimeMetadata & {
     baseURL: string;
     extensions: Extension[];
@@ -100,10 +100,10 @@ export type PluginModuleFederationSettings = Partial<{
     }>;
 }>;
 
-// @public (undocumented)
+// @public
 export type PluginRegistrationMethod = 'callback' | 'custom';
 
-// @public (undocumented)
+// @public
 export type PluginRuntimeMetadata = {
     name: string;
     version: string;
