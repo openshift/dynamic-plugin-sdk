@@ -101,6 +101,7 @@ export const pluginRuntimeMetadataSchema = yup.object().required().shape({
   // TODO(vojtech): Yup lacks native support for map-like structures with arbitrary keys
   // TODO(vojtech): we need to validate dependency values as semver ranges
   dependencies: yup.object(),
+  optionalDependencies: yup.object(),
   customProperties: yup.object(),
 });
 
