@@ -585,7 +585,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.7":
+"@babel/runtime@npm:^7.12.5":
   version: 7.17.9
   resolution: "@babel/runtime@npm:7.17.9"
   dependencies:
@@ -1220,7 +1220,6 @@ __metadata:
     "@patternfly/react-icons": ^5.1.0
     "@patternfly/react-styles": ^5.1.0
     "@patternfly/react-table": ^5.1.0
-    "@patternfly/react-virtualized-extension": ^5.0.0
     "@rollup/plugin-commonjs": ^21.0.2
     "@rollup/plugin-json": ^5.0.2
     "@rollup/plugin-node-resolve": ^13.1.1
@@ -1241,7 +1240,6 @@ __metadata:
     "@types/react-router": ^5.1.17
     "@types/react-router-dom": ^5.3.3
     "@types/react-test-renderer": ^17.0.2
-    "@types/react-virtualized": ^9.21.21
     "@types/semver": ^7.3.10
     "@types/uuid": ^8.3.4
     "@typescript-eslint/eslint-plugin": ^5.3.1
@@ -1274,7 +1272,6 @@ __metadata:
     react-router: ^5.2.1
     react-router-dom: ^6.3.0
     react-test-renderer: ^17.0.2
-    react-virtualized: ^9.22.3
     redux: ^4.1.2
     redux-thunk: ^2.4.1
     rollup: ^2.61.1
@@ -1589,7 +1586,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-core@npm:^5.0.0, @patternfly/react-core@npm:^5.1.0":
+"@patternfly/react-core@npm:^5.1.0":
   version: 5.1.0
   resolution: "@patternfly/react-core@npm:5.1.0"
   dependencies:
@@ -1617,7 +1614,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-icons@npm:^5.0.0, @patternfly/react-icons@npm:^5.1.0":
+"@patternfly/react-icons@npm:^5.1.0":
   version: 5.1.0
   resolution: "@patternfly/react-icons@npm:5.1.0"
   dependencies:
@@ -1636,7 +1633,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-styles@npm:^5.0.0, @patternfly/react-styles@npm:^5.1.0":
+"@patternfly/react-styles@npm:^5.1.0":
   version: 5.1.0
   resolution: "@patternfly/react-styles@npm:5.1.0"
   dependencies:
@@ -1692,23 +1689,6 @@ __metadata:
   dependencies:
     "@patternfly/patternfly": 5.0.2
   checksum: fb240efd00f211667feb92984af439a2aae65172225c16fcca4fe0cf7a286a5095ca91430b747f88e3affa342dda8f42c21fd1543c034de025b1b7f1d3a5c0a2
-  languageName: node
-  linkType: hard
-
-"@patternfly/react-virtualized-extension@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "@patternfly/react-virtualized-extension@npm:5.0.0"
-  dependencies:
-    "@patternfly/react-core": ^5.0.0
-    "@patternfly/react-icons": ^5.0.0
-    "@patternfly/react-styles": ^5.0.0
-    linear-layout-vector: 0.0.1
-    react-virtualized: ^9.22.5
-    tslib: ^2.5.2
-  peerDependencies:
-    react: ^17 || ^18
-    react-dom: ^17 || ^18
-  checksum: 21c02d0e248bba346174731eae5356c78d4917efe8503f78307c38b25157a4aa7b8e0302bf764011c0554bbd77e0271f6715f89c343c728baaeaf8ee4d2a9893
   languageName: node
   linkType: hard
 
@@ -2367,16 +2347,6 @@ __metadata:
   dependencies:
     "@types/react": ^17
   checksum: 0be325798b6b38cc31fbb11f2f1e1a5578cc3b23eddf1ddd1ab58ccf50966e8f779383084d8bc3a7db3108ad815af8fbae5c0f54329a88d52200e01547d85c33
-  languageName: node
-  linkType: hard
-
-"@types/react-virtualized@npm:^9.21.21":
-  version: 9.21.21
-  resolution: "@types/react-virtualized@npm:9.21.21"
-  dependencies:
-    "@types/prop-types": "*"
-    "@types/react": ^17
-  checksum: 7f360746ae926c93ba07d830a33940ab1598f6966263594896d0dc746d704f9c0e0d1692cf543e925bcca7b007d70d3cc53379a9b1810f60c2d43ee5cfdb591e
   languageName: node
   linkType: hard
 
@@ -3850,13 +3820,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clsx@npm:^1.0.4":
-  version: 1.1.1
-  resolution: "clsx@npm:1.1.1"
-  checksum: ff052650329773b9b245177305fc4c4dc3129f7b2be84af4f58dc5defa99538c61d4207be7419405a5f8f3d92007c954f4daba5a7b74e563d5de71c28c830063
-  languageName: node
-  linkType: hard
-
 "co@npm:^4.6.0":
   version: 4.6.0
   resolution: "co@npm:4.6.0"
@@ -4588,16 +4551,6 @@ __metadata:
   dependencies:
     utila: ~0.4
   checksum: ea52fe303f5392e48dea563abef0e6fb3a478b8dbe3c599e99bb5d53981c6c38fc4944e56bb92a8ead6bb989d10b7914722ae11febbd2fd0910e33b9fc4aaa77
-  languageName: node
-  linkType: hard
-
-"dom-helpers@npm:^5.1.3":
-  version: 5.2.1
-  resolution: "dom-helpers@npm:5.2.1"
-  dependencies:
-    "@babel/runtime": ^7.8.7
-    csstype: ^3.0.2
-  checksum: 863ba9e086f7093df3376b43e74ce4422571d404fc9828bf2c56140963d5edf0e56160f9b2f3bb61b282c07f8fc8134f023c98fd684bddcb12daf7b0f14d951c
   languageName: node
   linkType: hard
 
@@ -7746,13 +7699,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"linear-layout-vector@npm:0.0.1":
-  version: 0.0.1
-  resolution: "linear-layout-vector@npm:0.0.1"
-  checksum: 33630203afd3dbde121213c0b3465189de84afb2b6f772e80e7f907ad5b6320d311fa7193859d87e318934dcdad083d16d46fa2af5be09dfe514f62a74a9e012
-  languageName: node
-  linkType: hard
-
 "lines-and-columns@npm:^1.1.6":
   version: 1.2.4
   resolution: "lines-and-columns@npm:1.2.4"
@@ -9570,13 +9516,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-lifecycles-compat@npm:^3.0.4":
-  version: 3.0.4
-  resolution: "react-lifecycles-compat@npm:3.0.4"
-  checksum: a904b0fc0a8eeb15a148c9feb7bc17cec7ef96e71188280061fc340043fd6d8ee3ff233381f0e8f95c1cf926210b2c4a31f38182c8f35ac55057e453d6df204f
-  languageName: node
-  linkType: hard
-
 "react-redux@npm:^7.2.2":
   version: 7.2.6
   resolution: "react-redux@npm:7.2.6"
@@ -9665,40 +9604,6 @@ __metadata:
   peerDependencies:
     react: 17.0.2
   checksum: e6b5c6ed2a0bde2c34f1ab9523ff9bc4c141a271daf730d6b852374e83acc0155d58ab71a318251e953ebfa65b8bebb9c5dce3eba1ccfcbef7cc4e1e8261c401
-  languageName: node
-  linkType: hard
-
-"react-virtualized@npm:^9.22.3":
-  version: 9.22.3
-  resolution: "react-virtualized@npm:9.22.3"
-  dependencies:
-    "@babel/runtime": ^7.7.2
-    clsx: ^1.0.4
-    dom-helpers: ^5.1.3
-    loose-envify: ^1.4.0
-    prop-types: ^15.7.2
-    react-lifecycles-compat: ^3.0.4
-  peerDependencies:
-    react: ^15.3.0 || ^16.0.0-alpha
-    react-dom: ^15.3.0 || ^16.0.0-alpha
-  checksum: 5e3b566592293bc0057bc6be4f6ee29c58c8931421d2882a3ef45ca9b24c6f3ea78bbc5a182c2916af6520845e5a90f569b3a63c9b5e89428720913e6d6239cc
-  languageName: node
-  linkType: hard
-
-"react-virtualized@npm:^9.22.5":
-  version: 9.22.5
-  resolution: "react-virtualized@npm:9.22.5"
-  dependencies:
-    "@babel/runtime": ^7.7.2
-    clsx: ^1.0.4
-    dom-helpers: ^5.1.3
-    loose-envify: ^1.4.0
-    prop-types: ^15.7.2
-    react-lifecycles-compat: ^3.0.4
-  peerDependencies:
-    react: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0
-    react-dom: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0
-  checksum: 01f5ed8d8db7c831d592172946c2b61fcb409bf6cbc84500468f12d6cf9b7e60453e332fac02dd608480d23cb14421f7f17716393e623e83bb10a7763fad9e2c
   languageName: node
   linkType: hard
 
@@ -11090,7 +10995,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.4.0, tslib@npm:^2.5.0, tslib@npm:^2.5.2":
+"tslib@npm:^2.4.0, tslib@npm:^2.5.0":
   version: 2.6.2
   resolution: "tslib@npm:2.6.2"
   checksum: 329ea56123005922f39642318e3d1f0f8265d1e7fcb92c633e0809521da75eeaca28d2cf96d7248229deb40e5c19adf408259f4b9640afd20d13aecc1430f3ad

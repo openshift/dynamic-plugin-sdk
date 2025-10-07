@@ -383,7 +383,9 @@ export class PluginLoader implements PluginLoaderInterface {
 
         if (resolutionErrors.length > 0) {
           setResolutionComplete();
-          reject(new ErrorWithCause('Detected dependency resolution errors', resolutionErrors));
+          reject(
+            new Error(`Detected dependency resolution errors: [${resolutionErrors.join('; ')}]`),
+          );
           return;
         }
 
