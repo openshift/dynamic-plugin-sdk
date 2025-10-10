@@ -15,7 +15,7 @@ export const applyDefaults: <TObject>(obj: TObject, defaults: unknown) => TObjec
 // @public
 export const applyOverrides: <TObject>(obj: TObject, overrides: unknown) => TObject;
 
-// @public (undocumented)
+// @public
 export type CodeRef<TValue = unknown> = () => Promise<TValue>;
 
 // @public (undocumented)
@@ -33,22 +33,26 @@ export class CustomError extends Error {
 }
 
 // @public
+export interface CustomPluginData extends AnyObject {
+}
+
+// @public
 export type EitherNotBoth<TypeA, TypeB> = (TypeA & Never<TypeB>) | (TypeB & Never<TypeA>);
 
 // @public
 export type EitherOrNone<TypeA, TypeB> = EitherNotBoth<TypeA, TypeB> | (Never<TypeA> & Never<TypeB>);
 
-// @public (undocumented)
+// @public
 export type EncodedCodeRef = {
     $codeRef: string;
 };
 
-// @public (undocumented)
+// @public
 export type EncodedExtension<TExtension extends Extension = Extension> = ReplaceProperties<TExtension, {
     properties: ReplaceProperties<ExtractExtensionProperties<TExtension>, MapCodeRefsToEncodedCodeRefs<ExtractExtensionProperties<TExtension>>>;
 }>;
 
-// @public (undocumented)
+// @public
 export type Extension<TType extends string = string, TProperties extends AnyObject = AnyObject> = {
     type: TType;
     properties: TProperties;
@@ -56,54 +60,55 @@ export type Extension<TType extends string = string, TProperties extends AnyObje
     [customProperty: string]: unknown;
 };
 
-// @public (undocumented)
+// @public
 export type ExtensionFlags = Partial<{
     required: string[];
     disallowed: string[];
 }>;
 
-// @public (undocumented)
+// @public
 export type ExtensionPredicate<TExtension extends Extension> = (e: Extension) => e is TExtension;
 
-// @public (undocumented)
+// @public
 export type ExtractExtensionProperties<T> = T extends Extension<any, infer TProperties> ? TProperties : never;
 
-// @public (undocumented)
+// @public
 export type FailedPlugin = {
     manifest: Readonly<PluginManifest>;
     errorMessage: string;
     errorCause?: unknown;
 };
 
-// @public (undocumented)
+// @public
 export type FailedPluginInfoEntry = {
     status: 'failed';
 } & Pick<FailedPlugin, 'manifest' | 'errorMessage' | 'errorCause'>;
 
-// @public (undocumented)
+// @public
 export type FeatureFlags = {
     [flagName: string]: boolean;
 };
 
-// @public (undocumented)
+// @public
 export type LoadedExtension<TExtension extends Extension = Extension> = TExtension & {
     pluginName: string;
     uid: string;
 };
 
-// @public (undocumented)
+// @public
 export type LoadedPlugin = {
     manifest: Readonly<PluginManifest>;
     loadedExtensions: Readonly<LoadedExtension[]>;
     entryModule: PluginEntryModule;
     enabled: boolean;
     disableReason?: string;
+    customData: CustomPluginData;
 };
 
-// @public (undocumented)
+// @public
 export type LoadedPluginInfoEntry = {
     status: 'loaded';
-} & Pick<LoadedPlugin, 'manifest' | 'enabled' | 'disableReason'>;
+} & Pick<LoadedPlugin, 'manifest' | 'enabled' | 'disableReason' | 'customData'>;
 
 // @public (undocumented)
 export type LogFunction = (message?: any, ...optionalParams: any[]) => void;
@@ -126,12 +131,12 @@ export type Never<T> = {
     [K in keyof T]?: never;
 };
 
-// @public (undocumented)
+// @public
 export type PendingPlugin = {
     manifest: Readonly<PluginManifest>;
 };
 
-// @public (undocumented)
+// @public
 export type PendingPluginInfoEntry = {
     status: 'pending';
 } & Pick<PendingPlugin, 'manifest'>;
@@ -152,7 +157,7 @@ export enum PluginEventType {
 // @public (undocumented)
 export type PluginInfoEntry = PendingPluginInfoEntry | LoadedPluginInfoEntry | FailedPluginInfoEntry;
 
-// @public (undocumented)
+// @public
 export type PluginLoaderInterface = {
     loadPluginManifest: (manifestURL: string) => Promise<PluginManifest>;
     transformPluginManifest: (manifest: PluginManifest) => PluginManifest;
@@ -184,7 +189,7 @@ export type PluginLoadResult = {
     errorCause?: unknown;
 };
 
-// @public (undocumented)
+// @public
 export type PluginManifest = PluginRuntimeMetadata & {
     baseURL: string;
     extensions: Extension[];
@@ -193,10 +198,10 @@ export type PluginManifest = PluginRuntimeMetadata & {
     buildHash?: string;
 };
 
-// @public (undocumented)
+// @public
 export type PluginRegistrationMethod = 'callback' | 'custom';
 
-// @public (undocumented)
+// @public
 export type PluginRuntimeMetadata = {
     name: string;
     version: string;
@@ -218,6 +223,8 @@ export class PluginStore implements PluginStoreInterface {
     // (undocumented)
     enablePlugins(pluginNames: string[]): void;
     // (undocumented)
+    findPluginInfo(pluginName: string): PluginInfoEntry | undefined;
+    // (undocumented)
     getExposedModule<TModule extends AnyObject>(pluginName: string, moduleName: string): Promise<TModule>;
     // (undocumented)
     getExtensions(): LoadedExtension<Extension<string, AnyObject>>[];
@@ -232,23 +239,27 @@ export class PluginStore implements PluginStoreInterface {
     // (undocumented)
     readonly sdkVersion: string;
     // (undocumented)
+    setCustomPluginData(pluginName: string, customData: CustomPluginData): void;
+    // (undocumented)
     setFeatureFlags(newFlags: FeatureFlags): void;
     // (undocumented)
     subscribe(eventTypes: PluginEventType[], listener: VoidFunction): VoidFunction;
 }
 
-// @public (undocumented)
+// @public
 export type PluginStoreInterface = {
     readonly sdkVersion: string;
     subscribe: (eventTypes: PluginEventType[], listener: VoidFunction) => VoidFunction;
     getExtensions: () => LoadedExtension[];
     getPluginInfo: () => PluginInfoEntry[];
+    findPluginInfo: (pluginName: string) => PluginInfoEntry | undefined;
     getFeatureFlags: () => FeatureFlags;
     setFeatureFlags: (newFlags: FeatureFlags) => void;
     loadPlugin: (manifest: PluginManifest | string, forceReload?: boolean) => Promise<void>;
     enablePlugins: (pluginNames: string[]) => void;
     disablePlugins: (pluginNames: string[], disableReason?: string) => void;
     getExposedModule: <TModule extends AnyObject>(pluginName: string, moduleName: string) => Promise<TModule>;
+    setCustomPluginData: (pluginName: string, customData: CustomPluginData) => void;
 };
 
 // @public (undocumented)
@@ -276,7 +287,7 @@ export type ReplaceProperties<T, R> = {
     [K in keyof T]: K extends keyof R ? R[K] : T[K];
 };
 
-// @public (undocumented)
+// @public
 export type ResolvedExtension<TExtension extends Extension = Extension> = ReplaceProperties<TExtension, {
     properties: ReplaceProperties<ExtractExtensionProperties<TExtension>, MapCodeRefsToValues<ExtractExtensionProperties<TExtension>>>;
 }>;

@@ -5,8 +5,11 @@ const SHARED_SCOPE_NAME = 'default';
 /**
  * Initialize the webpack share scope object.
  *
- * The host application should use webpack `ModuleFederationPlugin` to declare modules
- * shared between the application and its plugins.
+ * The host application should use webpack `ModuleFederationPlugin` or `SharePlugin`
+ * to declare application provided shared modules.
+ *
+ * At runtime, plugins may add new modules to the share scope object as part of their
+ * loading process.
  *
  * @example
  * ```ts
