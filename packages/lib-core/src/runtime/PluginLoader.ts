@@ -351,7 +351,8 @@ export class PluginLoader implements PluginLoaderInterface {
   private resolvePluginDependencies(manifest: PluginManifest) {
     return new Promise<void>((resolve, reject) => {
       const pluginName = manifest.name;
-      const dependencies = manifest.dependencies ?? {};
+      const requiredDependencies = manifest.dependencies ?? {};
+      const optionalDependencies = manifest.optionalDependencies ?? {};
       const semverRangeOptions: semver.RangeOptions = { includePrerelease: true };
 
       let isResolutionComplete = false;
@@ -365,21 +366,27 @@ export class PluginLoader implements PluginLoaderInterface {
       const tryResolveDependencies = () => {
         const resolutions = this.getCurrentDependencyResolutions();
         const resolutionErrors: string[] = [];
+        const pendingDepNames: string[] = [];
 
-        Object.entries(dependencies).forEach(([depName, versionRange]) => {
-          if (resolutions.has(depName)) {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const res = resolutions.get(depName)!;
+        Object.entries({ ...optionalDependencies, ...requiredDependencies }).forEach(
+          ([depName, versionRange]) => {
+            if (resolutions.has(depName)) {
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              const res = resolutions.get(depName)!;
+              const isRequired = !!requiredDependencies[depName];
 
-            if (res.success && !semver.satisfies(res.version, versionRange, semverRangeOptions)) {
-              resolutionErrors.push(
-                `Dependency ${depName} not met: required range ${versionRange}, resolved version ${res.version}`,
-              );
-            } else if (!res.success) {
-              resolutionErrors.push(`Dependency ${depName} could not be resolved successfully`);
+              if (res.success && !semver.satisfies(res.version, versionRange, semverRangeOptions)) {
+                resolutionErrors.push(
+                  `Dependency ${depName} not met: required range ${versionRange}, resolved version ${res.version}`,
+                );
+              } else if (!res.success && isRequired) {
+                resolutionErrors.push(`Dependency ${depName} could not be resolved successfully`);
+              }
+            } else {
+              pendingDepNames.push(depName);
             }
-          }
-        });
+          },
+        );
 
         if (resolutionErrors.length > 0) {
           setResolutionComplete();
@@ -388,10 +395,6 @@ export class PluginLoader implements PluginLoaderInterface {
           );
           return;
         }
-
-        const pendingDepNames = Object.keys(dependencies).filter(
-          (depName) => !resolutions.has(depName),
-        );
 
         if (pendingDepNames.length === 0) {
           setResolutionComplete();
