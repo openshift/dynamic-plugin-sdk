@@ -1,12 +1,6 @@
 import type { AnyObject } from '@monorepo/common';
 import type { LoadedExtension } from './extension';
-import type {
-  PluginManifest,
-  PendingPlugin,
-  LoadedPlugin,
-  FailedPlugin,
-  CustomPluginData,
-} from './plugin';
+import type { PluginManifest, PendingPlugin, LoadedPlugin, FailedPlugin } from './plugin';
 
 export enum PluginEventType {
   /**
@@ -24,7 +18,6 @@ export enum PluginEventType {
    * - plugin was successfully loaded, processed and added to the `PluginStore`
    * - plugin failed to load, or there was an error while processing the plugin
    * - plugin was enabled or disabled
-   * - plugin's custom data has changed
    *
    * This may also trigger event {@link PluginEventType.ExtensionsChanged} in response
    * to enabling or disabling a plugin.
@@ -60,7 +53,7 @@ export type PendingPluginInfoEntry = {
  */
 export type LoadedPluginInfoEntry = {
   status: 'loaded';
-} & Pick<LoadedPlugin, 'manifest' | 'enabled' | 'disableReason' | 'customData'>;
+} & Pick<LoadedPlugin, 'manifest' | 'enabled' | 'disableReason'>;
 
 /**
  * Information on a plugin in `failed` state.
@@ -121,13 +114,6 @@ export type PluginStoreInterface = {
    * This method always returns a new array instance.
    */
   getPluginInfo: () => PluginInfoEntry[];
-
-  /**
-   * Get current information on the given plugin.
-   *
-   * Returns `undefined` if the plugin is not found.
-   */
-  findPluginInfo: (pluginName: string) => PluginInfoEntry | undefined;
 
   /**
    * Get current feature flags.
@@ -193,15 +179,4 @@ export type PluginStoreInterface = {
     pluginName: string,
     moduleName: string,
   ) => Promise<TModule>;
-
-  /**
-   * Set custom data for the given plugin by merging with existing `customData` object
-   * associated with the plugin.
-   *
-   * This method can be used by host applications to augment the existing plugin runtime
-   * information as needed.
-   *
-   * The plugin is expected to be loaded by the `PluginStore`.
-   */
-  setCustomPluginData: (pluginName: string, customData: CustomPluginData) => void;
 };

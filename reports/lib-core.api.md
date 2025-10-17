@@ -33,10 +33,6 @@ export class CustomError extends Error {
 }
 
 // @public
-export interface CustomPluginData extends AnyObject {
-}
-
-// @public
 export type EitherNotBoth<TypeA, TypeB> = (TypeA & Never<TypeB>) | (TypeB & Never<TypeA>);
 
 // @public
@@ -102,13 +98,12 @@ export type LoadedPlugin = {
     entryModule: PluginEntryModule;
     enabled: boolean;
     disableReason?: string;
-    customData: CustomPluginData;
 };
 
 // @public
 export type LoadedPluginInfoEntry = {
     status: 'loaded';
-} & Pick<LoadedPlugin, 'manifest' | 'enabled' | 'disableReason' | 'customData'>;
+} & Pick<LoadedPlugin, 'manifest' | 'enabled' | 'disableReason'>;
 
 // @public (undocumented)
 export type LogFunction = (message?: any, ...optionalParams: any[]) => void;
@@ -223,8 +218,6 @@ export class PluginStore implements PluginStoreInterface {
     // (undocumented)
     enablePlugins(pluginNames: string[]): void;
     // (undocumented)
-    findPluginInfo(pluginName: string): PluginInfoEntry | undefined;
-    // (undocumented)
     getExposedModule<TModule extends AnyObject>(pluginName: string, moduleName: string): Promise<TModule>;
     // (undocumented)
     getExtensions(): LoadedExtension<Extension<string, AnyObject>>[];
@@ -239,8 +232,6 @@ export class PluginStore implements PluginStoreInterface {
     // (undocumented)
     readonly sdkVersion: string;
     // (undocumented)
-    setCustomPluginData(pluginName: string, customData: CustomPluginData): void;
-    // (undocumented)
     setFeatureFlags(newFlags: FeatureFlags): void;
     // (undocumented)
     subscribe(eventTypes: PluginEventType[], listener: VoidFunction): VoidFunction;
@@ -252,14 +243,12 @@ export type PluginStoreInterface = {
     subscribe: (eventTypes: PluginEventType[], listener: VoidFunction) => VoidFunction;
     getExtensions: () => LoadedExtension[];
     getPluginInfo: () => PluginInfoEntry[];
-    findPluginInfo: (pluginName: string) => PluginInfoEntry | undefined;
     getFeatureFlags: () => FeatureFlags;
     setFeatureFlags: (newFlags: FeatureFlags) => void;
     loadPlugin: (manifest: PluginManifest | string, forceReload?: boolean) => Promise<void>;
     enablePlugins: (pluginNames: string[]) => void;
     disablePlugins: (pluginNames: string[], disableReason?: string) => void;
     getExposedModule: <TModule extends AnyObject>(pluginName: string, moduleName: string) => Promise<TModule>;
-    setCustomPluginData: (pluginName: string, customData: CustomPluginData) => void;
 };
 
 // @public (undocumented)

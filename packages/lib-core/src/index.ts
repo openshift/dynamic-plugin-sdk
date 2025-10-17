@@ -66,7 +66,6 @@ export {
   PluginRegistrationMethod,
   PluginRuntimeMetadata,
   PluginManifest,
-  CustomPluginData,
   PendingPlugin,
   LoadedPlugin,
   FailedPlugin,

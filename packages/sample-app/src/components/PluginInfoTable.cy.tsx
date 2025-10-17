@@ -81,33 +81,4 @@ describe('PluginInfoTable', () => {
       cy.wrap(entry).its('enabled').should('be.false');
     });
   });
-
-  it('Allows to set custom plugin data', () => {
-    cy.getPluginStore().then((pluginStore) => {
-      pluginStore.addLoadedPlugin(mockPluginManifest({ name: 'test' }), mockPluginEntryModule());
-      pluginStore.enablePlugins(['test']);
-    });
-
-    cy.get('[data-test-id="plugin-table"]')
-      .find('tbody > tr')
-      .within(() => {
-        cy.get('td[data-label="Name"]').should('contain.text', 'test');
-        cy.get('td[data-label="Status"]').should('contain.text', 'loaded');
-        cy.get('td[data-label="Lunch"]').should('contain.text', '(plugin is hungry)');
-      });
-
-    cy.get('[data-test-id="plugin-table"]')
-      .find('tbody > tr')
-      .within(() => {
-        cy.get('[data-test-id="plugin-table-actions-column"] button').click();
-        cy.get('button').contains('Have burger for lunch').click();
-      });
-
-    cy.getPluginStore().then((pluginStore) => {
-      const entry = pluginStore.getPluginInfo()[0];
-
-      cy.wrap(entry).its('status').should('equal', 'loaded');
-      cy.wrap(entry).its('customData.lunch').should('equal', 'burger');
-    });
-  });
 });
