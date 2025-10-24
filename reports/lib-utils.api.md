@@ -59,7 +59,7 @@ export type APIActions = {
 export const AppInitSDK: React_2.FC<AppInitSDKProps>;
 
 // @public (undocumented)
-export type AppInitSDKProps = {
+export type AppInitSDKProps = React_2.PropsWithChildren<{
     configurations: {
         apiDiscovery?: InitAPIDiscovery;
         apiPriorityList?: string[];
@@ -67,7 +67,7 @@ export type AppInitSDKProps = {
         pluginStore: PluginStore;
         wsAppSettings: UtilsConfig['wsAppSettings'];
     };
-};
+}>;
 
 // @public (undocumented)
 export type BulkMessageHandler = GenericHandler<MessageDataType[]>;
@@ -384,7 +384,7 @@ export type QueryParams = Partial<{
 }>;
 
 // @public
-export const ReduxExtensionProvider: React_2.FC;
+export const ReduxExtensionProvider: React_2.FC<React_2.PropsWithChildren<unknown>>;
 
 // @public (undocumented)
 export type ResourcesObject = {
