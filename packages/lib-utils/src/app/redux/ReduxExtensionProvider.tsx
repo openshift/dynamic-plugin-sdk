@@ -8,7 +8,7 @@ import { Provider } from 'react-redux';
  * Renders a Redux.Provider for each `core.redux-provider` extension.
  * Should be rendered near the root of the application.
  */
-const ReduxExtensionProvider: React.FC = ({ children }) => {
+const ReduxExtensionProvider: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
   const [reduxProviderExtensions, reduxProvidersResolved] =
     useResolvedExtensions<ReduxProvider>(isReduxProvider);
 

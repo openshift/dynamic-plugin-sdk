@@ -8,7 +8,7 @@ import type { InitAPIDiscovery } from '../types/api-discovery';
 import { initAPIDiscovery } from './api-discovery';
 import { useReduxStore } from './redux';
 
-export type AppInitSDKProps = {
+export type AppInitSDKProps = React.PropsWithChildren<{
   configurations: {
     apiDiscovery?: InitAPIDiscovery;
     apiPriorityList?: string[];
@@ -16,7 +16,7 @@ export type AppInitSDKProps = {
     pluginStore: PluginStore;
     wsAppSettings: UtilsConfig['wsAppSettings'];
   };
-};
+}>;
 
 /**
  * Initializes the host application to work with Kubernetes and related SDK utilities.
