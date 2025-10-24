@@ -65,10 +65,12 @@ export { PluginLoadResult, PluginLoaderInterface } from './types/loader';
 export {
   PluginRegistrationMethod,
   PluginRuntimeMetadata,
+  ManualPluginManifest,
   PluginManifest,
   PendingPlugin,
   LoadedPlugin,
   FailedPlugin,
+  ManualPlugin,
 } from './types/plugin';
 export { PluginEntryModule } from './types/runtime';
 export {
@@ -77,6 +79,7 @@ export {
   PendingPluginInfoEntry,
   LoadedPluginInfoEntry,
   FailedPluginInfoEntry,
+  ManualPluginInfoEntry,
   FeatureFlags,
   PluginStoreInterface,
 } from './types/store';

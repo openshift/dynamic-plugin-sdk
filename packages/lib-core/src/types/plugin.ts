@@ -49,6 +49,11 @@ export type PluginManifest = PluginRuntimeMetadata & {
   buildHash?: string;
 };
 
+export type ManualPluginManifest = Omit<
+  PluginManifest,
+  'baseURL' | 'loadScripts' | 'registrationMethod'
+>;
+
 /**
  * Internal entry on a plugin in `pending` state.
  */
@@ -60,9 +65,19 @@ export type PendingPlugin = {
  * Internal entry on a plugin in `loaded` state.
  */
 export type LoadedPlugin = {
-  manifest: Readonly<PluginManifest>;
+  manifest: Readonly<PluginManifest | ManualPluginManifest>;
   loadedExtensions: Readonly<LoadedExtension[]>;
   entryModule: PluginEntryModule;
+  enabled: boolean;
+  disableReason?: string;
+};
+
+/**
+ * Internal entry on a plugin loaded manually via {@link PluginStoreInterface.manuallyAddPlugin}.
+ */
+export type ManualPlugin = {
+  manifest: Readonly<ManualPluginManifest>;
+  loadedExtensions: Readonly<LoadedExtension[]>;
   enabled: boolean;
   disableReason?: string;
 };

@@ -93,7 +93,7 @@ export type LoadedExtension<TExtension extends Extension = Extension> = TExtensi
 
 // @public
 export type LoadedPlugin = {
-    manifest: Readonly<PluginManifest>;
+    manifest: Readonly<PluginManifest | ManualPluginManifest>;
     loadedExtensions: Readonly<LoadedExtension[]>;
     entryModule: PluginEntryModule;
     enabled: boolean;
@@ -110,6 +110,22 @@ export type LogFunction = (message?: any, ...optionalParams: any[]) => void;
 
 // @public
 export type Logger = Record<'info' | 'warn' | 'error', LogFunction>;
+
+// @public
+export type ManualPlugin = {
+    manifest: Readonly<ManualPluginManifest>;
+    loadedExtensions: Readonly<LoadedExtension[]>;
+    enabled: boolean;
+    disableReason?: string;
+};
+
+// @public
+export type ManualPluginInfoEntry = {
+    status: 'manual';
+} & Pick<ManualPlugin, 'manifest' | 'enabled' | 'disableReason'>;
+
+// @public (undocumented)
+export type ManualPluginManifest = Omit<PluginManifest, 'baseURL' | 'loadScripts' | 'registrationMethod'>;
 
 // @public (undocumented)
 export type MapCodeRefsToEncodedCodeRefs<T extends object> = {
@@ -150,7 +166,7 @@ export enum PluginEventType {
 }
 
 // @public (undocumented)
-export type PluginInfoEntry = PendingPluginInfoEntry | LoadedPluginInfoEntry | FailedPluginInfoEntry;
+export type PluginInfoEntry = PendingPluginInfoEntry | LoadedPluginInfoEntry | FailedPluginInfoEntry | ManualPluginInfoEntry;
 
 // @public
 export type PluginLoaderInterface = {
@@ -230,6 +246,8 @@ export class PluginStore implements PluginStoreInterface {
     // (undocumented)
     loadPlugin(manifest: PluginManifest | string, forceReload?: boolean): Promise<void>;
     // (undocumented)
+    manuallyAddPlugin(loadedManifest: ManualPluginManifest): Promise<void>;
+    // (undocumented)
     readonly sdkVersion: string;
     // (undocumented)
     setFeatureFlags(newFlags: FeatureFlags): void;
@@ -246,6 +264,7 @@ export type PluginStoreInterface = {
     getFeatureFlags: () => FeatureFlags;
     setFeatureFlags: (newFlags: FeatureFlags) => void;
     loadPlugin: (manifest: PluginManifest | string, forceReload?: boolean) => Promise<void>;
+    manuallyAddPlugin: (loadedManifest: ManualPluginManifest) => void;
     enablePlugins: (pluginNames: string[]) => void;
     disablePlugins: (pluginNames: string[], disableReason?: string) => void;
     getExposedModule: <TModule extends AnyObject>(pluginName: string, moduleName: string) => Promise<TModule>;

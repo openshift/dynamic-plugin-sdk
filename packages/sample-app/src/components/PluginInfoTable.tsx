@@ -72,12 +72,17 @@ const PluginInfoTable: React.FC = () => {
         ) : (
           entries.map((p) => {
             const statusTooltip = p.status === 'failed' ? p.errorMessage : null;
-            const enabledLabel = p.status === 'loaded' && p.enabled ? 'Yes' : 'No';
-            const enabledTooltip = p.status === 'loaded' && !p.enabled ? p.disableReason : null;
-            const toggleEnabledText = p.status === 'loaded' && p.enabled ? 'Disable' : 'Enable';
+            const enabledLabel =
+              (p.status === 'loaded' || p.status === 'manual') && p.enabled ? 'Yes' : 'No';
+            const enabledTooltip =
+              (p.status === 'loaded' || p.status === 'manual') && !p.enabled
+                ? p.disableReason
+                : null;
+            const toggleEnabledText =
+              (p.status === 'loaded' || p.status === 'manual') && p.enabled ? 'Disable' : 'Enable';
 
             const togglePluginEnabled = () => {
-              if (p.status === 'loaded') {
+              if (p.status === 'loaded' || p.status === 'manual') {
                 if (p.enabled) {
                   pluginStore.disablePlugins([p.manifest.name], 'Disabled by user');
                 } else {
@@ -99,7 +104,7 @@ const PluginInfoTable: React.FC = () => {
                 </Td>
                 <Td dataLabel={columnNames.actions} modifier="fitContent">
                   <Button
-                    isDisabled={p.status !== 'loaded'}
+                    isDisabled={p.status !== 'loaded' && p.status !== 'manual'}
                     variant="secondary"
                     onClick={togglePluginEnabled}
                   >
