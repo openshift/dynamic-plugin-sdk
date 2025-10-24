@@ -1,5 +1,11 @@
 # Changelog for `@openshift/dynamic-plugin-sdk`
 
+## 5.1.0 - 20xx-xx-xx
+
+- Support manually added plugins in `PluginStore` ([#279])
+- Removed unused dependencies from package.json ([#275])
+- Add support for optionalDependencies in plugin manifest ([#273])
+
 ## 5.0.1 - 2024-01-15
 
 - Ensure `transformPluginManifest` is always called before loading a plugin ([#253])
@@ -74,3 +80,6 @@
 [#236]: https://github.com/openshift/dynamic-plugin-sdk/pull/236
 [#241]: https://github.com/openshift/dynamic-plugin-sdk/pull/241
 [#253]: https://github.com/openshift/dynamic-plugin-sdk/pull/253
+[#273]: https://github.com/openshift/dynamic-plugin-sdk/pull/273
+[#275]: https://github.com/openshift/dynamic-plugin-sdk/pull/275
+[#279]: https://github.com/openshift/dynamic-plugin-sdk/pull/279

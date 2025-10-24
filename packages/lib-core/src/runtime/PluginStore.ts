@@ -5,7 +5,14 @@ import { cloneDeep, compact, isEqual, noop, pickBy } from 'lodash';
 import { version as sdkVersion } from '../../package.json';
 import type { LoadedExtension } from '../types/extension';
 import type { PluginLoaderInterface } from '../types/loader';
-import type { PluginManifest, PendingPlugin, LoadedPlugin, FailedPlugin } from '../types/plugin';
+import type {
+  PluginManifest,
+  PendingPlugin,
+  LoadedPlugin,
+  FailedPlugin,
+  ManualPluginManifest,
+  ManualPlugin,
+} from '../types/plugin';
 import type { PluginEntryModule } from '../types/runtime';
 import type { PluginInfoEntry, PluginStoreInterface, FeatureFlags } from '../types/store';
 import { PluginEventType } from '../types/store';
@@ -55,6 +62,9 @@ export class PluginStore implements PluginStoreInterface {
 
   /** Plugins that failed to load or get processed properly. */
   private readonly failedPlugins = new Map<string, FailedPlugin>();
+
+  /** Plugins that have been loaded via {@link manuallyAddPlugin}. */
+  private readonly manualPlugins = new Map<string, ManualPlugin>();
 
   /** Extensions which are currently in use. */
   private extensions: LoadedExtension[] = [];
@@ -131,6 +141,15 @@ export class PluginStore implements PluginStoreInterface {
       });
     });
 
+    Array.from(this.manualPlugins.values()).forEach((plugin) => {
+      entries.push({
+        status: 'manual',
+        manifest: plugin.manifest,
+        enabled: plugin.enabled,
+        disableReason: plugin.disableReason,
+      });
+    });
+
     Array.from(this.failedPlugins.values()).forEach((plugin) => {
       entries.push({
         status: 'failed',
@@ -161,6 +180,44 @@ export class PluginStore implements PluginStoreInterface {
     }
   }
 
+  async manuallyAddPlugin(loadedManifest: ManualPluginManifest) {
+    const pluginName = loadedManifest.name;
+    const buildHash = loadedManifest.buildHash ?? uuidv4();
+
+    if (
+      this.loadedPlugins.has(pluginName) ||
+      this.pendingPlugins.has(pluginName) ||
+      this.failedPlugins.has(pluginName) ||
+      this.manualPlugins.has(pluginName)
+    ) {
+      consoleLogger.warn(
+        `Plugin ${pluginName} is already present in the PluginStore. Skipping manual addition.`,
+      );
+      return;
+    }
+
+    consoleLogger.info(`Manually loading plugin ${pluginName} version ${loadedManifest.version}`);
+
+    const loadedExtensions = cloneDeep(loadedManifest.extensions).map<LoadedExtension>(
+      (e, index) => ({
+        ...e,
+        pluginName,
+        uid: `${pluginName}[${index}]_${buildHash}`,
+      }),
+    );
+
+    const manualPlugin: ManualPlugin = {
+      // TODO(vojtech): use deepFreeze on the manifest and type it as DeepReadonly
+      manifest: Object.freeze(loadedManifest),
+      loadedExtensions: loadedExtensions.map((e) => Object.freeze(e)),
+      enabled: false,
+    };
+
+    this.manualPlugins.set(pluginName, manualPlugin);
+    this.invokeListeners(PluginEventType.PluginInfoChanged);
+    this.updateExtensions();
+  }
+
   async loadPlugin(manifest: PluginManifest | string, forceReload?: boolean) {
     let loadedManifest: PluginManifest;
 
@@ -174,6 +231,10 @@ export class PluginStore implements PluginStoreInterface {
     loadedManifest = this.loader.transformPluginManifest(loadedManifest);
 
     const pluginName = loadedManifest.name;
+
+    if (this.manualPlugins.has(pluginName)) {
+      throw new Error(`Plugin ${pluginName} was added manually and cannot be loaded.`);
+    }
 
     if (this.pendingPlugins.has(pluginName)) {
       return this.pendingPromises.get(pluginName);
@@ -225,17 +286,16 @@ export class PluginStore implements PluginStoreInterface {
     let updateRequired = false;
 
     pluginNames.forEach((pluginName) => {
-      if (!this.loadedPlugins.has(pluginName)) {
+      if (!this.loadedPlugins.has(pluginName) && !this.manualPlugins.has(pluginName)) {
         consoleLogger.warn(
-          `Attempt to ${
-            enabled ? 'enable' : 'disable'
+          `Attempt to ${enabled ? 'enable' : 'disable'
           } plugin ${pluginName} which is not currently loaded`,
         );
         return;
       }
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const plugin = this.loadedPlugins.get(pluginName)!;
+      const plugin = this.loadedPlugins.get(pluginName)! ?? this.manualPlugins.get(pluginName)!;
 
       if (plugin.enabled !== enabled) {
         plugin.enabled = enabled;
@@ -276,7 +336,12 @@ export class PluginStore implements PluginStoreInterface {
   private updateExtensions() {
     const prevExtensions = this.extensions;
 
-    this.extensions = Array.from(this.loadedPlugins.values()).reduce<LoadedExtension[]>(
+    const plugins = [
+      ...Array.from(this.loadedPlugins.values()),
+      ...Array.from(this.manualPlugins.values()),
+    ];
+
+    this.extensions = plugins.reduce<LoadedExtension[]>(
       (acc, p) =>
         p.enabled ? [...acc, ...p.loadedExtensions.filter((e) => this.isExtensionInUse(e))] : acc,
       [],

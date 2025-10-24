@@ -1,6 +1,13 @@
 import type { AnyObject } from '@monorepo/common';
 import type { LoadedExtension } from './extension';
-import type { PluginManifest, PendingPlugin, LoadedPlugin, FailedPlugin } from './plugin';
+import type {
+  PluginManifest,
+  PendingPlugin,
+  LoadedPlugin,
+  FailedPlugin,
+  ManualPluginManifest,
+  ManualPlugin,
+} from './plugin';
 
 export enum PluginEventType {
   /**
@@ -56,6 +63,15 @@ export type LoadedPluginInfoEntry = {
 } & Pick<LoadedPlugin, 'manifest' | 'enabled' | 'disableReason'>;
 
 /**
+ * Information on a plugin in `loaded` state.
+ *
+ * Plugins in this state were successfully loaded and processed.
+ */
+export type ManualPluginInfoEntry = {
+  status: 'manual';
+} & Pick<ManualPlugin, 'manifest' | 'enabled' | 'disableReason'>;
+
+/**
  * Information on a plugin in `failed` state.
  *
  * Plugins in this state failed to load or get processed properly.
@@ -67,7 +83,8 @@ export type FailedPluginInfoEntry = {
 export type PluginInfoEntry =
   | PendingPluginInfoEntry
   | LoadedPluginInfoEntry
-  | FailedPluginInfoEntry;
+  | FailedPluginInfoEntry
+  | ManualPluginInfoEntry;
 
 /**
  * Feature flags used to control enablement of all extensions.
@@ -155,6 +172,20 @@ export type PluginStoreInterface = {
    * to ensure all plugin modules in use are up to date.
    */
   loadPlugin: (manifest: PluginManifest | string, forceReload?: boolean) => Promise<void>;
+
+  /**
+   * Manually and synchronously add a loaded plugin to the store. The
+   * extensions in the manifest should already be decoded. That is, they
+   * should already have the `decodeCodeRefs` function applied to them.
+   *
+   * Manually loaded plugins do not have entry modules. As a result, you
+   * cannot use {@link PluginStoreInterface.getExposedModule} to retrieve
+   * exposed modules from plugins added via this method.
+   *
+   * The plugin must not have been previously attempted to be loaded via
+   * the `loadPlugin` method.
+   */
+  manuallyAddPlugin: (loadedManifest: ManualPluginManifest) => void;
 
   /**
    * Enable the given plugin(s).
