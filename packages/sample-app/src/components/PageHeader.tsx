@@ -1,3 +1,4 @@
+import { usePluginStore } from '@openshift/dynamic-plugin-sdk';
 import {
   Brand,
   Button,
@@ -20,9 +21,29 @@ import type { LoadPluginModalRefProps } from './LoadPluginModal';
 
 const PageHeader: React.FC = () => {
   const loadPluginModalRef = React.useRef<LoadPluginModalRefProps>(null);
+  const pluginStore = usePluginStore();
 
   const openLoadPluginModal = () => {
     loadPluginModalRef.current?.open();
+  };
+
+  const manuallyLoadPlugin = () => {
+    pluginStore.manuallyAddPlugin({
+      name: 'manual-plugin',
+      version: '0.0.0',
+      extensions: [
+        {
+          type: 'core.telemetry/listener',
+          properties: {
+            listener: () => import('./manualPlugin').then((m) => m.default),
+          },
+          flags: {
+            required: ['TELEMETRY_FLAG'],
+            disallowed: [],
+          },
+        },
+      ],
+    });
   };
 
   return (
@@ -51,6 +72,15 @@ const PageHeader: React.FC = () => {
                   data-test-id="plugin-modal-open"
                 >
                   Load plugin
+                </Button>
+              </ToolbarItem>
+              <ToolbarItem>
+                <Button
+                  variant="secondary"
+                  onClick={manuallyLoadPlugin}
+                  data-test-id="manual-plugin-load"
+                >
+                  Manually add plugin
                 </Button>
               </ToolbarItem>
             </ToolbarGroup>

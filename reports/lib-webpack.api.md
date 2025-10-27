@@ -64,6 +64,14 @@ export type ExtensionFlags = Partial<{
 export type ExtractExtensionProperties<T> = T extends Extension<any, infer TProperties> ? TProperties : never;
 
 // @public (undocumented)
+export interface ManualPluginManifest extends PluginRuntimeMetadata {
+    // (undocumented)
+    buildHash?: string;
+    // (undocumented)
+    extensions: Extension[];
+}
+
+// @public (undocumented)
 export type MapCodeRefsToEncodedCodeRefs<T extends object> = {
     [K in keyof T]: CodeRefsToEncodedCodeRefs<T[K]>;
 };
@@ -82,13 +90,14 @@ export type PluginEntryCallbackSettings = Partial<{
 }>;
 
 // @public
-export type PluginManifest = PluginRuntimeMetadata & {
+export interface PluginManifest extends ManualPluginManifest {
+    // (undocumented)
     baseURL: string;
-    extensions: Extension[];
+    // (undocumented)
     loadScripts: string[];
+    // (undocumented)
     registrationMethod: PluginRegistrationMethod;
-    buildHash?: string;
-};
+}
 
 // @public
 export type PluginModuleFederationSettings = Partial<{
@@ -104,13 +113,18 @@ export type PluginModuleFederationSettings = Partial<{
 export type PluginRegistrationMethod = 'callback' | 'custom';
 
 // @public
-export type PluginRuntimeMetadata = {
-    name: string;
-    version: string;
-    dependencies?: Record<string, string>;
-    optionalDependencies?: Record<string, string>;
+export interface PluginRuntimeMetadata {
+    // (undocumented)
     customProperties?: AnyObject;
-};
+    // (undocumented)
+    dependencies?: Record<string, string>;
+    // (undocumented)
+    name: string;
+    // (undocumented)
+    optionalDependencies?: Record<string, string>;
+    // (undocumented)
+    version: string;
+}
 
 // @public
 export type ReplaceProperties<T, R> = {

@@ -69,11 +69,14 @@ export type ExtensionPredicate<TExtension extends Extension> = (e: Extension) =>
 export type ExtractExtensionProperties<T> = T extends Extension<any, infer TProperties> ? TProperties : never;
 
 // @public
-export type FailedPlugin = {
-    manifest: Readonly<PluginManifest>;
-    errorMessage: string;
+export interface FailedPlugin {
+    // (undocumented)
     errorCause?: unknown;
-};
+    // (undocumented)
+    errorMessage: string;
+    // (undocumented)
+    manifest: Readonly<PluginManifest>;
+}
 
 // @public
 export type FailedPluginInfoEntry = {
@@ -92,13 +95,18 @@ export type LoadedExtension<TExtension extends Extension = Extension> = TExtensi
 };
 
 // @public
-export type LoadedPlugin = {
-    manifest: Readonly<PluginManifest>;
-    loadedExtensions: Readonly<LoadedExtension[]>;
-    entryModule: PluginEntryModule;
-    enabled: boolean;
+export interface LoadedPlugin {
+    // (undocumented)
     disableReason?: string;
-};
+    // (undocumented)
+    enabled: boolean;
+    // (undocumented)
+    entryModule: PluginEntryModule;
+    // (undocumented)
+    loadedExtensions: Readonly<LoadedExtension[]>;
+    // (undocumented)
+    manifest: Readonly<PluginManifest>;
+}
 
 // @public
 export type LoadedPluginInfoEntry = {
@@ -110,6 +118,31 @@ export type LogFunction = (message?: any, ...optionalParams: any[]) => void;
 
 // @public
 export type Logger = Record<'info' | 'warn' | 'error', LogFunction>;
+
+// @public
+export interface ManualPlugin {
+    // (undocumented)
+    disableReason?: string;
+    // (undocumented)
+    enabled: boolean;
+    // (undocumented)
+    loadedExtensions: Readonly<LoadedExtension[]>;
+    // (undocumented)
+    manifest: Readonly<ManualPluginManifest>;
+}
+
+// @public
+export type ManualPluginInfoEntry = {
+    status: 'manual';
+} & Pick<ManualPlugin, 'manifest' | 'enabled' | 'disableReason'>;
+
+// @public (undocumented)
+export interface ManualPluginManifest extends PluginRuntimeMetadata {
+    // (undocumented)
+    buildHash?: string;
+    // (undocumented)
+    extensions: Extension[];
+}
 
 // @public (undocumented)
 export type MapCodeRefsToEncodedCodeRefs<T extends object> = {
@@ -127,9 +160,10 @@ export type Never<T> = {
 };
 
 // @public
-export type PendingPlugin = {
+export interface PendingPlugin {
+    // (undocumented)
     manifest: Readonly<PluginManifest>;
-};
+}
 
 // @public
 export type PendingPluginInfoEntry = {
@@ -150,7 +184,7 @@ export enum PluginEventType {
 }
 
 // @public (undocumented)
-export type PluginInfoEntry = PendingPluginInfoEntry | LoadedPluginInfoEntry | FailedPluginInfoEntry;
+export type PluginInfoEntry = PendingPluginInfoEntry | LoadedPluginInfoEntry | FailedPluginInfoEntry | ManualPluginInfoEntry;
 
 // @public
 export type PluginLoaderInterface = {
@@ -185,25 +219,31 @@ export type PluginLoadResult = {
 };
 
 // @public
-export type PluginManifest = PluginRuntimeMetadata & {
+export interface PluginManifest extends ManualPluginManifest {
+    // (undocumented)
     baseURL: string;
-    extensions: Extension[];
+    // (undocumented)
     loadScripts: string[];
+    // (undocumented)
     registrationMethod: PluginRegistrationMethod;
-    buildHash?: string;
-};
+}
 
 // @public
 export type PluginRegistrationMethod = 'callback' | 'custom';
 
 // @public
-export type PluginRuntimeMetadata = {
-    name: string;
-    version: string;
-    dependencies?: Record<string, string>;
-    optionalDependencies?: Record<string, string>;
+export interface PluginRuntimeMetadata {
+    // (undocumented)
     customProperties?: AnyObject;
-};
+    // (undocumented)
+    dependencies?: Record<string, string>;
+    // (undocumented)
+    name: string;
+    // (undocumented)
+    optionalDependencies?: Record<string, string>;
+    // (undocumented)
+    version: string;
+}
 
 // @public
 export class PluginStore implements PluginStoreInterface {
@@ -230,6 +270,8 @@ export class PluginStore implements PluginStoreInterface {
     // (undocumented)
     loadPlugin(manifest: PluginManifest | string, forceReload?: boolean): Promise<void>;
     // (undocumented)
+    manuallyAddPlugin(loadedManifest: ManualPluginManifest): Promise<void>;
+    // (undocumented)
     readonly sdkVersion: string;
     // (undocumented)
     setFeatureFlags(newFlags: FeatureFlags): void;
@@ -246,6 +288,7 @@ export type PluginStoreInterface = {
     getFeatureFlags: () => FeatureFlags;
     setFeatureFlags: (newFlags: FeatureFlags) => void;
     loadPlugin: (manifest: PluginManifest | string, forceReload?: boolean) => Promise<void>;
+    manuallyAddPlugin: (loadedManifest: ManualPluginManifest) => void;
     enablePlugins: (pluginNames: string[]) => void;
     disablePlugins: (pluginNames: string[], disableReason?: string) => void;
     getExposedModule: <TModule extends AnyObject>(pluginName: string, moduleName: string) => Promise<TModule>;

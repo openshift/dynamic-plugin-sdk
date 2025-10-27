@@ -22,6 +22,7 @@ export {
   PluginRegistrationMethod,
   PluginRuntimeMetadata,
   PluginManifest,
+  ManualPluginManifest,
 } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
 
 export {

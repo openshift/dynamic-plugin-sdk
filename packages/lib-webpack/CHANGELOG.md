@@ -1,5 +1,9 @@
 # Changelog for `@openshift/dynamic-plugin-sdk-webpack`
 
+## 4.1.1 - 20xx-xx-xx
+
+- Use updated chunk API to generate plugin manifest ([#264])
+
 ## 4.1.0 - 2024-04-26
 
 - Allow overriding core webpack module federation plugins used by DynamicRemotePlugin ([#259])
@@ -61,3 +65,4 @@
 [#250]: https://github.com/openshift/dynamic-plugin-sdk/pull/250
 [#256]: https://github.com/openshift/dynamic-plugin-sdk/pull/256
 [#259]: https://github.com/openshift/dynamic-plugin-sdk/pull/259
+[#264]: https://github.com/openshift/dynamic-plugin-sdk/pull/264
