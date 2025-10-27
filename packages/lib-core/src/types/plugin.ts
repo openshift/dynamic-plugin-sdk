@@ -24,13 +24,18 @@ export type PluginRegistrationMethod = 'callback' | 'custom';
  *
  * The `customProperties` object may contain additional information for the host application.
  */
-export type PluginRuntimeMetadata = {
+export interface PluginRuntimeMetadata {
   name: string;
   version: string;
   dependencies?: Record<string, string>;
   optionalDependencies?: Record<string, string>;
   customProperties?: AnyObject;
-};
+}
+
+export interface ManualPluginManifest extends PluginRuntimeMetadata {
+  extensions: Extension[];
+  buildHash?: string;
+}
 
 /**
  * Plugin manifest object, generated during the webpack build of the plugin.
@@ -41,52 +46,45 @@ export type PluginRuntimeMetadata = {
  * The `baseURL` should be used when loading all plugin assets, including the ones listed in
  * `loadScripts`.
  */
-export type PluginManifest = PluginRuntimeMetadata & {
+export interface PluginManifest extends ManualPluginManifest {
   baseURL: string;
-  extensions: Extension[];
   loadScripts: string[];
   registrationMethod: PluginRegistrationMethod;
-  buildHash?: string;
-};
-
-export type ManualPluginManifest = Omit<
-  PluginManifest,
-  'baseURL' | 'loadScripts' | 'registrationMethod'
->;
+}
 
 /**
  * Internal entry on a plugin in `pending` state.
  */
-export type PendingPlugin = {
+export interface PendingPlugin {
   manifest: Readonly<PluginManifest>;
-};
+}
 
 /**
  * Internal entry on a plugin in `loaded` state.
  */
-export type LoadedPlugin = {
-  manifest: Readonly<PluginManifest | ManualPluginManifest>;
+export interface LoadedPlugin {
+  manifest: Readonly<PluginManifest>;
   loadedExtensions: Readonly<LoadedExtension[]>;
   entryModule: PluginEntryModule;
   enabled: boolean;
   disableReason?: string;
-};
+}
 
 /**
  * Internal entry on a plugin loaded manually via {@link PluginStoreInterface.manuallyAddPlugin}.
  */
-export type ManualPlugin = {
+export interface ManualPlugin {
   manifest: Readonly<ManualPluginManifest>;
   loadedExtensions: Readonly<LoadedExtension[]>;
   enabled: boolean;
   disableReason?: string;
-};
+}
 
 /**
  * Internal entry on a plugin in `failed` state.
  */
-export type FailedPlugin = {
+export interface FailedPlugin {
   manifest: Readonly<PluginManifest>;
   errorMessage: string;
   errorCause?: unknown;
-};
+}

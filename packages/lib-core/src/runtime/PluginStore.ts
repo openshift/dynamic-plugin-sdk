@@ -288,8 +288,7 @@ export class PluginStore implements PluginStoreInterface {
     pluginNames.forEach((pluginName) => {
       if (!this.loadedPlugins.has(pluginName) && !this.manualPlugins.has(pluginName)) {
         consoleLogger.warn(
-          `Attempt to ${enabled ? 'enable' : 'disable'
-          } plugin ${pluginName} which is not currently loaded`,
+          `Attempt to ${enabled ? 'enable' : 'disable'} unknown plugin ${pluginName}`,
         );
         return;
       }
