@@ -15,6 +15,14 @@ import type { PluginEntryModule } from '../types/runtime';
  */
 const codeRefSymbol = Symbol('CodeRef');
 
+/**
+ * Marks `codeRef` to be interpreted as a {@link CodeRef} function.
+ */
+export const applyCodeRefSymbol = <T extends CodeRef>(codeRef: T): T => {
+  Object.defineProperty(codeRef, codeRefSymbol, { value: true });
+  return codeRef;
+};
+
 const isEncodedCodeRef = (obj: unknown): obj is EncodedCodeRef =>
   isPlainObject(obj) &&
   isEqual(Object.getOwnPropertyNames(obj), ['$codeRef']) &&
@@ -105,11 +113,8 @@ export const decodeCodeRefs = (extension: LoadedExtension, entryModule: PluginEn
       configurable: true,
     });
 
-    // Mark the function with a non-configurable symbol property
-    Object.defineProperty(codeRef, codeRefSymbol, { value: true });
-
     // eslint-disable-next-line no-param-reassign
-    obj[key] = codeRef;
+    obj[key] = applyCodeRefSymbol(codeRef);
   });
 
   return extension;

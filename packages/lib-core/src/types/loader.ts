@@ -1,3 +1,4 @@
+import type { LoadedExtension } from './extension';
 import type { PluginManifest } from './plugin';
 import type { PluginEntryModule } from './runtime';
 
@@ -5,6 +6,7 @@ export type PluginLoadResult =
   | {
       success: true;
       entryModule: PluginEntryModule;
+      loadedExtensions: LoadedExtension[];
     }
   | {
       success: false;
@@ -30,6 +32,9 @@ export type PluginLoaderInterface = {
 
   /**
    * Load a plugin from the given manifest.
+   *
+   * The implementation is responsible for decoding any code references in extensions
+   * listed in the plugin manifest.
    *
    * The resulting Promise never rejects; any plugin load error(s) will be contained
    * within the {@link PluginLoadResult} object.

@@ -20,18 +20,14 @@ export const findPluginChunks = (
   }
 
   const runtimeChunk = allChunks.find((chunk) => {
-      /**
-       * In webpack chunk runtime can be one of undefined, string and a SortableSet.
-       * 
-       * If runtime is a SortableSet, a different check is needed.
-       */
-      if (typeof entryChunk.runtime === 'string') {
-        return chunk.name === entryChunk.runtime;
-      } else if (entryChunk.runtime) {
-        return entryChunk.runtime.has(chunk.name);
-      }
+    // Chunk runtime can be undefined | string | SortableSet<string>
+    // so we need a different check for the SortableSet value
+    if (typeof entryChunk.runtime === 'string') {
+      return entryChunk.runtime === chunk.name;
+    } else if (entryChunk.runtime) {
+      return entryChunk.runtime.has(chunk.name);
     }
-  );
+  });
 
   if (!runtimeChunk) {
     throw new Error(`Cannot find runtime chunk for entry chunk ${containerName}`);

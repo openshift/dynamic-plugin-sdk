@@ -1,9 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { AnyObject } from '@monorepo/common';
 import { consoleLogger, ErrorWithCause } from '@monorepo/common';
-import { identity, noop } from 'lodash';
+import { cloneDeep, identity, noop } from 'lodash';
 import * as semver from 'semver';
 import { DEFAULT_REMOTE_ENTRY_CALLBACK } from '../constants';
+import type { LoadedExtension } from '../types/extension';
 import type { ResourceFetch } from '../types/fetch';
 import type { PluginLoadResult, PluginLoaderInterface } from '../types/loader';
 import type { PluginManifest } from '../types/plugin';
@@ -13,6 +14,7 @@ import { settleAllPromises } from '../utils/promise';
 import { injectScriptElement, getScriptElement } from '../utils/scripts';
 import { resolveURL } from '../utils/url';
 import { pluginManifestSchema } from '../yup-schemas';
+import { decodeCodeRefs } from './coderefs';
 
 declare global {
   interface Window {
@@ -180,7 +182,7 @@ export class PluginLoader implements PluginLoaderInterface {
   }
 
   /**
-   * @inheritDoc
+   * @remarks
    *
    * Plugins using the `callback` registration method are expected to call the global entry
    * callback function created via {@link registerPluginEntryCallback} method, passing two
@@ -252,10 +254,21 @@ export class PluginLoader implements PluginLoaderInterface {
       };
     }
 
+    const loadedExtensions = cloneDeep(manifest.extensions).map<LoadedExtension>((e, index) =>
+      decodeCodeRefs(
+        {
+          ...e,
+          pluginName,
+          uid: `${pluginName}[${index}]_${manifest.buildHash ?? uuidv4()}`,
+        },
+        entryModule,
+      ),
+    );
+
     data.status = 'loaded';
     this.invokeLoadListeners();
 
-    return { success: true, entryModule };
+    return { success: true, entryModule, loadedExtensions };
   }
 
   /**

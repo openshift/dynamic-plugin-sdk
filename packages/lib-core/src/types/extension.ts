@@ -29,6 +29,11 @@ export type ExtensionFlags = Partial<{
  * app.page/resource/details // adds new details page for the given resource
  * ```
  *
+ * The `properties` object may contain code references represented as {@link CodeRef}
+ * values. Each code reference should be resolved (its value loaded over the network)
+ * only when needed. Therefore, any code reference resolution errors should be handled
+ * as part of interpreting the given extension type.
+ *
  * Extensions may also use feature flags to express condition(s) of their enablement.
  *
  * @see {@link ExtensionFlags}
