@@ -30,9 +30,9 @@ export type ExtensionFlags = Partial<{
  * ```
  *
  * The `properties` object may contain code references represented as {@link CodeRef}
- * values. Each code reference should be resolved (its value loaded over the network)
- * only when needed. Therefore, any code reference resolution errors should be handled
- * as part of interpreting the given extension type.
+ * values. Each code reference should be resolved (e.g. referenced value loaded over
+ * the network via `import()` function) only when needed. Therefore, any code reference
+ * resolution errors should be handled as part of interpreting the given extension type.
  *
  * Extensions may also use feature flags to express condition(s) of their enablement.
  *

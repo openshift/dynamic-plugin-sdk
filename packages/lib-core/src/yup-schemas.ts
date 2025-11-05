@@ -1,7 +1,6 @@
 // TODO(vojtech): suppress false positive https://github.com/jsx-eslint/eslint-plugin-react/pull/3326
 /* eslint-disable react/forbid-prop-types */
 import * as yup from 'yup';
-import type { PluginRegistrationMethod } from './types/plugin';
 
 /**
  * Schema for a valid semver string.
@@ -85,14 +84,6 @@ export const extensionSchema = yup
 export const extensionArraySchema = yup.array().of(extensionSchema).required();
 
 /**
- * Schema for `PluginRegistrationMethod` objects.
- */
-export const pluginRegistrationMethodSchema = yup
-  .mixed<PluginRegistrationMethod>()
-  .oneOf(['callback', 'custom'])
-  .required();
-
-/**
  * Schema for `PluginRuntimeMetadata` objects.
  */
 export const pluginRuntimeMetadataSchema = yup.object().required().shape({
@@ -106,12 +97,12 @@ export const pluginRuntimeMetadataSchema = yup.object().required().shape({
 });
 
 /**
- * Schema for `PluginManifest` objects.
+ * Schema for `RemotePluginManifest` objects.
  */
-export const pluginManifestSchema = pluginRuntimeMetadataSchema.shape({
+export const remotePluginManifestSchema = pluginRuntimeMetadataSchema.shape({
   baseURL: yup.string().required(),
   extensions: extensionArraySchema,
   loadScripts: yup.array().of(yup.string().required()).required(),
-  registrationMethod: pluginRegistrationMethodSchema,
+  registrationMethod: yup.string().oneOf(['callback', 'custom']).required(),
   buildHash: yup.string(),
 });
