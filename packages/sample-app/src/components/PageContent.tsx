@@ -16,7 +16,7 @@ const ExtensionGallery: React.FC<ExtensionGalleryProps> = ({ extensions }) => (
   <Gallery hasGutter>
     {extensions.map((e) => (
       <GalleryItem key={e.uid}>
-        <Card isCompact>
+        <Card isCompact data-test-id="extension-card">
           <CardBody>
             <LabelWithTooltipIcon label={e.type} tooltipContent={truncate(e.uid)} />
           </CardBody>

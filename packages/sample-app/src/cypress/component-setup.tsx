@@ -1,7 +1,7 @@
 import { TestPluginStore, PluginStoreProvider } from '@openshift/dynamic-plugin-sdk';
 import { mount } from 'cypress/react';
 import * as React from 'react';
-import '../app-styles';
+import '@patternfly/react-core/dist/styles/base.css';
 
 declare global {
   // TODO(vojtech): suppress false positive https://github.com/typescript-eslint/typescript-eslint/pull/2238

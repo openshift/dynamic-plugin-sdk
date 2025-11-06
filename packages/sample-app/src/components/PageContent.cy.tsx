@@ -60,7 +60,7 @@ describe('RenderExtensions', () => {
       pluginStore.enablePlugins(['test']);
     });
 
-    cy.get('[data-ouia-component-type="PF4/Card"]')
+    cy.get('[data-test-id="extension-card"]')
       .should('have.length', 2)
       .each((element) => {
         cy.wrap(element).should('contain.text', 'core.telemetry/listener');
