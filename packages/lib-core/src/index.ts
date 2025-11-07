@@ -23,7 +23,7 @@ export {
 } from '@monorepo/common';
 
 // Core components
-export { PluginLoaderOptions } from './runtime/PluginLoader';
+export { PluginLoader, PluginLoaderOptions } from './runtime/PluginLoader';
 export { PluginStore, PluginStoreOptions, PluginStoreLoaderSettings } from './runtime/PluginStore';
 export {
   PluginStoreProvider,
@@ -40,6 +40,9 @@ export {
 } from './runtime/useResolvedExtensions';
 export { usePluginInfo } from './runtime/usePluginInfo';
 export { useFeatureFlag, UseFeatureFlagResult } from './runtime/useFeatureFlag';
+
+// Core utilities
+export { applyCodeRefSymbol } from './runtime/coderefs';
 
 // Testing utilities
 export { TestPluginStore } from './testing/TestPluginStore';

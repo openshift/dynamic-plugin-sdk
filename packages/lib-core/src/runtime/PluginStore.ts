@@ -1,7 +1,6 @@
-import { v4 as uuidv4 } from 'uuid';
 import type { AnyObject, EitherNotBoth } from '@monorepo/common';
 import { consoleLogger, ErrorWithCause } from '@monorepo/common';
-import { cloneDeep, compact, isEqual, noop, pickBy } from 'lodash';
+import { compact, isEqual, noop, pickBy } from 'lodash';
 import { version as sdkVersion } from '../../package.json';
 import type { LoadedExtension } from '../types/extension';
 import type { PluginLoaderInterface } from '../types/loader';
@@ -9,7 +8,7 @@ import type { PluginManifest, PendingPlugin, LoadedPlugin, FailedPlugin } from '
 import type { PluginEntryModule } from '../types/runtime';
 import type { PluginInfoEntry, PluginStoreInterface, FeatureFlags } from '../types/store';
 import { PluginEventType } from '../types/store';
-import { decodeCodeRefs, getPluginModule } from './coderefs';
+import { getPluginModule } from './coderefs';
 import { PluginLoader } from './PluginLoader';
 import type { PluginLoaderOptions } from './PluginLoader';
 
@@ -191,7 +190,9 @@ export class PluginStore implements PluginStoreInterface {
       const result = await this.loader.loadPlugin(loadedManifest);
 
       if (result.success) {
-        this.addLoadedPlugin(loadedManifest, result.entryModule);
+        const { entryModule, loadedExtensions } = result;
+
+        this.addLoadedPlugin(loadedManifest, entryModule, loadedExtensions);
 
         consoleLogger.info(`Plugin ${pluginName} has been loaded`);
 
@@ -303,20 +304,12 @@ export class PluginStore implements PluginStoreInterface {
    *
    * Once added, the plugin is disabled by default. Enable it to put its extensions into use.
    */
-  protected addLoadedPlugin(manifest: PluginManifest, entryModule: PluginEntryModule) {
+  protected addLoadedPlugin(
+    manifest: PluginManifest,
+    entryModule: PluginEntryModule,
+    loadedExtensions: LoadedExtension[],
+  ) {
     const pluginName = manifest.name;
-    const buildHash = manifest.buildHash ?? uuidv4();
-
-    const loadedExtensions = cloneDeep(manifest.extensions).map<LoadedExtension>((e, index) =>
-      decodeCodeRefs(
-        {
-          ...e,
-          pluginName,
-          uid: `${pluginName}[${index}]_${buildHash}`,
-        },
-        entryModule,
-      ),
-    );
 
     const loadedPlugin: LoadedPlugin = {
       // TODO(vojtech): use deepFreeze on the manifest and type it as DeepReadonly

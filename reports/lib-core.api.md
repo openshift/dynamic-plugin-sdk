@@ -10,6 +10,9 @@ import * as React_2 from 'react';
 export type AnyObject = Record<string, unknown>;
 
 // @public
+export const applyCodeRefSymbol: <T extends CodeRef<unknown>>(codeRef: T) => T;
+
+// @public
 export const applyDefaults: <TObject>(obj: TObject, defaults: unknown) => TObject;
 
 // @public
@@ -153,6 +156,18 @@ export enum PluginEventType {
 export type PluginInfoEntry = PendingPluginInfoEntry | LoadedPluginInfoEntry | FailedPluginInfoEntry;
 
 // @public
+export class PluginLoader implements PluginLoaderInterface {
+    constructor(options?: PluginLoaderOptions);
+    // (undocumented)
+    loadPlugin(manifest: PluginManifest): Promise<PluginLoadResult>;
+    // (undocumented)
+    loadPluginManifest(manifestURL: string): Promise<any>;
+    registerPluginEntryCallback(): void;
+    // (undocumented)
+    transformPluginManifest(manifest: PluginManifest): PluginManifest;
+}
+
+// @public
 export type PluginLoaderInterface = {
     loadPluginManifest: (manifestURL: string) => Promise<PluginManifest>;
     transformPluginManifest: (manifest: PluginManifest) => PluginManifest;
@@ -178,6 +193,7 @@ export type PluginLoaderOptions = Partial<{
 export type PluginLoadResult = {
     success: true;
     entryModule: PluginEntryModule;
+    loadedExtensions: LoadedExtension[];
 } | {
     success: false;
     errorMessage: string;
@@ -210,7 +226,7 @@ export class PluginStore implements PluginStoreInterface {
     constructor(options?: PluginStoreOptions & PluginStoreLoaderSettings);
     // (undocumented)
     protected addFailedPlugin(manifest: PluginManifest, errorMessage: string, errorCause?: unknown): void;
-    protected addLoadedPlugin(manifest: PluginManifest, entryModule: PluginEntryModule): void;
+    protected addLoadedPlugin(manifest: PluginManifest, entryModule: PluginEntryModule, loadedExtensions: LoadedExtension[]): void;
     // (undocumented)
     protected addPendingPlugin(manifest: PluginManifest): void;
     // (undocumented)
@@ -289,7 +305,7 @@ export class TestPluginStore extends PluginStore {
     // (undocumented)
     addFailedPlugin(manifest: PluginManifest, errorMessage: string, errorCause?: unknown): void;
     // (undocumented)
-    addLoadedPlugin(manifest: PluginManifest, entryModule: PluginEntryModule): void;
+    addLoadedPlugin(manifest: PluginManifest, entryModule: PluginEntryModule, loadedExtensions: LoadedExtension[]): void;
     // (undocumented)
     addPendingPlugin(manifest: PluginManifest): void;
 }

@@ -1,3 +1,5 @@
+import type { LoadedExtension } from '@openshift/dynamic-plugin-sdk';
+import { applyCodeRefSymbol } from '@openshift/dynamic-plugin-sdk';
 import * as React from 'react';
 import { mockPluginManifest, mockPluginEntryModule } from '../test-mocks';
 import { RenderExtensions } from './PageContent';
@@ -27,12 +29,34 @@ describe('RenderExtensions', () => {
         ],
       });
 
+      const fooListener = cy.spy().as('fooListener');
+      const barListener = cy.spy().as('barListener');
+
       const entryModule = mockPluginEntryModule({
-        FooModule: { default: cy.spy().as('fooListener') },
-        BarModule: { fizz: cy.spy().as('barListener') },
+        FooModule: { default: fooListener },
+        BarModule: { fizz: barListener },
       });
 
-      pluginStore.addLoadedPlugin(manifest, entryModule);
+      const loadedExtensions: LoadedExtension[] = [
+        {
+          type: 'core.telemetry/listener',
+          properties: {
+            listener: applyCodeRefSymbol(() => Promise.resolve(fooListener)),
+          },
+          pluginName: 'test',
+          uid: 'test[0]',
+        },
+        {
+          type: 'core.telemetry/listener',
+          properties: {
+            listener: applyCodeRefSymbol(() => Promise.resolve(barListener)),
+          },
+          pluginName: 'test',
+          uid: 'test[1]',
+        },
+      ];
+
+      pluginStore.addLoadedPlugin(manifest, entryModule, loadedExtensions);
       pluginStore.enablePlugins(['test']);
     });
 

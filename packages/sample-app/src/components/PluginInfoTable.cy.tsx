@@ -10,7 +10,13 @@ describe('PluginInfoTable', () => {
   it('Shows plugin runtime information', () => {
     cy.getPluginStore().then((pluginStore) => {
       pluginStore.addPendingPlugin(mockPluginManifest({ name: 'test-3' }));
-      pluginStore.addLoadedPlugin(mockPluginManifest({ name: 'test-2' }), mockPluginEntryModule());
+
+      pluginStore.addLoadedPlugin(
+        mockPluginManifest({ name: 'test-2' }),
+        mockPluginEntryModule(),
+        [],
+      );
+
       pluginStore.addFailedPlugin(mockPluginManifest({ name: 'test-1' }), 'Test error message');
     });
 
@@ -41,7 +47,12 @@ describe('PluginInfoTable', () => {
 
   it('Allows to manually disable a loaded plugin', () => {
     cy.getPluginStore().then((pluginStore) => {
-      pluginStore.addLoadedPlugin(mockPluginManifest({ name: 'test' }), mockPluginEntryModule());
+      pluginStore.addLoadedPlugin(
+        mockPluginManifest({ name: 'test' }),
+        mockPluginEntryModule(),
+        [],
+      );
+
       pluginStore.enablePlugins(['test']);
     });
 
