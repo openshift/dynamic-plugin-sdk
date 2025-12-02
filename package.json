@@ -19,7 +19,8 @@
     "jest-print-config": "jest --showConfig",
     "sample-app-test-component": "yarn workspace @monorepo/sample-app run cypress run --component",
     "sample-app-test-e2e": "yarn workspace @monorepo/sample-app run cypress run --e2e",
-    "api-extractor": "api-extractor run --typescript-compiler-folder ./node_modules/typescript/lib"
+    "api-extractor": "api-extractor run --typescript-compiler-folder ./node_modules/typescript/lib",
+    "api-extractor-local": "yarn workspaces foreach --from '@openshift/*' run api-extractor-local"
   },
   "devDependencies": {
     "@babel/core": "^7.18.6",

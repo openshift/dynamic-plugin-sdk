@@ -24,7 +24,8 @@
     "build": "rm -rf dist && yarn run -T rollup -c && yarn api-extractor",
     "lint": "yarn run -T eslint $INIT_CWD",
     "test": "yarn run -T test $INIT_CWD",
-    "api-extractor": "yarn run -T api-extractor -c $INIT_CWD/api-extractor.json"
+    "api-extractor": "yarn run -T api-extractor -c $INIT_CWD/api-extractor.json",
+    "api-extractor-local": "yarn run api-extractor --local"
   },
   "peerDependencies": {
     "react": "^17 || ^18"
