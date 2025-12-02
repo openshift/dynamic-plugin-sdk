@@ -8,5 +8,5 @@ export const mockLocalPluginManifest = ({
   name,
   version,
   extensions,
-  $local: true,
+  registrationMethod: 'local',
 });

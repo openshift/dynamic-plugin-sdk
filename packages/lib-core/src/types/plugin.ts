@@ -3,19 +3,6 @@ import type { Extension, LoadedExtension } from './extension';
 import type { PluginEntryModule } from './runtime';
 
 /**
- * Registration method used to finalize the plugin's load process.
- *
- * In order to load plugins using the `callback` registration method, the host application
- * must register a global entry callback function to be called by the plugin's entry script.
- *
- * In order to load plugins using the `custom` registration method, the host application must
- * provide a way to retrieve the entry module that was loaded by the plugin's entry script.
- *
- * @see {@link PluginEntryModule}
- */
-export type PluginRegistrationMethod = 'callback' | 'custom';
-
-/**
  * Runtime plugin metadata.
  *
  * There can be only one plugin with the given `name` loaded at any time.
@@ -33,52 +20,57 @@ export type PluginRuntimeMetadata = {
 };
 
 /**
- * Plugin manifest object, generated during the webpack build of the plugin.
+ * Plugin manifest generated as part of the plugin's webpack build.
  *
  * The `extensions` list contains all extensions contributed by the plugin. Code references
  * within each extension's properties are serialized as JSON objects `{ $codeRef: string }`.
  *
- * The `baseURL` should be used when loading all plugin assets, including the ones listed in
- * `loadScripts`.
+ * The `baseURL` should be used when loading all plugin assets, including the ones listed
+ * in `loadScripts`.
  *
- * This is the standard (webpack) representation of a plugin manifest, where we need to load
- * the specified scripts in order to initialize the plugin and access its exposed modules via
- * the plugin's entry module.
+ * This is the standard representation of a plugin manifest; we load the specified scripts
+ * from remote sources in order to initialize the plugin and provide access to its exposed
+ * modules.
  */
-export type PluginManifest = PluginRuntimeMetadata & {
+export type RemotePluginManifest = PluginRuntimeMetadata & {
   baseURL: string;
   extensions: Extension[];
   loadScripts: string[];
-  registrationMethod: PluginRegistrationMethod;
+  registrationMethod: 'callback' | 'custom';
   buildHash?: string;
 };
 
 /**
- * Plugin manifest object, created directly in your application.
+ * Plugin manifest created directly by your application.
  *
- * This is the local (manual) representation of a plugin manifest; any code references in
- * the `extensions` list should be represented as `CodeRef` functions. Plugins defined this
- * way will have no entry module.
+ * Code references within each extension's properties should be represented as `CodeRef`
+ * functions, i.e. there is no JSON deserialization of code references for plugins loaded
+ * from local manifests.
+ *
+ * This is the local representation of a plugin manifest; you can use it to implement the
+ * concept of plugins which are statically linked to the host application at its build time.
+ *
+ * Note that plugins defined this way will have no entry module and no exposed modules.
  */
 export type LocalPluginManifest = PluginRuntimeMetadata & {
   extensions: Extension[];
-  $local: true;
+  registrationMethod: 'local';
 };
 
-export type AnyPluginManifest = PluginManifest | LocalPluginManifest;
+export type PluginManifest = RemotePluginManifest | LocalPluginManifest;
 
 /**
  * Internal entry on a plugin in `pending` state.
  */
 export type PendingPlugin = {
-  manifest: Readonly<AnyPluginManifest>;
+  manifest: Readonly<PluginManifest>;
 };
 
 /**
  * Internal entry on a plugin in `loaded` state.
  */
 export type LoadedPlugin = {
-  manifest: Readonly<AnyPluginManifest>;
+  manifest: Readonly<PluginManifest>;
   loadedExtensions: Readonly<LoadedExtension[]>;
   entryModule?: PluginEntryModule;
   enabled: boolean;
@@ -89,7 +81,7 @@ export type LoadedPlugin = {
  * Internal entry on a plugin in `failed` state.
  */
 export type FailedPlugin = {
-  manifest: Readonly<AnyPluginManifest>;
+  manifest: Readonly<PluginManifest>;
   errorMessage: string;
   errorCause?: unknown;
 };

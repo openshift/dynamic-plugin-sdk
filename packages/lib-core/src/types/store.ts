@@ -1,6 +1,6 @@
 import type { AnyObject } from '@monorepo/common';
 import type { LoadedExtension } from './extension';
-import type { AnyPluginManifest, PendingPlugin, LoadedPlugin, FailedPlugin } from './plugin';
+import type { PluginManifest, PendingPlugin, LoadedPlugin, FailedPlugin } from './plugin';
 
 export enum PluginEventType {
   /**
@@ -132,8 +132,8 @@ export type PluginStoreInterface = {
   /**
    * Start loading a plugin from the given manifest.
    *
-   * The manifest can be provided as an object (standard or local plugin manifest)
-   * or referenced by URL (to be loaded and validated as a standard plugin manifest).
+   * The manifest can be provided as an object or referenced by URL. When referenced
+   * by URL, the manifest will be loaded and validated as a remote plugin manifest.
    *
    * Depending on the plugin's current load status, this method works as follows:
    * - plugin is still loading - do nothing
@@ -155,7 +155,7 @@ export type PluginStoreInterface = {
    * changes in a plugin's deployment, users should be prompted to reload the application
    * to ensure all plugin modules in use are up to date.
    */
-  loadPlugin: (manifest: AnyPluginManifest | string, forceReload?: boolean) => Promise<void>;
+  loadPlugin: (manifest: PluginManifest | string, forceReload?: boolean) => Promise<void>;
 
   /**
    * Enable the given plugin(s).
@@ -174,7 +174,7 @@ export type PluginStoreInterface = {
   /**
    * Get a module exposed by the given plugin.
    *
-   * The plugin is expected to be loaded from a standard plugin manifest.
+   * The plugin is expected to be loaded from a remote plugin manifest.
    */
   getExposedModule: <TModule extends AnyObject>(
     pluginName: string,

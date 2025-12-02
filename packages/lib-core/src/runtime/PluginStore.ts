@@ -4,7 +4,7 @@ import { compact, isEqual, noop, pickBy } from 'lodash';
 import { version as sdkVersion } from '../../package.json';
 import type { LoadedExtension } from '../types/extension';
 import type { PluginLoaderInterface } from '../types/loader';
-import type { AnyPluginManifest, PendingPlugin, LoadedPlugin, FailedPlugin } from '../types/plugin';
+import type { PluginManifest, PendingPlugin, LoadedPlugin, FailedPlugin } from '../types/plugin';
 import type { PluginEntryModule } from '../types/runtime';
 import type { PluginInfoEntry, PluginStoreInterface, FeatureFlags } from '../types/store';
 import { PluginEventType } from '../types/store';
@@ -160,8 +160,8 @@ export class PluginStore implements PluginStoreInterface {
     }
   }
 
-  async loadPlugin(manifest: AnyPluginManifest | string, forceReload?: boolean) {
-    let loadedManifest: AnyPluginManifest;
+  async loadPlugin(manifest: PluginManifest | string, forceReload?: boolean) {
+    let loadedManifest: PluginManifest;
 
     try {
       if (typeof manifest === 'string') {
@@ -291,7 +291,7 @@ export class PluginStore implements PluginStoreInterface {
     }
   }
 
-  protected addPendingPlugin(manifest: AnyPluginManifest) {
+  protected addPendingPlugin(manifest: PluginManifest) {
     const pluginName = manifest.name;
     const pendingPlugin: PendingPlugin = { manifest };
 
@@ -309,7 +309,7 @@ export class PluginStore implements PluginStoreInterface {
    * Once added, the plugin is disabled by default. Enable it to put its extensions into use.
    */
   protected addLoadedPlugin(
-    manifest: AnyPluginManifest,
+    manifest: PluginManifest,
     loadedExtensions: LoadedExtension[],
     entryModule?: PluginEntryModule,
   ) {
@@ -331,11 +331,7 @@ export class PluginStore implements PluginStoreInterface {
     this.updateExtensions();
   }
 
-  protected addFailedPlugin(
-    manifest: AnyPluginManifest,
-    errorMessage: string,
-    errorCause?: unknown,
-  ) {
+  protected addFailedPlugin(manifest: PluginManifest, errorMessage: string, errorCause?: unknown) {
     const pluginName = manifest.name;
     const failedPlugin: FailedPlugin = { manifest, errorMessage, errorCause };
 

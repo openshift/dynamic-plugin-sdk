@@ -9,9 +9,6 @@ import * as React_2 from 'react';
 // @public
 export type AnyObject = Record<string, unknown>;
 
-// @public (undocumented)
-export type AnyPluginManifest = PluginManifest | LocalPluginManifest;
-
 // @public
 export const applyCodeRefSymbol: <T extends CodeRef<unknown>>(codeRef: T) => T;
 
@@ -76,7 +73,7 @@ export type ExtractExtensionProperties<T> = T extends Extension<any, infer TProp
 
 // @public
 export type FailedPlugin = {
-    manifest: Readonly<AnyPluginManifest>;
+    manifest: Readonly<PluginManifest>;
     errorMessage: string;
     errorCause?: unknown;
 };
@@ -91,12 +88,6 @@ export type FeatureFlags = {
     [flagName: string]: boolean;
 };
 
-// @public (undocumented)
-export const isLocalPluginManifest: (manifest: AnyPluginManifest) => manifest is LocalPluginManifest;
-
-// @public (undocumented)
-export const isStandardPluginManifest: (manifest: AnyPluginManifest) => manifest is PluginManifest;
-
 // @public
 export type LoadedExtension<TExtension extends Extension = Extension> = TExtension & {
     pluginName: string;
@@ -105,7 +96,7 @@ export type LoadedExtension<TExtension extends Extension = Extension> = TExtensi
 
 // @public
 export type LoadedPlugin = {
-    manifest: Readonly<AnyPluginManifest>;
+    manifest: Readonly<PluginManifest>;
     loadedExtensions: Readonly<LoadedExtension[]>;
     entryModule?: PluginEntryModule;
     enabled: boolean;
@@ -120,7 +111,7 @@ export type LoadedPluginInfoEntry = {
 // @public
 export type LocalPluginManifest = PluginRuntimeMetadata & {
     extensions: Extension[];
-    $local: true;
+    registrationMethod: 'local';
 };
 
 // @public (undocumented)
@@ -146,7 +137,7 @@ export type Never<T> = {
 
 // @public
 export type PendingPlugin = {
-    manifest: Readonly<AnyPluginManifest>;
+    manifest: Readonly<PluginManifest>;
 };
 
 // @public
@@ -174,25 +165,25 @@ export type PluginInfoEntry = PendingPluginInfoEntry | LoadedPluginInfoEntry | F
 export class PluginLoader implements PluginLoaderInterface {
     constructor(options?: PluginLoaderOptions);
     // (undocumented)
-    loadPlugin(manifest: AnyPluginManifest): Promise<PluginLoadResult>;
+    loadPlugin(manifest: PluginManifest): Promise<PluginLoadResult>;
     // (undocumented)
-    loadPluginManifest(manifestURL: string): Promise<PluginManifest>;
+    loadPluginManifest(manifestURL: string): Promise<RemotePluginManifest>;
     registerPluginEntryCallback(): void;
     // (undocumented)
-    transformPluginManifest<T extends AnyPluginManifest>(manifest: T): T;
+    transformPluginManifest<T extends PluginManifest>(manifest: T): T;
 }
 
 // @public
 export type PluginLoaderInterface = {
-    loadPluginManifest: (manifestURL: string) => Promise<PluginManifest>;
-    transformPluginManifest: <T extends AnyPluginManifest>(manifest: T) => T;
-    loadPlugin: (manifest: AnyPluginManifest) => Promise<PluginLoadResult>;
+    loadPluginManifest: (manifestURL: string) => Promise<RemotePluginManifest>;
+    transformPluginManifest: <T extends PluginManifest>(manifest: T) => T;
+    loadPlugin: (manifest: PluginManifest) => Promise<PluginLoadResult>;
 };
 
 // @public (undocumented)
 export type PluginLoaderOptions = Partial<{
-    canLoadPlugin: (manifest: AnyPluginManifest, reload: boolean) => boolean;
-    canReloadScript: (manifest: PluginManifest, scriptName: string) => boolean;
+    canLoadPlugin: (manifest: PluginManifest, reload: boolean) => boolean;
+    canReloadScript: (manifest: RemotePluginManifest, scriptName: string) => boolean;
     entryCallbackSettings: Partial<{
         registerCallback: boolean;
         name: string;
@@ -200,8 +191,8 @@ export type PluginLoaderOptions = Partial<{
     fetchImpl: ResourceFetch;
     fixedPluginDependencyResolutions: Record<string, string>;
     sharedScope: AnyObject;
-    transformPluginManifest: <T extends AnyPluginManifest>(manifest: T) => T;
-    getPluginEntryModule: (manifest: PluginManifest) => PluginEntryModule | void;
+    transformPluginManifest: <T extends PluginManifest>(manifest: T) => T;
+    getPluginEntryModule: (manifest: RemotePluginManifest) => PluginEntryModule | void;
 }>;
 
 // @public (undocumented)
@@ -215,17 +206,8 @@ export type PluginLoadResult = {
     errorCause?: unknown;
 };
 
-// @public
-export type PluginManifest = PluginRuntimeMetadata & {
-    baseURL: string;
-    extensions: Extension[];
-    loadScripts: string[];
-    registrationMethod: PluginRegistrationMethod;
-    buildHash?: string;
-};
-
-// @public
-export type PluginRegistrationMethod = 'callback' | 'custom';
+// @public (undocumented)
+export type PluginManifest = RemotePluginManifest | LocalPluginManifest;
 
 // @public
 export type PluginRuntimeMetadata = {
@@ -240,11 +222,11 @@ export type PluginRuntimeMetadata = {
 export class PluginStore implements PluginStoreInterface {
     constructor(options?: PluginStoreOptions & PluginStoreLoaderSettings);
     // (undocumented)
-    protected addFailedPlugin(manifest: AnyPluginManifest, errorMessage: string, errorCause?: unknown): void;
+    protected addFailedPlugin(manifest: PluginManifest, errorMessage: string, errorCause?: unknown): void;
     // (undocumented)
-    protected addLoadedPlugin(manifest: AnyPluginManifest, loadedExtensions: LoadedExtension[], entryModule?: PluginEntryModule): void;
+    protected addLoadedPlugin(manifest: PluginManifest, loadedExtensions: LoadedExtension[], entryModule?: PluginEntryModule): void;
     // (undocumented)
-    protected addPendingPlugin(manifest: AnyPluginManifest): void;
+    protected addPendingPlugin(manifest: PluginManifest): void;
     // (undocumented)
     disablePlugins(pluginNames: string[], disableReason?: string): void;
     // (undocumented)
@@ -260,7 +242,7 @@ export class PluginStore implements PluginStoreInterface {
     // (undocumented)
     getPluginInfo(): PluginInfoEntry[];
     // (undocumented)
-    loadPlugin(manifest: AnyPluginManifest | string, forceReload?: boolean): Promise<void>;
+    loadPlugin(manifest: PluginManifest | string, forceReload?: boolean): Promise<void>;
     // (undocumented)
     readonly sdkVersion: string;
     // (undocumented)
@@ -277,7 +259,7 @@ export type PluginStoreInterface = {
     getPluginInfo: () => PluginInfoEntry[];
     getFeatureFlags: () => FeatureFlags;
     setFeatureFlags: (newFlags: FeatureFlags) => void;
-    loadPlugin: (manifest: AnyPluginManifest | string, forceReload?: boolean) => Promise<void>;
+    loadPlugin: (manifest: PluginManifest | string, forceReload?: boolean) => Promise<void>;
     enablePlugins: (pluginNames: string[]) => void;
     disablePlugins: (pluginNames: string[], disableReason?: string) => void;
     getExposedModule: <TModule extends AnyObject>(pluginName: string, moduleName: string) => Promise<TModule>;
@@ -302,6 +284,15 @@ export const PluginStoreProvider: React_2.FC<PluginStoreProviderProps>;
 export type PluginStoreProviderProps = React_2.PropsWithChildren<{
     store: PluginStoreInterface;
 }>;
+
+// @public
+export type RemotePluginManifest = PluginRuntimeMetadata & {
+    baseURL: string;
+    extensions: Extension[];
+    loadScripts: string[];
+    registrationMethod: 'callback' | 'custom';
+    buildHash?: string;
+};
 
 // @public
 export type ReplaceProperties<T, R> = {

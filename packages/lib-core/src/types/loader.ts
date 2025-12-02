@@ -1,5 +1,5 @@
 import type { LoadedExtension } from './extension';
-import type { PluginManifest, AnyPluginManifest } from './plugin';
+import type { RemotePluginManifest, PluginManifest } from './plugin';
 import type { PluginEntryModule } from './runtime';
 
 export type PluginLoadResult =
@@ -19,16 +19,16 @@ export type PluginLoadResult =
  */
 export type PluginLoaderInterface = {
   /**
-   * Load a standard plugin manifest from the given URL.
+   * Load a plugin manifest from the given URL.
    *
    * The implementation should validate the manifest object as necessary.
    */
-  loadPluginManifest: (manifestURL: string) => Promise<PluginManifest>;
+  loadPluginManifest: (manifestURL: string) => Promise<RemotePluginManifest>;
 
   /**
    * Transform the plugin manifest before loading the associated plugin.
    */
-  transformPluginManifest: <T extends AnyPluginManifest>(manifest: T) => T;
+  transformPluginManifest: <T extends PluginManifest>(manifest: T) => T;
 
   /**
    * Load a plugin from the given manifest.
@@ -39,5 +39,5 @@ export type PluginLoaderInterface = {
    * The resulting Promise never rejects; any plugin load error(s) will be contained
    * within the {@link PluginLoadResult} object.
    */
-  loadPlugin: (manifest: AnyPluginManifest) => Promise<PluginLoadResult>;
+  loadPlugin: (manifest: PluginManifest) => Promise<PluginLoadResult>;
 };

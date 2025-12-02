@@ -2,10 +2,13 @@
 
 ## 6.0.0 - TODO
 
-> TODO highlight major changes for this release here.
+> This release adds new features, including the ability to load plugins from local manifests,
+> i.e. without involving the standard webpack built plugin load process. This can be used to
+> implement the concept of plugins which are statically linked to the host application at its
+> build time. Note that the original `PluginManifest` type is now `RemotePluginManifest`.
 
 - Add support for optional dependencies ([#273])
-- Add support for loading plugins from local manifests ([#281])
+- BREAKING: Add support for loading plugins from local manifests ([#281])
 - BREAKING: Move plugin manifest extension post-processing to `PluginLoader.loadPlugin` ([#280])
 - Improve code reference types and make them support optional chaining ([#274])
 

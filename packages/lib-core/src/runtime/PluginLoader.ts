@@ -7,15 +7,14 @@ import { DEFAULT_REMOTE_ENTRY_CALLBACK } from '../constants';
 import type { LoadedExtension } from '../types/extension';
 import type { ResourceFetch } from '../types/fetch';
 import type { PluginLoadResult, PluginLoaderInterface } from '../types/loader';
-import type { PluginManifest, AnyPluginManifest } from '../types/plugin';
+import type { RemotePluginManifest, PluginManifest } from '../types/plugin';
 import type { PluginEntryModule, PluginEntryCallback } from '../types/runtime';
 import { basicFetch } from '../utils/basic-fetch';
 import { settleAllPromises } from '../utils/promise';
 import { injectScriptElement, getScriptElement } from '../utils/scripts';
 import { resolveURL } from '../utils/url';
-import { pluginManifestSchema } from '../yup-schemas';
+import { remotePluginManifestSchema } from '../yup-schemas';
 import { decodeCodeRefs } from './coderefs';
-import { isStandardPluginManifest } from './plugin-manifest';
 
 declare global {
   interface Window {
@@ -25,7 +24,7 @@ declare global {
 
 type PluginLoadData = {
   status: 'pending' | 'loaded' | 'failed';
-  manifest: AnyPluginManifest;
+  manifest: PluginManifest;
   entryCallbackFired?: boolean;
   entryCallbackModule?: PluginEntryModule;
 };
@@ -47,7 +46,7 @@ export type PluginLoaderOptions = Partial<{
    *
    * By default, all plugins are allowed to be loaded and reloaded.
    */
-  canLoadPlugin: (manifest: AnyPluginManifest, reload: boolean) => boolean;
+  canLoadPlugin: (manifest: PluginManifest, reload: boolean) => boolean;
 
   /**
    * Control whether the given plugin script can be reloaded when attempting to reload
@@ -55,7 +54,7 @@ export type PluginLoaderOptions = Partial<{
    *
    * By default, all plugin scripts are allowed to be reloaded.
    */
-  canReloadScript: (manifest: PluginManifest, scriptName: string) => boolean;
+  canReloadScript: (manifest: RemotePluginManifest, scriptName: string) => boolean;
 
   /**
    * Customize the global callback function used by plugin entry scripts.
@@ -122,19 +121,19 @@ export type PluginLoaderOptions = Partial<{
    *
    * By default, no transformation is performed on the manifest.
    */
-  transformPluginManifest: <T extends AnyPluginManifest>(manifest: T) => T;
+  transformPluginManifest: <T extends PluginManifest>(manifest: T) => T;
 
   /**
    * Provide access to the plugin's entry module.
    *
    * This option applies only to plugins using the `custom` registration method.
    *
-   * For example, if a plugin was built with `var` library type (i.e. its entry module
-   * is assigned to a variable), you can access the entry module via `window[pluginName]`.
+   * For example, if a plugin was built with `var` library type (i.e. its entry module is
+   * assigned to a global variable), you can access the entry module as `window[pluginName]`.
    *
    * By default, this function does nothing.
    */
-  getPluginEntryModule: (manifest: PluginManifest) => PluginEntryModule | void;
+  getPluginEntryModule: (manifest: RemotePluginManifest) => PluginEntryModule | void;
 }>;
 
 /**
@@ -173,36 +172,42 @@ export class PluginLoader implements PluginLoaderInterface {
     const response = await this.options.fetchImpl(manifestURL, { cache: 'no-cache' });
     const manifest = JSON.parse(await response.text());
 
-    pluginManifestSchema.validateSync(manifest, { strict: true, abortEarly: false });
+    remotePluginManifestSchema.validateSync(manifest, { strict: true, abortEarly: false });
 
-    return manifest as PluginManifest;
+    return manifest as RemotePluginManifest;
   }
 
-  transformPluginManifest<T extends AnyPluginManifest>(manifest: T) {
+  transformPluginManifest<T extends PluginManifest>(manifest: T) {
     return this.options.transformPluginManifest(manifest);
   }
 
   /**
    * @remarks
    *
-   * Plugins using the `callback` registration method are expected to call the global entry
-   * callback function created via {@link registerPluginEntryCallback} method, passing two
-   * arguments: plugin name and the entry module.
+   * In order to load plugins using the `callback` registration method, the host application
+   * must register a global entry callback function to be called by the plugin's entry script.
+   * This function should be called with two arguments: plugin name and entry module object.
    *
-   * For plugins using the `custom` registration method, the `getPluginEntryModule` function
-   * is expected to return the entry module of the given plugin. If not implemented properly,
-   * plugins using the `custom` registration method will fail to load.
+   * In order to load plugins using the `custom` registration method, the host application must
+   * provide a way to retrieve the entry module that was loaded by the plugin's entry script.
+   * If not implemented properly, plugins using this registration method will fail to load.
    *
    * For plugins loaded from a local plugin manifest, the `entryModule` will be `undefined`.
+   *
+   * @see {@link PluginLoaderOptions.entryCallbackSettings}
+   * @see {@link PluginLoaderOptions.getPluginEntryModule}
    */
-  async loadPlugin(manifest: AnyPluginManifest): Promise<PluginLoadResult> {
+  async loadPlugin(manifest: PluginManifest): Promise<PluginLoadResult> {
     const pluginName = manifest.name;
     const reload = this.plugins.has(pluginName);
 
     const data: PluginLoadData = { status: 'pending', manifest };
     let entryModule: PluginEntryModule | undefined;
 
-    if (isStandardPluginManifest(manifest) && manifest.registrationMethod === 'callback') {
+    const isRemoteManifest =
+      manifest.registrationMethod === 'callback' || manifest.registrationMethod === 'custom';
+
+    if (manifest.registrationMethod === 'callback') {
       data.entryCallbackFired = false;
     }
 
@@ -232,7 +237,7 @@ export class PluginLoader implements PluginLoaderInterface {
     }
 
     try {
-      if (isStandardPluginManifest(manifest)) {
+      if (isRemoteManifest) {
         await this.loadPluginScripts(manifest, data);
       }
     } catch (e) {
@@ -247,7 +252,7 @@ export class PluginLoader implements PluginLoaderInterface {
     }
 
     try {
-      if (isStandardPluginManifest(manifest)) {
+      if (isRemoteManifest) {
         entryModule = await this.initSharedModules(manifest, data);
       }
     } catch (e) {
@@ -261,9 +266,7 @@ export class PluginLoader implements PluginLoaderInterface {
       };
     }
 
-    const pluginBuildHash = isStandardPluginManifest(manifest)
-      ? manifest.buildHash ?? uuidv4()
-      : uuidv4();
+    const pluginBuildHash = isRemoteManifest ? manifest.buildHash ?? uuidv4() : uuidv4();
 
     let loadedExtensions = cloneDeep(manifest.extensions).map<LoadedExtension>((e, index) => ({
       ...e,
@@ -271,7 +274,7 @@ export class PluginLoader implements PluginLoaderInterface {
       uid: `${pluginName}[${index}]_${pluginBuildHash}`,
     }));
 
-    if (isStandardPluginManifest(manifest)) {
+    if (isRemoteManifest) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       loadedExtensions = loadedExtensions.map((e) => decodeCodeRefs(e, entryModule!));
     }
@@ -285,7 +288,7 @@ export class PluginLoader implements PluginLoaderInterface {
   /**
    * Load all scripts of the given plugin.
    */
-  private async loadPluginScripts(manifest: PluginManifest, data: PluginLoadData) {
+  private async loadPluginScripts(manifest: RemotePluginManifest, data: PluginLoadData) {
     const pluginName = manifest.name;
 
     const [, rejectedReasons] = await settleAllPromises(
@@ -326,7 +329,7 @@ export class PluginLoader implements PluginLoaderInterface {
   /**
    * Initialize the plugin with provided shared modules.
    */
-  private async initSharedModules(manifest: PluginManifest, data: PluginLoadData) {
+  private async initSharedModules(manifest: RemotePluginManifest, data: PluginLoadData) {
     const pluginName = manifest.name;
 
     const entryModule =
@@ -372,7 +375,7 @@ export class PluginLoader implements PluginLoaderInterface {
    *
    * Fail early if there are any unsuccessful or unmet dependency resolutions.
    */
-  private resolvePluginDependencies(manifest: AnyPluginManifest) {
+  private resolvePluginDependencies(manifest: PluginManifest) {
     return new Promise<void>((resolve, reject) => {
       const pluginName = manifest.name;
       const requiredDependencies = manifest.dependencies ?? {};
