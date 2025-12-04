@@ -1,22 +1,18 @@
 import {
-  Brand,
   Button,
+  Content,
   Masthead,
-  MastheadToggle,
-  MastheadMain,
   MastheadBrand,
   MastheadContent,
-  PageToggleButton,
+  MastheadMain,
   Toolbar,
   ToolbarContent,
-  ToolbarItem,
   ToolbarGroup,
+  ToolbarItem,
 } from '@patternfly/react-core';
-import { BarsIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import pfLogo from '../images/pfColorLogo.svg';
-import LoadPluginModal from './LoadPluginModal';
 import type { LoadPluginModalRefProps } from './LoadPluginModal';
+import LoadPluginModal from './LoadPluginModal';
 
 const PageHeader: React.FC = () => {
   const loadPluginModalRef = React.useRef<LoadPluginModalRefProps>(null);
@@ -27,23 +23,15 @@ const PageHeader: React.FC = () => {
 
   return (
     <Masthead>
-      <MastheadToggle>
-        <PageToggleButton variant="plain">
-          <BarsIcon />
-        </PageToggleButton>
-      </MastheadToggle>
       <MastheadMain>
         <MastheadBrand>
-          <Brand src={pfLogo} alt="PatternFly logo" />
+          <Content component="h1">{document.title}</Content>
         </MastheadBrand>
       </MastheadMain>
       <MastheadContent>
         <Toolbar>
           <ToolbarContent>
-            <ToolbarGroup>
-              <ToolbarItem variant="label">{document.title}</ToolbarItem>
-            </ToolbarGroup>
-            <ToolbarGroup variant="button-group" alignment={{ default: 'alignRight' }}>
+            <ToolbarGroup align={{ default: 'alignEnd' }}>
               <ToolbarItem>
                 <Button
                   variant="primary"

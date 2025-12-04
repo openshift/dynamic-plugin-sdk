@@ -19,7 +19,8 @@
     "jest-print-config": "jest --showConfig",
     "sample-app-test-component": "yarn workspace @monorepo/sample-app run cypress run --component",
     "sample-app-test-e2e": "yarn workspace @monorepo/sample-app run cypress run --e2e",
-    "api-extractor": "api-extractor run --typescript-compiler-folder ./node_modules/typescript/lib"
+    "api-extractor": "api-extractor run --typescript-compiler-folder ./node_modules/typescript/lib",
+    "api-extractor-local": "yarn workspaces foreach --from '@openshift/*' run api-extractor-local"
   },
   "devDependencies": {
     "@babel/core": "^7.18.6",
@@ -27,10 +28,6 @@
     "@microsoft/api-documenter": "^7.19.24",
     "@microsoft/api-extractor": "^7.33.6",
     "@optimize-lodash/rollup-plugin": "^4.0.3",
-    "@patternfly/react-core": "^5.1.0",
-    "@patternfly/react-icons": "^5.1.0",
-    "@patternfly/react-styles": "^5.1.0",
-    "@patternfly/react-table": "^5.1.0",
     "@rollup/plugin-commonjs": "^21.0.2",
     "@rollup/plugin-json": "^5.0.2",
     "@rollup/plugin-node-resolve": "^13.1.1",

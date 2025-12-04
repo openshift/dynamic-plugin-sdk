@@ -6,7 +6,7 @@ type PageLayoutProps = React.PropsWithChildren<{
 }>;
 
 const PageLayout: React.FC<PageLayoutProps> = ({ header, children }) => (
-  <Page header={header}>
+  <Page isContentFilled masthead={header}>
     <PageSection isFilled>{children}</PageSection>
   </Page>
 );

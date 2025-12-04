@@ -1,7 +1,7 @@
 import { PluginStore, PluginStoreProvider } from '@openshift/dynamic-plugin-sdk';
 import * as React from 'react';
 import { render } from 'react-dom';
-import './app-styles';
+import '@patternfly/react-core/dist/styles/base.css';
 import ErrorBoundary from './components/ErrorBoundary';
 import Loading from './components/Loading';
 import PageContent from './components/PageContent';
