@@ -2,6 +2,11 @@
 
 > Changes prefixed with [!] refer to API breaking changes.
 
+## 5.0.0 - TBD
+
+- BREAKING: Minimum compatible version of `webpack` increased to `^5.100.0`. ([#280])
+- All `webpack` imports are now type-only to increase compatibility with other bundlers. ([#280])
+
 ## 4.1.0 - 2024-04-26
 
 - Allow overriding core webpack module federation plugins used by DynamicRemotePlugin ([#259])
@@ -63,3 +68,4 @@
 [#250]: https://github.com/openshift/dynamic-plugin-sdk/pull/250
 [#256]: https://github.com/openshift/dynamic-plugin-sdk/pull/256
 [#259]: https://github.com/openshift/dynamic-plugin-sdk/pull/259
+[#280]: https://github.com/openshift/dynamic-plugin-sdk/pull/280
