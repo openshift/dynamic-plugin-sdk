@@ -4,9 +4,9 @@
 
 ```ts
 
-import { Compiler } from 'webpack';
-import { container } from 'webpack';
-import { WebpackPluginInstance } from 'webpack';
+import type { Compiler } from 'webpack';
+import type { container } from 'webpack';
+import type { WebpackPluginInstance } from 'webpack';
 
 // @public
 export type AnyObject = Record<string, unknown>;

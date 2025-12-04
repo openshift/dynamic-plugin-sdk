@@ -26,7 +26,12 @@
     "api-extractor-local": "yarn run api-extractor --local"
   },
   "peerDependencies": {
-    "webpack": "^5.75.0"
+    "webpack": "^5.100.0"
+  },
+  "peerDependenciesMeta": {
+    "webpack": {
+      "optional": true
+    }
   },
   "dependencies": {
     "lodash": "^4.17.21",
