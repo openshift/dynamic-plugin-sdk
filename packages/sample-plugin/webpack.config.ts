@@ -1,7 +1,6 @@
 import path from 'path';
 import { DynamicRemotePlugin } from '@openshift/dynamic-plugin-sdk-webpack';
 import type { WebpackSharedObject } from '@openshift/dynamic-plugin-sdk-webpack';
-import CSSMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import type { Configuration, WebpackPluginInstance } from 'webpack';
 import { EnvironmentPlugin } from 'webpack';
 import extensions from './plugin-extensions';
@@ -81,11 +80,6 @@ const config: Configuration = {
           filename: isProd ? 'images/[contenthash][ext]' : 'images/[name][ext]',
         },
       },
-      {
-        test: /\.(css)$/,
-        include: pathTo('src'),
-        use: ['style-loader', 'css-loader'],
-      },
     ],
   },
   plugins,
@@ -94,7 +88,6 @@ const config: Configuration = {
     minimize: isProd,
     minimizer: [
       '...', // The '...' string represents the webpack default TerserPlugin instance
-      new CSSMinimizerPlugin(),
     ],
   },
 };
