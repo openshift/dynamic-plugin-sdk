@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { mockPluginManifest, mockPluginEntryModule } from '../test-mocks';
+import { mockLocalPluginManifest } from '../test-mocks';
 import PluginInfoTable from './PluginInfoTable';
 
 describe('PluginInfoTable', () => {
@@ -9,15 +9,9 @@ describe('PluginInfoTable', () => {
 
   it('Shows plugin runtime information', () => {
     cy.getPluginStore().then((pluginStore) => {
-      pluginStore.addPendingPlugin(mockPluginManifest({ name: 'test-3' }));
-
-      pluginStore.addLoadedPlugin(
-        mockPluginManifest({ name: 'test-2' }),
-        mockPluginEntryModule(),
-        [],
-      );
-
-      pluginStore.addFailedPlugin(mockPluginManifest({ name: 'test-1' }), 'Test error message');
+      pluginStore.addPendingPlugin(mockLocalPluginManifest({ name: 'test-3' }));
+      pluginStore.addLoadedPlugin(mockLocalPluginManifest({ name: 'test-2' }), []);
+      pluginStore.addFailedPlugin(mockLocalPluginManifest({ name: 'test-1' }), 'Boom!');
     });
 
     cy.get('[data-test-id="plugin-table"]')
@@ -47,12 +41,7 @@ describe('PluginInfoTable', () => {
 
   it('Allows to manually disable a loaded plugin', () => {
     cy.getPluginStore().then((pluginStore) => {
-      pluginStore.addLoadedPlugin(
-        mockPluginManifest({ name: 'test' }),
-        mockPluginEntryModule(),
-        [],
-      );
-
+      pluginStore.addLoadedPlugin(mockLocalPluginManifest({ name: 'test' }), []);
       pluginStore.enablePlugins(['test']);
     });
 

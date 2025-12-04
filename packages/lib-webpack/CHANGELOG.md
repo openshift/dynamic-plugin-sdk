@@ -1,7 +1,5 @@
 # Changelog for `@openshift/dynamic-plugin-sdk-webpack`
 
-> Changes prefixed with [!] refer to API breaking changes.
-
 ## 4.1.0 - 2024-04-26
 
 - Allow overriding core webpack module federation plugins used by DynamicRemotePlugin ([#259])
@@ -21,9 +19,9 @@
 > to the generated plugin manifest.
 
 - Add `transformPluginManifest` option to `DynamicRemotePlugin` ([#236])
-- [!] Rename `sharedScope` to `sharedScopeName` in `moduleFederationSettings` ([#236])
+- BREAKING: Rename `sharedScope` to `sharedScopeName` in `moduleFederationSettings` ([#236])
 - Validate values of plugin metadata `dependencies` object as semver ranges ([#239])
-- [!] Disallow empty strings as values of plugin metadata `dependencies` object ([#240])
+- BREAKING: Disallow empty strings as values of plugin metadata `dependencies` object ([#240])
 - Fix bug in `DynamicRemotePlugin` where `buildHash` in plugin manifest is not generated properly ([#227])
 
 ## 3.0.1 - 2023-04-13
@@ -34,14 +32,14 @@
 ## 3.0.0 - 2023-03-02
 
 - Add base URL for plugin assets to plugin manifest ([#206])
-- [!] Make `DynamicRemotePlugin` options `pluginMetadata` and `extensions` mandatory ([#207])
-- [!] Replace `DynamicRemotePlugin` option `moduleFederationLibraryType` with `moduleFederationSettings` ([#199])
+- BREAKING: Make `DynamicRemotePlugin` options `pluginMetadata` and `extensions` mandatory ([#207])
+- BREAKING: Replace `DynamicRemotePlugin` option `moduleFederationLibraryType` with `moduleFederationSettings` ([#199])
 - Allow building plugins which do not provide any exposed modules ([#199])
 
 ## 2.0.0 - 2023-01-23
 
 - Support building plugins using webpack library type other than `jsonp` ([#182])
-- [!] Emit error when a separate runtime chunk is used with `jsonp` library type ([#182])
+- BREAKING: Emit error when a separate runtime chunk is used with `jsonp` library type ([#182])
 - Allow customizing the filename of entry script and plugin manifest ([#182])
 - Ensure that all APIs referenced through the package index are exported ([#184])
 

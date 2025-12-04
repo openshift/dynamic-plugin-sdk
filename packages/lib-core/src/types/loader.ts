@@ -1,12 +1,12 @@
 import type { LoadedExtension } from './extension';
-import type { PluginManifest } from './plugin';
+import type { RemotePluginManifest, PluginManifest } from './plugin';
 import type { PluginEntryModule } from './runtime';
 
 export type PluginLoadResult =
   | {
       success: true;
-      entryModule: PluginEntryModule;
       loadedExtensions: LoadedExtension[];
+      entryModule?: PluginEntryModule;
     }
   | {
       success: false;
@@ -23,18 +23,18 @@ export type PluginLoaderInterface = {
    *
    * The implementation should validate the manifest object as necessary.
    */
-  loadPluginManifest: (manifestURL: string) => Promise<PluginManifest>;
+  loadPluginManifest: (manifestURL: string) => Promise<RemotePluginManifest>;
 
   /**
    * Transform the plugin manifest before loading the associated plugin.
    */
-  transformPluginManifest: (manifest: PluginManifest) => PluginManifest;
+  transformPluginManifest: <T extends PluginManifest>(manifest: T) => T;
 
   /**
    * Load a plugin from the given manifest.
    *
    * The implementation is responsible for decoding any code references in extensions
-   * listed in the plugin manifest.
+   * listed in the plugin manifest (except when loading from a local plugin manifest).
    *
    * The resulting Promise never rejects; any plugin load error(s) will be contained
    * within the {@link PluginLoadResult} object.

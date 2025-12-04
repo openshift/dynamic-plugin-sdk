@@ -66,8 +66,9 @@ export {
 export { ResourceFetch } from './types/fetch';
 export { PluginLoadResult, PluginLoaderInterface } from './types/loader';
 export {
-  PluginRegistrationMethod,
   PluginRuntimeMetadata,
+  RemotePluginManifest,
+  LocalPluginManifest,
   PluginManifest,
   PendingPlugin,
   LoadedPlugin,
