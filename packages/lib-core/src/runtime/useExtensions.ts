@@ -28,10 +28,7 @@ export const useExtensions = <TExtension extends Extension>(
 
   return React.useMemo(
     () =>
-      extensions.reduce<LoadedExtension<TExtension>[]>(
-        (acc, e) => ((predicate ?? (() => true))(e) ? [...acc, e] : acc),
-        [],
-      ),
+      extensions.filter((e): e is LoadedExtension<TExtension> => (predicate ?? (() => true))(e)),
     [extensions, predicate],
   );
 };

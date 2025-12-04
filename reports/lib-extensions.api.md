@@ -4,8 +4,6 @@
 
 ```ts
 
-/// <reference types="react" />
-
 import type { AnyObject } from '@openshift/dynamic-plugin-sdk';
 import type { CodeRef } from '@openshift/dynamic-plugin-sdk';
 import type { ComponentType } from 'react';
@@ -210,7 +208,7 @@ export const isCatalogItemProvider: (e: Extension) => e is CatalogItemProvider;
 export const isCatalogItemType: (e: Extension) => e is CatalogItemType;
 
 // @public (undocumented)
-export const isContextProvider: (e: Extension) => e is ContextProvider<unknown>;
+export const isContextProvider: (e: Extension) => e is ContextProvider;
 
 // @public (undocumented)
 export const isCreateResource: (e: Extension) => e is CreateResource;

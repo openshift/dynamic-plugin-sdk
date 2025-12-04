@@ -14,7 +14,7 @@ import type { UseK8sModel } from './use-model-types';
 export const getK8sModel = (
   k8s: K8sState,
   k8sGroupVersionKind: K8sResourceKindReference | K8sGroupVersionKind,
-): K8sModelCommon => {
+): K8sModelCommon | undefined => {
   const kindReference = transformGroupVersionKindToReference(k8sGroupVersionKind);
   return kindReference
     ? k8s?.getIn(['RESOURCES', 'models', kindReference]) ??
@@ -36,6 +36,8 @@ export const getK8sModel = (
  * ```
  */
 export const useK8sModel: UseK8sModel = (k8sGroupVersionKind) => [
-  useSelector<SDKStoreState, K8sModelCommon>(({ k8s }) => getK8sModel(k8s, k8sGroupVersionKind)),
+  useSelector<SDKStoreState, K8sModelCommon | undefined>(({ k8s }) =>
+    getK8sModel(k8s, k8sGroupVersionKind),
+  ),
   useSelector<SDKStoreState, boolean>(({ k8s }) => k8s?.getIn(['RESOURCES', 'inFlight']) ?? false),
 ];
