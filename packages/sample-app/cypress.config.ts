@@ -1,5 +1,5 @@
 import { defineConfig } from 'cypress';
-import webpackConfig from './webpack.config';
+import webpackConfig from './webpack.config.ts';
 
 export default defineConfig({
   screenshotsFolder: '../../screenshots',
