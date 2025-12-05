@@ -560,8 +560,8 @@ export const WorkspaceProvider: React_3.FC<React_3.PropsWithChildren<unknown>>;
 
 // Warnings were encountered during analysis:
 //
-// dist/types/app/redux/reducers/index.d.ts:8:5 - (ae-forgotten-export) The symbol "K8sAction" needs to be exported by the entry point index.d.ts
-// dist/types/utils/WorkspaceContext.d.ts:12:5 - (ae-forgotten-export) The symbol "WorkspaceContextState" needs to be exported by the entry point index.d.ts
-// dist/types/utils/WorkspaceContext.d.ts:14:5 - (ae-forgotten-export) The symbol "UpdateEvents" needs to be exported by the entry point index.d.ts
+// src/app/redux/reducers/index.ts:9:25 - (ae-forgotten-export) The symbol "K8sAction" needs to be exported by the entry point index.d.ts
+// src/utils/WorkspaceContext.ts:14:23 - (ae-forgotten-export) The symbol "WorkspaceContextState" needs to be exported by the entry point index.d.ts
+// src/utils/WorkspaceContext.ts:14:23 - (ae-forgotten-export) The symbol "UpdateEvents" needs to be exported by the entry point index.d.ts
 
 ```

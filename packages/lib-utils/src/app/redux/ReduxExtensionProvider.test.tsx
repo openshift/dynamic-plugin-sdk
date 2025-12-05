@@ -15,7 +15,7 @@ jest.mock('@openshift/dynamic-plugin-sdk', () => ({
   useResolvedExtensions: jest.fn(),
 }));
 
-const useResolvedExtensionsMock = jest.mocked(useResolvedExtensions, false);
+const useResolvedExtensionsMock = jest.mocked(useResolvedExtensions, { shallow: false });
 
 describe('ReduxExtensionProvider', () => {
   beforeEach(() => {
