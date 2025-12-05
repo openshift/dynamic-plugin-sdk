@@ -384,7 +384,6 @@ export class PluginLoader implements PluginLoaderInterface {
         Object.entries({ ...optionalDependencies, ...requiredDependencies }).forEach(
           ([depName, versionRange]) => {
             if (resolutions.has(depName)) {
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               const res = resolutions.get(depName)!;
               const isRequired = !!requiredDependencies[depName];
 
@@ -435,7 +434,6 @@ export class PluginLoader implements PluginLoaderInterface {
         return;
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const data = this.plugins.get(pluginName)!;
 
       if (data.entryCallbackFired) {
