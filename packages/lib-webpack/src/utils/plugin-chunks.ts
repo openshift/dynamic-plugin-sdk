@@ -1,4 +1,4 @@
-import { Compilation, Chunk, AssetInfo } from 'webpack';
+import type { Compilation, Chunk, AssetInfo } from 'webpack';
 
 export const findPluginChunks = (
   containerName: string,
@@ -25,7 +25,7 @@ export const findPluginChunks = (
     if (typeof entryChunk.runtime === 'string') {
       return entryChunk.runtime === chunk.name;
     } else if (entryChunk.runtime) {
-      return entryChunk.runtime.has(chunk.name);
+      return entryChunk.runtime.has(chunk.name ?? '');
     }
   });
 

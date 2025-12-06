@@ -6,10 +6,13 @@ const config: InitialOptionsTsJest = {
   ...baseConfig,
   testEnvironment: 'node',
 
-  globals: {
-    'ts-jest': {
-      tsconfig: path.resolve(__dirname, '../tsconfig-bases/lib-node-cjs.json'),
-    },
+  transform: {
+    '^.+\\.[tj]sx?$': [
+      'ts-jest',
+      {
+        tsconfig: path.resolve(__dirname, '../tsconfig-bases/lib-node-cjs.json'),
+      },
+    ],
   },
 };
 

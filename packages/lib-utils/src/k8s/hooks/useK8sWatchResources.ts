@@ -139,13 +139,13 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
   React.useEffect(() => {
     const reduxIDKeys = Object.keys(reduxIDs || {});
     reduxIDKeys.forEach((k) => {
-      if (reduxIDs?.[k] && reduxIDs[k].action) {
+      if (reduxIDs?.[k]) {
         dispatch(reduxIDs[k].action);
       }
     });
     return () => {
       reduxIDKeys.forEach((k) => {
-        if (reduxIDs?.[k] && reduxIDs[k].action) {
+        if (reduxIDs?.[k]) {
           dispatch(k8sActions.stopK8sWatch(reduxIDs[k].id));
         }
       });

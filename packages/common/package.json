@@ -4,6 +4,11 @@
   "description": "Common code and configuration used by all monorepo packages",
   "private": true,
   "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./jest/*": "./jest/*.ts",
+    "./tsconfig-bases/*": "./tsconfig-bases/*.json"
+  },
   "scripts": {
     "lint": "yarn run -T eslint $INIT_CWD",
     "test": "yarn run -T test $INIT_CWD"

@@ -13,10 +13,13 @@ const config: InitialOptionsTsJest = {
 
   setupFilesAfterEnv: [path.resolve(__dirname, 'setup-react.ts')],
 
-  globals: {
-    'ts-jest': {
-      tsconfig: path.resolve(__dirname, '../tsconfig-bases/lib-react-esm.json'),
-    },
+  transform: {
+    '^.+\\.[tj]sx?$': [
+      'ts-jest',
+      {
+        tsconfig: path.resolve(__dirname, '../tsconfig-bases/lib-react-esm.json'),
+      },
+    ],
   },
 };
 

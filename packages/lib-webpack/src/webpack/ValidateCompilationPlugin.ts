@@ -1,4 +1,4 @@
-import { WebpackPluginInstance, Compiler, WebpackError } from 'webpack';
+import type { WebpackPluginInstance, Compiler } from 'webpack';
 import { findPluginChunks } from '../utils/plugin-chunks';
 
 type ValidateCompilationPluginOptions = {
@@ -24,7 +24,7 @@ export class ValidateCompilationPlugin implements WebpackPluginInstance {
             'This configuration is not recommended since it may cause issues when reloading plugins at runtime.\n' +
             'Consider updating your webpack configuration to avoid emitting a separate runtime chunk.';
 
-        const error = new WebpackError(errorMessage);
+        const error = new compiler.webpack.WebpackError(errorMessage);
         error.chunk = runtimeChunk;
         (jsonpLibraryType ? compilation.errors : compilation.warnings).push(error);
       }

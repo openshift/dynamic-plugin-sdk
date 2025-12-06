@@ -10,7 +10,7 @@ import * as React_2 from 'react';
 export type AnyObject = Record<string, unknown>;
 
 // @public
-export const applyCodeRefSymbol: <T extends CodeRef<unknown>>(codeRef: T) => T;
+export const applyCodeRefSymbol: <T extends CodeRef>(codeRef: T) => T;
 
 // @public
 export const applyDefaults: <TObject>(obj: TObject, defaults: unknown) => TObject;
@@ -236,10 +236,10 @@ export class PluginStore implements PluginStoreInterface {
     // (undocumented)
     getExposedModule<TModule extends AnyObject>(pluginName: string, moduleName: string): Promise<TModule>;
     // (undocumented)
-    getExtensions(): LoadedExtension<Extension<string, AnyObject>>[];
+    getExtensions(): LoadedExtension[];
     // (undocumented)
     getFeatureFlags(): {
-        [x: string]: boolean;
+        [flagName: string]: boolean;
     };
     // (undocumented)
     getPluginInfo(): PluginInfoEntry[];
@@ -311,7 +311,7 @@ export class TestPluginStore extends PluginStore {
 }
 
 // @public
-export const useExtensions: <TExtension extends Extension<string, AnyObject>>(predicate?: ExtensionPredicate<TExtension> | undefined) => LoadedExtension<TExtension>[];
+export const useExtensions: <TExtension extends Extension>(predicate?: ExtensionPredicate<TExtension>) => LoadedExtension<TExtension>[];
 
 // @public
 export const useFeatureFlag: (name: string) => UseFeatureFlagResult;
@@ -326,7 +326,7 @@ export const usePluginInfo: () => PluginInfoEntry[];
 export const usePluginStore: () => PluginStoreInterface;
 
 // @public
-export const useResolvedExtensions: <TExtension extends Extension<string, AnyObject>>(predicate?: ExtensionPredicate<TExtension> | undefined, options?: UseResolvedExtensionsOptions) => UseResolvedExtensionsResult<TExtension>;
+export const useResolvedExtensions: <TExtension extends Extension>(predicate?: ExtensionPredicate<TExtension>, options?: UseResolvedExtensionsOptions) => UseResolvedExtensionsResult<TExtension>;
 
 // @public (undocumented)
 export type UseResolvedExtensionsOptions = Partial<{

@@ -235,7 +235,6 @@ export class PluginStore implements PluginStoreInterface {
         return;
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const plugin = this.loadedPlugins.get(pluginName)!;
 
       if (plugin.enabled !== enabled) {
@@ -345,7 +344,6 @@ export class PluginStore implements PluginStoreInterface {
       );
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const plugin = this.loadedPlugins.get(pluginName)!;
 
     const referencedModule = await getPluginModule<TModule>(

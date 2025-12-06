@@ -4,8 +4,6 @@
 
 ```ts
 
-/// <reference types="react" />
-
 import type { ActionType as ActionType_2 } from 'typesafe-actions';
 import type { AnyAction } from 'redux';
 import type { AnyObject } from '@openshift/dynamic-plugin-sdk';
@@ -75,20 +73,22 @@ export type BulkMessageHandler = GenericHandler<MessageDataType[]>;
 // @public (undocumented)
 export type CloseHandler = GenericHandler<CloseEvent>;
 
+// Warning: (ae-forgotten-export) The symbol "ResourceReadArgs" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export const commonFetch: (url: string, requestInit?: RequestInit | undefined, timeout?: number | undefined, isK8sAPIRequest?: boolean | undefined) => Promise<Response>;
+export const commonFetch: (...[url, requestInit, timeout, isK8sAPIRequest]: ResourceReadArgs) => Promise<Response>;
 
 // @public (undocumented)
 export const commonFetchJSON: {
     <TResult>(url: string, requestInit?: RequestInit | undefined, timeout?: number | undefined, isK8sAPIRequest?: boolean | undefined): Promise<TResult>;
-    put<TResult_1>(url: string, data: unknown, requestInit?: RequestInit | undefined, timeout?: number | undefined, isK8sAPIRequest?: boolean | undefined): Promise<TResult_1>;
-    post<TResult_2>(url: string, data: unknown, requestInit?: RequestInit | undefined, timeout?: number | undefined, isK8sAPIRequest?: boolean | undefined): Promise<TResult_2>;
-    patch<TResult_3>(url: string, data: unknown, requestInit?: RequestInit | undefined, timeout?: number | undefined, isK8sAPIRequest?: boolean | undefined): Promise<TResult_3>;
-    delete<TResult_4>(url: string, data?: unknown, requestInit?: RequestInit | undefined, timeout?: number | undefined, isK8sAPIRequest?: boolean | undefined): Promise<TResult_4>;
+    put<TResult>(url: string, data: unknown, requestInit?: RequestInit | undefined, timeout?: number | undefined, isK8sAPIRequest?: boolean | undefined): Promise<TResult>;
+    post<TResult>(url: string, data: unknown, requestInit?: RequestInit | undefined, timeout?: number | undefined, isK8sAPIRequest?: boolean | undefined): Promise<TResult>;
+    patch<TResult>(url: string, data: unknown, requestInit?: RequestInit | undefined, timeout?: number | undefined, isK8sAPIRequest?: boolean | undefined): Promise<TResult>;
+    delete<TResult>(url: string, data?: unknown, requestInit?: RequestInit | undefined, timeout?: number | undefined, isK8sAPIRequest?: boolean | undefined): Promise<TResult>;
 };
 
 // @public (undocumented)
-export const commonFetchText: (url: string, requestInit?: RequestInit | undefined, timeout?: number | undefined, isK8sAPIRequest?: boolean | undefined) => Promise<string>;
+export const commonFetchText: (...[url, requestInit, timeout, isK8sAPIRequest]: ResourceReadArgs) => Promise<string>;
 
 // @public (undocumented)
 export const createAPIActions: (dispatch: Dispatch) => APIActions;
@@ -132,7 +132,7 @@ export function getActiveWorkspace(): string | null;
 export type GetGroupVersionKindForModel = (model: K8sModelCommon) => K8sResourceIdentifier;
 
 // @public
-export const getK8sResourceURL: (model: K8sModelCommon, resource?: K8sResourceCommon | undefined, queryOptions?: QueryOptions, isCreate?: boolean) => string;
+export const getK8sResourceURL: (model: K8sModelCommon, resource?: K8sResourceCommon, queryOptions?: QueryOptions, isCreate?: boolean) => string;
 
 // @public
 export const getUtilsConfig: () => UtilsConfig;
@@ -393,81 +393,7 @@ export type ResourcesObject = {
 
 // @public
 export const SDKReducers: Readonly<{
-    k8s: (state: K8sState, action: {
-        type: import("../actions/k8s").ActionType.StartWatchK8sObject;
-        payload: {
-            id: string;
-        };
-    } | {
-        type: import("../actions/k8s").ActionType.StartWatchK8sList;
-        payload: {
-            id: string;
-            query: Query;
-        };
-    } | {
-        type: import("../actions/k8s").ActionType.ModifyObject;
-        payload: {
-            id: string;
-            k8sObjects: K8sResourceCommon;
-        };
-    } | {
-        type: import("../actions/k8s").ActionType.StopWatchK8s;
-        payload: {
-            id: string;
-        };
-    } | {
-        type: import("../actions/k8s").ActionType.Errored;
-        payload: {
-            id: string;
-            k8sObjects: unknown;
-        };
-    } | {
-        type: import("../actions/k8s").ActionType.Loaded;
-        payload: {
-            id: string;
-            k8sObjects: K8sResourceCommon[];
-        };
-    } | {
-        type: import("../actions/k8s").ActionType.BulkAddToList;
-        payload: {
-            id: string;
-            k8sObjects: K8sResourceCommon[];
-        };
-    } | {
-        type: import("../actions/k8s").ActionType.UpdateListFromWS;
-        payload: {
-            id: string;
-            k8sObjects: {
-                type: "ADDED" | "DELETED" | "MODIFIED";
-                object: K8sResourceCommon;
-            }[];
-        };
-    } | {
-        type: import("../actions/k8s").ActionType.FilterList;
-        payload: {
-            id: string;
-            name: string;
-            value: Partial<{
-                selected: string[];
-                all: string[];
-            }>;
-        };
-    } | {
-        type: import("../actions/k8s").ActionType.ReceivedResources;
-        payload: {
-            resources: DiscoveryResources;
-        };
-    } | {
-        type: import("../actions/k8s").ActionType.SetResourcesInFlight;
-        payload: {
-            isInFlight: boolean;
-        };
-    } | {
-        type: import("../actions/k8s").ActionType.SetBatchesInFlight;
-        payload: {
-            isInFlight: boolean;
-        };
-    }) => K8sState;
+    k8s: (state: K8sState, action: K8sAction) => K8sState;
 }>;
 
 // @public (undocumented)
@@ -484,7 +410,7 @@ export function setActiveWorkspaceLocalStorage(workspace: string): void;
 export const setUtilsConfig: (c: UtilsConfig) => void;
 
 // @public (undocumented)
-export type UseK8sModel = (groupVersionKind: K8sResourceKindReference | K8sGroupVersionKind) => [K8sModelCommon, boolean];
+export type UseK8sModel = (groupVersionKind: K8sResourceKindReference | K8sGroupVersionKind) => [K8sModelCommon | undefined, boolean];
 
 // @public
 export const useK8sModel: UseK8sModel;
@@ -498,16 +424,16 @@ export type UseK8sModels = () => [{
 export const useK8sModels: UseK8sModels;
 
 // @public
-export const useK8sWatchResource: <R extends K8sResourceCommon | K8sResourceCommon[]>(initResource: WatchK8sResource | null, initModel?: K8sModelCommon | undefined, options?: Partial<WebSocketOptions & RequestInit & {
-    wsPrefix?: string | undefined;
-    pathPrefix?: string | undefined;
-}> | undefined) => WatchK8sResult<R>;
+export const useK8sWatchResource: <R extends K8sResourceCommon | K8sResourceCommon[]>(initResource: WatchK8sResource | null, initModel?: K8sModelCommon, options?: Partial<WebSocketOptions & RequestInit & {
+    wsPrefix?: string;
+    pathPrefix?: string;
+}>) => WatchK8sResult<R>;
 
 // @public
-export const useK8sWatchResources: <R extends ResourcesObject>(initResources: WatchK8sResources<R>, initModels?: K8sModelCommon[] | undefined, options?: Partial<WebSocketOptions & RequestInit & {
-    wsPrefix?: string | undefined;
-    pathPrefix?: string | undefined;
-}> | undefined) => WatchK8sResults<R>;
+export const useK8sWatchResources: <R extends ResourcesObject>(initResources: WatchK8sResources<R>, initModels?: K8sModelCommon[], options?: Partial<WebSocketOptions & RequestInit & {
+    wsPrefix?: string;
+    pathPrefix?: string;
+}>) => WatchK8sResults<R>;
 
 // @public
 export const useWorkspace: () => readonly [string | null, (newWorkspace: string) => void];
@@ -634,7 +560,8 @@ export const WorkspaceProvider: React_3.FC<React_3.PropsWithChildren<unknown>>;
 
 // Warnings were encountered during analysis:
 //
-// dist/types/utils/WorkspaceContext.d.ts:13:5 - (ae-forgotten-export) The symbol "WorkspaceContextState" needs to be exported by the entry point index.d.ts
-// dist/types/utils/WorkspaceContext.d.ts:15:5 - (ae-forgotten-export) The symbol "UpdateEvents" needs to be exported by the entry point index.d.ts
+// src/app/redux/reducers/index.ts:9:25 - (ae-forgotten-export) The symbol "K8sAction" needs to be exported by the entry point index.d.ts
+// src/utils/WorkspaceContext.ts:14:23 - (ae-forgotten-export) The symbol "WorkspaceContextState" needs to be exported by the entry point index.d.ts
+// src/utils/WorkspaceContext.ts:14:23 - (ae-forgotten-export) The symbol "UpdateEvents" needs to be exported by the entry point index.d.ts
 
 ```

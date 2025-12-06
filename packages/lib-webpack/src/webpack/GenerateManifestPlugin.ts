@@ -1,6 +1,5 @@
 import type { PluginManifest } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
 import type { WebpackPluginInstance, Compiler } from 'webpack';
-import { Compilation, sources, WebpackError } from 'webpack';
 import { findPluginChunks, getChunkFiles } from '../utils/plugin-chunks';
 
 type InputManifestData = Omit<PluginManifest, 'baseURL' | 'loadScripts' | 'buildHash'>;
@@ -31,7 +30,7 @@ export class GenerateManifestPlugin implements WebpackPluginInstance {
           name: GenerateManifestPlugin.name,
           // Using one of the later asset processing stages to ensure all assets
           // are already added and optimized within the given webpack compilation
-          stage: Compilation.PROCESS_ASSETS_STAGE_ANALYSE,
+          stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_ANALYSE,
         },
         () => {
           const { entryChunk, runtimeChunk } = findPluginChunks(containerName, compilation);
@@ -57,7 +56,7 @@ export class GenerateManifestPlugin implements WebpackPluginInstance {
 
           compilation.emitAsset(
             manifestFilename,
-            new sources.RawSource(Buffer.from(manifestContent)),
+            new compiler.webpack.sources.RawSource(Buffer.from(manifestContent)),
           );
 
           const warnings: string[] = [];
@@ -71,7 +70,7 @@ export class GenerateManifestPlugin implements WebpackPluginInstance {
           }
 
           warnings.forEach((message) => {
-            const error = new WebpackError(message);
+            const error = new compiler.webpack.WebpackError(message);
             error.file = manifestFilename;
             compilation.warnings.push(error);
           });
