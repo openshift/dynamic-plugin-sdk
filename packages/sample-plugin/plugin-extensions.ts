@@ -1,29 +1,28 @@
+import type {
+  SampleAppExtensionWithText,
+  SampleAppExtensionWithComponent,
+} from '@monorepo/sample-app/src/sample-extensions';
 import type { EncodedExtension } from '@openshift/dynamic-plugin-sdk';
-import type { ModelFeatureFlag, TelemetryListener } from '@openshift/dynamic-plugin-sdk-extensions';
 
-// TODO(vojtech): make EncodedExtension type work with A | B type unions
+// TODO(vojtech): make EncodedExtension<T> type param work with A | B unions
 
-const e1: EncodedExtension<ModelFeatureFlag> = {
-  type: 'core.flag/model',
+const extensions: EncodedExtension[] = [];
+
+extensions.push({
+  type: 'sample-app.text',
   properties: {
-    flag: 'EXAMPLE',
-    model: {
-      group: 'example.org',
-      version: 'v1',
-      kind: 'ExampleModel',
-    },
+    text: 'Plasma reactors online',
   },
-};
+} as EncodedExtension<SampleAppExtensionWithText>);
 
-const e2: EncodedExtension<TelemetryListener> = {
-  type: 'core.telemetry/listener',
+extensions.push({
+  type: 'sample-app.component',
   properties: {
-    listener: { $codeRef: 'telemetryListener' },
+    component: { $codeRef: 'testComponent' },
   },
   flags: {
-    required: ['TELEMETRY_FLAG'],
-    disallowed: [],
+    required: ['SAMPLE_FLAG'],
   },
-};
+} as EncodedExtension<SampleAppExtensionWithComponent>);
 
-export default [e1, e2];
+export default extensions;

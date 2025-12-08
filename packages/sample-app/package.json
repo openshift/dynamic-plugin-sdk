@@ -14,7 +14,6 @@
   },
   "devDependencies": {
     "@openshift/dynamic-plugin-sdk": "portal:../lib-core",
-    "@openshift/dynamic-plugin-sdk-extensions": "portal:../lib-extensions",
     "@openshift/dynamic-plugin-sdk-webpack": "portal:../lib-webpack",
     "@patternfly/react-core": "^6.4.0",
     "@patternfly/react-icons": "^6.4.0",

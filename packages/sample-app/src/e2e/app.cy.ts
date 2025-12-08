@@ -6,7 +6,7 @@ describe('Sample Plugin Host Application', () => {
       .find('tbody')
       .should('contain.text', 'No plugins detected');
 
-    cy.get('[data-test-id="plugin-modal-open"]').should('have.text', 'Load plugin').click();
+    cy.get('[data-test-id="plugin-modal-open"]').should('have.text', 'Load remote plugin').click();
 
     cy.get('[data-test-id="plugin-modal-url"]').should(
       'have.value',

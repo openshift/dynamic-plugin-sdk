@@ -7,7 +7,7 @@ const metadata: PluginBuildMetadata = {
     'sample-app': '^1.0.0',
   },
   exposedModules: {
-    telemetryListener: './src/telemetry-listener',
+    testComponent: './src/test-component',
   },
   customProperties: {
     test: true,
