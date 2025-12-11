@@ -1,4 +1,4 @@
-import { WebpackPluginInstance, Compiler, Compilation, sources, WebpackError } from 'webpack';
+import type { WebpackPluginInstance, Compiler } from 'webpack';
 import { findPluginChunks, getChunkFiles } from '../utils/plugin-chunks';
 
 type PatchEntryCallbackPluginOptions = {
@@ -17,20 +17,20 @@ export class PatchEntryCallbackPlugin implements WebpackPluginInstance {
       compilation.hooks.processAssets.tap(
         {
           name: PatchEntryCallbackPlugin.name,
-          stage: Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE,
+          stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE,
         },
         () => {
           const { entryChunk } = findPluginChunks(containerName, compilation);
 
           getChunkFiles(entryChunk, compilation).forEach((fileName) => {
             compilation.updateAsset(fileName, (source) => {
-              const newSource = new sources.ReplaceSource(source);
+              const newSource = new compiler.webpack.sources.ReplaceSource(source);
               const fromIndex = source.source().toString().indexOf(`${callbackName}(`);
 
               if (fromIndex >= 0) {
                 newSource.insert(fromIndex + callbackName.length + 1, `'${pluginID}', `);
               } else {
-                const error = new WebpackError(`Missing call to ${callbackName}`);
+                const error = new compiler.webpack.WebpackError(`Missing call to ${callbackName}`);
                 error.file = fileName;
                 error.chunk = entryChunk;
                 compilation.errors.push(error);

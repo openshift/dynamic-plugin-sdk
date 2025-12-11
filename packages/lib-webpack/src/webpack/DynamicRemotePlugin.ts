@@ -6,7 +6,7 @@ import type {
 import { identity, isEmpty, mapValues, intersection } from 'lodash';
 import * as semver from 'semver';
 import * as yup from 'yup';
-import { WebpackPluginInstance, Compiler, container } from 'webpack';
+import type { WebpackPluginInstance, Compiler, container } from 'webpack';
 import type { PluginBuildMetadata } from '../types/plugin';
 import type { WebpackSharedObject } from '../types/webpack';
 import { dynamicRemotePluginAdaptedOptionsSchema } from '../yup-schemas';
@@ -231,8 +231,8 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
     const moduleFederationSharedScope = moduleFederationSettings.sharedScopeName ?? 'default';
 
     const {
-      ModuleFederationPlugin = container.ModuleFederationPlugin,
-      ContainerPlugin = container.ContainerPlugin,
+      ModuleFederationPlugin = compiler.webpack.container.ModuleFederationPlugin,
+      ContainerPlugin = compiler.webpack.container.ContainerPlugin,
     } = moduleFederationSettings.pluginOverride ?? {};
 
     const entryCallbackName = entryCallbackSettings.name ?? DEFAULT_REMOTE_ENTRY_CALLBACK;
