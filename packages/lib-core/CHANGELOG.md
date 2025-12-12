@@ -1,13 +1,15 @@
 # Changelog for `@openshift/dynamic-plugin-sdk`
 
-> Changes prefixed with [!] refer to API breaking changes.
-
 ## 6.0.0 - TODO
 
-> TODO highlight major changes for this release here.
+> This release adds new features, including the ability to load plugins from local manifests,
+> i.e. without involving the standard webpack plugin load process. This can be used to implement
+> the concept of plugins which are statically linked to the host application at its build time.
+> Note that the original `PluginManifest` type has been renamed to `RemotePluginManifest`.
 
 - Add support for optional dependencies ([#273])
-- [!] Move plugin manifest extension post-processing to `PluginLoader.loadPlugin` ([#280])
+- BREAKING: Add support for loading plugins from local manifests ([#281])
+- BREAKING: Move plugin manifest extension post-processing to `PluginLoader.loadPlugin` ([#280])
 - Improve code reference types and make them support optional chaining ([#274])
 
 ## 5.0.1 - 2024-01-15
@@ -20,7 +22,7 @@
 > the `PluginStore`. Note that the `useResolvedExtensions` hook does not automatically disable
 > plugins whose extensions have code reference resolution errors.
 
-- [!] Rename `postProcessManifest` loader option to `transformPluginManifest` ([#236])
+- BREAKING: Rename `postProcessManifest` loader option to `transformPluginManifest` ([#236])
 - Support passing custom plugin loader implementation to `PluginStore` ([#232])
 - Add `TestPluginStore` intended for React component testing purposes ([#232])
 - Add options to `useResolvedExtensions` hook to customize its default behavior ([#241])
@@ -30,10 +32,10 @@
 > This release removes the `PluginLoader` export. Pass the former `PluginLoader`
 > options object as `loaderOptions` when creating the `PluginStore`.
 
-- [!] Modify `PluginStore.loadPlugin` signature to accept plugin manifest ([#212])
-- [!] Ensure `PluginStore.loadPlugin` returns the same Promise for pending plugins ([#212])
-- [!] Treat `PluginLoader` as an implementation detail of `PluginStore` ([#212])
-- [!] Replace `entryCallbackName` loader option with `entryCallbackSettings.name` ([#212])
+- BREAKING: Modify `PluginStore.loadPlugin` signature to accept plugin manifest ([#212])
+- BREAKING: Ensure `PluginStore.loadPlugin` returns the same Promise for pending plugins ([#212])
+- BREAKING: Treat `PluginLoader` as an implementation detail of `PluginStore` ([#212])
+- BREAKING: Replace `entryCallbackName` loader option with `entryCallbackSettings.name` ([#212])
 - Add `entryCallbackSettings.autoRegisterCallback` loader option ([#212])
 - Support tracking pending plugins via `PluginStore.getPluginInfo` ([#212])
 - Provide access to raw plugin manifest in all `PluginInfoEntry` objects ([#212])
@@ -47,7 +49,7 @@
 - Allow plugins to pass custom properties via plugin manifest ([#204])
 - Add `sdkVersion` to `PluginStore` for better runtime diagnostics ([#200])
 - Provide direct access to raw plugin manifest data ([#207])
-- [!] Remove `PluginStore` option `postProcessExtensions` ([#207])
+- BREAKING: Remove `PluginStore` option `postProcessExtensions` ([#207])
 - Add technical compatibility with React 18 ([#208])
 
 ## 2.0.1 - 2023-01-27
@@ -63,7 +65,7 @@
 - Allow reloading plugins which are already loaded ([#182])
 - Allow providing custom manifest object in `PluginStore.loadPlugin` ([#182])
 - Provide direct access to plugin modules via `PluginStore.getExposedModule` ([#180])
-- [!] Fix `useResolvedExtensions` hook to reset result before restarting resolution ([#182])
+- BREAKING: Fix `useResolvedExtensions` hook to reset result before restarting resolution ([#182])
 - Ensure that all APIs referenced through the package index are exported ([#184])
 
 ## 1.0.0 - 2022-10-27
@@ -87,3 +89,4 @@
 [#273]: https://github.com/openshift/dynamic-plugin-sdk/pull/273
 [#274]: https://github.com/openshift/dynamic-plugin-sdk/pull/274
 [#280]: https://github.com/openshift/dynamic-plugin-sdk/pull/280
+[#281]: https://github.com/openshift/dynamic-plugin-sdk/pull/281

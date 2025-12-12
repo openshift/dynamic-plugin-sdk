@@ -1,14 +1,14 @@
-import type { PluginManifest } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
+import type { RemotePluginManifest } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
 import type { WebpackPluginInstance, Compiler } from 'webpack';
 import { findPluginChunks, getChunkFiles } from '../utils/plugin-chunks';
 
-type InputManifestData = Omit<PluginManifest, 'baseURL' | 'loadScripts' | 'buildHash'>;
+type InputManifestData = Omit<RemotePluginManifest, 'baseURL' | 'loadScripts' | 'buildHash'>;
 
 type GenerateManifestPluginOptions = {
   containerName: string;
   manifestFilename: string;
   manifestData: InputManifestData;
-  transformManifest: (manifest: PluginManifest) => PluginManifest;
+  transformManifest: (manifest: RemotePluginManifest) => RemotePluginManifest;
 };
 
 export class GenerateManifestPlugin implements WebpackPluginInstance {

@@ -1,7 +1,7 @@
 import type { LoadedExtension } from '@openshift/dynamic-plugin-sdk';
 import { applyCodeRefSymbol } from '@openshift/dynamic-plugin-sdk';
 import * as React from 'react';
-import { mockPluginManifest, mockPluginEntryModule } from '../test-mocks';
+import { mockLocalPluginManifest } from '../test-mocks';
 import { RenderExtensions } from './PageContent';
 
 describe('RenderExtensions', () => {
@@ -11,52 +11,34 @@ describe('RenderExtensions', () => {
 
   it('Invokes all telemetry listener functions', () => {
     cy.getPluginStore().then((pluginStore) => {
-      const manifest = mockPluginManifest({
+      const fooListener = cy.spy().as('fooListener');
+      const barListener = cy.spy().as('barListener');
+
+      const manifest = mockLocalPluginManifest({
         name: 'test',
         extensions: [
           {
             type: 'core.telemetry/listener',
             properties: {
-              listener: { $codeRef: 'FooModule' },
+              listener: applyCodeRefSymbol(() => Promise.resolve(fooListener)),
             },
           },
           {
             type: 'core.telemetry/listener',
             properties: {
-              listener: { $codeRef: 'BarModule.fizz' },
+              listener: applyCodeRefSymbol(() => Promise.resolve(barListener)),
             },
           },
         ],
       });
 
-      const fooListener = cy.spy().as('fooListener');
-      const barListener = cy.spy().as('barListener');
+      const loadedExtensions: LoadedExtension[] = manifest.extensions.map((e, index) => ({
+        ...e,
+        pluginName: manifest.name,
+        uid: `${manifest.name}[${index}]`,
+      }));
 
-      const entryModule = mockPluginEntryModule({
-        FooModule: { default: fooListener },
-        BarModule: { fizz: barListener },
-      });
-
-      const loadedExtensions: LoadedExtension[] = [
-        {
-          type: 'core.telemetry/listener',
-          properties: {
-            listener: applyCodeRefSymbol(() => Promise.resolve(fooListener)),
-          },
-          pluginName: 'test',
-          uid: 'test[0]',
-        },
-        {
-          type: 'core.telemetry/listener',
-          properties: {
-            listener: applyCodeRefSymbol(() => Promise.resolve(barListener)),
-          },
-          pluginName: 'test',
-          uid: 'test[1]',
-        },
-      ];
-
-      pluginStore.addLoadedPlugin(manifest, entryModule, loadedExtensions);
+      pluginStore.addLoadedPlugin(manifest, loadedExtensions);
       pluginStore.enablePlugins(['test']);
     });
 

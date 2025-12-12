@@ -23,8 +23,10 @@ const columnTooltips = {
 const getDropdownActions = (entry: PluginInfoEntry): IAction[] => [
   {
     title: 'Log plugin manifest',
-    // eslint-disable-next-line no-console
-    onClick: () => console.log(`${entry.manifest.name} manifest`, entry.manifest),
+    onClick: () => {
+      // eslint-disable-next-line no-console
+      console.log(`${entry.manifest.name} manifest`, entry.manifest);
+    },
   },
 ];
 
