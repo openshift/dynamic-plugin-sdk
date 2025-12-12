@@ -1,4 +1,4 @@
-import { Compilation, Chunk, AssetInfo } from 'webpack';
+import type { Compilation, Chunk, AssetInfo } from 'webpack';
 
 export const findPluginChunks = (
   containerName: string,
@@ -20,12 +20,13 @@ export const findPluginChunks = (
   }
 
   const runtimeChunk = allChunks.find((chunk) => {
+    const chunkName = chunk.name ?? '';
     // Chunk runtime can be undefined | string | SortableSet<string>
     // so we need a different check for the SortableSet value
     if (typeof entryChunk.runtime === 'string') {
-      return entryChunk.runtime === chunk.name;
+      return entryChunk.runtime === chunkName;
     } else if (entryChunk.runtime) {
-      return entryChunk.runtime.has(chunk.name);
+      return entryChunk.runtime.has(chunkName);
     }
   });
 
