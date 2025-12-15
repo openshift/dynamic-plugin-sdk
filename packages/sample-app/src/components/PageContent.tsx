@@ -27,14 +27,16 @@ import PluginInfoTable from './PluginInfoTable';
 
 const ExtensionCard: React.FC<{ extension: LoadedExtension }> = ({ extension, children }) => (
   <Card isCompact data-test-id="extension-card">
-    <CardTitle>
+    <CardTitle data-test-id="extension-card-title">
       <LabelWithTooltipIcon
         label={extension.type}
         tooltipContent={`Extension UID: ${extension.uid}`}
       />
     </CardTitle>
-    <CardBody>{children}</CardBody>
-    <CardFooter>Contributed by {extension.pluginName}</CardFooter>
+    <CardBody data-test-id="extension-card-body">{children}</CardBody>
+    <CardFooter data-test-id="extension-card-footer">
+      Contributed by {extension.pluginName}
+    </CardFooter>
   </Card>
 );
 
