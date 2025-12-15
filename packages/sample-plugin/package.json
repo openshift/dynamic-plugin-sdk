@@ -12,12 +12,16 @@
     "http-server": "http-server dist -p 9001 -c-1 --cors"
   },
   "devDependencies": {
+    "@monorepo/sample-app": "portal:../sample-app",
     "@openshift/dynamic-plugin-sdk": "portal:../lib-core",
-    "@openshift/dynamic-plugin-sdk-extensions": "portal:../lib-extensions",
     "@openshift/dynamic-plugin-sdk-webpack": "portal:../lib-webpack",
+    "@patternfly/react-core": "^6.4.0",
+    "css-loader": "^7.1.2",
+    "css-minimizer-webpack-plugin": "7.0.2",
     "http-server": "^14.1.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "style-loader": "^4.0.0",
     "ts-loader": "^9.5.4",
     "typescript": "~4.4.4",
     "webpack": "^5.100.0",

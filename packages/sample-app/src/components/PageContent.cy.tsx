@@ -1,5 +1,4 @@
 import type { LoadedExtension } from '@openshift/dynamic-plugin-sdk';
-import { applyCodeRefSymbol } from '@openshift/dynamic-plugin-sdk';
 import * as React from 'react';
 import { mockLocalPluginManifest } from '../test-mocks';
 import { RenderExtensions } from './PageContent';
@@ -9,24 +8,21 @@ describe('RenderExtensions', () => {
     cy.mount(<RenderExtensions />);
   });
 
-  it('Invokes all telemetry listener functions', () => {
+  it('Renders sample-app.text extensions', () => {
     cy.getPluginStore().then((pluginStore) => {
-      const fooListener = cy.spy().as('fooListener');
-      const barListener = cy.spy().as('barListener');
-
       const manifest = mockLocalPluginManifest({
         name: 'test',
         extensions: [
           {
-            type: 'core.telemetry/listener',
+            type: 'sample-app.text',
             properties: {
-              listener: applyCodeRefSymbol(() => Promise.resolve(fooListener)),
+              text: 'Hello from extension 1',
             },
           },
           {
-            type: 'core.telemetry/listener',
+            type: 'sample-app.text',
             properties: {
-              listener: applyCodeRefSymbol(() => Promise.resolve(barListener)),
+              text: 'Hello from extension 2',
             },
           },
         ],
@@ -42,13 +38,23 @@ describe('RenderExtensions', () => {
       pluginStore.enablePlugins(['test']);
     });
 
-    cy.get('[data-test-id="extension-card"]')
+    cy.get('[data-test-id="extension-card-title"]')
       .should('have.length', 2)
       .each((element) => {
-        cy.wrap(element).should('contain.text', 'core.telemetry/listener');
+        cy.wrap(element).should('contain.text', 'sample-app.text');
       });
 
-    cy.get('@fooListener').should('be.calledWith', 'TestEvent');
-    cy.get('@barListener').should('be.calledWith', 'TestEvent');
+    cy.get('[data-test-id="extension-card-body"]')
+      .first()
+      .should('contain.text', 'Hello from extension 1');
+    cy.get('[data-test-id="extension-card-body"]')
+      .last()
+      .should('contain.text', 'Hello from extension 2');
+
+    cy.get('[data-test-id="extension-card-footer"]')
+      .should('have.length', 2)
+      .each((element) => {
+        cy.wrap(element).should('contain.text', 'Contributed by test');
+      });
   });
 });

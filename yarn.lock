@@ -1020,12 +1020,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@monorepo/sample-app@portal:../sample-app::locator=%40monorepo%2Fsample-plugin%40workspace%3Apackages%2Fsample-plugin":
+  version: 0.0.0-use.local
+  resolution: "@monorepo/sample-app@portal:../sample-app::locator=%40monorepo%2Fsample-plugin%40workspace%3Apackages%2Fsample-plugin"
+  languageName: node
+  linkType: soft
+
 "@monorepo/sample-app@workspace:packages/sample-app":
   version: 0.0.0-use.local
   resolution: "@monorepo/sample-app@workspace:packages/sample-app"
   dependencies:
     "@openshift/dynamic-plugin-sdk": "portal:../lib-core"
-    "@openshift/dynamic-plugin-sdk-extensions": "portal:../lib-extensions"
     "@openshift/dynamic-plugin-sdk-webpack": "portal:../lib-webpack"
     "@patternfly/react-core": ^6.4.0
     "@patternfly/react-icons": ^6.4.0
@@ -1056,12 +1061,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@monorepo/sample-plugin@workspace:packages/sample-plugin"
   dependencies:
+    "@monorepo/sample-app": "portal:../sample-app"
     "@openshift/dynamic-plugin-sdk": "portal:../lib-core"
-    "@openshift/dynamic-plugin-sdk-extensions": "portal:../lib-extensions"
     "@openshift/dynamic-plugin-sdk-webpack": "portal:../lib-webpack"
+    "@patternfly/react-core": ^6.4.0
+    css-loader: ^7.1.2
+    css-minimizer-webpack-plugin: 7.0.2
     http-server: ^14.1.1
     react: ^17.0.2
     react-dom: ^17.0.2
+    style-loader: ^4.0.0
     ts-loader: ^9.5.4
     typescript: ~4.4.4
     webpack: ^5.100.0
@@ -1115,44 +1124,6 @@ __metadata:
   checksum: c96381d4a37448ea280951e46233f7e541058cf57a57d4094dd4bdcaae43fa5872b5f2eb6bfb004591a68e29c5877abe3cdc210cb3588cbf20ab2877f31a7de7
   languageName: node
   linkType: hard
-
-"@openshift/dynamic-plugin-sdk-extensions@portal:../lib-extensions::locator=%40monorepo%2Fsample-app%40workspace%3Apackages%2Fsample-app":
-  version: 0.0.0-use.local
-  resolution: "@openshift/dynamic-plugin-sdk-extensions@portal:../lib-extensions::locator=%40monorepo%2Fsample-app%40workspace%3Apackages%2Fsample-app"
-  peerDependencies:
-    "@openshift/dynamic-plugin-sdk": ^4 || ^5
-    react: ^17 || ^18
-    react-redux: ^7 || ^8
-    react-router: ^5.2.1
-    redux: ^4.1.2
-  peerDependenciesMeta:
-    react-redux:
-      optional: true
-    react-router:
-      optional: true
-    redux:
-      optional: true
-  languageName: node
-  linkType: soft
-
-"@openshift/dynamic-plugin-sdk-extensions@portal:../lib-extensions::locator=%40monorepo%2Fsample-plugin%40workspace%3Apackages%2Fsample-plugin":
-  version: 0.0.0-use.local
-  resolution: "@openshift/dynamic-plugin-sdk-extensions@portal:../lib-extensions::locator=%40monorepo%2Fsample-plugin%40workspace%3Apackages%2Fsample-plugin"
-  peerDependencies:
-    "@openshift/dynamic-plugin-sdk": ^4 || ^5
-    react: ^17 || ^18
-    react-redux: ^7 || ^8
-    react-router: ^5.2.1
-    redux: ^4.1.2
-  peerDependenciesMeta:
-    react-redux:
-      optional: true
-    react-router:
-      optional: true
-    redux:
-      optional: true
-  languageName: node
-  linkType: soft
 
 "@openshift/dynamic-plugin-sdk-extensions@workspace:packages/lib-extensions":
   version: 0.0.0-use.local

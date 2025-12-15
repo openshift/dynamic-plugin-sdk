@@ -87,7 +87,7 @@ const LoadPluginModal = React.forwardRef<LoadPluginModalRefProps, LoadPluginModa
         aria-describedby="load-plugin-description"
       >
         <ModalHeader
-          title="Load plugin"
+          title="Load remote plugin"
           description="Load a plugin from the provided manifest."
           labelId="load-plugin-title"
           descriptorId="load-plugin-description"

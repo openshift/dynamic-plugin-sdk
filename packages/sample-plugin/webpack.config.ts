@@ -1,6 +1,7 @@
 import path from 'path';
+import { pluginSharedModules } from '@monorepo/sample-app/src/shared-modules';
 import { DynamicRemotePlugin } from '@openshift/dynamic-plugin-sdk-webpack';
-import type { WebpackSharedObject } from '@openshift/dynamic-plugin-sdk-webpack';
+import CSSMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import type { Configuration, WebpackPluginInstance } from 'webpack';
 import { EnvironmentPlugin } from 'webpack';
 import extensions from './plugin-extensions';
@@ -9,25 +10,6 @@ import pluginMetadata from './plugin-metadata';
 const isProd = process.env.NODE_ENV === 'production';
 
 const pathTo = (relativePath: string) => path.resolve(__dirname, relativePath);
-
-/**
- * Shared modules consumed and/or provided by this plugin.
- *
- * A host application typically provides some modules to its plugins. If an application
- * provided module is configured as an eager singleton, we suggest using `import: false`
- * to avoid bundling a fallback version of the module when building your plugin.
- *
- * Plugins may provide additional shared modules that can be consumed by other plugins.
- *
- * @see https://webpack.js.org/plugins/module-federation-plugin/#sharing-hints
- */
-const pluginSharedModules: WebpackSharedObject = {
-  '@openshift/dynamic-plugin-sdk': { singleton: true, import: false },
-  '@patternfly/react-core': {},
-  '@patternfly/react-table': {},
-  react: { singleton: true, import: false },
-  'react-dom': { singleton: true, import: false },
-};
 
 const plugins: WebpackPluginInstance[] = [
   new EnvironmentPlugin({
@@ -80,6 +62,11 @@ const config: Configuration = {
           filename: isProd ? 'images/[contenthash][ext]' : 'images/[name][ext]',
         },
       },
+      {
+        test: /\.(css)$/,
+        include: pathTo('src'),
+        use: ['style-loader', 'css-loader'],
+      },
     ],
   },
   plugins,
@@ -88,6 +75,7 @@ const config: Configuration = {
     minimize: isProd,
     minimizer: [
       '...', // The '...' string represents the webpack default TerserPlugin instance
+      new CSSMinimizerPlugin(),
     ],
   },
 };

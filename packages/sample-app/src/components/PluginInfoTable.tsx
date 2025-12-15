@@ -1,7 +1,7 @@
 import { usePluginStore, usePluginInfo } from '@openshift/dynamic-plugin-sdk';
 import type { PluginInfoEntry } from '@openshift/dynamic-plugin-sdk';
 import { Bullseye, Button, EmptyState, EmptyStateBody } from '@patternfly/react-core';
-import { ModuleIcon } from '@patternfly/react-icons';
+import { PackageIcon } from '@patternfly/react-icons';
 import { ActionsColumn, Table, Thead, Tbody, Tr, Th, Td } from '@patternfly/react-table';
 import type { IAction } from '@patternfly/react-table';
 import * as React from 'react';
@@ -52,7 +52,7 @@ const PluginInfoTable: React.FC = () => {
           <Tr>
             <Td colSpan={7}>
               <Bullseye>
-                <EmptyState titleText="No plugins detected" icon={ModuleIcon}>
+                <EmptyState titleText="No plugins detected" icon={PackageIcon}>
                   <EmptyStateBody>
                     Check browser console for errors if plugins don&apos;t show up here.
                   </EmptyStateBody>
