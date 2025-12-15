@@ -14,7 +14,7 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from '@patternfly/react-core';
-import { FlagIcon } from '@patternfly/react-icons';
+import { FlagIcon, VialIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { localPluginManifests } from '../local-plugins';
 import type { LoadPluginModalRefProps } from './LoadPluginModal';
@@ -48,7 +48,11 @@ const PageHeader: React.FC = () => {
     <Masthead>
       <MastheadMain>
         <MastheadBrand>
-          <Content component="h1">{document.title}</Content>
+          <Content component="h1">
+            <VialIcon />
+            &nbsp;
+            {document.title}
+          </Content>
         </MastheadBrand>
       </MastheadMain>
       <MastheadContent>

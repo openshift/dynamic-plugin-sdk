@@ -12,7 +12,7 @@ import {
   Stack,
   StackItem,
 } from '@patternfly/react-core';
-import { FileIcon } from '@patternfly/react-icons';
+import { PuzzlePieceIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import type {
   SampleAppExtensionWithText,
@@ -86,7 +86,7 @@ export const RenderExtensions: React.FC = () => {
 
   if (!extensionsAvailable) {
     return (
-      <EmptyState titleText="No extensions currently in use" icon={FileIcon}>
+      <EmptyState titleText="No extensions currently in use" icon={PuzzlePieceIcon}>
         <EmptyStateBody>Load and enable plugins to see their extensions here.</EmptyStateBody>
       </EmptyState>
     );
