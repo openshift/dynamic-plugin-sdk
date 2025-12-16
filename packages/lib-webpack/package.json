@@ -1,6 +1,6 @@
 {
   "name": "@openshift/dynamic-plugin-sdk-webpack",
-  "version": "5.1.1",
+  "version": "5.2.0",
   "description": "Allows building dynamic plugin assets with webpack",
   "license": "Apache-2.0",
   "repository": {
@@ -26,7 +26,16 @@
     "api-extractor-local": "yarn run api-extractor --local"
   },
   "peerDependencies": {
+    "@rspack/core": "^2.0.8",
     "webpack": "^5.100.0"
+  },
+  "peerDependenciesMeta": {
+    "@rspack/core": {
+      "optional": true
+    },
+    "webpack": {
+      "optional": true
+    }
   },
   "dependencies": {
     "lodash": "^4.17.23",

@@ -7,8 +7,10 @@
     "clean": "rm -rf dist",
     "build": "yarn clean && yarn webpack",
     "build-prod": "yarn clean && NODE_ENV=production yarn webpack",
+    "build-rspack": "yarn clean && NODE_ENV=production yarn rspack",
     "lint": "yarn run -T eslint $INIT_CWD",
-    "webpack": "node -r ts-node/register ./node_modules/.bin/webpack",
+    "webpack": "WEBPACK=1 node -r ts-node/register ./node_modules/.bin/webpack",
+    "rspack": "RSPACK=1 node -r ts-node/register ./node_modules/.bin/rspack -c webpack.config.ts",
     "http-server": "http-server dist -p 9001 -c-1 --cors"
   },
   "devDependencies": {
@@ -16,6 +18,8 @@
     "@openshift/dynamic-plugin-sdk": "portal:../lib-core",
     "@openshift/dynamic-plugin-sdk-webpack": "portal:../lib-webpack",
     "@patternfly/react-core": "^6.4.0",
+    "@rspack/cli": "^2.0.8",
+    "@rspack/core": "^2.0.8",
     "css-loader": "^7.1.2",
     "css-minimizer-webpack-plugin": "7.0.2",
     "http-server": "^14.1.1",
