@@ -1,6 +1,6 @@
 # Changelog for `@openshift/dynamic-plugin-sdk`
 
-## 6.0.0 - TODO
+## 6.0.0 - 2026-01-06
 
 > This release adds new features, including the ability to load plugins from local manifests,
 > i.e. without involving the standard webpack plugin load process. This can be used to implement
