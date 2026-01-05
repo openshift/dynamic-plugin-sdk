@@ -1,9 +1,9 @@
 # Changelog for `@openshift/dynamic-plugin-sdk-webpack`
 
-## 5.0.0 - TBD
+## 5.0.0 - 2026-01-06
 
-- BREAKING: Minimum compatible version of `webpack` increased to `^5.100.0`. ([#280])
-- All `webpack` imports are now type-only to increase compatibility with other bundlers. ([#280])
+- BREAKING: Minimum compatible version of `webpack` increased to `^5.100.0` ([#280])
+- All `webpack` imports are now type-only to increase compatibility with other bundlers ([#280])
 
 ## 4.1.0 - 2024-04-26
 
