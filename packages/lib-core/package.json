@@ -1,6 +1,6 @@
 {
   "name": "@openshift/dynamic-plugin-sdk",
-  "version": "5.0.1",
+  "version": "6.0.0",
   "description": "Allows loading, managing and interpreting dynamic plugins",
   "license": "Apache-2.0",
   "repository": {
