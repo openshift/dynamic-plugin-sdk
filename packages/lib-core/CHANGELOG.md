@@ -1,5 +1,9 @@
 # Changelog for `@openshift/dynamic-plugin-sdk`
 
+## 6.1.0 - TBD
+
+- Update yup to 1.7.1 ([#289])
+
 ## 6.0.0 - 2026-01-06
 
 > This release adds new features, including the ability to load plugins from local manifests,
@@ -90,3 +94,4 @@
 [#274]: https://github.com/openshift/dynamic-plugin-sdk/pull/274
 [#280]: https://github.com/openshift/dynamic-plugin-sdk/pull/280
 [#281]: https://github.com/openshift/dynamic-plugin-sdk/pull/281
+[#289]: https://github.com/openshift/dynamic-plugin-sdk/pull/289
