@@ -1,5 +1,9 @@
 # Changelog for `@openshift/dynamic-plugin-sdk-webpack`
 
+## 5.1.0 - TBD
+
+- Update yup to 1.7.1 ([#289])
+
 ## 5.0.0 - 2026-01-06
 
 - BREAKING: Minimum compatible version of `webpack` increased to `^5.100.0` ([#280])
@@ -67,3 +71,4 @@
 [#256]: https://github.com/openshift/dynamic-plugin-sdk/pull/256
 [#259]: https://github.com/openshift/dynamic-plugin-sdk/pull/259
 [#280]: https://github.com/openshift/dynamic-plugin-sdk/pull/280
+[#289]: https://github.com/openshift/dynamic-plugin-sdk/pull/289
