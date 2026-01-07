@@ -38,3 +38,12 @@ Alternatively, run `test.sh` which builds, lints and tests all the packages.
 yarn eslint path/to/lint
 yarn jest path/to/test
 ```
+
+## Update API reports
+
+After building libs, you may receive a warning regarding outdated API reports. To
+update them, run:
+
+```sh
+yarn api-extractor-local
+```
