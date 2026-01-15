@@ -84,15 +84,38 @@ export const extensionSchema = yup
 export const extensionArraySchema = yup.array().of(extensionSchema).required();
 
 /**
+ * Schema for Record<string, string> objects.
+ */
+export const recordStringStringSchema = yup
+  .object() // Rejects non-objects and null
+  .test(
+    'property?: Record<string, string>',
+    'Must be either undefined OR an object with string keys and values',
+    (obj: object) => {
+      // Allow undefined because these fields are optional
+      if (obj === undefined) {
+        return true;
+      }
+
+      // Objects can have Symbol() as keys, so ensure there are none
+      if (Object.getOwnPropertySymbols(obj).length > 0) {
+        return new yup.ValidationError('Must be an object with no symbols as keys');
+      }
+
+      // Object keys can only be symbols or strings, but since we've ruled out symbols,
+      // we can assume that all keys are strings. We just need to check the values now
+      return Object.values(obj).every((value) => typeof value === 'string');
+    },
+  );
+
+/**
  * Schema for `PluginRuntimeMetadata` objects.
  */
 export const pluginRuntimeMetadataSchema = yup.object().required().shape({
   name: pluginNameSchema,
   version: semverStringSchema,
-  // TODO(vojtech): Yup lacks native support for map-like structures with arbitrary keys
-  // TODO(vojtech): we need to validate dependency values as semver ranges
-  dependencies: yup.object(),
-  optionalDependencies: yup.object(),
+  dependencies: recordStringStringSchema,
+  optionalDependencies: recordStringStringSchema,
   customProperties: yup.object(),
 });
 
