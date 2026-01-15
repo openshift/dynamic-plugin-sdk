@@ -10,7 +10,9 @@ const metadata: PluginBuildMetadata = {
     testComponent: './src/test-component',
   },
   customProperties: {
-    test: true,
+    sampleApp: {
+      lunch: 'pizza',
+    },
   },
 };
 
