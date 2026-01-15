@@ -32,9 +32,23 @@ export interface PluginCustomProperties extends AnyObject {}
  */
 export type PluginRuntimeMetadata = {
   name: string;
-  version: string;
+  /**
+   * If the version of a dependency is set to "unknown", semver range checks for
+   * that dependency will be skipped.
+   *
+   * This is intended ONLY for uses cases in which a host application has a
+   * {@link LocalPluginManifest} or `fixedPluginDependencyResolutions` where
+   * a dependency version is only known during runtime or is not known at all.
+   *
+   * The usage of `unknown` in DynamicRemotePlugin is not allowed.
+   */
+  version: string | 'unknown';
   dependencies?: Record<string, string>;
   optionalDependencies?: Record<string, string>;
+  /**
+   * This field can be augmented by the host application using declaration merging
+   * of the {@link PluginCustomProperties} interface.
+   */
   customProperties?: PluginCustomProperties;
 };
 

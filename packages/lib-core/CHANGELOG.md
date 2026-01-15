@@ -4,7 +4,8 @@
 
 - Updated dependency `yup` to `1.7.1`. ([#289])
 - Add an option for to add custom types to typed PluginRuntimeMetadata['customProperties'] ([#290])
-
+- Allow setting version to "unknown" to skip semver validation when plugins depend on
+  a local plugin or `fixedPluginDependencyResolutions` set by `PluginStore`. ([#290])
 
 ## 6.0.0 - 2026-01-06
 

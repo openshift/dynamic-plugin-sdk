@@ -98,7 +98,7 @@ export type PluginModuleFederationSettings = Partial<{
 // @public
 export type PluginRuntimeMetadata = {
     name: string;
-    version: string;
+    version: string | 'unknown';
     dependencies?: Record<string, string>;
     optionalDependencies?: Record<string, string>;
     customProperties?: PluginCustomProperties;
