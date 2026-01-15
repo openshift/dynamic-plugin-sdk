@@ -2,7 +2,9 @@
 
 ## 6.1.0 - TBD
 
-- Update yup to 1.7.1 ([#289])
+- Updated dependency `yup` to `1.7.1`. ([#289])
+- Add an option for to add custom types to typed PluginRuntimeMetadata['customProperties'] ([#290])
+
 
 ## 6.0.0 - 2026-01-06
 
@@ -95,3 +97,4 @@
 [#280]: https://github.com/openshift/dynamic-plugin-sdk/pull/280
 [#281]: https://github.com/openshift/dynamic-plugin-sdk/pull/281
 [#289]: https://github.com/openshift/dynamic-plugin-sdk/pull/289
+[#290]: https://github.com/openshift/dynamic-plugin-sdk/pull/290

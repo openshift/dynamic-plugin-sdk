@@ -3,6 +3,25 @@ import type { Extension, LoadedExtension } from './extension';
 import type { PluginEntryModule } from './runtime';
 
 /**
+ * This interface can be augmented by the host application to add types to
+ * the {@link PluginRuntimeMetadata.customProperties}.
+ *
+ * @example Usage in your host application to augment the custom properties:
+ * ```ts
+ * // src/.../@types/dynamic-plugin-sdk.d.ts
+ * import '@openshift/dynamic-plugin-sdk';
+ *
+ * declare module '@openshift/dynamic-plugin-sdk' {
+ *   interface PluginCustomProperties {
+ *     lunch: string; // What kind of lunch the plugin author wants to eat
+ *   }
+ * }
+ * ```
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface PluginCustomProperties extends AnyObject {}
+
+/**
  * Runtime plugin metadata.
  *
  * There can be only one plugin with the given `name` loaded at any time.
@@ -16,7 +35,7 @@ export type PluginRuntimeMetadata = {
   version: string;
   dependencies?: Record<string, string>;
   optionalDependencies?: Record<string, string>;
-  customProperties?: AnyObject;
+  customProperties?: PluginCustomProperties;
 };
 
 /**

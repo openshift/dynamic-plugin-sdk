@@ -19,6 +19,7 @@ export {
   CodeRefsToEncodedCodeRefs,
   MapCodeRefsToEncodedCodeRefs,
   ExtractExtensionProperties,
+  PluginCustomProperties,
   PluginRuntimeMetadata,
   RemotePluginManifest,
 } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
