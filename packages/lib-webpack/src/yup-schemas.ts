@@ -2,14 +2,14 @@ import * as yup from 'yup';
 import {
   extensionArraySchema,
   pluginRuntimeMetadataSchema,
+  recordStringStringSchema
 } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
 
 /**
  * Schema for `PluginBuildMetadata` objects.
  */
 export const pluginBuildMetadataSchema = pluginRuntimeMetadataSchema.shape({
-  // TODO(vojtech): Yup lacks native support for map-like structures with arbitrary keys
-  exposedModules: yup.object(),
+  exposedModules: recordStringStringSchema,
 });
 
 /**
