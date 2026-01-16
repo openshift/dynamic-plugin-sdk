@@ -99,6 +99,9 @@ export type PluginLoaderOptions = Partial<{
    * This option should be used to satisfy any environment specific dependencies
    * supported by the host application.
    *
+   * If the version of a dependency is set to "unknown", semver range checks for
+   * that dependency will be skipped.
+   *
    * Default value: empty object.
    */
   fixedPluginDependencyResolutions: Record<string, string>;
@@ -364,6 +367,11 @@ export class PluginLoader implements PluginLoaderInterface {
     Object.entries(this.options.fixedPluginDependencyResolutions).forEach(([depName, version]) => {
       if (semver.valid(version)) {
         resolutions.set(depName, { success: true, version });
+      } else if (version === 'unknown') {
+        resolutions.set(depName, { success: true, version });
+        consoleLogger.warn(
+          `Dependency ${depName} fixed to version "unknown"; plugin version requirements will not be validated.`,
+        );
       }
     });
 
@@ -402,7 +410,14 @@ export class PluginLoader implements PluginLoaderInterface {
               const res = resolutions.get(depName)!;
               const isRequired = !!requiredDependencies[depName];
 
-              if (res.success && !semver.satisfies(res.version, versionRange, semverRangeOptions)) {
+              if (
+                res.success &&
+                // Allow "unknown" to skip plugin semver checks
+                !(
+                  semver.satisfies(res.version, versionRange, semverRangeOptions) ||
+                  versionRange === 'unknown'
+                )
+              ) {
                 resolutionErrors.push(
                   `Dependency ${depName} not met: required range ${versionRange}, resolved version ${res.version}`,
                 );

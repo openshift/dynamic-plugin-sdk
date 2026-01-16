@@ -146,6 +146,10 @@ export type PendingPluginInfoEntry = {
 } & Pick<PendingPlugin, 'manifest'>;
 
 // @public
+export interface PluginCustomProperties extends AnyObject {
+}
+
+// @public
 export type PluginEntryModule = {
     init: (sharedScope: AnyObject) => void | Promise<void>;
     get: <TModule extends AnyObject>(moduleRequest: string) => Promise<() => TModule>;
@@ -212,10 +216,10 @@ export type PluginManifest = RemotePluginManifest | LocalPluginManifest;
 // @public
 export type PluginRuntimeMetadata = {
     name: string;
-    version: string;
+    version: string | 'unknown';
     dependencies?: Record<string, string>;
     optionalDependencies?: Record<string, string>;
-    customProperties?: AnyObject;
+    customProperties?: PluginCustomProperties;
 };
 
 // @public

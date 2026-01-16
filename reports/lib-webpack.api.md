@@ -76,6 +76,10 @@ export type PluginBuildMetadata = PluginRuntimeMetadata & {
 };
 
 // @public
+export interface PluginCustomProperties extends AnyObject {
+}
+
+// @public
 export type PluginEntryCallbackSettings = Partial<{
     name: string;
     pluginID: string;
@@ -94,10 +98,10 @@ export type PluginModuleFederationSettings = Partial<{
 // @public
 export type PluginRuntimeMetadata = {
     name: string;
-    version: string;
+    version: string | 'unknown';
     dependencies?: Record<string, string>;
     optionalDependencies?: Record<string, string>;
-    customProperties?: AnyObject;
+    customProperties?: PluginCustomProperties;
 };
 
 // @public
