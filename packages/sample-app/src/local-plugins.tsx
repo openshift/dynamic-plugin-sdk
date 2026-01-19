@@ -35,6 +35,11 @@ const barManifest: LocalPluginManifest = {
     } as SampleAppExtensionWithComponent,
   ],
   registrationMethod: 'local',
+  customProperties: {
+    sampleApp: {
+      greeting: 'Greetings from local-bar plugin',
+    },
+  },
 };
 
 export const localPluginManifests = [fooManifest, barManifest];

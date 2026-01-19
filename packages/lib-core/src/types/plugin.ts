@@ -1,6 +1,23 @@
-import type { AnyObject } from '@monorepo/common';
 import type { Extension, LoadedExtension } from './extension';
 import type { PluginEntryModule } from './runtime';
+
+/**
+ * This interface can be extended by the host application to type the
+ * {@link PluginRuntimeMetadata.customProperties} object to reflect supported
+ * application or environment specific properties.
+ *
+ * @example
+ * ```
+ * // in your d.ts declaration file
+ * import type { SupportedCustomProperties } from './types';
+ *
+ * declare module '@openshift/dynamic-plugin-sdk' {
+ *   interface PluginCustomProperties extends SupportedCustomProperties {}
+ * }
+ * ```
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface PluginCustomProperties {}
 
 /**
  * Runtime plugin metadata.
@@ -10,13 +27,23 @@ import type { PluginEntryModule } from './runtime';
  * Any dependencies on other plugins will be resolved as part of the plugin's load process.
  *
  * The `customProperties` object may contain additional information for the host application.
+ * We recommend scoping related application or environment specific properties under the same
+ * key, for example:
+ *
+ * ```js
+ * customProperties: {
+ *   sampleApp: {
+ *     // Custom properties supported by the sample application
+ *   }
+ * }
+ * ```
  */
 export type PluginRuntimeMetadata = {
   name: string;
   version: string;
   dependencies?: Record<string, string>;
   optionalDependencies?: Record<string, string>;
-  customProperties?: AnyObject;
+  customProperties?: PluginCustomProperties;
 };
 
 /**

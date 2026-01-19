@@ -1,7 +1,8 @@
 {
-  "typescript.tsdk": "./node_modules/typescript/lib",
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-
+  "typescript.tsdk": "./node_modules/typescript/lib",
+  "typescript.preferences.preferTypeOnlyAutoImports": true,
+  "typescript.preferences.importModuleSpecifier": "project-relative",
   "search.exclude": {
     "**/.git": true,
     "**/.yarn": true,
@@ -17,31 +18,19 @@
   "files.associations": {
     "**/api-extractor.json": "jsonc"
   },
-
   "eslint.options": {
     "rulePaths": ["./packages/eslint-plugin-internal/src/runtime-rules"]
   },
-
   // https://code.visualstudio.com/docs/languages/identifiers
-  "[javascript]": {
-    "editor.formatOnSave": true
+  "[javascript][javascriptreact][typescript][typescriptreact]": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "never",
+      "source.sortImports": "never",
+      "source.fixAll.eslint": "explicit",
+      "source.fixAll.ts": "explicit"
+    }
   },
-  "[javascriptreact]": {
-    "editor.formatOnSave": true
-  },
-  "[typescript]": {
-    "editor.formatOnSave": true
-  },
-  "[typescriptreact]": {
-    "editor.formatOnSave": true
-  },
-  "[json]": {
-    "editor.formatOnSave": true
-  },
-  "[jsonc]": {
-    "editor.formatOnSave": true
-  },
-  "[yaml]": {
+  "[json][jsonc][yaml]": {
     "editor.formatOnSave": true
   }
 }

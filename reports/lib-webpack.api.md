@@ -76,6 +76,10 @@ export type PluginBuildMetadata = PluginRuntimeMetadata & {
 };
 
 // @public
+export interface PluginCustomProperties {
+}
+
+// @public
 export type PluginEntryCallbackSettings = Partial<{
     name: string;
     pluginID: string;
@@ -97,7 +101,7 @@ export type PluginRuntimeMetadata = {
     version: string;
     dependencies?: Record<string, string>;
     optionalDependencies?: Record<string, string>;
-    customProperties?: AnyObject;
+    customProperties?: PluginCustomProperties;
 };
 
 // @public
