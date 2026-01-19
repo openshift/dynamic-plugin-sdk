@@ -146,7 +146,7 @@ export type PendingPluginInfoEntry = {
 } & Pick<PendingPlugin, 'manifest'>;
 
 // @public
-export interface PluginCustomProperties extends AnyObject {
+export interface PluginCustomProperties {
 }
 
 // @public

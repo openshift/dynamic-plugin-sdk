@@ -1,3 +1,4 @@
+import type { SupportedCustomProperties } from '@monorepo/sample-app/src/types';
 import type { PluginBuildMetadata } from '@openshift/dynamic-plugin-sdk-webpack';
 
 const metadata: PluginBuildMetadata = {
@@ -11,9 +12,9 @@ const metadata: PluginBuildMetadata = {
   },
   customProperties: {
     sampleApp: {
-      lunch: 'pizza',
+      greeting: 'Greetings from sample plugin',
     },
-  },
+  } as SupportedCustomProperties,
 };
 
 export default metadata;

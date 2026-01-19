@@ -12,13 +12,14 @@ const columnNames = {
   version: 'Version',
   status: 'Status',
   extensions: 'Extensions',
-  lunch: 'Lunch',
+  greeting: 'Greeting',
   enabled: 'Enabled',
   actions: 'Actions',
 };
 
 const columnTooltips = {
-  lunch: 'A custom property set by the customProperties field in the plugin manifest.',
+  greeting:
+    'Optional greeting message provided by the plugin. See customProperties object in the plugin manifest.',
   enabled: 'Enabling a plugin puts all of its extensions into use. Disabling it does the opposite.',
 };
 
@@ -44,7 +45,7 @@ const PluginInfoTable: React.FC = () => {
           <Th>{columnNames.version}</Th>
           <Th>{columnNames.status}</Th>
           <Th>{columnNames.extensions}</Th>
-          <Th info={{ tooltip: columnTooltips.lunch }}>{columnNames.lunch}</Th>
+          <Th info={{ tooltip: columnTooltips.greeting }}>{columnNames.greeting}</Th>
           <Th info={{ tooltip: columnTooltips.enabled }}>{columnNames.enabled}</Th>
           <Th>{columnNames.actions}</Th>
           <Td />
@@ -88,8 +89,8 @@ const PluginInfoTable: React.FC = () => {
                   <LabelWithTooltipIcon label={p.status} tooltipContent={statusTooltip} />
                 </Td>
                 <Td dataLabel={columnNames.extensions}>{p.manifest.extensions.length}</Td>
-                <Td dataLabel={columnNames.lunch}>
-                  {p.manifest.customProperties?.sampleApp?.lunch ?? 'n/a'}
+                <Td dataLabel={columnNames.greeting}>
+                  {p.manifest.customProperties?.sampleApp?.greeting ?? '-'}
                 </Td>
                 <Td dataLabel={columnNames.enabled}>
                   <LabelWithTooltipIcon label={enabledLabel} tooltipContent={enabledTooltip} />

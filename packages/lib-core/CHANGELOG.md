@@ -2,9 +2,8 @@
 
 ## 6.1.0 - TBD
 
-- Updated dependency `yup` to `1.7.1`. ([#289])
-- Add an option for to add custom types to typed PluginRuntimeMetadata['customProperties'] ([#290])
-
+- Updated `yup` dependency to `^1.7.1`. ([#289])
+- Allow extending `customProperties` object type in `PluginRuntimeMetadata` ([#290])
 
 ## 6.0.0 - 2026-01-06
 

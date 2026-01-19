@@ -1,5 +1,5 @@
+import type { AnyObject } from '@openshift/dynamic-plugin-sdk';
 import * as React from 'react';
-import type { AnyObject } from '../types';
 import ErrorBoundaryFallback from './ErrorBoundaryFallback';
 
 export type ErrorBoundaryFallbackProps = {

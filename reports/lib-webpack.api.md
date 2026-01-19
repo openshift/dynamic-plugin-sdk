@@ -76,7 +76,7 @@ export type PluginBuildMetadata = PluginRuntimeMetadata & {
 };
 
 // @public
-export interface PluginCustomProperties extends AnyObject {
+export interface PluginCustomProperties {
 }
 
 // @public

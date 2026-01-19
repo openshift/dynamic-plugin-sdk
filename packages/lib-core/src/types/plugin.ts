@@ -1,25 +1,23 @@
-import type { AnyObject } from '@monorepo/common';
 import type { Extension, LoadedExtension } from './extension';
 import type { PluginEntryModule } from './runtime';
 
 /**
- * This interface can be augmented by the host application to add types to
- * the {@link PluginRuntimeMetadata.customProperties}.
+ * This interface can be extended by the host application to type the
+ * {@link PluginRuntimeMetadata.customProperties} object to reflect supported
+ * application or environment specific properties.
  *
- * @example Usage in your host application to augment the custom properties:
- * ```ts
- * // src/.../@types/dynamic-plugin-sdk.d.ts
- * import '@openshift/dynamic-plugin-sdk';
+ * @example
+ * ```
+ * // in your d.ts declaration file
+ * import type { SupportedCustomProperties } from './types';
  *
  * declare module '@openshift/dynamic-plugin-sdk' {
- *   interface PluginCustomProperties {
- *     lunch: string; // What kind of lunch the plugin author wants to eat
- *   }
+ *   interface PluginCustomProperties extends SupportedCustomProperties {}
  * }
  * ```
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface PluginCustomProperties extends AnyObject {}
+export interface PluginCustomProperties {}
 
 /**
  * Runtime plugin metadata.
@@ -29,6 +27,16 @@ export interface PluginCustomProperties extends AnyObject {}
  * Any dependencies on other plugins will be resolved as part of the plugin's load process.
  *
  * The `customProperties` object may contain additional information for the host application.
+ * We recommend scoping related application or environment specific properties under the same
+ * key, for example:
+ *
+ * ```js
+ * customProperties: {
+ *   sampleApp: {
+ *     // Custom properties supported by the sample application
+ *   }
+ * }
+ * ```
  */
 export type PluginRuntimeMetadata = {
   name: string;

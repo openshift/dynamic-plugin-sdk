@@ -19,11 +19,6 @@ const fooManifest: LocalPluginManifest = {
     } as SampleAppExtensionWithText,
   ],
   registrationMethod: 'local',
-  customProperties: {
-    sampleApp: {
-      lunch: 'sandwich',
-    },
-  },
 };
 
 const barManifest: LocalPluginManifest = {
@@ -42,7 +37,7 @@ const barManifest: LocalPluginManifest = {
   registrationMethod: 'local',
   customProperties: {
     sampleApp: {
-      lunch: 'burger',
+      greeting: 'Greetings from local-bar plugin',
     },
   },
 };
