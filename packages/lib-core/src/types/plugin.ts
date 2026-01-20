@@ -26,9 +26,9 @@ export interface PluginCustomProperties {}
  *
  * Any dependencies on other plugins will be resolved as part of the plugin's load process.
  *
- * The `customProperties` object may contain additional information for the host application.
- * We recommend scoping related application or environment specific properties under the same
- * key, for example:
+ * The `customProperties` object may contain additional information to be interpreted by the host
+ * application. We recommend scoping related application or environment specific properties under
+ * the same key, for example:
  *
  * ```js
  * customProperties: {

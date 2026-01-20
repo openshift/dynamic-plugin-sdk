@@ -193,7 +193,7 @@ export type PluginLoaderOptions = Partial<{
         name: string;
     }>;
     fetchImpl: ResourceFetch;
-    fixedPluginDependencyResolutions: Record<string, string>;
+    customDependencyResolutions: Record<string, string | undefined>;
     sharedScope: AnyObject;
     transformPluginManifest: <T extends PluginManifest>(manifest: T) => T;
     getPluginEntryModule: (manifest: RemotePluginManifest) => PluginEntryModule | void;

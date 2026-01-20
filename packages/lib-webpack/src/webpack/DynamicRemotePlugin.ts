@@ -149,8 +149,6 @@ export type DynamicRemotePluginOptions = {
   /**
    * Transform the plugin manifest before emitting the asset to webpack compilation.
    *
-   * Environment specific properties should be set via the `customProperties` object.
-   *
    * By default, no transformation is performed on the manifest.
    */
   transformPluginManifest?: (manifest: RemotePluginManifest) => RemotePluginManifest;
