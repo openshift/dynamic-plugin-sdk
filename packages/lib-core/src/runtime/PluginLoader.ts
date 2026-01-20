@@ -29,7 +29,7 @@ type PluginLoadData = {
   entryCallbackModule?: PluginEntryModule;
 };
 
-type DependencyResolution =
+type PluginResolution =
   | {
       success: true;
       version: string;
@@ -88,20 +88,27 @@ export type PluginLoaderOptions = Partial<{
   fetchImpl: ResourceFetch;
 
   /**
-   * Fixed resolutions used when processing plugin dependencies.
+   * Custom resolutions for processing plugin dependencies.
    *
-   * There are two kinds of dependencies:
-   * - Regular dependencies, which refer to actual plugins that must be loaded with
-   *   the right version prior to loading the plugin that depends on them.
-   * - Environment dependencies, which refer to any environment specific constants
-   *   such as the host application's version, runtime platform version, etc.
+   * This option allows the host application to support additional application or environment
+   * specific dependencies when loading its plugins. Each value must be a valid semver version
+   * or `undefined` to skip resolution of the given custom dependency.
    *
-   * This option should be used to satisfy any environment specific dependencies
-   * supported by the host application.
+   * When not specified, plugins may only depend on other plugins.
    *
    * Default value: empty object.
+   *
+   * @example
+   * ```js
+   * customDependencyResolutions: {
+   *   // Plugins may depend on sample-app, resolved version will be 1.0.0
+   *   'sample-app': '1.0.0',
+   *   // Plugins may depend on foo-env, dependency resolution will be skipped
+   *   'foo-env': undefined,
+   * }
+   * ```
    */
-  fixedPluginDependencyResolutions: Record<string, string>;
+  customDependencyResolutions: Record<string, string | undefined>;
 
   /**
    * webpack share scope object for initializing `PluginEntryModule` containers.
@@ -153,7 +160,7 @@ export class PluginLoader implements PluginLoaderInterface {
       canReloadScript: options.canReloadScript ?? (() => true),
       entryCallbackSettings: options.entryCallbackSettings ?? {},
       fetchImpl: options.fetchImpl ?? basicFetch,
-      fixedPluginDependencyResolutions: options.fixedPluginDependencyResolutions ?? {},
+      customDependencyResolutions: options.customDependencyResolutions ?? {},
       sharedScope: options.sharedScope ?? {},
       transformPluginManifest: options.transformPluginManifest ?? identity,
       getPluginEntryModule: options.getPluginEntryModule ?? noop,
@@ -350,20 +357,14 @@ export class PluginLoader implements PluginLoaderInterface {
     return entryModule;
   }
 
-  private getCurrentDependencyResolutions() {
-    const resolutions = new Map<string, DependencyResolution>();
+  private getCurrentPluginResolutions() {
+    const resolutions = new Map<string, PluginResolution>();
 
     Array.from(this.plugins.entries()).forEach(([pluginName, data]) => {
       if (data.status === 'loaded') {
         resolutions.set(pluginName, { success: true, version: data.manifest.version });
       } else if (data.status === 'failed') {
         resolutions.set(pluginName, { success: false });
-      }
-    });
-
-    Object.entries(this.options.fixedPluginDependencyResolutions).forEach(([depName, version]) => {
-      if (semver.valid(version)) {
-        resolutions.set(depName, { success: true, version });
       }
     });
 
@@ -391,23 +392,42 @@ export class PluginLoader implements PluginLoaderInterface {
       };
 
       const tryResolveDependencies = () => {
-        const resolutions = this.getCurrentDependencyResolutions();
+        const pluginResolutions = this.getCurrentPluginResolutions();
+        const customResolutions = new Map(Object.entries(this.options.customDependencyResolutions));
         const resolutionErrors: string[] = [];
         const pendingDepNames: string[] = [];
 
         Object.entries({ ...optionalDependencies, ...requiredDependencies }).forEach(
           ([depName, versionRange]) => {
-            if (resolutions.has(depName)) {
+            if (pluginResolutions.has(depName)) {
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              const res = resolutions.get(depName)!;
+              const res = pluginResolutions.get(depName)!;
               const isRequired = !!requiredDependencies[depName];
 
               if (res.success && !semver.satisfies(res.version, versionRange, semverRangeOptions)) {
                 resolutionErrors.push(
-                  `Dependency ${depName} not met: required range ${versionRange}, resolved version ${res.version}`,
+                  `Dependency on plugin ${depName} not met: required range ${versionRange}, resolved version ${res.version}`,
                 );
               } else if (!res.success && isRequired) {
-                resolutionErrors.push(`Dependency ${depName} could not be resolved successfully`);
+                resolutionErrors.push(
+                  `Dependency on plugin ${depName} could not be resolved successfully`,
+                );
+              }
+            } else if (customResolutions.has(depName)) {
+              const version = customResolutions.get(depName);
+
+              if (
+                version &&
+                semver.valid(version) &&
+                !semver.satisfies(version, versionRange, semverRangeOptions)
+              ) {
+                resolutionErrors.push(
+                  `Custom dependency ${depName} not met: required range ${versionRange}, resolved version ${version}`,
+                );
+              } else if (version === undefined) {
+                consoleLogger.info(
+                  `Skipping resolution of custom dependency ${depName} as its dependency resolution is undefined`,
+                );
               }
             } else {
               pendingDepNames.push(depName);
@@ -426,11 +446,14 @@ export class PluginLoader implements PluginLoaderInterface {
         if (pendingDepNames.length === 0) {
           setResolutionComplete();
           resolve();
-        } else {
-          consoleLogger.info(
-            `Plugin ${pluginName} has ${pendingDepNames.length} pending dependency resolutions`,
-          );
+          return;
         }
+
+        consoleLogger.info(
+          `Plugin ${pluginName} has ${
+            pendingDepNames.length
+          } pending dependency resolutions: [${pendingDepNames.join(', ')}]`,
+        );
       };
 
       tryResolveDependencies();

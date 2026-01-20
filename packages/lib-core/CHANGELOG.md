@@ -1,9 +1,12 @@
 # Changelog for `@openshift/dynamic-plugin-sdk`
 
-## 6.1.0 - TBD
+## 7.0.0 - TBD
 
-- Updated `yup` dependency to `^1.7.1`. ([#289])
+> TODO release note text here
+
+- BREAKING: Replace `fixedPluginDependencyResolutions` loader option with `customDependencyResolutions` ([#291])
 - Allow extending `customProperties` object type in `PluginRuntimeMetadata` ([#290])
+- Updated `yup` dependency to `^1.7.1`. ([#289])
 
 ## 6.0.0 - 2026-01-06
 
@@ -97,3 +100,4 @@
 [#281]: https://github.com/openshift/dynamic-plugin-sdk/pull/281
 [#289]: https://github.com/openshift/dynamic-plugin-sdk/pull/289
 [#290]: https://github.com/openshift/dynamic-plugin-sdk/pull/290
+[#291]: https://github.com/openshift/dynamic-plugin-sdk/pull/291

@@ -18,7 +18,7 @@ initSharedScope().then(() => {
   const pluginStore = new PluginStore({
     loaderOptions: {
       sharedScope: getSharedScope(),
-      fixedPluginDependencyResolutions: { 'sample-app': '1.0.0' },
+      customDependencyResolutions: { 'sample-app': '1.0.0' },
     },
   });
 

@@ -61,7 +61,7 @@ export class PluginStore implements PluginStoreInterface {
   /** Subscribed event listeners. */
   private readonly listeners = new Map<PluginEventType, Set<VoidFunction>>();
 
-  /** Feature flags used to determine the availability of extensions. */
+  /** Feature flags used to control enablement of all extensions. */
   private featureFlags: FeatureFlags = {};
 
   readonly sdkVersion = sdkVersion;
