@@ -424,6 +424,10 @@ export class PluginLoader implements PluginLoaderInterface {
                 resolutionErrors.push(
                   `Custom dependency ${depName} not met: required range ${versionRange}, resolved version ${version}`,
                 );
+              } else if (version === undefined) {
+                consoleLogger.info(
+                  `Skipping resolution of custom dependency ${depName} as its dependency resolution is undefined`,
+                );
               }
             } else {
               pendingDepNames.push(depName);
