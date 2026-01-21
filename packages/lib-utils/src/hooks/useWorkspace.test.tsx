@@ -1,11 +1,8 @@
-import { renderHook } from '@testing-library/react-hooks/native';
+import { act, renderHook } from '@testing-library/react';
 import React from 'react';
-import TestRenderer from 'react-test-renderer';
 import WorkspaceContext from '../utils/WorkspaceContext';
 import { workspaceState } from '../utils/workspaceState';
 import { useWorkspace } from './useWorkspace';
-
-const { act } = TestRenderer;
 
 jest.mock('react-redux', () => ({
   useDispatch: jest.fn(() => jest.fn()),

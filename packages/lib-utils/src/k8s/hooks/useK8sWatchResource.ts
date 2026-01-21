@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import * as k8sActions from '../../app/redux/actions/k8s';
 import { getReduxIdPayload } from '../../app/redux/reducers/k8s/selector';
 import type { K8sModelCommon, K8sResourceCommon } from '../../types/k8s';
-import type { SDKStoreState } from '../../types/redux';
+import type { DispatchWithThunk, SDKStoreState } from '../../types/redux';
 import WorkspaceContext from '../../utils/WorkspaceContext';
 import type { WebSocketOptions } from '../../web-socket/types';
 import { getWatchData, getReduxData, NoModelError } from './k8s-watcher';
@@ -54,7 +54,7 @@ export const useK8sWatchResource = <R extends K8sResourceCommon | K8sResourceCom
     [k8sModel, resource, options],
   );
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<DispatchWithThunk>();
 
   React.useEffect(() => {
     if (watchData) {

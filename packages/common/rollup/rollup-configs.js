@@ -98,7 +98,7 @@ export const tsBuildConfig = ({
       tsconfig: './tsconfig.json',
       include: tsconfig.include.map((filePattern) => `${filePattern}/**/*`),
       noEmitOnError: true,
-      jsx: 'react',
+      jsx: 'react-jsx',
     }),
     optimizeLodashImports({
       appendDotJs: false,

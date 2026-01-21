@@ -1,9 +1,8 @@
-import { renderHook } from '@testing-library/react-hooks/native';
+import { renderHook } from '@testing-library/react';
 import { Map as ImmutableMap } from 'immutable';
 import { useSelector } from 'react-redux';
 import type { K8sModelCommon, K8sResourceCommon } from '../../types/k8s';
 import type { WatchData } from './k8s-watch-types';
-import type { NoModelError } from './k8s-watcher';
 import { getWatchData, getReduxData } from './k8s-watcher';
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 import { useK8sModel } from './useK8sModel';
@@ -137,7 +136,7 @@ describe('useK8sWatchResource', () => {
 
     expect(data).toMatchObject({});
     expect(loaded).toEqual(true);
-    expect((error as NoModelError).message).toEqual('Model does not exist');
+    expect((error as Error).message).toEqual('Model does not exist');
   });
 
   test('should return data for the watched resource', () => {

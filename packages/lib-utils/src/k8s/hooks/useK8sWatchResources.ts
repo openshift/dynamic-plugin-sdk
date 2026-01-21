@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import * as k8sActions from '../../app/redux/actions/k8s';
 import type { K8sModelCommon } from '../../types/k8s';
-import type { K8sState, SDKStoreState } from '../../types/redux';
+import type { DispatchWithThunk, K8sState, SDKStoreState } from '../../types/redux';
 import type { WebSocketOptions } from '../../web-socket/types';
 import {
   transformGroupVersionKindToReference,
@@ -135,7 +135,7 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
   }, [k8sModels, modelsLoaded, resources, options]);
 
   // Dispatch action to watchResource (with cleanup for stopping the watch) for each resource in "resources"
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<DispatchWithThunk>();
   React.useEffect(() => {
     const reduxIDKeys = Object.keys(reduxIDs || {});
     reduxIDKeys.forEach((k) => {
