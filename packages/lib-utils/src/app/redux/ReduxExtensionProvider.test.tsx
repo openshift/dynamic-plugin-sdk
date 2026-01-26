@@ -1,4 +1,4 @@
-import type { ResolvedExtension, LoadedExtension } from '@openshift/dynamic-plugin-sdk';
+import type { LoadedAndResolvedExtension } from '@openshift/dynamic-plugin-sdk';
 import { useResolvedExtensions } from '@openshift/dynamic-plugin-sdk';
 import type { ReduxProvider } from '@openshift/dynamic-plugin-sdk-extensions';
 import { render } from '@testing-library/react';
@@ -9,7 +9,7 @@ import type { Store } from 'redux';
 import { createStore } from 'redux';
 import ReduxExtensionProvider from './ReduxExtensionProvider';
 
-type LRReduxReducer = LoadedExtension<ResolvedExtension<ReduxProvider>>;
+type LRReduxReducer = LoadedAndResolvedExtension<ReduxProvider>;
 
 jest.mock('@openshift/dynamic-plugin-sdk', () => ({
   useResolvedExtensions: jest.fn(),

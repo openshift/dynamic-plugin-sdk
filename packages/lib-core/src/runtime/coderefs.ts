@@ -6,7 +6,7 @@ import type {
   CodeRef,
   Extension,
   LoadedExtension,
-  ResolvedExtension,
+  LoadedAndResolvedExtension,
 } from '../types/extension';
 import type { PluginEntryModule } from '../types/runtime';
 
@@ -167,5 +167,5 @@ export const resolveCodeRefValues = async <TExtension extends Extension>(
   return {
     ...extension,
     properties: clonedProperties,
-  } as LoadedExtension<ResolvedExtension<TExtension>>;
+  } as LoadedAndResolvedExtension<TExtension>;
 };

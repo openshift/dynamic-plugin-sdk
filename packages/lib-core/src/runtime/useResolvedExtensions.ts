@@ -1,17 +1,12 @@
 import { consoleLogger } from '@monorepo/common';
 import * as React from 'react';
-import type {
-  Extension,
-  LoadedExtension,
-  ResolvedExtension,
-  ExtensionPredicate,
-} from '../types/extension';
+import type { Extension, LoadedAndResolvedExtension, ExtensionPredicate } from '../types/extension';
 import { settleAllPromises } from '../utils/promise';
 import { resolveCodeRefValues } from './coderefs';
 import { useExtensions } from './useExtensions';
 
 export type UseResolvedExtensionsResult<TExtension extends Extension> = [
-  resolvedExtensions: LoadedExtension<ResolvedExtension<TExtension>>[],
+  resolvedExtensions: LoadedAndResolvedExtension<TExtension>[],
   resolved: boolean,
   errors: unknown[],
 ];
@@ -60,7 +55,7 @@ export const useResolvedExtensions = <TExtension extends Extension>(
   const extensions = useExtensions(predicate);
 
   const [resolvedExtensions, setResolvedExtensions] = React.useState<
-    LoadedExtension<ResolvedExtension<TExtension>>[]
+    LoadedAndResolvedExtension<TExtension>[]
   >([]);
 
   const [resolved, setResolved] = React.useState<boolean>(false);

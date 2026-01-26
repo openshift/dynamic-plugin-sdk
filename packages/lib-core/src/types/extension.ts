@@ -133,3 +133,10 @@ export type EncodedExtension<TExtension extends Extension = Extension> = Replace
     >;
   }
 >;
+
+/**
+ * Runtime extension interface, with `CodeRef<T>` property values resolved to `T` values.
+ */
+export type LoadedAndResolvedExtension<TExtension extends Extension = Extension> = LoadedExtension<
+  ResolvedExtension<TExtension>
+>;
