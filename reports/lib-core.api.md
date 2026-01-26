@@ -89,6 +89,9 @@ export type FeatureFlags = {
 };
 
 // @public
+export type LoadedAndResolvedExtension<TExtension extends Extension = Extension> = LoadedExtension<ResolvedExtension<TExtension>>;
+
+// @public
 export type LoadedExtension<TExtension extends Extension = Extension> = TExtension & {
     pluginName: string;
     uid: string;
@@ -346,7 +349,7 @@ export type UseResolvedExtensionsOptions = Partial<{
 
 // @public (undocumented)
 export type UseResolvedExtensionsResult<TExtension extends Extension> = [
-resolvedExtensions: LoadedExtension<ResolvedExtension<TExtension>>[],
+resolvedExtensions: LoadedAndResolvedExtension<TExtension>[],
 resolved: boolean,
 errors: unknown[]
 ];

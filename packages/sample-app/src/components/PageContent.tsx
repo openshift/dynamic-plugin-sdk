@@ -1,5 +1,5 @@
 import { useExtensions, useResolvedExtensions } from '@openshift/dynamic-plugin-sdk';
-import type { LoadedExtension, ResolvedExtension } from '@openshift/dynamic-plugin-sdk';
+import type { LoadedExtension, LoadedAndResolvedExtension } from '@openshift/dynamic-plugin-sdk';
 import {
   Card,
   CardTitle,
@@ -52,10 +52,10 @@ const TextExtensionCard: React.FC<{ extension: LoadedExtension<SampleAppExtensio
 );
 
 /**
- * Extensions consumed via `useResolvedExtensions` hook are typed as `LoadedExtension<ResolvedExtension<E>>`.
+ * Extensions consumed via `useResolvedExtensions` hook are typed as `LoadedAndResolvedExtension<E>`.
  */
 const ComponentExtensionCard: React.FC<{
-  extension: LoadedExtension<ResolvedExtension<SampleAppExtensionWithComponent>>;
+  extension: LoadedAndResolvedExtension<SampleAppExtensionWithComponent>;
 }> = ({ extension }) => (
   <ExtensionCard extension={extension}>
     <extension.properties.component />

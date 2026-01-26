@@ -173,7 +173,11 @@ export class PluginStore implements PluginStoreInterface {
       throw new ErrorWithCause('Failed to load plugin manifest', e);
     }
 
-    loadedManifest = this.loader.transformPluginManifest(loadedManifest);
+    try {
+      loadedManifest = this.loader.transformPluginManifest(loadedManifest);
+    } catch (e) {
+      throw new ErrorWithCause('Failed to transform plugin manifest', e);
+    }
 
     const pluginName = loadedManifest.name;
 
