@@ -246,7 +246,11 @@ export class PluginStore implements PluginStoreInterface {
         onEnabledChange(plugin);
         updateRequired = true;
 
-        consoleLogger.info(`Plugin ${pluginName} will be ${enabled ? 'enabled' : 'disabled'}`);
+        consoleLogger.info(
+          `Plugin ${pluginName} will be ${
+            enabled ? 'enabled' : `disabled: ${plugin.disableReason ?? '(no reason provided)'}`
+          }`,
+        );
       }
     });
 
