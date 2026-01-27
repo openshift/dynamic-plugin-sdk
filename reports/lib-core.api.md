@@ -19,6 +19,9 @@ export const applyDefaults: <TObject>(obj: TObject, defaults: unknown) => TObjec
 export const applyOverrides: <TObject>(obj: TObject, overrides: unknown) => TObject;
 
 // @public
+export const cloneDeepOnlyCloneableValues: <TObject>(obj: TObject) => TObject;
+
+// @public
 export type CodeRef<TValue = unknown> = () => Promise<TValue>;
 
 // @public (undocumented)

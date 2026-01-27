@@ -1,6 +1,6 @@
 import type { AnyObject } from '@monorepo/common';
-import { ErrorWithCause, visitDeep } from '@monorepo/common';
-import { cloneDeep, has, identity, isEqual, isPlainObject } from 'lodash';
+import { cloneDeepOnlyCloneableValues, ErrorWithCause, visitDeep } from '@monorepo/common';
+import { has, identity, isEqual, isPlainObject } from 'lodash';
 import type {
   EncodedCodeRef,
   CodeRef,
@@ -128,8 +128,7 @@ export const decodeCodeRefs = (extension: LoadedExtension, entryModule: PluginEn
  * are either resolved or rejected. Each code reference resolution error will cause the
  * associated property value to be set to `undefined`.
  *
- * The resulting Promise resolves with a new extension instance; its `properties` object
- * is cloned in order to preserve the original extension.
+ * The resulting Promise resolves with a new extension instance.
  *
  * The resulting Promise never rejects. Use the `onResolutionErrors` callback to handle
  * any code reference resolution errors.
@@ -138,11 +137,11 @@ export const resolveCodeRefValues = async <TExtension extends Extension>(
   extension: LoadedExtension<TExtension>,
   onResolutionErrors: (errors: unknown[]) => void,
 ) => {
-  const clonedProperties = cloneDeep(extension.properties);
+  const clonedExtension = cloneDeepOnlyCloneableValues(extension);
   const resolutions: Promise<void>[] = [];
   const resolutionErrors: unknown[] = [];
 
-  visitDeep<CodeRef>(clonedProperties, isCodeRef, (codeRef, key, obj) => {
+  visitDeep<CodeRef>(clonedExtension.properties, isCodeRef, (codeRef, key, obj) => {
     resolutions.push(
       codeRef()
         // eslint-disable-next-line promise/always-return -- resolutions element type is Promise<void>
@@ -164,8 +163,5 @@ export const resolveCodeRefValues = async <TExtension extends Extension>(
     onResolutionErrors(resolutionErrors);
   }
 
-  return {
-    ...extension,
-    properties: clonedProperties,
-  } as LoadedAndResolvedExtension<TExtension>;
+  return clonedExtension as LoadedAndResolvedExtension<TExtension>;
 };

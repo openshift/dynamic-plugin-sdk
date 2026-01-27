@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { AnyObject } from '@monorepo/common';
-import { consoleLogger, ErrorWithCause } from '@monorepo/common';
-import { cloneDeep, identity, noop } from 'lodash';
+import { cloneDeepOnlyCloneableValues, consoleLogger, ErrorWithCause } from '@monorepo/common';
+import { identity, noop } from 'lodash';
 import * as semver from 'semver';
 import { DEFAULT_REMOTE_ENTRY_CALLBACK } from '../constants';
 import type { LoadedExtension } from '../types/extension';
@@ -275,8 +275,8 @@ export class PluginLoader implements PluginLoaderInterface {
 
     const pluginBuildHash = isRemoteManifest ? manifest.buildHash ?? uuidv4() : uuidv4();
 
-    let loadedExtensions = cloneDeep(manifest.extensions).map<LoadedExtension>((e, index) => ({
-      ...e,
+    let loadedExtensions = manifest.extensions.map<LoadedExtension>((e, index) => ({
+      ...cloneDeepOnlyCloneableValues(e),
       pluginName,
       uid: `${pluginName}[${index}]_${pluginBuildHash}`,
     }));

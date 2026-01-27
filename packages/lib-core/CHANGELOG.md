@@ -2,11 +2,12 @@
 
 ## 7.0.0 - TBD
 
-> TODO release note text here
+> This release contains improvements based on usage in OpenShift Console project.
 
 - BREAKING: Replace `fixedPluginDependencyResolutions` loader option with `customDependencyResolutions` ([#291])
 - Allow extending `customProperties` object type in `PluginRuntimeMetadata` ([#290])
 - Update `yup` dependency to `^1.7.1` and improve handling of `Record<string, string>` schemas ([#289])
+- Add `cloneDeepOnlyCloneableValues` function intended for cloning extension objects ([#294])
 - Add `LoadedAndResolvedExtension` type ([#292])
 
 ## 6.0.0 - 2026-01-06
@@ -103,3 +104,4 @@
 [#290]: https://github.com/openshift/dynamic-plugin-sdk/pull/290
 [#291]: https://github.com/openshift/dynamic-plugin-sdk/pull/291
 [#292]: https://github.com/openshift/dynamic-plugin-sdk/pull/292
+[#294]: https://github.com/openshift/dynamic-plugin-sdk/pull/294
