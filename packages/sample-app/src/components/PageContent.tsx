@@ -13,7 +13,7 @@ import {
   StackItem,
 } from '@patternfly/react-core';
 import { PuzzlePieceIcon } from '@patternfly/react-icons';
-import type { FC } from 'react';
+import type { FC, PropsWithChildren } from 'react';
 import { useMemo } from 'react';
 import type {
   SampleAppExtensionWithText,
@@ -26,7 +26,10 @@ import {
 import LabelWithTooltipIcon from './LabelWithTooltipIcon';
 import PluginInfoTable from './PluginInfoTable';
 
-const ExtensionCard: FC<{ extension: LoadedExtension }> = ({ extension, children }) => (
+const ExtensionCard: FC<PropsWithChildren<{ extension: LoadedExtension }>> = ({
+  extension,
+  children,
+}) => (
   <Card isCompact data-test-id="extension-card">
     <CardTitle data-test-id="extension-card-title">
       <LabelWithTooltipIcon

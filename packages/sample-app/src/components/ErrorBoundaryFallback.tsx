@@ -4,7 +4,7 @@ import { t_global_spacer_md } from '@patternfly/react-tokens';
 import type { FC } from 'react';
 import type { ErrorBoundaryFallbackProps } from './ErrorBoundary';
 
-const trimEmptyLines = (text: string) => text.replace(/^\s*\n/gm, '');
+const trimEmptyLines = (text: string | null | undefined) => text?.replace(/^\s*\n/gm, '');
 
 const ErrorBoundaryFallback: FC<ErrorBoundaryFallbackProps> = ({ error, errorInfo }) => (
   <Flex direction={{ default: 'column' }} style={{ padding: t_global_spacer_md.value }}>

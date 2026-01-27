@@ -19,8 +19,8 @@ export const appSharedModules: WebpackSharedObject = {
   '@openshift/dynamic-plugin-sdk': { eager: true, singleton: true, requiredVersion: false },
   '@patternfly/react-core': { eager: true },
   '@patternfly/react-table': { eager: true },
-  react: { eager: true, singleton: true, requiredVersion: '^17.0.0' },
-  'react-dom': { eager: true, singleton: true, requiredVersion: '^17.0.0' },
+  react: { eager: true, singleton: true, requiredVersion: '^18.0.0' },
+  'react-dom': { eager: true, singleton: true, requiredVersion: '^18.0.0' },
 };
 
 /**
