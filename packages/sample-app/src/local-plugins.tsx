@@ -1,6 +1,5 @@
 import type { LocalPluginManifest } from '@openshift/dynamic-plugin-sdk';
 import { applyCodeRefSymbol } from '@openshift/dynamic-plugin-sdk';
-import * as React from 'react';
 import type {
   SampleAppExtensionWithText,
   SampleAppExtensionWithComponent,

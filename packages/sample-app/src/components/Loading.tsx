@@ -1,7 +1,7 @@
 import { Bullseye, Spinner } from '@patternfly/react-core';
-import * as React from 'react';
+import type { FC } from 'react';
 
-const Loading: React.FC = () => (
+const Loading: FC = () => (
   <Bullseye>
     <Spinner />
   </Bullseye>

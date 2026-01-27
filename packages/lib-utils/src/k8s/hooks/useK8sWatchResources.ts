@@ -1,6 +1,6 @@
 import { Map as ImmutableMap } from 'immutable';
 import { keyBy } from 'lodash';
-import * as React from 'react';
+import { useRef, useMemo, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import * as k8sActions from '../../app/redux/actions/k8s';
 import type { K8sModelCommon } from '../../types/k8s';
@@ -67,7 +67,7 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
   const prevResources = usePrevious(resources);
 
   // Ref to immutable map mapping model's kind (string) to the model object (ImmutableMap)
-  const k8sModelsRef = React.useRef<ImmutableMap<string, K8sModelCommon>>(ImmutableMap());
+  const k8sModelsRef = useRef<ImmutableMap<string, K8sModelCommon>>(ImmutableMap());
 
   const haveResourcesChanged = prevResources !== resources;
   const haveK8sModelsChanged =
@@ -99,7 +99,7 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
   type WatchModel = ReturnType<GetWatchData> & { noModel: boolean };
 
   // Map of keys from "resources" to the {id, action} for watching the specific resource
-  const reduxIDs = React.useMemo<{
+  const reduxIDs = useMemo<{
     [key: string]: WatchModel;
   } | null>(() => {
     const watchDataForResources = Object.keys(resources).reduce(
@@ -136,7 +136,7 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
 
   // Dispatch action to watchResource (with cleanup for stopping the watch) for each resource in "resources"
   const dispatch = useDispatch<DispatchWithThunk>();
-  React.useEffect(() => {
+  useEffect(() => {
     const reduxIDKeys = Object.keys(reduxIDs || {});
     reduxIDKeys.forEach((k) => {
       if (reduxIDs?.[k] && reduxIDs[k].action) {
@@ -153,7 +153,7 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
   }, [dispatch, reduxIDs]);
 
   // Create selector to select k8s from the store on each update of reduxIDs
-  const resourceK8sSelectorCreator = React.useCallback(
+  const resourceK8sSelectorCreator = useCallback(
     (oldK8s: K8sState, newK8s: K8sState) =>
       Object.values(reduxIDs || {})
         .filter(({ noModel }) => !noModel)
@@ -167,7 +167,7 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
     k8s?.getIn(['RESOURCES', 'batchesInFlight']),
   );
 
-  const results = React.useMemo(
+  const results = useMemo(
     () =>
       Object.keys(resources).reduce<WatchK8sResults<R>>((acc, key) => {
         const accKey = key as keyof R;

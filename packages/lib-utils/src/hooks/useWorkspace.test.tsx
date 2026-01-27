@@ -1,5 +1,5 @@
 import { act, renderHook } from '@testing-library/react';
-import React from 'react';
+import type { ReactNode } from 'react';
 import WorkspaceContext from '../utils/WorkspaceContext';
 import { workspaceState } from '../utils/workspaceState';
 import { useWorkspace } from './useWorkspace';
@@ -22,7 +22,7 @@ describe('useWorkspace', () => {
   });
 
   test('an unset workspace should return null', () => {
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
+    const wrapper = ({ children }: { children: ReactNode }) => (
       <WorkspaceContext.Provider value={workspaceState()}>{children}</WorkspaceContext.Provider>
     );
     const { result } = renderHook(() => useWorkspace(), { wrapper });
@@ -34,7 +34,7 @@ describe('useWorkspace', () => {
 
   test('a set workspace should return the activeWorkspace', () => {
     localStorage.setItem(WORKSPACE_KEY, 'platform-experience');
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
+    const wrapper = ({ children }: { children: ReactNode }) => (
       <WorkspaceContext.Provider value={workspaceState()}>{children}</WorkspaceContext.Provider>
     );
     const { result } = renderHook(() => useWorkspace(), { wrapper });
@@ -46,7 +46,7 @@ describe('useWorkspace', () => {
 
   test('updating workspace should return the activeWorkspace', () => {
     localStorage.setItem(WORKSPACE_KEY, 'platform-experience');
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
+    const wrapper = ({ children }: { children: ReactNode }) => (
       <WorkspaceContext.Provider value={workspaceState()}>{children}</WorkspaceContext.Provider>
     );
     const { result } = renderHook(() => useWorkspace(), { wrapper });
@@ -62,7 +62,7 @@ describe('useWorkspace', () => {
 
   test('clearing localStorage should return null', () => {
     localStorage.setItem(WORKSPACE_KEY, 'platform-experience');
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
+    const wrapper = ({ children }: { children: ReactNode }) => (
       <WorkspaceContext.Provider value={workspaceState()}>{children}</WorkspaceContext.Provider>
     );
     const { result } = renderHook(() => useWorkspace(), { wrapper });

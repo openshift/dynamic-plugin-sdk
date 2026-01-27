@@ -1,14 +1,14 @@
 import { useResolvedExtensions } from '@openshift/dynamic-plugin-sdk';
 import { isReduxProvider } from '@openshift/dynamic-plugin-sdk-extensions';
 import type { ReduxProvider } from '@openshift/dynamic-plugin-sdk-extensions';
-import * as React from 'react';
+import type { PropsWithChildren, FC } from 'react';
 import { Provider } from 'react-redux';
 
 /**
  * Renders a Redux.Provider for each `core.redux-provider` extension.
  * Should be rendered near the root of the application.
  */
-const ReduxExtensionProvider: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
+const ReduxExtensionProvider: FC<PropsWithChildren<unknown>> = ({ children }) => {
   const [reduxProviderExtensions, reduxProvidersResolved] =
     useResolvedExtensions<ReduxProvider>(isReduxProvider);
 

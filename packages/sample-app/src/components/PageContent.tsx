@@ -13,7 +13,8 @@ import {
   StackItem,
 } from '@patternfly/react-core';
 import { PuzzlePieceIcon } from '@patternfly/react-icons';
-import * as React from 'react';
+import type { FC } from 'react';
+import { useMemo } from 'react';
 import type {
   SampleAppExtensionWithText,
   SampleAppExtensionWithComponent,
@@ -25,7 +26,7 @@ import {
 import LabelWithTooltipIcon from './LabelWithTooltipIcon';
 import PluginInfoTable from './PluginInfoTable';
 
-const ExtensionCard: React.FC<{ extension: LoadedExtension }> = ({ extension, children }) => (
+const ExtensionCard: FC<{ extension: LoadedExtension }> = ({ extension, children }) => (
   <Card isCompact data-test-id="extension-card">
     <CardTitle data-test-id="extension-card-title">
       <LabelWithTooltipIcon
@@ -43,7 +44,7 @@ const ExtensionCard: React.FC<{ extension: LoadedExtension }> = ({ extension, ch
 /**
  * Extensions consumed via `useExtensions` hook are typed as `LoadedExtension<E>`.
  */
-const TextExtensionCard: React.FC<{ extension: LoadedExtension<SampleAppExtensionWithText> }> = ({
+const TextExtensionCard: FC<{ extension: LoadedExtension<SampleAppExtensionWithText> }> = ({
   extension,
 }) => (
   <ExtensionCard extension={extension}>
@@ -54,7 +55,7 @@ const TextExtensionCard: React.FC<{ extension: LoadedExtension<SampleAppExtensio
 /**
  * Extensions consumed via `useResolvedExtensions` hook are typed as `LoadedAndResolvedExtension<E>`.
  */
-const ComponentExtensionCard: React.FC<{
+const ComponentExtensionCard: FC<{
   extension: LoadedAndResolvedExtension<SampleAppExtensionWithComponent>;
 }> = ({ extension }) => (
   <ExtensionCard extension={extension}>
@@ -73,14 +74,14 @@ const ComponentExtensionCard: React.FC<{
  * object. This is an asynchronous operation that completes when all code references in all
  * matching extensions have been processed.
  */
-export const RenderExtensions: React.FC = () => {
+export const RenderExtensions: FC = () => {
   const textExtensions = useExtensions(isSampleAppExtensionWithText);
 
   const [componentExtensions, componentExtensionsResolved] = useResolvedExtensions(
     isSampleAppExtensionWithComponent,
   );
 
-  const extensionsAvailable = React.useMemo(
+  const extensionsAvailable = useMemo(
     () =>
       textExtensions.length > 0 || (componentExtensionsResolved && componentExtensions.length > 0),
     [textExtensions, componentExtensions, componentExtensionsResolved],
@@ -111,7 +112,7 @@ export const RenderExtensions: React.FC = () => {
   );
 };
 
-const PageContent: React.FC = () => (
+const PageContent: FC = () => (
   <Stack hasGutter>
     <StackItem>
       <PluginInfoTable />

@@ -2,7 +2,8 @@ import type { LoadedAndResolvedExtension } from '@openshift/dynamic-plugin-sdk';
 import { useResolvedExtensions } from '@openshift/dynamic-plugin-sdk';
 import type { ReduxProvider } from '@openshift/dynamic-plugin-sdk-extensions';
 import { render } from '@testing-library/react';
-import * as React from 'react';
+import type { FC } from 'react';
+import { createContext } from 'react';
 import type { ReactReduxContextValue } from 'react-redux';
 import { createSelectorHook } from 'react-redux';
 import type { Store } from 'redux';
@@ -38,7 +39,7 @@ describe('ReduxExtensionProvider', () => {
         type: 'core.redux-provider',
         properties: {
           store: store1,
-          context: React.createContext<ReactReduxContextValue>({
+          context: createContext<ReactReduxContextValue>({
             store: store1,
           } as ReactReduxContextValue),
         },
@@ -49,7 +50,7 @@ describe('ReduxExtensionProvider', () => {
         type: 'core.redux-provider',
         properties: {
           store: store2,
-          context: React.createContext<ReactReduxContextValue>({
+          context: createContext<ReactReduxContextValue>({
             store: store2,
           } as ReactReduxContextValue),
         },
@@ -67,7 +68,7 @@ describe('ReduxExtensionProvider', () => {
     let value2 = -1;
 
     // this component will select values separately from each redux store
-    const Test: React.FC = () => {
+    const Test: FC = () => {
       value1 = useSelector1((state: State) => state.value);
       value2 = useSelector2((state: State) => state.value);
       return null;

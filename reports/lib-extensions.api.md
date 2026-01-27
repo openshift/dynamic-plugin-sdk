@@ -10,11 +10,12 @@ import type { AnyObject } from '@openshift/dynamic-plugin-sdk';
 import type { CodeRef } from '@openshift/dynamic-plugin-sdk';
 import type { ComponentType } from 'react';
 import type { Extension } from '@openshift/dynamic-plugin-sdk';
+import type { PathMatch } from 'react-router';
 import type { Provider } from 'react';
 import type { ReactNode } from 'react';
 import type { ReactReduxContextValue } from 'react-redux';
 import type { Reducer } from 'redux';
-import type { RouteComponentProps } from 'react-router';
+import type { RouteProps } from 'react-router';
 import type { Store } from 'redux';
 
 // @public (undocumented)
@@ -370,7 +371,7 @@ export type ResourcePageProperties = {
         kind: string;
     };
     component: CodeRef<ComponentType<{
-        match: RouteComponentProps['match'];
+        match: PathMatch;
         namespace: string;
         model: ExtensionK8sResourceIdentifier & {
             group: string;
@@ -386,7 +387,7 @@ export type RoutePage = Extension<'core.page/route', RoutePageProperties>;
 // @public (undocumented)
 export type RoutePageProperties = {
     perspective?: string;
-    component: CodeRef<ComponentType<RouteComponentProps>>;
+    component: CodeRef<ComponentType<RouteProps>>;
     path: string | string[];
     exact?: boolean;
 };

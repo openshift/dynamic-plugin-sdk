@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 import type { PluginEventType, PluginStoreInterface } from '../types/store';
 import { usePluginStore } from './PluginStoreContext';
 
@@ -34,23 +34,23 @@ export const usePluginSubscription = <TPluginData>(
 ): TPluginData => {
   const pluginStore = usePluginStore();
 
-  const getDataRef = React.useRef<typeof getData>(getData);
+  const getDataRef = useRef<typeof getData>(getData);
   getDataRef.current = getData;
 
-  const isSameDataRef = React.useRef<typeof isSameData>(isSameData);
+  const isSameDataRef = useRef<typeof isSameData>(isSameData);
   isSameDataRef.current = isSameData;
 
-  const [hookResult, setHookResult] = React.useState<TPluginData>(() => getData(pluginStore));
+  const [hookResult, setHookResult] = useState<TPluginData>(() => getData(pluginStore));
 
-  const updateResult = React.useCallback(() => {
+  const updateResult = useCallback(() => {
     const nextData = getDataRef.current(pluginStore);
 
     setHookResult((prevData) => (isSameDataRef.current(prevData, nextData) ? prevData : nextData));
   }, [pluginStore]);
 
-  React.useEffect(() => updateResult(), [getData, isSameData, updateResult]);
+  useEffect(() => updateResult(), [getData, isSameData, updateResult]);
 
-  React.useEffect(
+  useEffect(
     () => pluginStore.subscribe(eventTypes, updateResult),
     [pluginStore, eventTypes, updateResult],
   );

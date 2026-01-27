@@ -1,5 +1,5 @@
 import { consoleLogger } from '@openshift/dynamic-plugin-sdk';
-import * as React from 'react';
+import { useState, useMemo } from 'react';
 import { useStore } from 'react-redux';
 import type { Store } from 'redux';
 import { applyMiddleware, combineReducers, createStore, compose } from 'redux';
@@ -33,8 +33,8 @@ export const useReduxStore = (): UseReduxStoreResult => {
     // TODO: remove once proven not needed (redux versioning issue)
     consoleLogger.error(e);
   }
-  const [storeContextPresent, setStoreContextPresent] = React.useState(false);
-  const store = React.useMemo(() => {
+  const [storeContextPresent, setStoreContextPresent] = useState(false);
+  const store = useMemo(() => {
     if (storeContext) {
       setStoreContextPresent(true);
       setReduxStore(storeContext);

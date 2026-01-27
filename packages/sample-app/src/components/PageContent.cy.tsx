@@ -1,5 +1,4 @@
 import type { LoadedExtension } from '@openshift/dynamic-plugin-sdk';
-import * as React from 'react';
 import { mockLocalPluginManifest } from '../test-mocks';
 import { RenderExtensions } from './PageContent';
 

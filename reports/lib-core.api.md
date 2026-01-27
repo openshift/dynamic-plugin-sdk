@@ -4,7 +4,8 @@
 
 ```ts
 
-import * as React_2 from 'react';
+import type { FC } from 'react';
+import type { PropsWithChildren } from 'react';
 
 // @public
 export type AnyObject = Record<string, unknown>;
@@ -288,10 +289,10 @@ export type PluginStoreOptions = Partial<{
 }>;
 
 // @public
-export const PluginStoreProvider: React_2.FC<PluginStoreProviderProps>;
+export const PluginStoreProvider: FC<PluginStoreProviderProps>;
 
 // @public (undocumented)
-export type PluginStoreProviderProps = React_2.PropsWithChildren<{
+export type PluginStoreProviderProps = PropsWithChildren<{
     store: PluginStoreInterface;
 }>;
 

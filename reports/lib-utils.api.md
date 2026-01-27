@@ -13,10 +13,10 @@ import { Context } from 'react';
 import { CustomError } from '@openshift/dynamic-plugin-sdk';
 import type { Dispatch } from 'redux';
 import type { EitherNotBoth } from '@openshift/dynamic-plugin-sdk';
+import type { FC } from 'react';
 import type { Map as Map_2 } from 'immutable';
 import type { PluginStore } from '@openshift/dynamic-plugin-sdk';
-import * as React_2 from 'react';
-import { default as React_3 } from 'react';
+import type { PropsWithChildren } from 'react';
 import type { ResourceFetch } from '@openshift/dynamic-plugin-sdk';
 import type { Store } from 'redux';
 
@@ -56,10 +56,10 @@ export type APIActions = {
 };
 
 // @public
-export const AppInitSDK: React_2.FC<AppInitSDKProps>;
+export const AppInitSDK: FC<AppInitSDKProps>;
 
 // @public (undocumented)
-export type AppInitSDKProps = React_2.PropsWithChildren<{
+export type AppInitSDKProps = PropsWithChildren<{
     configurations: {
         apiDiscovery?: InitAPIDiscovery;
         apiPriorityList?: string[];
@@ -384,7 +384,7 @@ export type QueryParams = Partial<{
 }>;
 
 // @public
-export const ReduxExtensionProvider: React_2.FC<React_2.PropsWithChildren<unknown>>;
+export const ReduxExtensionProvider: FC<PropsWithChildren<unknown>>;
 
 // @public (undocumented)
 export type ResourcesObject = {
@@ -630,7 +630,7 @@ update: (event: UpdateEvents, attributes: Partial<WorkspaceContextState>) => voi
 }>;
 
 // @public
-export const WorkspaceProvider: React_3.FC<React_3.PropsWithChildren<unknown>>;
+export const WorkspaceProvider: FC<PropsWithChildren<unknown>>;
 
 // Warnings were encountered during analysis:
 //

@@ -1,5 +1,4 @@
 import { PluginStore, PluginStoreProvider } from '@openshift/dynamic-plugin-sdk';
-import * as React from 'react';
 import { render } from 'react-dom';
 import '@patternfly/react-core/dist/styles/base.css';
 import ErrorBoundary from './components/ErrorBoundary';

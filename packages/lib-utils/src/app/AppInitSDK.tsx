@@ -1,6 +1,7 @@
 import { consoleLogger, PluginStoreProvider } from '@openshift/dynamic-plugin-sdk';
 import type { PluginStore } from '@openshift/dynamic-plugin-sdk';
-import * as React from 'react';
+import type { PropsWithChildren, FC } from 'react';
+import { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import type { UtilsConfig } from '../config';
 import { isUtilsConfigSet, setUtilsConfig } from '../config';
@@ -8,7 +9,7 @@ import type { InitAPIDiscovery } from '../types/api-discovery';
 import { initAPIDiscovery } from './api-discovery';
 import { useReduxStore } from './redux';
 
-export type AppInitSDKProps = React.PropsWithChildren<{
+export type AppInitSDKProps = PropsWithChildren<{
   configurations: {
     apiDiscovery?: InitAPIDiscovery;
     apiPriorityList?: string[];
@@ -35,7 +36,7 @@ export type AppInitSDKProps = React.PropsWithChildren<{
  * )
  * ```
  */
-const AppInitSDK: React.FC<AppInitSDKProps> = ({ children, configurations }) => {
+const AppInitSDK: FC<AppInitSDKProps> = ({ children, configurations }) => {
   const { store, storeContextPresent } = useReduxStore();
 
   const {
@@ -46,7 +47,7 @@ const AppInitSDK: React.FC<AppInitSDKProps> = ({ children, configurations }) => 
     apiPriorityList,
   } = configurations;
 
-  React.useEffect(() => {
+  useEffect(() => {
     try {
       if (!isUtilsConfigSet()) {
         setUtilsConfig({ appFetch, wsAppSettings });

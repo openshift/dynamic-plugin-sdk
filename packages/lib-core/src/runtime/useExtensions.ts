@@ -1,5 +1,5 @@
 import { isEqualWith } from 'lodash';
-import * as React from 'react';
+import { useMemo } from 'react';
 import type { Extension, LoadedExtension, ExtensionPredicate } from '../types/extension';
 import type { PluginStoreInterface } from '../types/store';
 import { PluginEventType } from '../types/store';
@@ -26,7 +26,7 @@ export const useExtensions = <TExtension extends Extension>(
 ): LoadedExtension<TExtension>[] => {
   const extensions = usePluginSubscription(eventTypes, getData, isSameData);
 
-  return React.useMemo(
+  return useMemo(
     () =>
       extensions.reduce<LoadedExtension<TExtension>[]>(
         (acc, e) => ((predicate ?? (() => true))(e) ? [...acc, e] : acc),

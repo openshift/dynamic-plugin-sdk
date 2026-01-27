@@ -1,11 +1,11 @@
 import type { Map as ImmutableMap } from 'immutable';
-import * as React from 'react';
+import { useRef } from 'react';
 import { useSelector } from 'react-redux';
 import type { K8sModelCommon } from '../../types/k8s';
 import type { SDKStoreState } from '../../types/redux';
 
 export const useModelsLoaded = (): boolean => {
-  const ref = React.useRef(false);
+  const ref = useRef(false);
   const k8sModels = useSelector<SDKStoreState, ImmutableMap<string, K8sModelCommon[]>>(({ k8s }) =>
     k8s?.getIn(['RESOURCES', 'models']),
   );

@@ -4,7 +4,7 @@ import { Bullseye, Button, EmptyState, EmptyStateBody } from '@patternfly/react-
 import { PackageIcon } from '@patternfly/react-icons';
 import { ActionsColumn, Table, Thead, Tbody, Tr, Th, Td } from '@patternfly/react-table';
 import type { IAction } from '@patternfly/react-table';
-import * as React from 'react';
+import type { FC } from 'react';
 import LabelWithTooltipIcon from './LabelWithTooltipIcon';
 
 const columnNames = {
@@ -33,7 +33,7 @@ const getDropdownActions = (entry: PluginInfoEntry): IAction[] => [
   },
 ];
 
-const PluginInfoTable: React.FC = () => {
+const PluginInfoTable: FC = () => {
   const pluginStore = usePluginStore();
   const entries = usePluginInfo().sort((a, b) => a.manifest.name.localeCompare(b.manifest.name));
 
