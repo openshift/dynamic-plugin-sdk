@@ -1,4 +1,4 @@
-import { defaultsDeep, forOwn, isPlainObject } from 'lodash';
+import { cloneDeepWith, defaultsDeep, forOwn, isPlainObject } from 'lodash';
 import type { AnyObject } from '../types/common';
 
 /**
@@ -34,3 +34,18 @@ export const visitDeep = <TValue>(
     }
   });
 };
+
+/**
+ * Variation of Lodash `cloneDeep` function that keeps existing object references
+ * for uncloneable values (functions, DOM nodes, `WeakMap` and `Error` objects).
+ *
+ * @see https://github.com/lodash/lodash/blob/dec55b7a3b382da075e2eac90089b4cd00a26cbb/lodash.js#L323
+ */
+export const cloneDeepOnlyCloneableValues = <TObject>(obj: TObject): TObject =>
+  cloneDeepWith(obj, (value) => {
+    const tag = Object.prototype.toString.call(value);
+
+    return tag === '[object Function]' || tag === '[object Error]' || tag === '[object WeakMap]'
+      ? value
+      : undefined;
+  });
