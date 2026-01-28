@@ -7,6 +7,6 @@
     "moduleResolution": "node",
     "declaration": true,
     "declarationMap": true,
-    "jsx": "react"
+    "jsx": "react-jsx"
   }
 }

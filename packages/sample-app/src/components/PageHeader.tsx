@@ -15,15 +15,16 @@ import {
   ToggleGroupItem,
 } from '@patternfly/react-core';
 import { FlagIcon, VialIcon } from '@patternfly/react-icons';
-import * as React from 'react';
+import type { FC } from 'react';
+import { useRef, useCallback } from 'react';
 import { localPluginManifests } from '../local-plugins';
 import type { LoadPluginModalRefProps } from './LoadPluginModal';
 import LoadPluginModal from './LoadPluginModal';
 
-const PageHeader: React.FC = () => {
+const PageHeader: FC = () => {
   const pluginStore = usePluginStore();
 
-  const loadPluginModalRef = React.useRef<LoadPluginModalRefProps>(null);
+  const loadPluginModalRef = useRef<LoadPluginModalRefProps>(null);
 
   const [sampleFeatureFlag, setSampleFeatureFlag] = useFeatureFlag('SAMPLE_FLAG');
 
@@ -31,13 +32,13 @@ const PageHeader: React.FC = () => {
     loadPluginModalRef.current?.open();
   };
 
-  const loadLocalPlugins = React.useCallback(() => {
+  const loadLocalPlugins = useCallback(() => {
     localPluginManifests.forEach((manifest) => {
       pluginStore.loadPlugin(manifest);
     });
   }, [pluginStore]);
 
-  const onSampleFeatureFlagChange = React.useCallback<Required<ToggleGroupItemProps>['onChange']>(
+  const onSampleFeatureFlagChange = useCallback<Required<ToggleGroupItemProps>['onChange']>(
     (_e, value) => {
       setSampleFeatureFlag(value);
     },

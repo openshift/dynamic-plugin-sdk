@@ -15,7 +15,7 @@ import {
   HelperTextItem,
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
-import * as React from 'react';
+import { forwardRef, useState, useCallback, useImperativeHandle } from 'react';
 import { isValidURL } from '../utils';
 
 type LoadPluginModalProps = {
@@ -26,17 +26,17 @@ export type LoadPluginModalRefProps = {
   open: VoidFunction;
 };
 
-const LoadPluginModal = React.forwardRef<LoadPluginModalRefProps, LoadPluginModalProps>(
+const LoadPluginModal = forwardRef<LoadPluginModalRefProps, LoadPluginModalProps>(
   ({ defaultManifestURL = 'http://localhost:9001/plugin-manifest.json' }, ref) => {
-    const [isModalOpen, setModalOpen] = React.useState(false);
+    const [isModalOpen, setModalOpen] = useState(false);
 
-    const [manifestURL, setManifestURL] = React.useState(defaultManifestURL);
-    const [manifestURLValid, setManifestURLValid] = React.useState(isValidURL(defaultManifestURL));
-    const [forceReload, setForceReload] = React.useState(false);
+    const [manifestURL, setManifestURL] = useState(defaultManifestURL);
+    const [manifestURLValid, setManifestURLValid] = useState(isValidURL(defaultManifestURL));
+    const [forceReload, setForceReload] = useState(false);
 
     const pluginStore = usePluginStore();
 
-    const onManifestURLChange = React.useCallback<Required<TextInputProps>['onChange']>(
+    const onManifestURLChange = useCallback<Required<TextInputProps>['onChange']>(
       (_e, value) => {
         setManifestURL(value);
         setManifestURLValid(isValidURL(value));
@@ -44,23 +44,23 @@ const LoadPluginModal = React.forwardRef<LoadPluginModalRefProps, LoadPluginModa
       [setManifestURL, setManifestURLValid],
     );
 
-    const onForceReloadChange = React.useCallback<Required<CheckboxProps>['onChange']>(
+    const onForceReloadChange = useCallback<Required<CheckboxProps>['onChange']>(
       (_e, value) => {
         setForceReload(value);
       },
       [setForceReload],
     );
 
-    const closeModal = React.useCallback(() => {
+    const closeModal = useCallback(() => {
       setModalOpen(false);
     }, [setModalOpen]);
 
-    const loadPlugin = React.useCallback(() => {
+    const loadPlugin = useCallback(() => {
       pluginStore.loadPlugin(manifestURL, forceReload);
       closeModal();
     }, [pluginStore, manifestURL, forceReload, closeModal]);
 
-    const onSubmit = React.useCallback<Required<FormProps>['onSubmit']>(
+    const onSubmit = useCallback<Required<FormProps>['onSubmit']>(
       (e) => {
         e.preventDefault();
         loadPlugin();
@@ -68,7 +68,7 @@ const LoadPluginModal = React.forwardRef<LoadPluginModalRefProps, LoadPluginModa
       [loadPlugin],
     );
 
-    React.useImperativeHandle(
+    useImperativeHandle(
       ref,
       () => ({
         open: () => {

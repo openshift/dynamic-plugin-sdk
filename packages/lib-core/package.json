@@ -28,7 +28,7 @@
     "api-extractor-local": "yarn run api-extractor --local"
   },
   "peerDependencies": {
-    "react": "^17 || ^18"
+    "react": "^18 || ^19"
   },
   "dependencies": {
     "lodash": "^4.17.21",

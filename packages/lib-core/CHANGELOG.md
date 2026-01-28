@@ -5,6 +5,8 @@
 > This release contains improvements based on usage in OpenShift Console project.
 
 - BREAKING: Replace `fixedPluginDependencyResolutions` loader option with `customDependencyResolutions` ([#291])
+- BREAKING: Set minimum supported version of React to 18 and declare compatibility with React 19 ([#295])
+- Set build target to `es2021` and use new JSX transform `react-jsx` ([#295])
 - Allow extending `customProperties` object type in `PluginRuntimeMetadata` ([#290])
 - Update `yup` dependency to `^1.7.1` and improve handling of `Record<string, string>` schemas ([#289])
 - Add `cloneDeepOnlyCloneableValues` function intended for cloning extension objects ([#294])
@@ -105,3 +107,4 @@
 [#291]: https://github.com/openshift/dynamic-plugin-sdk/pull/291
 [#292]: https://github.com/openshift/dynamic-plugin-sdk/pull/292
 [#294]: https://github.com/openshift/dynamic-plugin-sdk/pull/294
+[#295]: https://github.com/openshift/dynamic-plugin-sdk/pull/295

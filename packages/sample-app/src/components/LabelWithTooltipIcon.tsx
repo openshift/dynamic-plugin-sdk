@@ -2,14 +2,14 @@ import { Flex, FlexItem, Tooltip } from '@patternfly/react-core';
 import { InfoCircleIcon } from '@patternfly/react-icons';
 // eslint-disable-next-line camelcase
 import { t_global_icon_color_status_info_default } from '@patternfly/react-tokens';
-import * as React from 'react';
+import type { ReactNode, FC } from 'react';
 
 type LabelWithTooltipIconProps = {
-  label: React.ReactNode;
-  tooltipContent?: React.ReactNode;
+  label: ReactNode;
+  tooltipContent?: ReactNode;
 };
 
-const LabelWithTooltipIcon: React.FC<LabelWithTooltipIconProps> = ({ label, tooltipContent }) => {
+const LabelWithTooltipIcon: FC<LabelWithTooltipIconProps> = ({ label, tooltipContent }) => {
   if (!tooltipContent) {
     return <>{label}</>;
   }

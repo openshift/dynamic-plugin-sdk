@@ -2,7 +2,8 @@ import type { LoadedAndResolvedExtension } from '@openshift/dynamic-plugin-sdk';
 import { useResolvedExtensions } from '@openshift/dynamic-plugin-sdk';
 import type { ReduxProvider } from '@openshift/dynamic-plugin-sdk-extensions';
 import { render } from '@testing-library/react';
-import * as React from 'react';
+import type { FC } from 'react';
+import { createContext } from 'react';
 import type { ReactReduxContextValue } from 'react-redux';
 import { createSelectorHook } from 'react-redux';
 import type { Store } from 'redux';
@@ -27,8 +28,8 @@ describe('ReduxExtensionProvider', () => {
       value: number;
     };
 
-    const store1: Store = createStore((state) => state ?? { value: 1 });
-    const store2: Store = createStore((state) => state ?? { value: 2 });
+    const store1: Store<State> = createStore((state) => state ?? { value: 1 });
+    const store2: Store<State> = createStore((state) => state ?? { value: 2 });
 
     // create 2 core.redux-provider extensions
     const extensions: LRReduxReducer[] = [
@@ -38,10 +39,9 @@ describe('ReduxExtensionProvider', () => {
         type: 'core.redux-provider',
         properties: {
           store: store1,
-          context: React.createContext<ReactReduxContextValue>({
+          context: createContext<ReactReduxContextValue>({
             store: store1,
-            storeState: store1.getState(),
-          }),
+          } as ReactReduxContextValue),
         },
       },
       {
@@ -50,10 +50,9 @@ describe('ReduxExtensionProvider', () => {
         type: 'core.redux-provider',
         properties: {
           store: store2,
-          context: React.createContext<ReactReduxContextValue>({
+          context: createContext<ReactReduxContextValue>({
             store: store2,
-            storeState: store2.getState(),
-          }),
+          } as ReactReduxContextValue),
         },
       },
     ];
@@ -62,16 +61,16 @@ describe('ReduxExtensionProvider', () => {
     useResolvedExtensionsMock.mockReturnValue([extensions, true, []]);
 
     // create 2 contextual redux selectors; one for each extension
-    const useSelector1 = createSelectorHook<State>(extensions[0].properties.context);
-    const useSelector2 = createSelectorHook<State>(extensions[1].properties.context);
+    const useSelector1 = createSelectorHook(extensions[0].properties.context);
+    const useSelector2 = createSelectorHook(extensions[1].properties.context);
 
     let value1 = -1;
     let value2 = -1;
 
     // this component will select values separately from each redux store
-    const Test: React.FC = () => {
-      value1 = useSelector1((state) => state.value);
-      value2 = useSelector2((state) => state.value);
+    const Test: FC = () => {
+      value1 = useSelector1((state: State) => state.value);
+      value2 = useSelector2((state: State) => state.value);
       return null;
     };
 

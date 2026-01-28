@@ -1,5 +1,5 @@
 import { consoleLogger } from '@monorepo/common';
-import * as React from 'react';
+import { useState, useEffect } from 'react';
 import type { Extension, LoadedAndResolvedExtension, ExtensionPredicate } from '../types/extension';
 import { settleAllPromises } from '../utils/promise';
 import { resolveCodeRefValues } from './coderefs';
@@ -54,14 +54,14 @@ export const useResolvedExtensions = <TExtension extends Extension>(
 
   const extensions = useExtensions(predicate);
 
-  const [resolvedExtensions, setResolvedExtensions] = React.useState<
+  const [resolvedExtensions, setResolvedExtensions] = useState<
     LoadedAndResolvedExtension<TExtension>[]
   >([]);
 
-  const [resolved, setResolved] = React.useState<boolean>(false);
-  const [errors, setErrors] = React.useState<unknown[]>([]);
+  const [resolved, setResolved] = useState<boolean>(false);
+  const [errors, setErrors] = useState<unknown[]>([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const allResolutionErrors: unknown[] = [];
     const failedExtensionUIDs: string[] = [];
 

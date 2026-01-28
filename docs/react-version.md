@@ -1,24 +1,20 @@
 # React Version Requirement
 
-Tools provided by dynamic plugin SDK are [React](https://reactjs.org/) focused.
+Tools provided by this SDK are [React](https://reactjs.org/) focused.
 
-If your host application or plugin uses [PatternFly](https://www.patternfly.org/), you should
-use a React version that is officially supported by your PatternFly major version.
+If your host application or plugin uses [PatternFly](https://www.patternfly.org/), make sure that
+your React version is supported by your PatternFly version. Refer to `@patternfly/react-core` peer
+dependencies for details.
 
-Host applications will typically provide React specific modules such as `react` and `react-dom`
-to their plugins via webpack shared scope object.
-
-## PatternFly 5 example
-
-The [manifest][pf-react-core-5.0.0] for `@patternfly/react-core` package version `5.0.0` contains
-the following peer dependencies:
+For example, [`@patternfly/react-core@6.4.0`][pf-react-core-6.4.0] manifest contains the following
+peer dependencies:
 
 ```
-"react": "^17 || ^18",
-"react-dom": "^17 || ^18"
+"react": "^17 || ^18 || ^19",
+"react-dom": "^17 || ^18 || ^19"
 ```
 
-This combines officially supported React versions (`^18`) and older and/or newer React versions
-for the sake of technical compatibility (`^17`) into a single version range.
+To ensure React version consistency, host applications may provide React specific modules such as
+`react` and `react-dom` to their plugins via webpack shared scope object.
 
-[pf-react-core-5.0.0]: https://github.com/patternfly/patternfly-react/blob/v5.0.0/packages/react-core/package.json
+[pf-react-core-6.4.0]: https://github.com/patternfly/patternfly-react/blob/v6.4.0/packages/react-core/package.json

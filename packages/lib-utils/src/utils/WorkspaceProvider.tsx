@@ -1,4 +1,5 @@
-import React from 'react';
+import type { PropsWithChildren, FC } from 'react';
+import { useMemo } from 'react';
 import WorkspaceContext from './WorkspaceContext';
 import { workspaceState } from './workspaceState';
 
@@ -16,8 +17,8 @@ import { workspaceState } from './workspaceState';
     </WorkspaceProvider>
  * ```
  */
-const WorkspaceProvider: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
-  const state = React.useMemo(() => workspaceState(), []);
+const WorkspaceProvider: FC<PropsWithChildren<unknown>> = ({ children }) => {
+  const state = useMemo(() => workspaceState(), []);
   return <WorkspaceContext.Provider value={state}>{children}</WorkspaceContext.Provider>;
 };
 

@@ -1,6 +1,5 @@
 import { TestPluginStore, PluginStoreProvider } from '@openshift/dynamic-plugin-sdk';
 import { mount } from 'cypress/react';
-import * as React from 'react';
 import '@patternfly/react-core/dist/styles/base.css';
 
 declare global {

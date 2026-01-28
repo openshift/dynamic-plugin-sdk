@@ -1,6 +1,5 @@
 import { PluginStore, PluginStoreProvider } from '@openshift/dynamic-plugin-sdk';
-import * as React from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import '@patternfly/react-core/dist/styles/base.css';
 import ErrorBoundary from './components/ErrorBoundary';
 import Loading from './components/Loading';
@@ -9,9 +8,10 @@ import PageHeader from './components/PageHeader';
 import PageLayout from './components/PageLayout';
 import { initSharedScope, getSharedScope } from './shared-scope';
 
-const appContainer = document.getElementById('root');
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const root = createRoot(document.getElementById('root')!);
 
-render(<Loading />, appContainer);
+root.render(<Loading />);
 
 // eslint-disable-next-line promise/catch-or-return, promise/always-return
 initSharedScope().then(() => {
@@ -27,7 +27,7 @@ initSharedScope().then(() => {
   // eslint-disable-next-line no-console
   console.info(`Using plugin SDK runtime version ${pluginStore.sdkVersion}`);
 
-  render(
+  root.render(
     <PluginStoreProvider store={pluginStore}>
       <ErrorBoundary>
         <PageLayout header={<PageHeader />}>
@@ -35,6 +35,5 @@ initSharedScope().then(() => {
         </PageLayout>
       </ErrorBoundary>
     </PluginStoreProvider>,
-    appContainer,
   );
 });

@@ -1,5 +1,5 @@
-import * as React from 'react';
+import type { FC } from 'react';
 
-const TestComponent: React.FC = () => <span>Component from sample plugin</span>;
+const TestComponent: FC = () => <span>Component from sample plugin</span>;
 
 export default TestComponent;

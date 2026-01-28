@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useCallback } from 'react';
 import type { PluginStoreInterface } from '../types/store';
 import { PluginEventType } from '../types/store';
 import { usePluginStore } from './PluginStoreContext';
@@ -24,14 +24,14 @@ export type UseFeatureFlagResult = [currentValue: boolean, setValue: (newValue: 
  * ```
  */
 export const useFeatureFlag = (name: string): UseFeatureFlagResult => {
-  const getData = React.useCallback(
+  const getData = useCallback(
     (pluginStore: PluginStoreInterface) => pluginStore.getFeatureFlags()[name],
     [name],
   );
   const currentValue = usePluginSubscription(eventTypes, getData, isSameData);
   const pluginStore = usePluginStore();
 
-  const setValue = React.useCallback(
+  const setValue = useCallback(
     (value: boolean) => {
       pluginStore.setFeatureFlags({ [name]: value });
     },

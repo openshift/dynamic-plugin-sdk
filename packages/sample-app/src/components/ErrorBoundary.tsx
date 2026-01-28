@@ -1,13 +1,14 @@
 import type { AnyObject } from '@openshift/dynamic-plugin-sdk';
-import * as React from 'react';
+import type { ErrorInfo, PropsWithChildren } from 'react';
+import { Component } from 'react';
 import ErrorBoundaryFallback from './ErrorBoundaryFallback';
 
 export type ErrorBoundaryFallbackProps = {
   error: Error;
-  errorInfo: React.ErrorInfo;
+  errorInfo: ErrorInfo;
 };
 
-type ErrorBoundaryProps = React.PropsWithChildren<AnyObject>;
+type ErrorBoundaryProps = PropsWithChildren<AnyObject>;
 
 type ErrorBoundaryState =
   | {
@@ -20,13 +21,13 @@ type ErrorBoundaryState =
 /**
  * @see https://reactjs.org/docs/error-boundaries.html
  */
-class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
   }
 
-  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     this.setState({ hasError: true, error, errorInfo });
 
     // eslint-disable-next-line no-console

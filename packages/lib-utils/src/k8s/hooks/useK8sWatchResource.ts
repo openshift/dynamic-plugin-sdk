@@ -1,10 +1,10 @@
 import type { Map as ImmutableMap } from 'immutable';
-import * as React from 'react';
+import { useContext, useMemo, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import * as k8sActions from '../../app/redux/actions/k8s';
 import { getReduxIdPayload } from '../../app/redux/reducers/k8s/selector';
 import type { K8sModelCommon, K8sResourceCommon } from '../../types/k8s';
-import type { SDKStoreState } from '../../types/redux';
+import type { DispatchWithThunk, SDKStoreState } from '../../types/redux';
 import WorkspaceContext from '../../utils/WorkspaceContext';
 import type { WebSocketOptions } from '../../web-socket/types';
 import { getWatchData, getReduxData, NoModelError } from './k8s-watcher';
@@ -38,7 +38,7 @@ export const useK8sWatchResource = <R extends K8sResourceCommon | K8sResourceCom
   initModel?: K8sModelCommon,
   options?: Partial<WebSocketOptions & RequestInit & { wsPrefix?: string; pathPrefix?: string }>,
 ): WatchK8sResult<R> => {
-  const workspaceContext = React.useContext(WorkspaceContext);
+  const workspaceContext = useContext(WorkspaceContext);
   const workspace = workspaceContext.getState().activeWorkspace;
   const withFallback: WatchK8sResource = initResource || { kind: NOT_A_VALUE };
   const resource = useDeepCompareMemoize(withFallback, true);
@@ -49,14 +49,14 @@ export const useK8sWatchResource = <R extends K8sResourceCommon | K8sResourceCom
   const [storedK8sModel] = useK8sModel(resource.groupVersionKind || resource.kind);
   const k8sModel = initModel || storedK8sModel;
 
-  const watchData = React.useMemo(
+  const watchData = useMemo(
     () => getWatchData(resource, k8sModel, options),
     [k8sModel, resource, options],
   );
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<DispatchWithThunk>();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (watchData) {
       dispatch(watchData.action);
     }
@@ -75,7 +75,7 @@ export const useK8sWatchResource = <R extends K8sResourceCommon | K8sResourceCom
     k8s?.getIn(['RESOURCES', 'batchesInFlight']),
   );
 
-  return React.useMemo(() => {
+  return useMemo(() => {
     if (!resource || resource.kind === NOT_A_VALUE) {
       return [undefined, true, undefined];
     }

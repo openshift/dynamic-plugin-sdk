@@ -1,12 +1,12 @@
 import { Flex, FlexItem, Content, CodeBlock, CodeBlockCode } from '@patternfly/react-core';
 // eslint-disable-next-line camelcase
 import { t_global_spacer_md } from '@patternfly/react-tokens';
-import * as React from 'react';
+import type { FC } from 'react';
 import type { ErrorBoundaryFallbackProps } from './ErrorBoundary';
 
 const trimEmptyLines = (text: string) => text.replace(/^\s*\n/gm, '');
 
-const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({ error, errorInfo }) => (
+const ErrorBoundaryFallback: FC<ErrorBoundaryFallbackProps> = ({ error, errorInfo }) => (
   <Flex direction={{ default: 'column' }} style={{ padding: t_global_spacer_md.value }}>
     <FlexItem>
       <Content component="h1">Oh no! Something went wrong.</Content>
@@ -16,7 +16,7 @@ const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({ error, er
     <FlexItem>
       <Content component="h3">Component trace</Content>
       <CodeBlock>
-        <CodeBlockCode>{trimEmptyLines(errorInfo.componentStack)}</CodeBlockCode>
+        <CodeBlockCode>{trimEmptyLines(errorInfo.componentStack ?? '(empty)')}</CodeBlockCode>
       </CodeBlock>
     </FlexItem>
     <FlexItem>
