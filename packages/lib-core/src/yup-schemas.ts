@@ -1,17 +1,17 @@
 // TODO(vojtech): suppress false positive https://github.com/jsx-eslint/eslint-plugin-react/pull/3326
 /* eslint-disable react/forbid-prop-types */
 import { array, object, string, ValidationError } from 'yup';
+import { valid, validRange } from 'semver';
 
 /**
  * Schema for a valid semver string.
- *
- * @see https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
  */
-const semverStringSchema = string()
+export const semverStringSchema = string()
   .required()
-  .matches(
-    /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/,
-  );
+  .test('is-semver', 'Must be a valid semver string', (value: string) => {
+    // valid may return a cleaned version (e.g., by stripping out leading 'v') but we need value to always be clean
+    return valid(value, { loose: false }) === value;
+  });
 
 /**
  * Schema for a valid plugin name.
@@ -103,13 +103,31 @@ export const recordStringStringSchema = object() // Rejects non-objects and null
   );
 
 /**
+ * Schema for Record<string, string> objects where the values are semver ranges.
+ */
+export const recordStringSemverRangeSchema = recordStringStringSchema.test(
+  'property?: Record<string, semver range>',
+  'Must be either undefined OR an object with string keys and semver range values',
+  (obj: object) => {
+    // Allow undefined because these fields are optional
+    if (obj === undefined) {
+      return true;
+    }
+
+    // We've already verified in recordStringStringSchema that all keys/values are strings,
+    // so we just need to check that they are valid semver ranges now
+    return Object.values(obj).every((value) => validRange(value) !== null);
+  },
+);
+
+/**
  * Schema for `PluginRuntimeMetadata` objects.
  */
 export const pluginRuntimeMetadataSchema = object().required().shape({
   name: pluginNameSchema,
   version: semverStringSchema,
-  dependencies: recordStringStringSchema,
-  optionalDependencies: recordStringStringSchema,
+  dependencies: recordStringSemverRangeSchema,
+  optionalDependencies: recordStringSemverRangeSchema,
   customProperties: object(),
 });
 
