@@ -1,4 +1,5 @@
 import type { WebpackSharedObject } from '@openshift/dynamic-plugin-sdk-webpack';
+import { devDependencies } from '../package.json';
 
 /**
  * Shared modules provided by the host application to its plugins.
@@ -19,8 +20,8 @@ export const appSharedModules: WebpackSharedObject = {
   '@openshift/dynamic-plugin-sdk': { eager: true, singleton: true, requiredVersion: false },
   '@patternfly/react-core': { eager: true },
   '@patternfly/react-table': { eager: true },
-  react: { eager: true, singleton: true, requiredVersion: '^18.0.0' },
-  'react-dom': { eager: true, singleton: true, requiredVersion: '^18.0.0' },
+  react: { eager: true, singleton: true, requiredVersion: devDependencies.react },
+  'react-dom': { eager: true, singleton: true, requiredVersion: devDependencies['react-dom'] },
 };
 
 /**

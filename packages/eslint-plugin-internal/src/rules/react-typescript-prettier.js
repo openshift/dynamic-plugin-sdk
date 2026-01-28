@@ -22,7 +22,7 @@ module.exports = {
   // Enforce a defaultProps definition for every prop that is not a required prop
   'react/require-default-props': 'off',
 
-  // Not needed with new JSX transform
+  // Disallow missing React when using JSX (not needed when using react-jsx transform)
   'react/react-in-jsx-scope': 'off',
 
   // Enforce that block statements are wrapped in curly braces

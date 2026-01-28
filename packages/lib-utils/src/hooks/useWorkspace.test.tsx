@@ -25,6 +25,7 @@ describe('useWorkspace', () => {
     const wrapper = ({ children }: { children: ReactNode }) => (
       <WorkspaceContext.Provider value={workspaceState()}>{children}</WorkspaceContext.Provider>
     );
+
     const { result } = renderHook(() => useWorkspace(), { wrapper });
     const [data, setter] = result.current;
 

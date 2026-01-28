@@ -3,7 +3,7 @@
   "extends": "./all-targets.json",
   "compilerOptions": {
     "target": "es2021",
-    "module": "es2020",
+    "module": "esnext",
     "moduleResolution": "node",
     "sourceMap": true,
     "jsx": "react-jsx"
