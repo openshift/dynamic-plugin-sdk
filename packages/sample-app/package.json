@@ -7,9 +7,11 @@
     "clean": "rm -rf dist",
     "build": "yarn clean && yarn webpack",
     "build-prod": "yarn clean && NODE_ENV=production yarn webpack",
+    "build-rspack": "yarn clean && NODE_ENV=production yarn rspack",
     "analyze": "yarn clean && NODE_ENV=production ANALYZE_BUNDLES=true yarn webpack",
     "lint": "yarn run -T eslint $INIT_CWD",
     "webpack": "node -r ts-node/register ./node_modules/.bin/webpack",
+    "rspack": "node -r ts-node/register ./node_modules/.bin/rspack",
     "http-server": "http-server dist -p 9000 -c-1"
   },
   "devDependencies": {
@@ -20,6 +22,8 @@
     "@patternfly/react-styles": "^6.4.0",
     "@patternfly/react-table": "^6.4.0",
     "@patternfly/react-tokens": "^6.4.0",
+    "@rspack/cli": "^1.6.7",
+    "@rspack/core": "^1.6.7",
     "@types/webpack-bundle-analyzer": "~4.7.0",
     "copy-webpack-plugin": "^13.0.1",
     "css-loader": "^7.1.2",
