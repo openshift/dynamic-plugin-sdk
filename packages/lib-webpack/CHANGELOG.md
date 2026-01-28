@@ -2,7 +2,7 @@
 
 ## 5.1.0 - TBD
 
-- Update yup to 1.7.1 ([#289])
+- Update `yup` dependency to `^1.7.1` and improve handling of `Record<string, string>` schemas ([#289])
 
 ## 5.0.0 - 2026-01-06
 
