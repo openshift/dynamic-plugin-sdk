@@ -1,14 +1,13 @@
 // TODO(vojtech): suppress false positive https://github.com/jsx-eslint/eslint-plugin-react/pull/3326
 /* eslint-disable react/forbid-prop-types */
-import * as yup from 'yup';
+import { array, object, string, ValidationError } from 'yup';
 
 /**
  * Schema for a valid semver string.
  *
  * @see https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
  */
-const semverStringSchema = yup
-  .string()
+const semverStringSchema = string()
   .required()
   .matches(
     /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/,
@@ -26,8 +25,7 @@ const semverStringSchema = yup
  * Foo-Bar-abc.123
  * ```
  */
-const pluginNameSchema = yup
-  .string()
+const pluginNameSchema = string()
   .required()
   .matches(/^[a-zA-Z]+(?:[-.]?[a-zA-Z0-9]+)*$/);
 
@@ -43,8 +41,7 @@ const pluginNameSchema = yup
  * My-app.Foo-Bar/abcTest
  * ```
  */
-const extensionTypeSchema = yup
-  .string()
+const extensionTypeSchema = string()
   .required()
   .matches(/^[a-zA-Z]+(?:-[a-zA-Z]+)*\.[a-zA-Z]+(?:-[a-zA-Z]+)*(?:\/[a-zA-Z]+(?:-[a-zA-Z]+)*)*$/);
 
@@ -58,36 +55,33 @@ const extensionTypeSchema = yup
  * FOO_BAR123
  * ```
  */
-const featureFlagNameSchema = yup
-  .string()
+const featureFlagNameSchema = string()
   .required()
   .matches(/^[A-Z]+[A-Z0-9_]*$/);
 
 /**
  * Schema for `Extension` objects.
  */
-export const extensionSchema = yup
-  .object()
+export const extensionSchema = object()
   .required()
   .shape({
     type: extensionTypeSchema,
-    properties: yup.object().required(),
-    flags: yup.object().shape({
-      required: yup.array().of(featureFlagNameSchema),
-      disallowed: yup.array().of(featureFlagNameSchema),
+    properties: object().required(),
+    flags: object().shape({
+      required: array().of(featureFlagNameSchema),
+      disallowed: array().of(featureFlagNameSchema),
     }),
   });
 
 /**
  * Schema for an array of `Extension` objects.
  */
-export const extensionArraySchema = yup.array().of(extensionSchema).required();
+export const extensionArraySchema = array().of(extensionSchema).required();
 
 /**
  * Schema for Record<string, string> objects.
  */
-export const recordStringStringSchema = yup
-  .object() // Rejects non-objects and null
+export const recordStringStringSchema = object() // Rejects non-objects and null
   .test(
     'property?: Record<string, string>',
     'Must be either undefined OR an object with string keys and values',
@@ -99,7 +93,7 @@ export const recordStringStringSchema = yup
 
       // Objects can have Symbol() as keys, so ensure there are none
       if (Object.getOwnPropertySymbols(obj).length > 0) {
-        return new yup.ValidationError('Must be an object with no symbols as keys');
+        return new ValidationError('Must be an object with no symbols as keys');
       }
 
       // Object keys can only be symbols or strings, but since we've ruled out symbols,
@@ -111,21 +105,21 @@ export const recordStringStringSchema = yup
 /**
  * Schema for `PluginRuntimeMetadata` objects.
  */
-export const pluginRuntimeMetadataSchema = yup.object().required().shape({
+export const pluginRuntimeMetadataSchema = object().required().shape({
   name: pluginNameSchema,
   version: semverStringSchema,
   dependencies: recordStringStringSchema,
   optionalDependencies: recordStringStringSchema,
-  customProperties: yup.object(),
+  customProperties: object(),
 });
 
 /**
  * Schema for `RemotePluginManifest` objects.
  */
 export const remotePluginManifestSchema = pluginRuntimeMetadataSchema.shape({
-  baseURL: yup.string().required(),
+  baseURL: string().required(),
   extensions: extensionArraySchema,
-  loadScripts: yup.array().of(yup.string().required()).required(),
-  registrationMethod: yup.string().oneOf(['callback', 'custom']).required(),
-  buildHash: yup.string(),
+  loadScripts: array().of(string().required()).required(),
+  registrationMethod: string().oneOf(['callback', 'custom']).required(),
+  buildHash: string(),
 });

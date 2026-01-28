@@ -4,8 +4,8 @@ import type {
   RemotePluginManifest,
 } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
 import { identity, isEmpty, mapValues, intersection } from 'lodash';
-import * as semver from 'semver';
-import * as yup from 'yup';
+import { validRange } from 'semver';
+import type { ValidationError } from 'yup';
 import type { WebpackPluginInstance, Compiler, container } from 'webpack';
 import type { PluginBuildMetadata } from '../types/plugin';
 import type { WebpackSharedObject } from '../types/webpack';
@@ -177,7 +177,7 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
     } catch (e) {
       throw new Error(
         `Invalid ${DynamicRemotePlugin.name} options:\n` +
-          (e as yup.ValidationError).errors.join('\n'),
+          (e as ValidationError).errors.join('\n'),
       );
     }
 
@@ -187,7 +187,7 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
       ...(this.adaptedOptions.pluginMetadata.dependencies ?? {}),
     }).reduce<string[]>(
       (acc, [depName, versionRange]) =>
-        versionRange && semver.validRange(versionRange) ? acc : [...acc, depName],
+        versionRange && validRange(versionRange) ? acc : [...acc, depName],
       [],
     );
 

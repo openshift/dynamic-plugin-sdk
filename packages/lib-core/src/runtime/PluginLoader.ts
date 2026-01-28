@@ -2,7 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 import type { AnyObject } from '@monorepo/common';
 import { cloneDeepOnlyCloneableValues, consoleLogger, ErrorWithCause } from '@monorepo/common';
 import { identity, noop } from 'lodash';
-import * as semver from 'semver';
+import { valid, satisfies } from 'semver';
+import type { RangeOptions } from 'semver';
 import { DEFAULT_REMOTE_ENTRY_CALLBACK } from '../constants';
 import type { LoadedExtension } from '../types/extension';
 import type { ResourceFetch } from '../types/fetch';
@@ -381,7 +382,7 @@ export class PluginLoader implements PluginLoaderInterface {
       const pluginName = manifest.name;
       const requiredDependencies = manifest.dependencies ?? {};
       const optionalDependencies = manifest.optionalDependencies ?? {};
-      const semverRangeOptions: semver.RangeOptions = { includePrerelease: true };
+      const semverRangeOptions: RangeOptions = { includePrerelease: true };
 
       let isResolutionComplete = false;
       let listener: VoidFunction;
@@ -404,7 +405,7 @@ export class PluginLoader implements PluginLoaderInterface {
               const res = pluginResolutions.get(depName)!;
               const isRequired = !!requiredDependencies[depName];
 
-              if (res.success && !semver.satisfies(res.version, versionRange, semverRangeOptions)) {
+              if (res.success && !satisfies(res.version, versionRange, semverRangeOptions)) {
                 resolutionErrors.push(
                   `Dependency on plugin ${depName} not met: required range ${versionRange}, resolved version ${res.version}`,
                 );
@@ -418,8 +419,8 @@ export class PluginLoader implements PluginLoaderInterface {
 
               if (
                 version &&
-                semver.valid(version) &&
-                !semver.satisfies(version, versionRange, semverRangeOptions)
+                valid(version) &&
+                !satisfies(version, versionRange, semverRangeOptions)
               ) {
                 resolutionErrors.push(
                   `Custom dependency ${depName} not met: required range ${versionRange}, resolved version ${version}`,

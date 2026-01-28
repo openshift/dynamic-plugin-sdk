@@ -1,4 +1,4 @@
-import * as yup from 'yup';
+import { object, string } from 'yup';
 import {
   extensionArraySchema,
   pluginRuntimeMetadataSchema,
@@ -15,28 +15,28 @@ export const pluginBuildMetadataSchema = pluginRuntimeMetadataSchema.shape({
 /**
  * Schema for `PluginModuleFederationSettings` objects.
  */
-const pluginModuleFederationSettingsSchema = yup.object().required().shape({
-  libraryType: yup.string(),
-  sharedScopeName: yup.string(),
+const pluginModuleFederationSettingsSchema = object().required().shape({
+  libraryType: string(),
+  sharedScopeName: string(),
 });
 
 /**
  * Schema for `PluginEntryCallbackSettings` objects.
  */
-const pluginEntryCallbackSettingsSchema = yup.object().required().shape({
-  name: yup.string(),
-  pluginID: yup.string(),
+const pluginEntryCallbackSettingsSchema = object().required().shape({
+  name: string(),
+  pluginID: string(),
 });
 
 /**
  * Schema for adapted `DynamicRemotePluginOptions` objects.
  */
-export const dynamicRemotePluginAdaptedOptionsSchema = yup.object().required().shape({
+export const dynamicRemotePluginAdaptedOptionsSchema = object().required().shape({
   pluginMetadata: pluginBuildMetadataSchema,
   extensions: extensionArraySchema,
-  sharedModules: yup.object().required(),
+  sharedModules: object().required(),
   moduleFederationSettings: pluginModuleFederationSettingsSchema,
   entryCallbackSettings: pluginEntryCallbackSettingsSchema,
-  entryScriptFilename: yup.string().required(),
-  pluginManifestFilename: yup.string().required(),
+  entryScriptFilename: string().required(),
+  pluginManifestFilename: string().required(),
 });
