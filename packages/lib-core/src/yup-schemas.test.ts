@@ -44,7 +44,7 @@ describe('recordStringStringSchema', () => {
     await expect(recordStringStringSchema.validate(undefined)).resolves.toBeUndefined();
   });
 
-  test('valid with correct string values', async () => {
+  test('valid with string values', async () => {
     const validObj = {
       key1: 'value1',
       key2: 'value2',
@@ -84,6 +84,7 @@ describe('recordStringSemverRangeSchema', () => {
       packageB: '>=2.0.0 <3.0.0',
       packageC: '~1.2.3',
       packageD: '1.2.3 - 2.3.4',
+      packageE: '1.2.3',
     };
 
     await expect(recordStringSemverRangeSchema.validate(validObj)).resolves.toEqual(validObj);
@@ -91,8 +92,8 @@ describe('recordStringSemverRangeSchema', () => {
 
   test('invalid with incorrect semver ranges', async () => {
     const invalidObj = {
-      packageA: 'not-a-semver',
-      packageB: '>=2.0.0 <3.0.0',
+      packageA: '^1.0.0',
+      packageB: 'not-a-semver', // Invalid semver range
     };
 
     await expect(recordStringSemverRangeSchema.validate(invalidObj)).rejects.toThrow(
@@ -100,10 +101,10 @@ describe('recordStringSemverRangeSchema', () => {
     );
   });
 
-  test('invalid when value is not a string', async () => {
+  test('invalid with non-string values', async () => {
     const invalidObj = {
-      packageA: 123,
-      packageB: '>=2.0.0 <3.0.0',
+      packageA: '^1.0.0',
+      packageB: 42, // Invalid non-string value
     };
 
     await expect(recordStringSemverRangeSchema.validate(invalidObj)).rejects.toThrow(
