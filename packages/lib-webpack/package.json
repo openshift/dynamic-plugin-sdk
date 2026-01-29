@@ -29,8 +29,8 @@
     "webpack": "^5.100.0"
   },
   "dependencies": {
-    "lodash": "^4.17.21",
-    "semver": "^7.3.7",
+    "lodash": "^4.17.23",
+    "semver": "^7.7.3",
     "yup": "^1.7.1"
   },
   "engines": {
