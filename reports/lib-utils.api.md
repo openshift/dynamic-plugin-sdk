@@ -70,6 +70,9 @@ export type AppInitSDKProps = PropsWithChildren<{
 }>;
 
 // @public (undocumented)
+export type AppResourceFetch = (...args: [...Parameters<ResourceFetch>, ...[isK8sAPIRequest?: boolean]]) => ReturnType<ResourceFetch>;
+
+// @public (undocumented)
 export type BulkMessageHandler = GenericHandler<MessageDataType[]>;
 
 // @public (undocumented)
@@ -514,7 +517,7 @@ export const useWorkspace: () => readonly [string | null, (newWorkspace: string)
 
 // @public (undocumented)
 export type UtilsConfig = {
-    appFetch: ResourceFetch;
+    appFetch: AppResourceFetch;
     wsAppSettings: (options: WebSocketOptions & {
         wsPrefix?: string;
         pathPrefix?: string;

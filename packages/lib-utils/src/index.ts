@@ -13,7 +13,13 @@ export { default as AppInitSDK, AppInitSDKProps } from './app/AppInitSDK';
 export { useWorkspace } from './hooks/useWorkspace';
 export { default as WorkspaceContext } from './utils/WorkspaceContext';
 export { default as WorkspaceProvider } from './utils/WorkspaceProvider';
-export { UtilsConfig, isUtilsConfigSet, setUtilsConfig, getUtilsConfig } from './config';
+export {
+  AppResourceFetch,
+  UtilsConfig,
+  isUtilsConfigSet,
+  setUtilsConfig,
+  getUtilsConfig,
+} from './config';
 export { commonFetch, commonFetchText, commonFetchJSON } from './utils/common-fetch';
 export {
   k8sGetResource,
