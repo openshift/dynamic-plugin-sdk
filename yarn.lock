@@ -959,7 +959,7 @@ __metadata:
     "@types/pluralize": ^0.0.29
     "@types/react": ^18.3.0
     "@types/react-dom": ^18.3.0
-    "@types/semver": ^7.3.10
+    "@types/semver": ^7.7.1
     "@types/uuid": ^8.3.4
     "@typescript-eslint/eslint-plugin": ^5.3.1
     "@typescript-eslint/parser": ^5.3.1
@@ -982,7 +982,7 @@ __metadata:
     jest: ^27.5.1
     jest-axe: ^6.0.0
     jsonc-parser: ^3.2.0
-    lodash: ^4.17.21
+    lodash: ^4.17.23
     minimatch: ^3.1.2
     prettier: ^2.4.1
     react: ^18.3.1
@@ -1029,7 +1029,7 @@ __metadata:
     cypress: ^12.17.3
     html-webpack-plugin: ^5.6.5
     http-server: ^14.1.1
-    lodash: ^4.17.21
+    lodash: ^4.17.23
     mini-css-extract-plugin: ^2.9.4
     react: ^18.3.1
     react-dom: ^18.3.1
@@ -1134,7 +1134,7 @@ __metadata:
   resolution: "@openshift/dynamic-plugin-sdk-utils@workspace:packages/lib-utils"
   dependencies:
     immutable: ^3.8.2
-    lodash: ^4.17.21
+    lodash: ^4.17.23
     pluralize: ^8.0.0
     typesafe-actions: ^4.4.2
     uuid: ^8.3.2
@@ -1152,8 +1152,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openshift/dynamic-plugin-sdk-webpack@portal:../lib-webpack::locator=%40monorepo%2Fsample-app%40workspace%3Apackages%2Fsample-app"
   dependencies:
-    lodash: ^4.17.21
-    semver: ^7.3.7
+    lodash: ^4.17.23
+    semver: ^7.7.3
     yup: ^1.7.1
   peerDependencies:
     webpack: ^5.100.0
@@ -1164,8 +1164,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openshift/dynamic-plugin-sdk-webpack@portal:../lib-webpack::locator=%40monorepo%2Fsample-plugin%40workspace%3Apackages%2Fsample-plugin"
   dependencies:
-    lodash: ^4.17.21
-    semver: ^7.3.7
+    lodash: ^4.17.23
+    semver: ^7.7.3
     yup: ^1.7.1
   peerDependencies:
     webpack: ^5.100.0
@@ -1176,8 +1176,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openshift/dynamic-plugin-sdk-webpack@workspace:packages/lib-webpack"
   dependencies:
-    lodash: ^4.17.21
-    semver: ^7.3.7
+    lodash: ^4.17.23
+    semver: ^7.7.3
     yup: ^1.7.1
   peerDependencies:
     webpack: ^5.100.0
@@ -1188,8 +1188,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openshift/dynamic-plugin-sdk@portal:../lib-core::locator=%40monorepo%2Fsample-app%40workspace%3Apackages%2Fsample-app"
   dependencies:
-    lodash: ^4.17.21
-    semver: ^7.3.7
+    lodash: ^4.17.23
+    semver: ^7.7.3
     uuid: ^8.3.2
     yup: ^1.7.1
   peerDependencies:
@@ -1201,8 +1201,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openshift/dynamic-plugin-sdk@portal:../lib-core::locator=%40monorepo%2Fsample-plugin%40workspace%3Apackages%2Fsample-plugin"
   dependencies:
-    lodash: ^4.17.21
-    semver: ^7.3.7
+    lodash: ^4.17.23
+    semver: ^7.7.3
     uuid: ^8.3.2
     yup: ^1.7.1
   peerDependencies:
@@ -1214,8 +1214,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openshift/dynamic-plugin-sdk@workspace:packages/lib-core"
   dependencies:
-    lodash: ^4.17.21
-    semver: ^7.3.7
+    lodash: ^4.17.23
+    semver: ^7.7.3
     uuid: ^8.3.2
     yup: ^1.7.1
   peerDependencies:
@@ -1859,10 +1859,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/semver@npm:^7.3.10":
-  version: 7.3.12
-  resolution: "@types/semver@npm:7.3.12"
-  checksum: 35536b2fc5602904f21cae681f6c9498e177dab3f54ae37c92f9a1b7e43c35f18bcd81e1c98c1cf0d33ee046bb06c771e9928c1c00a401d56a03f56549252a15
+"@types/semver@npm:^7.7.1":
+  version: 7.7.1
+  resolution: "@types/semver@npm:7.7.1"
+  checksum: 76d218e414482a398148d5c28f2bfa017108869f3fc18cda379c9d8d062348f8b9653ae2fa8642d3b5b52e211928fe8be34f22da4e1f08245c84e0e51e040673
   languageName: node
   linkType: hard
 
@@ -6988,10 +6988,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.17.14, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.7.0, lodash@npm:~4.17.15":
-  version: 4.17.21
-  resolution: "lodash@npm:4.17.21"
-  checksum: eb835a2e51d381e561e508ce932ea50a8e5a68f4ebdd771ea240d3048244a8d13658acbd502cd4829768c56f2e16bdd4340b9ea141297d472517b83868e677f7
+"lodash@npm:^4.17.14, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.17.23, lodash@npm:^4.7.0, lodash@npm:~4.17.15":
+  version: 4.17.23
+  resolution: "lodash@npm:4.17.23"
+  checksum: 7daad39758a72872e94651630fbb54ba76868f904211089721a64516ce865506a759d9ad3d8ff22a2a49a50a09db5d27c36f22762d21766e47e3ba918d6d7bab
   languageName: node
   linkType: hard
 
@@ -8966,7 +8966,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:7.x, semver@npm:^7.2.1, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.5.3, semver@npm:^7.5.4":
+"semver@npm:7.x, semver@npm:^7.2.1, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.5.3, semver@npm:^7.5.4, semver@npm:^7.7.3":
   version: 7.7.3
   resolution: "semver@npm:7.7.3"
   bin:

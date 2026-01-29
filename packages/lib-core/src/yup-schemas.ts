@@ -1,17 +1,17 @@
 // TODO(vojtech): suppress false positive https://github.com/jsx-eslint/eslint-plugin-react/pull/3326
 /* eslint-disable react/forbid-prop-types */
-import { array, object, string, ValidationError } from 'yup';
+import { array, object, string } from 'yup';
+import { valid, validRange } from 'semver';
 
 /**
  * Schema for a valid semver string.
- *
- * @see https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
  */
-const semverStringSchema = string()
+export const semverStringSchema = string()
   .required()
-  .matches(
-    /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/,
-  );
+  .test('semver-string', 'Must be a strictly valid semver string', (value: string) => {
+    // valid may return a cleaned version (e.g., by stripping out leading 'v') but we need value to always be clean
+    return valid(value, { loose: false }) === value;
+  });
 
 /**
  * Schema for a valid plugin name.
@@ -79,12 +79,12 @@ export const extensionSchema = object()
 export const extensionArraySchema = array().of(extensionSchema).required();
 
 /**
- * Schema for Record<string, string> objects.
+ * Schema for `Record<string, string>` objects.
  */
 export const recordStringStringSchema = object() // Rejects non-objects and null
   .test(
-    'property?: Record<string, string>',
-    'Must be either undefined OR an object with string keys and values',
+    'Record<string, string> | undefined',
+    'Must be an object with string keys and string values OR undefined',
     (obj: object) => {
       // Allow undefined because these fields are optional
       if (obj === undefined) {
@@ -93,14 +93,32 @@ export const recordStringStringSchema = object() // Rejects non-objects and null
 
       // Objects can have Symbol() as keys, so ensure there are none
       if (Object.getOwnPropertySymbols(obj).length > 0) {
-        return new ValidationError('Must be an object with no symbols as keys');
+        return false;
       }
 
       // Object keys can only be symbols or strings, but since we've ruled out symbols,
-      // we can assume that all keys are strings. We just need to check the values now
+      // we can assume that all keys are strings. We just need to check the values now.
       return Object.values(obj).every((value) => typeof value === 'string');
     },
   );
+
+/**
+ * Schema for `Record<string, string>` objects where the values are valid semver ranges.
+ */
+export const recordStringSemverRangeSchema = recordStringStringSchema.test(
+  'Record<string, semver_range> | undefined',
+  'Must be an object with string keys and semver range string values OR undefined',
+  (obj: object) => {
+    // Allow undefined because these fields are optional
+    if (obj === undefined) {
+      return true;
+    }
+
+    // recordStringStringSchema ensures that all keys and values are strings,
+    // so we just need to check that all values are valid semver ranges now.
+    return Object.values(obj).every((value) => validRange(value) !== null);
+  },
+);
 
 /**
  * Schema for `PluginRuntimeMetadata` objects.
@@ -108,8 +126,8 @@ export const recordStringStringSchema = object() // Rejects non-objects and null
 export const pluginRuntimeMetadataSchema = object().required().shape({
   name: pluginNameSchema,
   version: semverStringSchema,
-  dependencies: recordStringStringSchema,
-  optionalDependencies: recordStringStringSchema,
+  dependencies: recordStringSemverRangeSchema,
+  optionalDependencies: recordStringSemverRangeSchema,
   customProperties: object(),
 });
 

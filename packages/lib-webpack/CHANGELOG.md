@@ -2,7 +2,9 @@
 
 ## 5.1.0 - TBD
 
-- Update yup to 1.7.1 ([#289])
+- Update `yup` dependency to `^1.7.1` and improve handling of `Record<string, string>` schemas ([#289])
+- Update `semver` dependency to `^7.7.3` ([#296])
+- Update `lodash` dependency to `^4.17.23` ([#296])
 
 ## 5.0.0 - 2026-01-06
 
@@ -72,3 +74,4 @@
 [#259]: https://github.com/openshift/dynamic-plugin-sdk/pull/259
 [#280]: https://github.com/openshift/dynamic-plugin-sdk/pull/280
 [#289]: https://github.com/openshift/dynamic-plugin-sdk/pull/289
+[#296]: https://github.com/openshift/dynamic-plugin-sdk/pull/296

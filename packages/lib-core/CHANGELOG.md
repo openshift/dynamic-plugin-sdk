@@ -9,6 +9,8 @@
 - Set build target to `es2021` and use new JSX transform `react-jsx` ([#295])
 - Allow extending `customProperties` object type in `PluginRuntimeMetadata` ([#290])
 - Update `yup` dependency to `^1.7.1` and improve handling of `Record<string, string>` schemas ([#289])
+- Update `semver` dependency to `^7.7.3` ([#296])
+- Update `lodash` dependency to `^4.17.23` ([#296])
 - Add `cloneDeepOnlyCloneableValues` function intended for cloning extension objects ([#294])
 - Add `LoadedAndResolvedExtension` type ([#292])
 
@@ -108,3 +110,4 @@
 [#292]: https://github.com/openshift/dynamic-plugin-sdk/pull/292
 [#294]: https://github.com/openshift/dynamic-plugin-sdk/pull/294
 [#295]: https://github.com/openshift/dynamic-plugin-sdk/pull/295
+[#296]: https://github.com/openshift/dynamic-plugin-sdk/pull/296
