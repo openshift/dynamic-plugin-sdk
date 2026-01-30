@@ -5,7 +5,7 @@ import type { AnyObject, ReplaceProperties } from '@monorepo/common';
  *
  * In order for an extension to be in use:
  * - for every flag name in `required` list - flag value must be `true`
- * - for every flag name in `disallowed` list - flag value must be `false`
+ * - for every flag name in `disallowed` list - flag value must be `false` or nullish (e.g., undefined)
  */
 export type ExtensionFlags = Partial<{
   required: string[];
