@@ -333,7 +333,7 @@ export class TestPluginStore extends PluginStore {
 }
 
 // @public
-export const useExtensions: <TExtension extends Extension<string, AnyObject>>(predicate?: ExtensionPredicate<TExtension> | undefined) => LoadedExtension<TExtension>[];
+export const useExtensions: <TExtension extends Extension<string, AnyObject>>(predicate?: ExtensionPredicate<TExtension>) => LoadedExtension<TExtension>[];
 
 // @public
 export const useFeatureFlag: (name: string) => UseFeatureFlagResult;
