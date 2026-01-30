@@ -2,6 +2,10 @@ import type { ResourceFetch } from '@openshift/dynamic-plugin-sdk';
 import type { Store } from 'redux';
 import type { WebSocketAppSettings, WebSocketOptions } from './web-socket/types';
 
+export type AppResourceFetch = (
+  ...args: [...Parameters<ResourceFetch>, ...[isK8sAPIRequest?: boolean]]
+) => ReturnType<ResourceFetch>;
+
 export type UtilsConfig = {
   /**
    * Resource fetch implementation provided by the host application.
@@ -11,7 +15,7 @@ export type UtilsConfig = {
    * If the request cannot be completed successfully, the Promise should be rejected
    * with an appropriate error.
    */
-  appFetch: ResourceFetch;
+  appFetch: AppResourceFetch;
 
   /**
    * Configure the web socket settings for your application.

@@ -316,7 +316,7 @@ export type ResolvedExtension<TExtension extends Extension = Extension> = Replac
 }>;
 
 // @public
-export type ResourceFetch = (url: string, requestInit?: RequestInit, isK8sAPIRequest?: boolean) => Promise<Response>;
+export type ResourceFetch = (url: string, requestInit?: RequestInit) => Promise<Response>;
 
 // @public
 export class TestPluginStore extends PluginStore {
