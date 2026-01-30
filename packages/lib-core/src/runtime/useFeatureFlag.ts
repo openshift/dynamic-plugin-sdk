@@ -6,9 +6,13 @@ import { usePluginSubscription } from './usePluginSubscription';
 
 const eventTypes = [PluginEventType.FeatureFlagsChanged];
 
-const isSameData = (prevData: boolean, nextData: boolean) => prevData === nextData;
+const isSameData = (prevData: boolean | undefined, nextData: boolean | undefined) =>
+  prevData === nextData;
 
-export type UseFeatureFlagResult = [currentValue: boolean, setValue: (newValue: boolean) => void];
+export type UseFeatureFlagResult = [
+  currentValue: boolean | undefined,
+  setValue: (newValue: boolean | undefined) => void,
+];
 
 /**
  * React hook that provides access to a feature flag.
@@ -32,7 +36,7 @@ export const useFeatureFlag = (name: string): UseFeatureFlagResult => {
   const pluginStore = usePluginStore();
 
   const setValue = useCallback(
-    (value: boolean) => {
+    (value: boolean | undefined) => {
       pluginStore.setFeatureFlags({ [name]: value });
     },
     [pluginStore, name],

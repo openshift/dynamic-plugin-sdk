@@ -33,4 +33,4 @@ export const isModelFeatureFlag = (e: Extension): e is ModelFeatureFlag =>
 
 // Arbitrary types
 
-export type SetFeatureFlag = (flag: string, enabled: boolean) => void;
+export type SetFeatureFlag = (flag: string, enabled: boolean | undefined) => void;

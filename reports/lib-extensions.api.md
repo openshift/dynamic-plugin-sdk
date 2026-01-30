@@ -396,7 +396,7 @@ export type RoutePageProperties = {
 export type Separator = Extension<'core.navigation/separator', Omit<NavItemProperties, 'startsWith'>>;
 
 // @public (undocumented)
-export type SetFeatureFlag = (flag: string, enabled: boolean) => void;
+export type SetFeatureFlag = (flag: string, enabled: boolean | undefined) => void;
 
 // @public (undocumented)
 export type TelemetryEventListener = <TProperties = AnyObject>(eventType: string, properties?: TProperties) => void;

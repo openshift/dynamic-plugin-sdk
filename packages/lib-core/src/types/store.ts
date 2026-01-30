@@ -72,7 +72,7 @@ export type PluginInfoEntry =
 /**
  * Feature flags used to control enablement of all extensions.
  */
-export type FeatureFlags = { [flagName: string]: boolean };
+export type FeatureFlags = { [flagName: string]: boolean | undefined };
 
 /**
  * Common interface implemented by the `PluginStore`.
