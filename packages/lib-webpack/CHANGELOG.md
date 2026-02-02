@@ -1,6 +1,6 @@
 # Changelog for `@openshift/dynamic-plugin-sdk-webpack`
 
-## 5.1.0 - TBD
+## 5.1.0 - 2026-02-02
 
 - Update `yup` dependency to `^1.7.1` and improve handling of `Record<string, string>` schemas ([#289])
 - Update `semver` dependency to `^7.7.3` ([#296])
