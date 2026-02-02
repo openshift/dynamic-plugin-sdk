@@ -10,6 +10,7 @@ import type { AnyObject } from '@openshift/dynamic-plugin-sdk';
 import type { CodeRef } from '@openshift/dynamic-plugin-sdk';
 import type { ComponentType } from 'react';
 import type { Extension } from '@openshift/dynamic-plugin-sdk';
+import type { FeatureFlagValue } from '@openshift/dynamic-plugin-sdk';
 import type { PathMatch } from 'react-router';
 import type { Provider } from 'react';
 import type { ReactNode } from 'react';
@@ -396,7 +397,7 @@ export type RoutePageProperties = {
 export type Separator = Extension<'core.navigation/separator', Omit<NavItemProperties, 'startsWith'>>;
 
 // @public (undocumented)
-export type SetFeatureFlag = (flag: string, enabled: boolean | undefined) => void;
+export type SetFeatureFlag = (flag: string, value: FeatureFlagValue) => void;
 
 // @public (undocumented)
 export type TelemetryEventListener = <TProperties = AnyObject>(eventType: string, properties?: TProperties) => void;

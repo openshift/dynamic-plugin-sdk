@@ -1,7 +1,7 @@
 import type { AnyObject, ReplaceProperties } from '@monorepo/common';
 
 /**
- * An extension's feature flag settings.
+ * An extension's feature flag requirements.
  *
  * In order for an extension to be in use:
  * - for every flag name in `required` list - flag value must be `true`

@@ -70,9 +70,18 @@ export type PluginInfoEntry =
   | FailedPluginInfoEntry;
 
 /**
+ * Feature flag value type.
+ *
+ * If a flag requires asynchronous resolution, its value may be `undefined` until
+ * the resolution is complete. Flags with `undefined` values represent known feature
+ * flags which are not resolved yet.
+ */
+export type FeatureFlagValue = boolean | undefined;
+
+/**
  * Feature flags used to control enablement of all extensions.
  */
-export type FeatureFlags = { [flagName: string]: boolean | undefined };
+export type FeatureFlags = { [flagName: string]: FeatureFlagValue };
 
 /**
  * Common interface implemented by the `PluginStore`.

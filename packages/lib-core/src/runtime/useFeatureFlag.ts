@@ -1,17 +1,17 @@
 import { useCallback } from 'react';
-import type { PluginStoreInterface } from '../types/store';
+import type { FeatureFlagValue, PluginStoreInterface } from '../types/store';
 import { PluginEventType } from '../types/store';
 import { usePluginStore } from './PluginStoreContext';
 import { usePluginSubscription } from './usePluginSubscription';
 
 const eventTypes = [PluginEventType.FeatureFlagsChanged];
 
-const isSameData = (prevData: boolean | undefined, nextData: boolean | undefined) =>
+const isSameData = (prevData: FeatureFlagValue, nextData: FeatureFlagValue) =>
   prevData === nextData;
 
 export type UseFeatureFlagResult = [
-  currentValue: boolean | undefined,
-  setValue: (newValue: boolean | undefined) => void,
+  currentValue: FeatureFlagValue,
+  setValue: (newValue: FeatureFlagValue) => void,
 ];
 
 /**
@@ -36,7 +36,7 @@ export const useFeatureFlag = (name: string): UseFeatureFlagResult => {
   const pluginStore = usePluginStore();
 
   const setValue = useCallback(
-    (value: boolean | undefined) => {
+    (value: FeatureFlagValue) => {
       pluginStore.setFeatureFlags({ [name]: value });
     },
     [pluginStore, name],

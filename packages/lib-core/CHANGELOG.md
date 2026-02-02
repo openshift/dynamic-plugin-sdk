@@ -6,8 +6,8 @@
 
 - BREAKING: Replace `fixedPluginDependencyResolutions` loader option with `customDependencyResolutions` ([#291])
 - BREAKING: Set minimum supported version of React to 18 and declare compatibility with React 19 ([#295])
-- BREAKING: Nullish feature flags now default to false when calculating disallowed extension flags ([#297])
-- BREAKING: Feature flags can now have `undefined` values, which are interpreted as "value resolution is pending" ([#297])
+- BREAKING: Nullish feature flags now default to `false` when interpreting `disallowed` flag list ([#298])
+- Feature flags can now have `undefined` values to indicate that flag resolution is still pending ([#298])
 - Set build target to `es2021` and use new JSX transform `react-jsx` ([#295])
 - Allow extending `customProperties` object type in `PluginRuntimeMetadata` ([#290])
 - Update `yup` dependency to `^1.7.1` and improve handling of `Record<string, string>` schemas ([#289])
@@ -113,4 +113,4 @@
 [#294]: https://github.com/openshift/dynamic-plugin-sdk/pull/294
 [#295]: https://github.com/openshift/dynamic-plugin-sdk/pull/295
 [#296]: https://github.com/openshift/dynamic-plugin-sdk/pull/296
-[#297]: https://github.com/openshift/dynamic-plugin-sdk/pull/297
+[#298]: https://github.com/openshift/dynamic-plugin-sdk/pull/298
