@@ -29,7 +29,6 @@ Following SDK packages are distributed via [npmjs](https://www.npmjs.com/):
 | Package Name                               | Sources                                               |
 | ------------------------------------------ | ----------------------------------------------------- |
 | `@openshift/dynamic-plugin-sdk`            | [packages/lib-core](./packages/lib-core/)             |
-| `@openshift/dynamic-plugin-sdk-extensions` | [packages/lib-extensions](./packages/lib-extensions/) |
 | `@openshift/dynamic-plugin-sdk-utils`      | [packages/lib-utils](./packages/lib-utils/)           |
 | `@openshift/dynamic-plugin-sdk-webpack`    | [packages/lib-webpack](./packages/lib-webpack/)       |
 

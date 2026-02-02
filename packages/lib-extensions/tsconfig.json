@@ -1,8 +1,0 @@
-{
-  "extends": "@monorepo/common/tsconfig-bases/lib-react-esm.json",
-  "compilerOptions": {
-    "outDir": "dist",
-    "declarationDir": "types"
-  },
-  "include": ["src"]
-}
