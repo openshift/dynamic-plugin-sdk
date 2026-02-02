@@ -281,7 +281,7 @@ export class PluginStore implements PluginStoreInterface {
   private isExtensionInUse(extension: LoadedExtension) {
     return (
       (extension.flags?.required?.every((f) => this.featureFlags[f] === true) ?? true) &&
-      (extension.flags?.disallowed?.every((f) => this.featureFlags[f] === false) ?? true)
+      (extension.flags?.disallowed?.every((f) => (this.featureFlags[f] ?? false) === false) ?? true)
     );
   }
 

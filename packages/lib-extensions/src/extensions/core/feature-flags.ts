@@ -1,4 +1,4 @@
-import type { CodeRef, Extension } from '@openshift/dynamic-plugin-sdk';
+import type { CodeRef, Extension, FeatureFlagValue } from '@openshift/dynamic-plugin-sdk';
 import type { ExtensionK8sResourceIdentifier } from '../../types/common';
 
 /** Gives full control over host application's feature flags. */
@@ -33,4 +33,4 @@ export const isModelFeatureFlag = (e: Extension): e is ModelFeatureFlag =>
 
 // Arbitrary types
 
-export type SetFeatureFlag = (flag: string, enabled: boolean) => void;
+export type SetFeatureFlag = (flag: string, value: FeatureFlagValue) => void;

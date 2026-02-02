@@ -89,8 +89,11 @@ export type FailedPluginInfoEntry = {
 
 // @public
 export type FeatureFlags = {
-    [flagName: string]: boolean;
+    [flagName: string]: FeatureFlagValue;
 };
+
+// @public
+export type FeatureFlagValue = boolean | undefined;
 
 // @public
 export type LoadedAndResolvedExtension<TExtension extends Extension = Extension> = LoadedExtension<ResolvedExtension<TExtension>>;
@@ -248,7 +251,7 @@ export class PluginStore implements PluginStoreInterface {
     getExtensions(): LoadedExtension<Extension<string, AnyObject>>[];
     // (undocumented)
     getFeatureFlags(): {
-        [x: string]: boolean;
+        [x: string]: FeatureFlagValue;
     };
     // (undocumented)
     getPluginInfo(): PluginInfoEntry[];
@@ -335,7 +338,10 @@ export const useExtensions: <TExtension extends Extension<string, AnyObject>>(pr
 export const useFeatureFlag: (name: string) => UseFeatureFlagResult;
 
 // @public (undocumented)
-export type UseFeatureFlagResult = [currentValue: boolean, setValue: (newValue: boolean) => void];
+export type UseFeatureFlagResult = [
+currentValue: FeatureFlagValue,
+setValue: (newValue: FeatureFlagValue) => void
+];
 
 // @public
 export const usePluginInfo: () => PluginInfoEntry[];

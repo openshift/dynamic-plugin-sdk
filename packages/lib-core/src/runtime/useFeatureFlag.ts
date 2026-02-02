@@ -1,14 +1,18 @@
 import { useCallback } from 'react';
-import type { PluginStoreInterface } from '../types/store';
+import type { FeatureFlagValue, PluginStoreInterface } from '../types/store';
 import { PluginEventType } from '../types/store';
 import { usePluginStore } from './PluginStoreContext';
 import { usePluginSubscription } from './usePluginSubscription';
 
 const eventTypes = [PluginEventType.FeatureFlagsChanged];
 
-const isSameData = (prevData: boolean, nextData: boolean) => prevData === nextData;
+const isSameData = (prevData: FeatureFlagValue, nextData: FeatureFlagValue) =>
+  prevData === nextData;
 
-export type UseFeatureFlagResult = [currentValue: boolean, setValue: (newValue: boolean) => void];
+export type UseFeatureFlagResult = [
+  currentValue: FeatureFlagValue,
+  setValue: (newValue: FeatureFlagValue) => void,
+];
 
 /**
  * React hook that provides access to a feature flag.
@@ -32,7 +36,7 @@ export const useFeatureFlag = (name: string): UseFeatureFlagResult => {
   const pluginStore = usePluginStore();
 
   const setValue = useCallback(
-    (value: boolean) => {
+    (value: FeatureFlagValue) => {
       pluginStore.setFeatureFlags({ [name]: value });
     },
     [pluginStore, name],

@@ -84,6 +84,7 @@ export {
   PendingPluginInfoEntry,
   LoadedPluginInfoEntry,
   FailedPluginInfoEntry,
+  FeatureFlagValue,
   FeatureFlags,
   PluginStoreInterface,
 } from './types/store';
