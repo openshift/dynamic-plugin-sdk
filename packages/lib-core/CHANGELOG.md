@@ -1,8 +1,9 @@
 # Changelog for `@openshift/dynamic-plugin-sdk`
 
-## 7.0.0 - TBD
+## 7.0.0 - 2026-02-02
 
-> This release contains improvements based on usage in OpenShift Console project.
+> This release requires React 18+ and adds React 19 compatibility using the new JSX transform.
+> Feature flags now support `undefined` values to indicate their pending resolution.
 
 - BREAKING: Replace `fixedPluginDependencyResolutions` loader option with `customDependencyResolutions` ([#291])
 - BREAKING: Set minimum supported version of React to 18 and declare compatibility with React 19 ([#295])
@@ -10,11 +11,11 @@
 - Feature flags can now have `undefined` values to indicate that flag resolution is still pending ([#298])
 - Set build target to `es2021` and use new JSX transform `react-jsx` ([#295])
 - Allow extending `customProperties` object type in `PluginRuntimeMetadata` ([#290])
+- Add `cloneDeepOnlyCloneableValues` function intended for cloning extension objects ([#294])
+- Add `LoadedAndResolvedExtension` type ([#292])
 - Update `yup` dependency to `^1.7.1` and improve handling of `Record<string, string>` schemas ([#289])
 - Update `semver` dependency to `^7.7.3` ([#296])
 - Update `lodash` dependency to `^4.17.23` ([#296])
-- Add `cloneDeepOnlyCloneableValues` function intended for cloning extension objects ([#294])
-- Add `LoadedAndResolvedExtension` type ([#292])
 
 ## 6.0.0 - 2026-01-06
 
