@@ -33,7 +33,7 @@ module.exports = {
         excludeModules: ['@monorepo/common'],
       },
       {
-        includeFiles: 'packages/+(lib-extensions|lib-utils)/src/**',
+        includeFiles: 'packages/+(lib-utils)/src/**',
         excludeFiles: '**/*.+(test|stories).*',
       },
     ],

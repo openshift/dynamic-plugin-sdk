@@ -85,7 +85,6 @@ export {
 // Redux utilities
 export { SDKReducers } from './app/redux/reducers';
 export { ActionType } from './app/redux/actions/k8s';
-export { default as ReduxExtensionProvider } from './app/redux/ReduxExtensionProvider';
 export { K8sState } from './types/redux';
 
 // React hooks

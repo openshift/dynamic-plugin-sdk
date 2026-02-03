@@ -386,9 +386,6 @@ export type QueryParams = Partial<{
     [key: string]: string;
 }>;
 
-// @public
-export const ReduxExtensionProvider: FC<PropsWithChildren<unknown>>;
-
 // @public (undocumented)
 export type ResourcesObject = {
     [key: string]: K8sResourceCommon | K8sResourceCommon[];
