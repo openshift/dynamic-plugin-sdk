@@ -25,6 +25,11 @@ export type UseResolvedExtensionsOptions = Partial<{
    * Default value: `false`.
    */
   includeExtensionsWithResolutionErrors: boolean;
+
+  /**
+   * A custom implementation of the `useExtensions` hook to use.
+   */
+  useExtensionsImpl?: typeof useExtensions;
 }>;
 
 /**
@@ -52,7 +57,9 @@ export const useResolvedExtensions = <TExtension extends Extension>(
   const includeExtensionsWithResolutionErrors =
     options.includeExtensionsWithResolutionErrors ?? false;
 
-  const extensions = useExtensions(predicate);
+  const useExtensionsImpl = options.useExtensionsImpl ?? useExtensions;
+
+  const extensions = useExtensionsImpl(predicate);
 
   const [resolvedExtensions, setResolvedExtensions] = useState<
     LoadedAndResolvedExtension<TExtension>[]
@@ -62,6 +69,8 @@ export const useResolvedExtensions = <TExtension extends Extension>(
   const [errors, setErrors] = useState<unknown[]>([]);
 
   useEffect(() => {
+    let disposed = false;
+
     const allResolutionErrors: unknown[] = [];
     const failedExtensionUIDs: string[] = [];
 
@@ -82,19 +91,19 @@ export const useResolvedExtensions = <TExtension extends Extension>(
       }
 
       // eslint-disable-next-line promise/always-return -- this Promise is handled inline
-      const resultExtensions = includeExtensionsWithResolutionErrors
-        ? fulfilledValues
-        : fulfilledValues.filter((e) => !failedExtensionUIDs.includes(e.uid));
+      if (!disposed) {
+        const resultExtensions = includeExtensionsWithResolutionErrors
+          ? fulfilledValues
+          : fulfilledValues.filter((e) => !failedExtensionUIDs.includes(e.uid));
 
-      setResolved(true);
-      setResolvedExtensions(resultExtensions);
-      setErrors(allResolutionErrors);
+        setResolved(true);
+        setResolvedExtensions(resultExtensions);
+        setErrors(allResolutionErrors);
+      }
     });
 
     return () => {
-      setResolved(false);
-      setResolvedExtensions([]);
-      setErrors([]);
+      disposed = true;
     };
   }, [extensions, includeExtensionsWithResolutionErrors]);
 

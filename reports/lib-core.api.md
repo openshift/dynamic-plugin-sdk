@@ -356,6 +356,7 @@ export const useResolvedExtensions: <TExtension extends Extension<string, AnyObj
 // @public (undocumented)
 export type UseResolvedExtensionsOptions = Partial<{
     includeExtensionsWithResolutionErrors: boolean;
+    useExtensionsImpl?: typeof useExtensions;
 }>;
 
 // @public (undocumented)
