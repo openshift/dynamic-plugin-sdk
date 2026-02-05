@@ -203,7 +203,8 @@ export type PluginLoaderOptions = Partial<{
         name: string;
     }>;
     fetchImpl: ResourceFetch;
-    customDependencyResolutions: Record<string, string | undefined>;
+    customDependencyResolutions: Record<string, string>;
+    isDependencyResolvable: (depName: string, isOptional: boolean) => boolean;
     sharedScope: AnyObject;
     transformPluginManifest: <T extends PluginManifest>(manifest: T) => T;
     getPluginEntryModule: (manifest: RemotePluginManifest) => PluginEntryModule | void;

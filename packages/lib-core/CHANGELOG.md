@@ -1,5 +1,12 @@
 # Changelog for `@openshift/dynamic-plugin-sdk`
 
+## 8.0.0 - 2026-02-05
+
+> This release improves control over dependency resolution when loading plugins.
+
+- BREAKING: Loader option `customDependencyResolutions` no longer supports `undefined` values ([#305])
+- Add `isDependencyResolvable` loader option to allow bypassing resolution of dependencies ([#305])
+
 ## 7.0.0 - 2026-02-02
 
 > This release requires React 18+ and adds React 19 compatibility using the new JSX transform.
@@ -115,3 +122,4 @@
 [#295]: https://github.com/openshift/dynamic-plugin-sdk/pull/295
 [#296]: https://github.com/openshift/dynamic-plugin-sdk/pull/296
 [#298]: https://github.com/openshift/dynamic-plugin-sdk/pull/298
+[#305]: https://github.com/openshift/dynamic-plugin-sdk/pull/305
