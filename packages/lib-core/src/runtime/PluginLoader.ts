@@ -1,9 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { AnyObject } from '@monorepo/common';
 import { cloneDeepOnlyCloneableValues, consoleLogger, ErrorWithCause } from '@monorepo/common';
-import { identity, noop } from 'lodash';
+import { identity, noop, pickBy } from 'lodash';
 import type { RangeOptions } from 'semver';
-import { valid, satisfies } from 'semver';
+import { valid, validRange, satisfies } from 'semver';
 import { DEFAULT_REMOTE_ENTRY_CALLBACK } from '../constants';
 import type { LoadedExtension } from '../types/extension';
 import type { ResourceFetch } from '../types/fetch';
@@ -41,7 +41,7 @@ type PluginResolution =
 
 export type PluginLoaderOptions = Partial<{
   /**
-   * Control which plugins can be loaded.
+   * Control whether a plugin can be loaded from the given manifest.
    *
    * The `reload` argument indicates whether an already loaded plugin is to be reloaded.
    *
@@ -92,8 +92,8 @@ export type PluginLoaderOptions = Partial<{
    * Custom resolutions for processing plugin dependencies.
    *
    * This option allows the host application to support additional application or environment
-   * specific dependencies when loading its plugins. Each value must be a valid semver version
-   * or `undefined` to skip resolution of the given custom dependency.
+   * specific (i.e. non-plugin) dependencies when loading its plugins. Entries with invalid
+   * semver string values will be discarded.
    *
    * When not specified, plugins may only depend on other plugins.
    *
@@ -104,12 +104,17 @@ export type PluginLoaderOptions = Partial<{
    * customDependencyResolutions: {
    *   // Plugins may depend on sample-app, resolved version will be 1.0.0
    *   'sample-app': '1.0.0',
-   *   // Plugins may depend on foo-env, dependency resolution will be skipped
-   *   'foo-env': undefined,
    * }
    * ```
    */
-  customDependencyResolutions: Record<string, string | undefined>;
+  customDependencyResolutions: Record<string, string>;
+
+  /**
+   * Allow the host application to bypass resolution of dependencies.
+   *
+   * By default, all dependencies are considered to be resolvable.
+   */
+  isDependencyResolvable: (depName: string, isOptional: boolean) => boolean;
 
   /**
    * webpack share scope object for initializing `PluginEntryModule` containers.
@@ -162,6 +167,7 @@ export class PluginLoader implements PluginLoaderInterface {
       entryCallbackSettings: options.entryCallbackSettings ?? {},
       fetchImpl: options.fetchImpl ?? basicFetch,
       customDependencyResolutions: options.customDependencyResolutions ?? {},
+      isDependencyResolvable: options.isDependencyResolvable ?? (() => true),
       sharedScope: options.sharedScope ?? {},
       transformPluginManifest: options.transformPluginManifest ?? identity,
       getPluginEntryModule: options.getPluginEntryModule ?? noop,
@@ -387,6 +393,20 @@ export class PluginLoader implements PluginLoaderInterface {
       let isResolutionComplete = false;
       let listener: VoidFunction;
 
+      const allResolvableDependencies = pickBy(
+        { ...optionalDependencies, ...requiredDependencies },
+        (versionRange, depName) => {
+          const isOptional = !!optionalDependencies[depName];
+          const canResolve = this.options.isDependencyResolvable(depName, isOptional);
+
+          if (!canResolve) {
+            consoleLogger.info(`Bypassing resolution of dependency ${depName}`);
+          }
+
+          return canResolve && validRange(versionRange);
+        },
+      );
+
       const setResolutionComplete = () => {
         isResolutionComplete = true;
         this.loadListeners.delete(listener);
@@ -394,47 +414,41 @@ export class PluginLoader implements PluginLoaderInterface {
 
       const tryResolveDependencies = () => {
         const pluginResolutions = this.getCurrentPluginResolutions();
-        const customResolutions = new Map(Object.entries(this.options.customDependencyResolutions));
+
+        const customResolutions = pickBy(this.options.customDependencyResolutions, (value) =>
+          valid(value),
+        );
+
         const resolutionErrors: string[] = [];
         const pendingDepNames: string[] = [];
 
-        Object.entries({ ...optionalDependencies, ...requiredDependencies }).forEach(
-          ([depName, versionRange]) => {
-            if (pluginResolutions.has(depName)) {
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              const res = pluginResolutions.get(depName)!;
-              const isRequired = !!requiredDependencies[depName];
+        Object.entries(allResolvableDependencies).forEach(([depName, versionRange]) => {
+          if (pluginResolutions.has(depName)) {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const res = pluginResolutions.get(depName)!;
+            const isRequired = !!requiredDependencies[depName];
 
-              if (res.success && !satisfies(res.version, versionRange, semverRangeOptions)) {
-                resolutionErrors.push(
-                  `Dependency on plugin ${depName} not met: required range ${versionRange}, resolved version ${res.version}`,
-                );
-              } else if (!res.success && isRequired) {
-                resolutionErrors.push(
-                  `Dependency on plugin ${depName} could not be resolved successfully`,
-                );
-              }
-            } else if (customResolutions.has(depName)) {
-              const version = customResolutions.get(depName);
-
-              if (
-                version &&
-                valid(version) &&
-                !satisfies(version, versionRange, semverRangeOptions)
-              ) {
-                resolutionErrors.push(
-                  `Custom dependency ${depName} not met: required range ${versionRange}, resolved version ${version}`,
-                );
-              } else if (version === undefined) {
-                consoleLogger.info(
-                  `Skipping resolution of custom dependency ${depName} as its dependency resolution is undefined`,
-                );
-              }
-            } else {
-              pendingDepNames.push(depName);
+            if (res.success && !satisfies(res.version, versionRange, semverRangeOptions)) {
+              resolutionErrors.push(
+                `Dependency on plugin ${depName} not met: required range ${versionRange}, resolved version ${res.version}`,
+              );
+            } else if (!res.success && isRequired) {
+              resolutionErrors.push(
+                `Dependency on plugin ${depName} could not be resolved successfully`,
+              );
             }
-          },
-        );
+          } else if (customResolutions[depName]) {
+            const version = customResolutions[depName];
+
+            if (!satisfies(version, versionRange, semverRangeOptions)) {
+              resolutionErrors.push(
+                `Custom dependency ${depName} not met: required range ${versionRange}, resolved version ${version}`,
+              );
+            }
+          } else {
+            pendingDepNames.push(depName);
+          }
+        });
 
         if (resolutionErrors.length > 0) {
           setResolutionComplete();
@@ -453,7 +467,9 @@ export class PluginLoader implements PluginLoaderInterface {
         consoleLogger.info(
           `Plugin ${pluginName} has ${
             pendingDepNames.length
-          } pending dependency resolutions: [${pendingDepNames.join(', ')}]`,
+          } pending dependency resolutions: [${pendingDepNames
+            .map((depName) => `${depName}:${allResolvableDependencies[depName]}`)
+            .join(', ')}]`,
         );
       };
 
