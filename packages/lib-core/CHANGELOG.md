@@ -1,6 +1,6 @@
 # Changelog for `@openshift/dynamic-plugin-sdk`
 
-## 8.0.0 - TODO
+## 8.0.0 - 2026-02-05
 
 > This release improves control over dependency resolution when loading plugins.
 

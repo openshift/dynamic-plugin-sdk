@@ -28,7 +28,7 @@
     "api-extractor-local": "yarn run api-extractor --local"
   },
   "peerDependencies": {
-    "@openshift/dynamic-plugin-sdk": "^4 || ^5 || ^6 || ^7",
+    "@openshift/dynamic-plugin-sdk": "^4 || ^5 || ^6 || ^7 || ^8",
     "react": "^18 || ^19",
     "react-redux": "^7 || ^8",
     "redux": "^4.1.2",
