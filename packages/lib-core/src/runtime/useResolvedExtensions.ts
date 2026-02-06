@@ -1,5 +1,5 @@
 import { consoleLogger } from '@monorepo/common';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import type { Extension, LoadedAndResolvedExtension, ExtensionPredicate } from '../types/extension';
 import { settleAllPromises } from '../utils/promise';
 import { resolveCodeRefValues } from './coderefs';
@@ -25,7 +25,17 @@ export type UseResolvedExtensionsOptions = Partial<{
    * Default value: `false`.
    */
   includeExtensionsWithResolutionErrors: boolean;
+
+  /**
+   * Custom implementation of the {@link useExtensions} hook to use instead of the standard hook.
+   */
+  useExtensionsImpl: typeof useExtensions;
 }>;
+
+const defaultOptions: Required<UseResolvedExtensionsOptions> = {
+  includeExtensionsWithResolutionErrors: false,
+  useExtensionsImpl: useExtensions,
+};
 
 /**
  * React hook that calls `useExtensions` and resolves all code references in all matching extensions.
@@ -47,12 +57,21 @@ export type UseResolvedExtensionsOptions = Partial<{
  */
 export const useResolvedExtensions = <TExtension extends Extension>(
   predicate?: ExtensionPredicate<TExtension>,
-  options: UseResolvedExtensionsOptions = {},
+  options: UseResolvedExtensionsOptions = defaultOptions,
 ): UseResolvedExtensionsResult<TExtension> => {
-  const includeExtensionsWithResolutionErrors =
-    options.includeExtensionsWithResolutionErrors ?? false;
+  const includeExtensionsWithResolutionErrors = useMemo(
+    () =>
+      options.includeExtensionsWithResolutionErrors ??
+      defaultOptions.includeExtensionsWithResolutionErrors,
+    [options.includeExtensionsWithResolutionErrors],
+  );
 
-  const extensions = useExtensions(predicate);
+  const useExtensionsImpl = useMemo(
+    () => options.useExtensionsImpl ?? defaultOptions.useExtensionsImpl,
+    [options.useExtensionsImpl],
+  );
+
+  const extensions = useExtensionsImpl(predicate);
 
   const [resolvedExtensions, setResolvedExtensions] = useState<
     LoadedAndResolvedExtension<TExtension>[]
@@ -62,6 +81,8 @@ export const useResolvedExtensions = <TExtension extends Extension>(
   const [errors, setErrors] = useState<unknown[]>([]);
 
   useEffect(() => {
+    let disposed = false;
+
     const allResolutionErrors: unknown[] = [];
     const failedExtensionUIDs: string[] = [];
 
@@ -74,27 +95,27 @@ export const useResolvedExtensions = <TExtension extends Extension>(
         }),
       ),
     ).then(([fulfilledValues]) => {
-      if (allResolutionErrors.length > 0) {
-        consoleLogger.error(
-          'useResolvedExtensions has detected code reference resolution errors',
-          allResolutionErrors,
-        );
-      }
-
       // eslint-disable-next-line promise/always-return -- this Promise is handled inline
-      const resultExtensions = includeExtensionsWithResolutionErrors
-        ? fulfilledValues
-        : fulfilledValues.filter((e) => !failedExtensionUIDs.includes(e.uid));
+      if (!disposed) {
+        const resultExtensions = includeExtensionsWithResolutionErrors
+          ? fulfilledValues
+          : fulfilledValues.filter((e) => !failedExtensionUIDs.includes(e.uid));
 
-      setResolved(true);
-      setResolvedExtensions(resultExtensions);
-      setErrors(allResolutionErrors);
+        setResolved(true);
+        setResolvedExtensions(resultExtensions);
+        setErrors(allResolutionErrors);
+
+        if (allResolutionErrors.length > 0) {
+          consoleLogger.error(
+            'useResolvedExtensions has detected code reference resolution errors',
+            allResolutionErrors,
+          );
+        }
+      }
     });
 
     return () => {
-      setResolved(false);
-      setResolvedExtensions([]);
-      setErrors([]);
+      disposed = true;
     };
   }, [extensions, includeExtensionsWithResolutionErrors]);
 
