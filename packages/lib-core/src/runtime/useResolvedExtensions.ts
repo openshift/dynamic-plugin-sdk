@@ -27,7 +27,7 @@ export type UseResolvedExtensionsOptions = Partial<{
   includeExtensionsWithResolutionErrors: boolean;
 
   /**
-   * A custom implementation of the `useExtensions` hook to use.
+   * Custom implementation of the {@link useExtensions} hook to use instead of the standard hook.
    */
   useExtensionsImpl?: typeof useExtensions;
 }>;
@@ -83,6 +83,10 @@ export const useResolvedExtensions = <TExtension extends Extension>(
         }),
       ),
     ).then(([fulfilledValues]) => {
+      if (disposed) {
+        return;
+      }
+
       if (allResolutionErrors.length > 0) {
         consoleLogger.error(
           'useResolvedExtensions has detected code reference resolution errors',
@@ -91,15 +95,13 @@ export const useResolvedExtensions = <TExtension extends Extension>(
       }
 
       // eslint-disable-next-line promise/always-return -- this Promise is handled inline
-      if (!disposed) {
-        const resultExtensions = includeExtensionsWithResolutionErrors
-          ? fulfilledValues
-          : fulfilledValues.filter((e) => !failedExtensionUIDs.includes(e.uid));
+      const resultExtensions = includeExtensionsWithResolutionErrors
+        ? fulfilledValues
+        : fulfilledValues.filter((e) => !failedExtensionUIDs.includes(e.uid));
 
-        setResolved(true);
-        setResolvedExtensions(resultExtensions);
-        setErrors(allResolutionErrors);
-      }
+      setResolved(true);
+      setResolvedExtensions(resultExtensions);
+      setErrors(allResolutionErrors);
     });
 
     return () => {
