@@ -12,6 +12,10 @@ const getData = (pluginStore: PluginStoreInterface) => pluginStore.getExtensions
 const isSameData = (prevData: LoadedExtension[], nextData: LoadedExtension[]) =>
   isEqualWith(prevData, nextData, (a, b) => a === b);
 
+/** Create a predicate that matches any extension */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const anyPredicate = (() => true) as unknown as ExtensionPredicate<any>;
+
 /**
  * React hook for consuming extensions which are currently in use.
  *
@@ -19,19 +23,17 @@ const isSameData = (prevData: LoadedExtension[], nextData: LoadedExtension[]) =>
  *
  * This hook re-renders the component whenever the list of matching extensions changes.
  *
- * The hook's result is guaranteed to be referentially stable across re-renders.
+ * The hook's result is guaranteed to be referentially stable across re-renders,
+ * given predicate is also referentially stable (e.g., it is a module-level constant
+ * or memoized).
  */
 export const useExtensions = <TExtension extends Extension>(
-  predicate?: ExtensionPredicate<TExtension>,
+  predicate: ExtensionPredicate<TExtension> = anyPredicate,
 ): LoadedExtension<TExtension>[] => {
   const extensions = usePluginSubscription(eventTypes, getData, isSameData);
 
   return useMemo(
-    () =>
-      extensions.reduce<LoadedExtension<TExtension>[]>(
-        (acc, e) => ((predicate ?? (() => true))(e) ? [...acc, e] : acc),
-        [],
-      ),
+    () => extensions.filter(predicate as ExtensionPredicate<LoadedExtension<TExtension>>),
     [extensions, predicate],
   );
 };
