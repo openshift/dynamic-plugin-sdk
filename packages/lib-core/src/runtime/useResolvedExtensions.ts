@@ -47,11 +47,32 @@ const defaultOptions: Required<UseResolvedExtensionsOptions> = {
  * all matching extensions that had their code references resolved successfully along with any errors
  * that occurred during the process.
  *
+ * When the list of matching extensions changes, the resolution is restarted. In such case, the hook
+ * will _not_ re-render the component with empty initial result since it's preferable to use existing
+ * state until the current resolution completes.
+ *
  * This hook supports an options argument to customize its default behavior.
  *
- * When the list of matching extensions changes, the resolution is restarted.
- *
  * The hook's result tuple elements are guaranteed to be referentially stable across re-renders.
+ *
+ * @example
+ * ```tsx
+ * const MyComponent = () => {
+ *   const [extensions, resolved] = useResolvedExtensions(isSampleAppExtension);
+ *
+ *   let renderExtensions = null;
+ *
+ *   if (resolved) {
+ *     renderExtensions = extensions.map((e) => (
+ *       <div key={e.uid}>
+ *         <extension.properties.component />
+ *       </div>
+ *     ));
+ *   }
+ *
+ *   return renderExtensions;
+ * };
+ * ```
  *
  * @see {@link useExtensions}
  */
