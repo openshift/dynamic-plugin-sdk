@@ -1002,6 +1002,9 @@ __metadata:
     type-fest: "npm:^2.18.0"
     typescript: "npm:~4.4.4"
     webpack: "npm:^5.100.0"
+  dependenciesMeta:
+    cypress:
+      built: true
   languageName: unknown
   linkType: soft
 

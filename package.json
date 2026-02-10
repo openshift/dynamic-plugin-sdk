@@ -6,9 +6,9 @@
   ],
   "scripts": {
     "build": "yarn build-libs && yarn build-samples",
-    "build-libs": "yarn workspaces foreach -A --include '@openshift/*' run build",
-    "build-samples": "yarn workspaces foreach -A --include '@monorepo/sample-*' run build",
-    "run-samples": "yarn workspaces foreach -Apvi --include '@monorepo/sample-*' run http-server",
+    "build-libs": "yarn workspaces foreach -A --include 'packages/lib-*' run build",
+    "build-samples": "yarn workspaces foreach -A --include 'packages/sample-*' run build",
+    "run-samples": "yarn workspaces foreach -Api --include 'packages/sample-*' run http-server",
     "lint": "yarn eslint packages",
     "test": "yarn jest",
     "test-component": "yarn sample-app-test-component",
@@ -21,7 +21,7 @@
     "sample-app-test-component": "yarn workspace @monorepo/sample-app run cypress run --component",
     "sample-app-test-e2e": "yarn workspace @monorepo/sample-app run cypress run --e2e",
     "api-extractor": "api-extractor run --typescript-compiler-folder ./node_modules/typescript/lib",
-    "api-extractor-local": "yarn workspaces foreach -A --include '@openshift/*' run api-extractor-local"
+    "api-extractor-local": "yarn workspaces foreach -A --include 'packages/lib-*' run api-extractor-local"
   },
   "devDependencies": {
     "@babel/core": "^7.18.6",
@@ -87,6 +87,11 @@
     "type-fest": "^2.18.0",
     "typescript": "~4.4.4",
     "webpack": "^5.100.0"
+  },
+  "dependenciesMeta": {
+    "cypress": {
+      "built": true
+    }
   },
   "packageManager": "yarn@4.12.0"
 }
