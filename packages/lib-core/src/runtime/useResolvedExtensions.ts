@@ -53,7 +53,8 @@ const defaultOptions: Required<UseResolvedExtensionsOptions> = {
  *
  * This hook supports an options argument to customize its default behavior.
  *
- * The hook's result tuple elements are guaranteed to be referentially stable across re-renders.
+ * The hook's result is guaranteed to be referentially stable across re-renders, assuming referential
+ * stability of all hook parameters.
  *
  * @example
  * ```tsx
