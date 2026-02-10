@@ -8,14 +8,14 @@ export type LogFunction = (message?: any, ...optionalParams: any[]) => void;
  */
 export type Logger = Record<'info' | 'warn' | 'error', LogFunction>;
 
-const isProdEnv = process.env.NODE_ENV === 'production';
+const isDevEnv = process.env.NODE_ENV === 'development';
 
 /**
  * {@link Logger} implementation that uses the {@link console} API.
  */
 export const consoleLogger: Logger = {
   /* eslint-disable no-console */
-  info: isProdEnv ? noop : console.info,
+  info: isDevEnv ? console.info : noop,
   warn: console.warn,
   error: console.error,
   /* eslint-enable no-console */
