@@ -15,12 +15,30 @@ const isSameData = (prevData: LoadedExtension[], nextData: LoadedExtension[]) =>
 /**
  * React hook that provides extensions which are currently in use.
  *
+ * An extension is in use when the associated plugin is currently enabled and its
+ * feature flag requirements (if any) are met according to current feature flags.
+ *
  * The optional `predicate` parameter may be used to filter resulting extensions.
  *
  * This hook re-renders the component whenever the list of matching extensions changes.
  *
  * The hook's result is guaranteed to be referentially stable across re-renders, assuming referential
  * stability of the `predicate` parameter.
+ *
+ * @example
+ * ```tsx
+ * const MyComponent = () => {
+ *   const extensions = useExtensions(isSampleAppExtension);
+ *
+ *   const renderExtensions = extensions.map((e) => (
+ *     <div key={e.uid}>
+ *       {e.properties.text}
+ *     </div>
+ *   ));
+ *
+ *   return renderExtensions;
+ * };
+ * ```
  */
 export const useExtensions = <TExtension extends Extension>(
   predicate?: ExtensionPredicate<TExtension>,
