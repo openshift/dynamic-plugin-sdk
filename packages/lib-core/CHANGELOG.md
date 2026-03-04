@@ -1,5 +1,12 @@
 # Changelog for `@openshift/dynamic-plugin-sdk`
 
+## 8.1.0 - 2026-03-04
+
+- Add `useExtensionsImpl` option to `useResolvedExtensions` hook ([#304])
+- Fix `useResolvedExtensions` hook to avoid state updates when the component is not mounted ([#304])
+- Improve `useExtensions` hook by using conditional `filter` instead of unconditional `reduce` ([#299])
+- Remove condition on `consoleLogger.info` calls, host applications can override this as needed ([#309])
+
 ## 8.0.0 - 2026-02-05
 
 > This release improves control over dependency resolution when loading plugins.
@@ -122,4 +129,7 @@
 [#295]: https://github.com/openshift/dynamic-plugin-sdk/pull/295
 [#296]: https://github.com/openshift/dynamic-plugin-sdk/pull/296
 [#298]: https://github.com/openshift/dynamic-plugin-sdk/pull/298
+[#299]: https://github.com/openshift/dynamic-plugin-sdk/pull/299
+[#304]: https://github.com/openshift/dynamic-plugin-sdk/pull/304
 [#305]: https://github.com/openshift/dynamic-plugin-sdk/pull/305
+[#309]: https://github.com/openshift/dynamic-plugin-sdk/pull/309
