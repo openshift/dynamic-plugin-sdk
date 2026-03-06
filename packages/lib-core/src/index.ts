@@ -43,7 +43,12 @@ export { usePluginInfo } from './runtime/usePluginInfo';
 export { useFeatureFlag, UseFeatureFlagResult } from './runtime/useFeatureFlag';
 
 // Core utilities
-export { applyCodeRefSymbol } from './runtime/coderefs';
+export {
+  applyCodeRefSymbol,
+  isEncodedCodeRef,
+  isCodeRef,
+  parseEncodedCodeRef,
+} from './runtime/coderefs';
 
 // Testing utilities
 export { TestPluginStore } from './testing/TestPluginStore';

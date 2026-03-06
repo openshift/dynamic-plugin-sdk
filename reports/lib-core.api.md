@@ -96,6 +96,12 @@ export type FeatureFlags = {
 export type FeatureFlagValue = boolean | undefined;
 
 // @public
+export const isCodeRef: (obj: unknown) => obj is CodeRef<unknown>;
+
+// @public
+export const isEncodedCodeRef: (obj: unknown) => obj is EncodedCodeRef;
+
+// @public
 export type LoadedAndResolvedExtension<TExtension extends Extension = Extension> = LoadedExtension<ResolvedExtension<TExtension>>;
 
 // @public
@@ -144,6 +150,9 @@ export type MapCodeRefsToValues<T extends object> = {
 export type Never<T> = {
     [K in keyof T]?: never;
 };
+
+// @public
+export const parseEncodedCodeRef: (ref: EncodedCodeRef) => [moduleName: string, exportName: string] | undefined;
 
 // @public
 export type PendingPlugin = {

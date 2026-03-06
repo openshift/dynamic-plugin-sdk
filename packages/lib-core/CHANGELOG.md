@@ -1,5 +1,9 @@
 # Changelog for `@openshift/dynamic-plugin-sdk`
 
+## 8.2.0 - TODO
+
+- Expose additional utilities for processing code references ([#310])
+
 ## 8.1.0 - 2026-03-04
 
 - Add `useExtensionsImpl` option to `useResolvedExtensions` hook ([#304])
@@ -133,3 +137,4 @@
 [#304]: https://github.com/openshift/dynamic-plugin-sdk/pull/304
 [#305]: https://github.com/openshift/dynamic-plugin-sdk/pull/305
 [#309]: https://github.com/openshift/dynamic-plugin-sdk/pull/309
+[#310]: https://github.com/openshift/dynamic-plugin-sdk/pull/310

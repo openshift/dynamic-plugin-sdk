@@ -65,9 +65,9 @@ export type ExtensionPredicate<TExtension extends Extension> = (e: Extension) =>
 /**
  * Code reference, encoded as an object literal for JSON serialization purposes.
  *
- * The value of `$codeRef` property should be one of the following:
- * - `moduleName.exportName` - refers to the given module's named export
- * - `moduleName` - refers to the given module's `default` export
+ * The value of `$codeRef` property should be formatted as either `moduleName.exportName`
+ * (refers to the module's named export) or `moduleName` (refers to the module's `default`
+ * export).
  */
 export type EncodedCodeRef = { $codeRef: string };
 

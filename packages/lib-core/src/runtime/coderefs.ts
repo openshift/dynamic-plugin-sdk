@@ -23,12 +23,18 @@ export const applyCodeRefSymbol = <T extends CodeRef>(codeRef: T): T => {
   return codeRef;
 };
 
-const isEncodedCodeRef = (obj: unknown): obj is EncodedCodeRef =>
+/**
+ * Checks if the given object is a valid {@link EncodedCodeRef} object.
+ */
+export const isEncodedCodeRef = (obj: unknown): obj is EncodedCodeRef =>
   isPlainObject(obj) &&
   isEqual(Object.getOwnPropertyNames(obj), ['$codeRef']) &&
   typeof (obj as EncodedCodeRef).$codeRef === 'string';
 
-const isCodeRef = (obj: unknown): obj is CodeRef =>
+/**
+ * Checks if the given object is a valid {@link CodeRef} function.
+ */
+export const isCodeRef = (obj: unknown): obj is CodeRef =>
   typeof obj === 'function' &&
   isEqual(Object.getOwnPropertySymbols(obj), [codeRefSymbol]) &&
   (obj as unknown as Record<symbol, boolean>)[codeRefSymbol] === true;
@@ -36,12 +42,12 @@ const isCodeRef = (obj: unknown): obj is CodeRef =>
 /**
  * Parse data from the {@link EncodedCodeRef} object.
  *
- * Returns `undefined` if the `$codeRef` value is malformed.
+ * Returns `undefined` if the `$codeRef` value is malformed or missing.
  */
-const parseEncodedCodeRef = (
+export const parseEncodedCodeRef = (
   ref: EncodedCodeRef,
 ): [moduleName: string, exportName: string] | undefined => {
-  const match = ref.$codeRef.match(/^([^.\s]+)(?:\.([^.\s]+))?$/);
+  const match = ref.$codeRef?.match(/^([^.\s]+)(?:\.([^.\s]+))?$/);
 
   if (!match) {
     return undefined;
