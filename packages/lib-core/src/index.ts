@@ -30,7 +30,7 @@ export {
   PluginStoreProvider,
   PluginStoreProviderProps,
   usePluginStore,
-} from './runtime/PluginStoreContext';
+} from './runtime/PluginStoreProvider';
 
 // React hooks
 export { useExtensions } from './runtime/useExtensions';

@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import type { FeatureFlagValue, PluginStoreInterface } from '../types/store';
 import { PluginEventType } from '../types/store';
-import { usePluginStore } from './PluginStoreContext';
+import { usePluginStore } from './PluginStoreProvider';
 import { usePluginSubscription } from './usePluginSubscription';
 
 const eventTypes = [PluginEventType.FeatureFlagsChanged];

@@ -1,6 +1,6 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
 import type { PluginEventType, PluginStoreInterface } from '../types/store';
-import { usePluginStore } from './PluginStoreContext';
+import { usePluginStore } from './PluginStoreProvider';
 
 const isSameReference = (a: unknown, b: unknown) => a === b;
 

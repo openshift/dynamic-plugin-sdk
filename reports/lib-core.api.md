@@ -152,7 +152,10 @@ export type Never<T> = {
 };
 
 // @public
-export const parseEncodedCodeRef: (ref: EncodedCodeRef) => [moduleName: string, exportName: string] | undefined;
+export const parseEncodedCodeRef: (ref: EncodedCodeRef) => {
+    moduleName: string;
+    exportName: string;
+} | undefined;
 
 // @public
 export type PendingPlugin = {
