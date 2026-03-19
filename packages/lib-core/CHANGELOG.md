@@ -1,6 +1,6 @@
 # Changelog for `@openshift/dynamic-plugin-sdk`
 
-## 8.2.0 - TODO
+## 8.2.0 - 2026-03-19
 
 - Expose additional utilities for processing code references ([#310])
 
