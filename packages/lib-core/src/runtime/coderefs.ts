@@ -46,7 +46,7 @@ export const isCodeRef = (obj: unknown): obj is CodeRef =>
  */
 export const parseEncodedCodeRef = (
   ref: EncodedCodeRef,
-): [moduleName: string, exportName: string] | undefined => {
+): { moduleName: string; exportName: string } | undefined => {
   const match = ref.$codeRef?.match(/^([^.\s]+)(?:\.([^.\s]+))?$/);
 
   if (!match) {
@@ -56,7 +56,7 @@ export const parseEncodedCodeRef = (
   const moduleName = match[1];
   const exportName = match[2] || 'default';
 
-  return [moduleName, exportName];
+  return { moduleName, exportName };
 };
 
 export const getPluginModule = async <TModule extends AnyObject>(
@@ -85,10 +85,10 @@ const createCodeRef =
     const refData = parseEncodedCodeRef(encodedCodeRef);
 
     if (!refData) {
-      throw new Error(formatErrorMessage(`Malformed code reference '${encodedCodeRef.$codeRef}'`));
+      throw new Error(formatErrorMessage(`Invalid code reference '${encodedCodeRef.$codeRef}'`));
     }
 
-    const [moduleName, exportName] = refData;
+    const { moduleName, exportName } = refData;
 
     const referencedModule = await getPluginModule(moduleName, entryModule, formatErrorMessage);
 
