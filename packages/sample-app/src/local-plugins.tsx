@@ -36,7 +36,7 @@ const barManifest: LocalPluginManifest = {
   registrationMethod: 'local',
   customProperties: {
     sampleApp: {
-      greeting: 'Greetings from local-bar plugin',
+      greeting: 'Hello from local-bar plugin',
     },
   },
 };

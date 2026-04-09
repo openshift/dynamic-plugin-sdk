@@ -15,6 +15,7 @@ import {
 import { PuzzlePieceIcon } from '@patternfly/react-icons';
 import type { FC, PropsWithChildren } from 'react';
 import { useMemo } from 'react';
+import { useReplaceTextExtensions } from '../hooks/useReplaceTextExtensions';
 import type {
   SampleAppExtensionWithText,
   SampleAppExtensionWithComponent,
@@ -72,16 +73,19 @@ const ComponentExtensionCard: FC<{
  * The `useExtensions` hook returns extensions which are currently in use without any further
  * transformations. Its argument is a predicate that filters extensions based on their `type`.
  *
- * The `useResolvedExtensions` hook extends the `useExtensions` functionality by resolving all
+ * The `useResolvedExtensions` hook transforms the provided extensions by resolving all
  * `CodeRef<T>` functions into corresponding `T` values within each extension's `properties`
  * object. This is an asynchronous operation that completes when all code references in all
- * matching extensions have been processed.
+ * provided extensions have been processed.
+ *
+ * The `useReplaceTextExtensions` hook is an example on how to implement custom extension
+ * transformations, replacing `%key%` placeholders within each extension's `properties` object.
  */
 export const RenderExtensions: FC = () => {
-  const textExtensions = useExtensions(isSampleAppExtensionWithText);
+  const textExtensions = useReplaceTextExtensions(useExtensions(isSampleAppExtensionWithText));
 
   const [componentExtensions, componentExtensionsResolved] = useResolvedExtensions(
-    isSampleAppExtensionWithComponent,
+    useExtensions(isSampleAppExtensionWithComponent),
   );
 
   const extensionsAvailable = useMemo(
