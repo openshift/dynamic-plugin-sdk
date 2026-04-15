@@ -1,5 +1,9 @@
 # Changelog for `@openshift/dynamic-plugin-sdk-webpack`
 
+## 5.1.1 - TBD
+
+- Fix bug in `PatchEntryCallbackPlugin` where compilation fails when using webpack-dev-server ([#314])
+
 ## 5.1.0 - 2026-02-02
 
 - Update `yup` dependency to `^1.7.1` and improve handling of `Record<string, string>` schemas ([#289])
@@ -75,3 +79,4 @@
 [#280]: https://github.com/openshift/dynamic-plugin-sdk/pull/280
 [#289]: https://github.com/openshift/dynamic-plugin-sdk/pull/289
 [#296]: https://github.com/openshift/dynamic-plugin-sdk/pull/296
+[#314]: https://github.com/openshift/dynamic-plugin-sdk/pull/314

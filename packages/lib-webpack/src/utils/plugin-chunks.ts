@@ -21,6 +21,7 @@ export const findPluginChunks = (
 
   const runtimeChunk = allChunks.find((chunk) => {
     const chunkName = chunk.name ?? '';
+
     // Chunk runtime can be undefined | string | SortableSet<string>
     // so we need a different check for the SortableSet value
     if (typeof entryChunk.runtime === 'string') {
@@ -43,11 +44,11 @@ export const getChunkFiles = (
   includeFile = (assetInfo: AssetInfo) => !assetInfo.development && !assetInfo.hotModuleReplacement,
 ) =>
   Array.from(chunk.files).filter((fileName) => {
-    const assetInfo = compilation.getAsset(fileName);
+    const asset = compilation.getAsset(fileName);
 
-    if (!assetInfo) {
-      throw new Error(`Missing asset information for ${fileName}`);
+    if (!asset) {
+      throw new Error(`Missing asset data for ${fileName}`);
     }
 
-    return includeFile(assetInfo);
+    return includeFile(asset.info);
   });
