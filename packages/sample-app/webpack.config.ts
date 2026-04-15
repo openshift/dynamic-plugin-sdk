@@ -4,7 +4,7 @@ import CSSMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import HTMLPlugin from 'html-webpack-plugin';
 import { escapeRegExp } from 'lodash';
 import MiniCSSExtractPlugin from 'mini-css-extract-plugin';
-import type { Configuration, WebpackPluginInstance } from 'webpack';
+import type { Configuration as WebpackConfiguration, WebpackPluginInstance } from 'webpack';
 import { EnvironmentPlugin, container } from 'webpack';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { appSharedModules } from './src/shared-modules';
@@ -34,7 +34,7 @@ const plugins: WebpackPluginInstance[] = [
   }),
 ];
 
-const config: Configuration = {
+const config: WebpackConfiguration = {
   mode: isProd ? 'production' : 'development',
   entry: {
     app: './src/app.tsx',

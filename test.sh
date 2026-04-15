@@ -12,8 +12,12 @@ echo "yarn $(yarn -v)"
 # Install dependencies
 yarn install --immutable
 
-# Build packages
-yarn build
+# Build all libraries
+yarn build-libs
+
+# Build sample projects
+yarn build-samples
+yarn build-samples-prod
 
 # Analyze code for potential problems
 yarn lint

@@ -5,9 +5,9 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "yarn build-libs && yarn build-samples",
     "build-libs": "yarn workspaces foreach -A --include 'packages/lib-*' run build",
     "build-samples": "yarn workspaces foreach -A --include 'packages/sample-*' run build",
+    "build-samples-prod": "yarn workspaces foreach -A --include 'packages/sample-*' run build-prod",
     "run-samples": "yarn workspaces foreach -Api --include 'packages/sample-*' run http-server",
     "lint": "yarn eslint packages",
     "test": "yarn jest",
