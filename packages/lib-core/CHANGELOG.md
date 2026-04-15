@@ -1,5 +1,10 @@
 # Changelog for `@openshift/dynamic-plugin-sdk`
 
+## 9.0.0 - TBD
+
+- BREAKING: Modify `useResolvedExtensions` hook to require `extensions` array ([#313])
+- Expose `visitDeep` utility function ([#313])
+
 ## 8.2.0 - 2026-03-19
 
 - Expose additional utilities for processing code references ([#310])
@@ -138,3 +143,4 @@
 [#305]: https://github.com/openshift/dynamic-plugin-sdk/pull/305
 [#309]: https://github.com/openshift/dynamic-plugin-sdk/pull/309
 [#310]: https://github.com/openshift/dynamic-plugin-sdk/pull/310
+[#313]: https://github.com/openshift/dynamic-plugin-sdk/pull/313

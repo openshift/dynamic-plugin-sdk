@@ -363,12 +363,11 @@ export const usePluginInfo: () => PluginInfoEntry[];
 export const usePluginStore: () => PluginStoreInterface;
 
 // @public
-export const useResolvedExtensions: <TExtension extends Extension<string, AnyObject>>(predicate?: ExtensionPredicate<TExtension> | undefined, options?: UseResolvedExtensionsOptions) => UseResolvedExtensionsResult<TExtension>;
+export const useResolvedExtensions: <TExtension extends Extension<string, AnyObject>>(extensions: LoadedExtension<TExtension>[], options?: UseResolvedExtensionsOptions) => UseResolvedExtensionsResult<TExtension>;
 
 // @public (undocumented)
 export type UseResolvedExtensionsOptions = Partial<{
     includeExtensionsWithResolutionErrors: boolean;
-    useExtensionsImpl: typeof useExtensions;
 }>;
 
 // @public (undocumented)
@@ -377,5 +376,8 @@ resolvedExtensions: LoadedAndResolvedExtension<TExtension>[],
 resolved: boolean,
 errors: unknown[]
 ];
+
+// @public
+export const visitDeep: <TValue>(obj: AnyObject, predicate: (value: unknown) => value is TValue, valueCallback: (value: TValue, key: string, container: AnyObject) => void, isObject?: (obj: unknown) => obj is AnyObject) => void;
 
 ```

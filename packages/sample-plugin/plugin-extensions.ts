@@ -12,7 +12,7 @@ const extensions: ConsumedExtension[] = [
   {
     type: 'sample-app.text',
     properties: {
-      text: 'Plasma reactors online',
+      text: 'Text in %APP_NAME%',
     },
   },
   {
