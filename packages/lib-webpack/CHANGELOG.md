@@ -1,6 +1,6 @@
 # Changelog for `@openshift/dynamic-plugin-sdk-webpack`
 
-## 5.1.1 - TBD
+## 5.1.1 - 2026-04-16
 
 - Fix bug in `PatchEntryCallbackPlugin` where compilation fails when using webpack-dev-server ([#314])
 
