@@ -2,7 +2,7 @@ import { object, string } from 'yup';
 import {
   extensionArraySchema,
   pluginRuntimeMetadataSchema,
-  recordStringStringSchema
+  recordStringStringSchema,
 } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
 
 /**

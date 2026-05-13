@@ -280,7 +280,7 @@ export class PluginLoader implements PluginLoaderInterface {
       };
     }
 
-    const pluginBuildHash = isRemoteManifest ? manifest.buildHash ?? uuidv4() : uuidv4();
+    const pluginBuildHash = isRemoteManifest ? (manifest.buildHash ?? uuidv4()) : uuidv4();
 
     let loadedExtensions = manifest.extensions.map<LoadedExtension>((e, index) => ({
       ...cloneDeepOnlyCloneableValues(e),
