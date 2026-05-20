@@ -17,6 +17,7 @@ export {
   CustomError,
   applyDefaults,
   applyOverrides,
+  visitDeep,
   cloneDeepOnlyCloneableValues,
   LogFunction,
   Logger,
