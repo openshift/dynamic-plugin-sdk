@@ -1,7 +1,7 @@
 import reactConfig from '@monorepo/common/jest/jest-config-react';
-import type { InitialOptionsTsJest } from 'ts-jest';
+import type { JestConfigWithTsJest } from 'ts-jest';
 
-const config: InitialOptionsTsJest = {
+const config: JestConfigWithTsJest = {
   ...reactConfig,
   displayName: 'common',
 };

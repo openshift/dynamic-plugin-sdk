@@ -1,15 +1,18 @@
 import path from 'path';
-import type { InitialOptionsTsJest } from 'ts-jest';
+import type { JestConfigWithTsJest } from 'ts-jest';
 import baseConfig from './jest-config-base';
 
-const config: InitialOptionsTsJest = {
+const config: JestConfigWithTsJest = {
   ...baseConfig,
   testEnvironment: 'node',
 
-  globals: {
-    'ts-jest': {
-      tsconfig: path.resolve(__dirname, '../tsconfig-bases/lib-node-cjs.json'),
-    },
+  transform: {
+    '^.+\\.(jsx?|tsx?)$': [
+      'ts-jest',
+      {
+        tsconfig: path.resolve(__dirname, '../tsconfig-bases/lib-node-cjs.json'),
+      },
+    ],
   },
 };
 
