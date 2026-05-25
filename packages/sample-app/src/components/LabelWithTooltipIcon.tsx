@@ -19,6 +19,7 @@ const LabelWithTooltipIcon: FC<LabelWithTooltipIconProps> = ({ label, tooltipCon
       <FlexItem>{label}</FlexItem>
       <FlexItem>
         <Tooltip content={tooltipContent}>
+          {/* eslint-disable-next-line camelcase */}
           <InfoCircleIcon color={t_global_icon_color_status_info_default.var} />
         </Tooltip>
       </FlexItem>

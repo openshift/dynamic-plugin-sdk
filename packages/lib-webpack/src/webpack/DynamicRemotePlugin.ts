@@ -175,8 +175,7 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
       });
     } catch (e) {
       throw new Error(
-        `Invalid ${DynamicRemotePlugin.name} options:\n` +
-          (e as ValidationError).errors.join('\n'),
+        `Invalid ${DynamicRemotePlugin.name} options:\n` + (e as ValidationError).errors.join('\n'),
       );
     }
 

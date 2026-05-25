@@ -7,6 +7,7 @@ import type { ErrorBoundaryFallbackProps } from './ErrorBoundary';
 const trimEmptyLines = (text: string) => text.replace(/^\s*\n/gm, '');
 
 const ErrorBoundaryFallback: FC<ErrorBoundaryFallbackProps> = ({ error, errorInfo }) => (
+  // eslint-disable-next-line camelcase
   <Flex direction={{ default: 'column' }} style={{ padding: t_global_spacer_md.value }}>
     <FlexItem>
       <Content component="h1">Oh no! Something went wrong.</Content>
