@@ -41,8 +41,6 @@ const resourceDataMock: K8sResourceCommon = {
     resourceVersion: '414309692',
     uid: '602ad43f-1a71-4e71-9314-d93bffbc0762',
   },
-  spec: {},
-  status: {},
 };
 
 let undefinedModelMock: K8sModelCommon | undefined;

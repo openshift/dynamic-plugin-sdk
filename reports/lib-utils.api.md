@@ -119,6 +119,12 @@ export type DiscoveryResources = {
 // @public (undocumented)
 export type ErrorHandler = GenericHandler<Event>;
 
+// @public
+export interface FieldsV1 {
+    // (undocumented)
+    [field: string]: FieldsV1 | Record<string, never>;
+}
+
 // @public (undocumented)
 export type FilterValue = Partial<{
     selected: string[];
@@ -203,36 +209,12 @@ export type K8sResourceBaseOptions<TQueryOptions = QueryOptions> = {
     }>;
 };
 
-// @public (undocumented)
-export type K8sResourceCommon = K8sResourceIdentifier & Partial<{
-    metadata: Partial<{
-        annotations: Record<string, string>;
-        clusterName: string;
-        creationTimestamp: string;
-        deletionGracePeriodSeconds: number;
-        deletionTimestamp: string;
-        finalizers: string[];
-        generateName: string;
-        generation: number;
-        labels: Record<string, string>;
-        managedFields: unknown[];
-        name: string;
-        namespace: string;
-        ownerReferences: OwnerReference[];
-        resourceVersion: string;
-        uid: string;
-    }>;
-    spec: {
-        selector?: Selector | MatchLabels;
-        [key: string]: unknown;
-    };
-    status: {
-        [key: string]: unknown;
-    };
-    data: {
-        [key: string]: unknown;
-    };
-}>;
+// @public
+export interface K8sResourceCommon {
+    apiVersion?: string;
+    kind?: string;
+    metadata?: ObjectMetadata;
+}
 
 // @public (undocumented)
 export type K8sResourceDeleteOptions = K8sResourceBaseOptions & {
@@ -299,6 +281,17 @@ export const k8sUpdateResource: <TResource extends K8sResourceCommon, TUpdatedRe
 // @public (undocumented)
 export type K8sVerb = 'create' | 'get' | 'list' | 'update' | 'patch' | 'delete' | 'deletecollection' | 'watch';
 
+// @public
+export interface ManagedFieldsEntry {
+    apiVersion?: string;
+    fieldsType?: string;
+    fieldsV1?: FieldsV1;
+    manager?: string;
+    operation?: string;
+    subresource?: string;
+    time?: string;
+}
+
 // @public (undocumented)
 export type MatchExpression = {
     key: string;
@@ -317,6 +310,32 @@ export type MessageDataType = AnyObject | string;
 
 // @public (undocumented)
 export type MessageHandler = GenericHandler<MessageDataType>;
+
+// @public
+export interface ObjectMetadata {
+    annotations?: {
+        [k: string]: string;
+    };
+    // (undocumented)
+    clusterName?: string;
+    creationTimestamp?: string;
+    deletionGracePeriodSeconds?: number;
+    deletionTimestamp?: string;
+    finalizers?: string[];
+    generateName?: string;
+    generation?: number;
+    labels?: {
+        [k: string]: string;
+    };
+    managedFields?: ManagedFieldsEntry[];
+    name?: string;
+    namespace?: string;
+    ownerReferences?: OwnerReference[];
+    resourceVersion?: string;
+    // @deprecated
+    selfLink?: string;
+    uid?: string;
+}
 
 // @public (undocumented)
 export type OpenHandler = GenericHandler<never>;
@@ -343,15 +362,15 @@ export enum Operator {
     NotIn = "NotIn"
 }
 
-// @public (undocumented)
-export type OwnerReference = {
+// @public
+export interface OwnerReference {
     apiVersion: string;
+    blockOwnerDeletion?: boolean;
+    controller?: boolean;
     kind: string;
     name: string;
     uid: string;
-    controller?: boolean;
-    blockOwnerDeletion?: boolean;
-};
+}
 
 // @public (undocumented)
 export type Patch = {
