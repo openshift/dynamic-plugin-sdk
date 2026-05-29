@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 export const usePrevious = <P = unknown>(value: P, deps?: unknown[]): P | undefined => {
   const ref = useRef<P>();

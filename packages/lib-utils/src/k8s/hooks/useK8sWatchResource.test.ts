@@ -3,7 +3,7 @@ import { Map as ImmutableMap } from 'immutable';
 import { useSelector } from 'react-redux';
 import type { K8sModelCommon, K8sResourceCommon } from '../../types/k8s';
 import type { WatchData } from './k8s-watch-types';
-import { getWatchData, getReduxData } from './k8s-watcher';
+import { getReduxData, getWatchData } from './k8s-watcher';
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 import { useK8sModel } from './useK8sModel';
 import { useK8sWatchResource } from './useK8sWatchResource';

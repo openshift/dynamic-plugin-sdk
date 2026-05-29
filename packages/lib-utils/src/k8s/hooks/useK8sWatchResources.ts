@@ -1,26 +1,26 @@
 import { Map as ImmutableMap } from 'immutable';
 import { keyBy } from 'lodash';
-import { useRef, useMemo, useEffect, useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import * as k8sActions from '../../app/redux/actions/k8s';
 import type { K8sModelCommon } from '../../types/k8s';
 import type { DispatchWithThunk, K8sState, SDKStoreState } from '../../types/redux';
 import type { WebSocketOptions } from '../../web-socket/types';
 import {
-  transformGroupVersionKindToReference,
-  getReferenceForModel,
   getGroupVersionKindForReference,
+  getReferenceForModel,
+  transformGroupVersionKindToReference,
 } from '../k8s-utils';
 import type { GetWatchData } from './k8s-watch-types';
-import { getWatchData, getReduxData, NoModelError } from './k8s-watcher';
+import { getReduxData, getWatchData, NoModelError } from './k8s-watcher';
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 import { useModelsLoaded } from './useModelsLoaded';
 import { usePrevious } from './usePrevious';
 import type {
   ResourcesObject,
   WatchK8sResources,
-  WatchK8sResultsObject,
   WatchK8sResults,
+  WatchK8sResultsObject,
 } from './watch-resource-types';
 
 /**

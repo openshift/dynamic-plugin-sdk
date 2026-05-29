@@ -1,5 +1,5 @@
 import type { RemotePluginManifest } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
-import type { WebpackPluginInstance, Compiler } from 'webpack';
+import type { Compiler, WebpackPluginInstance } from 'webpack';
 import { findPluginChunks, getChunkFiles } from '../utils/plugin-chunks';
 
 type InputManifestData = Omit<RemotePluginManifest, 'baseURL' | 'loadScripts' | 'buildHash'>;

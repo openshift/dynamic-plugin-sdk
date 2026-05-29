@@ -1,12 +1,12 @@
 import { PluginStore, PluginStoreProvider } from '@openshift/dynamic-plugin-sdk';
-import { createRoot } from 'react-dom/client';
 import '@patternfly/react-core/dist/styles/base.css';
+import { createRoot } from 'react-dom/client';
 import ErrorBoundary from './components/ErrorBoundary';
 import Loading from './components/Loading';
 import PageContent from './components/PageContent';
 import PageHeader from './components/PageHeader';
 import PageLayout from './components/PageLayout';
-import { initSharedScope, getSharedScope } from './shared-scope';
+import { getSharedScope, initSharedScope } from './shared-scope';
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const root = createRoot(document.getElementById('root')!);

@@ -1,9 +1,9 @@
 import { renderHook } from '@testing-library/react';
-import { Map as ImmutableMap, fromJS } from 'immutable';
+import { fromJS, Map as ImmutableMap } from 'immutable';
 import { useSelector } from 'react-redux';
 import type { K8sModelCommon, K8sResourceCommon } from '../../types/k8s';
 import type { WatchData } from './k8s-watch-types';
-import { getWatchData, getReduxData } from './k8s-watcher';
+import { getReduxData, getWatchData } from './k8s-watcher';
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 import { useK8sWatchResources } from './useK8sWatchResources';
 import { useModelsLoaded } from './useModelsLoaded';

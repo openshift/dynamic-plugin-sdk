@@ -13,7 +13,7 @@ import type {
 import type { K8sModelCommon } from '../../types/k8s';
 import type { DispatchWithThunk } from '../../types/redux';
 import { commonFetchJSON } from '../../utils/common-fetch';
-import { setResourcesInFlight, setBatchesInFlight, receivedResources } from '../redux/actions/k8s';
+import { receivedResources, setBatchesInFlight, setResourcesInFlight } from '../redux/actions/k8s';
 import { cacheResources, getCachedResources } from './discovery-cache';
 
 const API_DISCOVERY_INIT_DELAY = 5_000;

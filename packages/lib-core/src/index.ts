@@ -10,87 +10,82 @@
 // Common types and utilities
 export {
   AnyObject,
-  ReplaceProperties,
-  Never,
-  EitherNotBoth,
-  EitherOrNone,
-  CustomError,
   applyDefaults,
   applyOverrides,
-  visitDeep,
   cloneDeepOnlyCloneableValues,
+  consoleLogger,
+  CustomError,
+  EitherNotBoth,
+  EitherOrNone,
   LogFunction,
   Logger,
-  consoleLogger,
+  Never,
+  ReplaceProperties,
+  visitDeep,
 } from '@monorepo/common';
-
+// Core utilities
+export {
+  applyCodeRefSymbol,
+  isCodeRef,
+  isEncodedCodeRef,
+  parseEncodedCodeRef,
+} from './runtime/coderefs';
 // Core components
 export { PluginLoader, PluginLoaderOptions } from './runtime/PluginLoader';
-export { PluginStore, PluginStoreOptions, PluginStoreLoaderSettings } from './runtime/PluginStore';
+export { PluginStore, PluginStoreLoaderSettings, PluginStoreOptions } from './runtime/PluginStore';
 export {
   PluginStoreProvider,
   PluginStoreProviderProps,
   usePluginStore,
 } from './runtime/PluginStoreProvider';
-
 // React hooks
 export { useExtensions } from './runtime/useExtensions';
+export { useFeatureFlag, UseFeatureFlagResult } from './runtime/useFeatureFlag';
+export { usePluginInfo } from './runtime/usePluginInfo';
 export {
   useResolvedExtensions,
-  UseResolvedExtensionsResult,
   UseResolvedExtensionsOptions,
+  UseResolvedExtensionsResult,
 } from './runtime/useResolvedExtensions';
-export { usePluginInfo } from './runtime/usePluginInfo';
-export { useFeatureFlag, UseFeatureFlagResult } from './runtime/useFeatureFlag';
-
-// Core utilities
-export {
-  applyCodeRefSymbol,
-  isEncodedCodeRef,
-  isCodeRef,
-  parseEncodedCodeRef,
-} from './runtime/coderefs';
-
 // Testing utilities
 export { TestPluginStore } from './testing/TestPluginStore';
-
 // Core types
 export {
   CodeRef,
+  CodeRefsToEncodedCodeRefs,
+  CodeRefsToValues,
   EncodedCodeRef,
+  EncodedExtension,
   Extension,
   ExtensionFlags,
   ExtensionPredicate,
-  EncodedExtension,
-  LoadedExtension,
-  ResolvedExtension,
+  ExtractExtensionProperties,
   LoadedAndResolvedExtension,
-  CodeRefsToValues,
-  CodeRefsToEncodedCodeRefs,
+  LoadedExtension,
   MapCodeRefsToEncodedCodeRefs,
   MapCodeRefsToValues,
-  ExtractExtensionProperties,
+  ResolvedExtension,
 } from './types/extension';
 export { ResourceFetch } from './types/fetch';
-export { PluginLoadResult, PluginLoaderInterface } from './types/loader';
+export { PluginLoaderInterface, PluginLoadResult } from './types/loader';
 export {
+  FailedPlugin,
+  LoadedPlugin,
+  LocalPluginManifest,
+  PendingPlugin,
   PluginCustomProperties,
+  PluginManifest,
   PluginRuntimeMetadata,
   RemotePluginManifest,
-  LocalPluginManifest,
-  PluginManifest,
-  PendingPlugin,
-  LoadedPlugin,
-  FailedPlugin,
 } from './types/plugin';
 export { PluginEntryModule } from './types/runtime';
 export {
+  FailedPluginInfoEntry,
+  FeatureFlags,
+  FeatureFlagValue,
+  LoadedPluginInfoEntry,
+  PendingPluginInfoEntry,
   PluginEventType,
   PluginInfoEntry,
-  PendingPluginInfoEntry,
-  LoadedPluginInfoEntry,
-  FailedPluginInfoEntry,
-  FeatureFlagValue,
-  FeatureFlags,
   PluginStoreInterface,
 } from './types/store';

@@ -1,4 +1,4 @@
-import type { WebpackPluginInstance, Compiler } from 'webpack';
+import type { Compiler, WebpackPluginInstance } from 'webpack';
 import { findPluginChunks } from '../utils/plugin-chunks';
 
 type ValidateCompilationPluginOptions = {

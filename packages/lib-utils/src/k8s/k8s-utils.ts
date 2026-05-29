@@ -1,17 +1,17 @@
 import { Map as ImmutableMap } from 'immutable';
 import { isEmpty, isPlainObject, pick, toArray } from 'lodash';
 import type {
+  GetGroupVersionKindForModel,
+  K8sGroupVersionKind,
   K8sModelCommon,
   K8sResourceCommon,
+  K8sResourceKindReference,
+  K8sStatus,
+  MatchExpression,
+  MatchLabels,
   QueryOptions,
   QueryParams,
   Selector,
-  MatchExpression,
-  MatchLabels,
-  K8sResourceKindReference,
-  GetGroupVersionKindForModel,
-  K8sGroupVersionKind,
-  K8sStatus,
 } from '../types/k8s';
 import type { WebSocketOptions } from '../web-socket/types';
 import { WebSocketFactory } from '../web-socket/WebSocketFactory';

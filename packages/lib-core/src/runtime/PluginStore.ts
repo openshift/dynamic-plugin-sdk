@@ -4,13 +4,13 @@ import { compact, isEqual, noop, pickBy } from 'lodash';
 import { version as sdkVersion } from '../../package.json';
 import type { LoadedExtension } from '../types/extension';
 import type { PluginLoaderInterface } from '../types/loader';
-import type { PluginManifest, PendingPlugin, LoadedPlugin, FailedPlugin } from '../types/plugin';
+import type { FailedPlugin, LoadedPlugin, PendingPlugin, PluginManifest } from '../types/plugin';
 import type { PluginEntryModule } from '../types/runtime';
-import type { PluginInfoEntry, PluginStoreInterface, FeatureFlags } from '../types/store';
+import type { FeatureFlags, PluginInfoEntry, PluginStoreInterface } from '../types/store';
 import { PluginEventType } from '../types/store';
 import { getPluginModule } from './coderefs';
-import { PluginLoader } from './PluginLoader';
 import type { PluginLoaderOptions } from './PluginLoader';
+import { PluginLoader } from './PluginLoader';
 
 export type PluginStoreLoaderSettings = EitherNotBoth<
   {

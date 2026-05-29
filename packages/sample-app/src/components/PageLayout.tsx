@@ -1,5 +1,5 @@
 import { Page, PageSection } from '@patternfly/react-core';
-import type { ReactNode, PropsWithChildren, FC } from 'react';
+import type { FC, PropsWithChildren, ReactNode } from 'react';
 
 type PageLayoutProps = PropsWithChildren<{
   header?: ReactNode;

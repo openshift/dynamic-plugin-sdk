@@ -1,4 +1,4 @@
-import { Flex, FlexItem, Content, CodeBlock, CodeBlockCode } from '@patternfly/react-core';
+import { CodeBlock, CodeBlockCode, Content, Flex, FlexItem } from '@patternfly/react-core';
 // eslint-disable-next-line camelcase
 import { t_global_spacer_md } from '@patternfly/react-tokens';
 import type { FC } from 'react';

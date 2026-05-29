@@ -1,7 +1,7 @@
 import { consoleLogger } from '@openshift/dynamic-plugin-sdk';
-import { Map as ImmutableMap, fromJS } from 'immutable';
+import { fromJS, Map as ImmutableMap } from 'immutable';
 import { isEqual } from 'lodash';
-import { getReferenceForModel, getNamespacedResources, allModels } from '../../../../k8s/k8s-utils';
+import { allModels, getNamespacedResources, getReferenceForModel } from '../../../../k8s/k8s-utils';
 import type { K8sModelCommon, K8sResourceCommon } from '../../../../types/k8s';
 import type { K8sState } from '../../../../types/redux';
 import type { K8sAction } from '../../actions/k8s';

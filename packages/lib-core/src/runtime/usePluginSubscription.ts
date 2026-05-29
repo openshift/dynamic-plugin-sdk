@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { PluginEventType, PluginStoreInterface } from '../types/store';
 import { usePluginStore } from './PluginStoreProvider';
 
