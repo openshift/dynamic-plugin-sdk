@@ -1,10 +1,10 @@
 import { consoleLogger } from '@openshift/dynamic-plugin-sdk';
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useStore } from 'react-redux';
 import type { Store } from 'redux';
-import { applyMiddleware, combineReducers, createStore, compose } from 'redux';
+import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
-import { setReduxStore, getReduxStore } from '../../config';
+import { getReduxStore, setReduxStore } from '../../config';
 import { SDKReducers } from './reducers';
 
 type UseReduxStoreResult = {

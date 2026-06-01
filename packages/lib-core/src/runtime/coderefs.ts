@@ -2,11 +2,11 @@ import type { AnyObject } from '@monorepo/common';
 import { cloneDeepOnlyCloneableValues, ErrorWithCause, visitDeep } from '@monorepo/common';
 import { has, identity, isEqual, isPlainObject } from 'lodash';
 import type {
-  EncodedCodeRef,
   CodeRef,
+  EncodedCodeRef,
   Extension,
-  LoadedExtension,
   LoadedAndResolvedExtension,
+  LoadedExtension,
 } from '../types/extension';
 import type { PluginEntryModule } from '../types/runtime';
 

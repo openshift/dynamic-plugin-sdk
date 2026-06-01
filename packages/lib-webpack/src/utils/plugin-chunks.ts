@@ -1,4 +1,4 @@
-import type { Compilation, Chunk, AssetInfo } from 'webpack';
+import type { AssetInfo, Chunk, Compilation } from 'webpack';
 
 export const findPluginChunks = (
   containerName: string,

@@ -1,9 +1,9 @@
-import { usePluginStore, usePluginInfo } from '@openshift/dynamic-plugin-sdk';
 import type { PluginInfoEntry } from '@openshift/dynamic-plugin-sdk';
+import { usePluginInfo, usePluginStore } from '@openshift/dynamic-plugin-sdk';
 import { Bullseye, Button, EmptyState, EmptyStateBody } from '@patternfly/react-core';
 import { PackageIcon } from '@patternfly/react-icons';
-import { ActionsColumn, Table, Thead, Tbody, Tr, Th, Td } from '@patternfly/react-table';
 import type { IAction } from '@patternfly/react-table';
+import { ActionsColumn, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import type { FC } from 'react';
 import LabelWithTooltipIcon from './LabelWithTooltipIcon';
 

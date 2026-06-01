@@ -1,7 +1,6 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-// eslint-disable-next-line import/no-unresolved
 import { optimizeLodashImports } from '@optimize-lodash/rollup-plugin';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';

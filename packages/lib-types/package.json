@@ -1,0 +1,37 @@
+{
+  "name": "@openshift/dynamic-plugin-sdk-types",
+  "version": "1.0.0",
+  "description": "TypeScript types generated from OpenShift and Kubernetes APIs",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openshift/dynamic-plugin-sdk.git",
+    "directory": "packages/lib-types"
+  },
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "clean-cache": "rm -rf ./cached",
+    "clean-dist": "rm -rf ./dist",
+    "clean": "yarn clean-dist && yarn clean-cache",
+    "generate-collect": "./collect-crds.sh",
+    "generate-format": "yarn run -T prettier --plugin prettier-plugin-organize-imports --write ./dist --ignore-path > /dev/null",
+    "generate-types-prep": "mkdir -p ./dist && cp ./src/k8s-common.ts ./dist/k8s-common.d.ts",
+    "generate-types": "yarn generate-types-prep && yarn run -T ts-node src/generate-types.ts",
+    "generate-metadata": "yarn run -T ts-node src/build-metadata.ts",
+    "build": "yarn clean-dist && yarn generate-collect && yarn generate-types-prep && yarn generate-types && yarn generate-format && yarn generate-metadata && yarn update-types",
+    "test": "yarn run -T test $INIT_CWD",
+    "update-sources": "jq -r 'keys[]' sources.json | while read repo; do sha=$(gh api repos/$repo/commits/HEAD --jq .sha); echo \"$repo: $sha\"; jq --arg r \"$repo\" --arg s \"$sha\" '.[$r]=$s' sources.json > sources.tmp && mv sources.tmp sources.json; done",
+    "update-types": "cp ./dist/kubernetes/**/CustomResourceDefinition.d.ts ./src/k8s/v1/CRD/CustomResourceDefinition.d.ts"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/json-schema": "^7.0.15",
+    "js-yaml": "^4.1.1",
+    "json-schema-to-typescript": "^15.0.4",
+    "typescript": "^5.9.2"
+  }
+}

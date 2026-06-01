@@ -1,9 +1,9 @@
-import { object, string } from 'yup';
 import {
   extensionArraySchema,
   pluginRuntimeMetadataSchema,
   recordStringStringSchema,
 } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
+import { object, string } from 'yup';
 
 /**
  * Schema for `PluginBuildMetadata` objects.

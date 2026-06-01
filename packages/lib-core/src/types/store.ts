@@ -1,6 +1,6 @@
 import type { AnyObject } from '@monorepo/common';
 import type { LoadedExtension } from './extension';
-import type { PluginManifest, PendingPlugin, LoadedPlugin, FailedPlugin } from './plugin';
+import type { FailedPlugin, LoadedPlugin, PendingPlugin, PluginManifest } from './plugin';
 
 export enum PluginEventType {
   /**

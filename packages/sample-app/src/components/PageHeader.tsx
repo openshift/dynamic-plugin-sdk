@@ -1,4 +1,4 @@
-import { usePluginStore, useFeatureFlag } from '@openshift/dynamic-plugin-sdk';
+import { useFeatureFlag, usePluginStore } from '@openshift/dynamic-plugin-sdk';
 import type { ToggleGroupItemProps } from '@patternfly/react-core';
 import {
   Button,
@@ -7,16 +7,16 @@ import {
   MastheadBrand,
   MastheadContent,
   MastheadMain,
+  ToggleGroup,
+  ToggleGroupItem,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-  ToggleGroup,
-  ToggleGroupItem,
 } from '@patternfly/react-core';
 import { FlagIcon, VialIcon } from '@patternfly/react-icons';
 import type { FC } from 'react';
-import { useRef, useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { localPluginManifests } from '../local-plugins';
 import type { LoadPluginModalRefProps } from './LoadPluginModal';
 import LoadPluginModal from './LoadPluginModal';

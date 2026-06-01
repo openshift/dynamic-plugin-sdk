@@ -1,5 +1,5 @@
 import type { Dispatch } from 'react';
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useEventListener } from './useEventListener';
 
 const tryJSONParse = <T>(data: string): string | T => {

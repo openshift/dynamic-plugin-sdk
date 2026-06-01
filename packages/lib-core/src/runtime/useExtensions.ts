@@ -1,6 +1,6 @@
 import { isEqualWith } from 'lodash';
 import { useMemo } from 'react';
-import type { Extension, LoadedExtension, ExtensionPredicate } from '../types/extension';
+import type { Extension, ExtensionPredicate, LoadedExtension } from '../types/extension';
 import type { PluginStoreInterface } from '../types/store';
 import { PluginEventType } from '../types/store';
 import { usePluginSubscription } from './usePluginSubscription';

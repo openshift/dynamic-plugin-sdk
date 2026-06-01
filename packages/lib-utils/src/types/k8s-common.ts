@@ -1,0 +1,1 @@
+../../../lib-types/src/k8s-common.ts

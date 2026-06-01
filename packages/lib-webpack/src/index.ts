@@ -9,27 +9,24 @@
  */
 
 export { AnyObject, ReplaceProperties } from '@monorepo/common';
-
 export {
   CodeRef,
+  CodeRefsToEncodedCodeRefs,
   EncodedCodeRef,
+  EncodedExtension,
   Extension,
   ExtensionFlags,
-  EncodedExtension,
-  CodeRefsToEncodedCodeRefs,
-  MapCodeRefsToEncodedCodeRefs,
   ExtractExtensionProperties,
+  MapCodeRefsToEncodedCodeRefs,
   PluginCustomProperties,
   PluginRuntimeMetadata,
   RemotePluginManifest,
 } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
-
+export { PluginBuildMetadata } from './types/plugin';
+export { WebpackSharedConfig, WebpackSharedObject } from './types/webpack';
 export {
   DynamicRemotePlugin,
   DynamicRemotePluginOptions,
-  PluginModuleFederationSettings,
   PluginEntryCallbackSettings,
+  PluginModuleFederationSettings,
 } from './webpack/DynamicRemotePlugin';
-
-export { PluginBuildMetadata } from './types/plugin';
-export { WebpackSharedConfig, WebpackSharedObject } from './types/webpack';
