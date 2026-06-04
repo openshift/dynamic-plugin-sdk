@@ -1102,9 +1102,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openshift/dynamic-plugin-sdk-types@workspace:packages/lib-types":
+"@openshift/api-types@workspace:packages/lib-api-types":
   version: 0.0.0-use.local
-  resolution: "@openshift/dynamic-plugin-sdk-types@workspace:packages/lib-types"
+  resolution: "@openshift/api-types@workspace:packages/lib-api-types"
   dependencies:
     "@types/js-yaml": "npm:^4.0.9"
     "@types/json-schema": "npm:^7.0.15"

@@ -3,7 +3,7 @@ import type { InitialOptionsTsJest } from 'ts-jest';
 
 const config: InitialOptionsTsJest = {
   ...nodeConfig,
-  displayName: 'lib-types',
+  displayName: 'lib-api-types',
 };
 
 export default config;
