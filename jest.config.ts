@@ -1,11 +1,12 @@
-import type { InitialOptionsTsJest } from 'ts-jest';
+import type { JestConfigWithTsJest } from 'ts-jest';
 
-const config: InitialOptionsTsJest = {
+const config: JestConfigWithTsJest = {
   projects: [
     '<rootDir>/packages/common',
     '<rootDir>/packages/lib-core',
     '<rootDir>/packages/lib-utils',
     '<rootDir>/packages/lib-webpack',
+    '<rootDir>/packages/sample-app',
   ],
 
   collectCoverage: true,

@@ -31,7 +31,6 @@
     "@types/js-yaml": "^4.0.9",
     "@types/json-schema": "^7.0.15",
     "js-yaml": "^4.1.1",
-    "json-schema-to-typescript": "^15.0.4",
-    "typescript": "^5.9.2"
+    "json-schema-to-typescript": "^15.0.4"
   }
 }

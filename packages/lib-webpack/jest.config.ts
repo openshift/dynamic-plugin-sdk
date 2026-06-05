@@ -1,7 +1,7 @@
 import nodeConfig from '@monorepo/common/jest/jest-config-node';
-import type { InitialOptionsTsJest } from 'ts-jest';
+import type { JestConfigWithTsJest } from 'ts-jest';
 
-const config: InitialOptionsTsJest = {
+const config: JestConfigWithTsJest = {
   ...nodeConfig,
   displayName: 'lib-webpack',
 };

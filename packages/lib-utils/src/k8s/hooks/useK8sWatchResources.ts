@@ -139,12 +139,16 @@ export const useK8sWatchResources = <R extends ResourcesObject>(
   useEffect(() => {
     const reduxIDKeys = Object.keys(reduxIDs || {});
     reduxIDKeys.forEach((k) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       if (reduxIDs?.[k] && reduxIDs[k].action) {
         dispatch(reduxIDs[k].action);
       }
     });
     return () => {
       reduxIDKeys.forEach((k) => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
         if (reduxIDs?.[k] && reduxIDs[k].action) {
           dispatch(k8sActions.stopK8sWatch(reduxIDs[k].id));
         }

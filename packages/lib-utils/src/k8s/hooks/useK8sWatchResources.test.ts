@@ -64,11 +64,11 @@ jest.mock('./useModelsLoaded', () => ({ useModelsLoaded: jest.fn() }));
 
 jest.mock('./useDeepCompareMemoize', () => ({ useDeepCompareMemoize: jest.fn() }));
 
-const useSelectorMock = jest.mocked(useSelector, false);
-const useModelsLoadedMock = jest.mocked(useModelsLoaded, false);
-const useDeepCompareMemoizeMock = jest.mocked(useDeepCompareMemoize, false);
-const getWatchDataMock = jest.mocked(getWatchData, false);
-const getReduxDataMock = jest.mocked(getReduxData, false);
+const useSelectorMock = jest.mocked(useSelector);
+const useModelsLoadedMock = jest.mocked(useModelsLoaded);
+const useDeepCompareMemoizeMock = jest.mocked(useDeepCompareMemoize);
+const getWatchDataMock = jest.mocked(getWatchData);
+const getReduxDataMock = jest.mocked(getReduxData);
 
 describe('useK8sWatchResources', () => {
   beforeEach(() => {

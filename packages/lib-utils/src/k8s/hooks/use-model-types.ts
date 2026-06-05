@@ -7,6 +7,6 @@ import type {
 export type UseK8sModel = (
   // Use K8sGroupVersionKind type instead of K8sResourceKindReference. Support for type K8sResourceKindReference will be removed in a future release.
   groupVersionKind: K8sResourceKindReference | K8sGroupVersionKind,
-) => [K8sModelCommon, boolean];
+) => [K8sModelCommon | undefined, boolean];
 
 export type UseK8sModels = () => [{ [key: string]: K8sModelCommon }, boolean];

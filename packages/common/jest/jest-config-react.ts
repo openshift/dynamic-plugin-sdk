@@ -1,8 +1,8 @@
 import path from 'path';
-import type { InitialOptionsTsJest } from 'ts-jest';
+import type { JestConfigWithTsJest } from 'ts-jest';
 import baseConfig from './jest-config-base';
 
-const config: InitialOptionsTsJest = {
+const config: JestConfigWithTsJest = {
   ...baseConfig,
   testEnvironment: 'jsdom',
 
@@ -13,10 +13,13 @@ const config: InitialOptionsTsJest = {
 
   setupFilesAfterEnv: [path.resolve(__dirname, 'setup-react.ts')],
 
-  globals: {
-    'ts-jest': {
-      tsconfig: path.resolve(__dirname, '../tsconfig-bases/lib-react-esm.json'),
-    },
+  transform: {
+    '^.+\\.(jsx?|tsx?)$': [
+      'ts-jest',
+      {
+        tsconfig: path.resolve(__dirname, '../tsconfig-bases/lib-react-esm.json'),
+      },
+    ],
   },
 };
 

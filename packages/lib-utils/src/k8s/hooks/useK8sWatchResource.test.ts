@@ -66,12 +66,12 @@ jest.mock('react-redux', () => ({
   useSelector: jest.fn(),
 }));
 
-const useSelectorMock = jest.mocked(useSelector, false);
-const useModelsLoadedMock = jest.mocked(useModelsLoaded, false);
-const useDeepCompareMemoizeMock = jest.mocked(useDeepCompareMemoize, false);
-const useK8sModelMock = jest.mocked(useK8sModel, false);
-const getWatchDataMock = jest.mocked(getWatchData, false);
-const getReduxDataMock = jest.mocked(getReduxData, false);
+const useSelectorMock = jest.mocked(useSelector);
+const useModelsLoadedMock = jest.mocked(useModelsLoaded);
+const useDeepCompareMemoizeMock = jest.mocked(useDeepCompareMemoize);
+const useK8sModelMock = jest.mocked(useK8sModel);
+const getWatchDataMock = jest.mocked(getWatchData);
+const getReduxDataMock = jest.mocked(getReduxData);
 
 describe('useK8sWatchResource', () => {
   beforeEach(() => {
