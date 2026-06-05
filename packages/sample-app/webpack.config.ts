@@ -51,7 +51,7 @@ const config: WebpackConfiguration = {
     rules: [
       {
         test: /\.(jsx?|tsx?)$/,
-        exclude: /\/node_modules\//,
+        exclude: [/\/node_modules\//, /\.test\.(jsx?|tsx?)$/],
         use: [
           {
             loader: 'ts-loader',

@@ -11,15 +11,11 @@
     "run-samples": "yarn workspaces foreach -Api --include 'packages/sample-*' run http-server",
     "lint": "yarn eslint packages",
     "test": "yarn jest",
-    "test-component": "yarn sample-app-test-component",
-    "test-e2e": "start-server-and-test 'yarn run-samples' '127.0.0.1:9000|127.0.0.1:9001' 'yarn sample-app-test-e2e'",
+    "test-e2e": "yarn workspace @monorepo/sample-app run test-e2e-headless",
     "eslint": "eslint --max-warnings 0 --ext .js,.jsx,.ts,.tsx --rulesdir ./packages/eslint-plugin-internal/src/runtime-rules",
     "eslint-print-config": "yarn eslint --print-config",
     "jest": "TZ=UTC jest --passWithNoTests",
     "jest-print-config": "jest --showConfig",
-    "sample-app-install-cypress": "yarn workspace @monorepo/sample-app run cypress install",
-    "sample-app-test-component": "yarn workspace @monorepo/sample-app run cypress run --component",
-    "sample-app-test-e2e": "yarn workspace @monorepo/sample-app run cypress run --e2e",
     "api-extractor": "api-extractor run --typescript-compiler-folder $PROJECT_CWD/node_modules/typescript/lib",
     "api-extractor-local": "yarn workspaces foreach -A --include 'packages/lib-*' run api-extractor-local"
   },
@@ -28,6 +24,8 @@
     "@microsoft/api-documenter": "^7.30.5",
     "@microsoft/api-extractor": "^7.58.7",
     "@optimize-lodash/rollup-plugin": "^4.0.3",
+    "@playwright/browser-chromium": "^1.59.1",
+    "@playwright/test": "^1.59.1",
     "@rollup/plugin-commonjs": "^21.0.2",
     "@rollup/plugin-json": "^5.0.2",
     "@rollup/plugin-node-resolve": "^13.1.1",
@@ -82,7 +80,6 @@
     "rollup": "^2.61.1",
     "rollup-plugin-analyzer": "^4.0.0",
     "rollup-plugin-import-css": "^3.0.3",
-    "start-server-and-test": "^2.0.1",
     "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
     "tslib": "^2.3.1",
@@ -91,7 +88,7 @@
     "webpack": "^5.100.0"
   },
   "dependenciesMeta": {
-    "cypress": {
+    "@playwright/browser-chromium": {
       "built": true
     }
   },

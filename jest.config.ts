@@ -6,6 +6,7 @@ const config: JestConfigWithTsJest = {
     '<rootDir>/packages/lib-core',
     '<rootDir>/packages/lib-utils',
     '<rootDir>/packages/lib-webpack',
+    '<rootDir>/packages/sample-app',
   ],
 
   collectCoverage: true,

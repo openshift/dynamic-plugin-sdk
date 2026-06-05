@@ -4,6 +4,8 @@
 **/node_modules
 **/dist
 **/.DS_Store
+**/integration-tests/results
+**/test-results
 
 # https://next.yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
 .pnp.*
