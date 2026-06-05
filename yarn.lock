@@ -333,7 +333,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.12.1, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.16.3, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.9.2":
+"@babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.12.1, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.16.3, @babel/runtime@npm:^7.9.2":
   version: 7.28.6
   resolution: "@babel/runtime@npm:7.28.6"
   checksum: 10c0/358cf2429992ac1c466df1a21c1601d595c46930a13c1d4662fde908d44ee78ec3c183aaff513ecb01ef8c55c3624afe0309eeeb34715672dbfadb7feedb2c0d
@@ -891,8 +891,8 @@ __metadata:
     "@microsoft/api-documenter": "npm:^7.30.5"
     "@microsoft/api-extractor": "npm:^7.58.7"
     "@optimize-lodash/rollup-plugin": "npm:^4.0.3"
-    "@playwright/browser-chromium": "npm:^1.59.1"
-    "@playwright/test": "npm:^1.59.1"
+    "@playwright/browser-chromium": "npm:^1.60.0"
+    "@playwright/test": "npm:^1.60.0"
     "@rollup/plugin-commonjs": "npm:^21.0.2"
     "@rollup/plugin-json": "npm:^5.0.2"
     "@rollup/plugin-node-resolve": "npm:^13.1.1"
@@ -939,9 +939,7 @@ __metadata:
     prettier-plugin-organize-imports: "npm:^4.3.0"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    react-redux: "npm:^8.0.5"
     react-router: "npm:^6.3.0"
-    react-router-dom: "npm:^6.3.0"
     redux: "npm:^4.1.2"
     redux-thunk: "npm:^2.4.1"
     rollup: "npm:^2.61.1"
@@ -1080,6 +1078,7 @@ __metadata:
     immutable: "npm:^3.8.2"
     lodash: "npm:^4.17.23"
     pluralize: "npm:^8.0.0"
+    react-redux: "npm:^8.0.5"
     typesafe-actions: "npm:^4.4.2"
     uuid: "npm:^8.3.2"
   peerDependencies:
@@ -1253,7 +1252,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/browser-chromium@npm:^1.59.1":
+"@playwright/browser-chromium@npm:^1.60.0":
   version: 1.60.0
   resolution: "@playwright/browser-chromium@npm:1.60.0"
   dependencies:
@@ -1262,7 +1261,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:^1.59.1":
+"@playwright/test@npm:^1.60.0":
   version: 1.60.0
   resolution: "@playwright/test@npm:1.60.0"
   dependencies:
@@ -4846,15 +4845,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"history@npm:^5.2.0":
-  version: 5.3.0
-  resolution: "history@npm:5.3.0"
-  dependencies:
-    "@babel/runtime": "npm:^7.7.6"
-  checksum: 10c0/812ec839386222d6437bd78d9f05db32e47d105ada0ad8834b32626919dd2fee7a10001bc489510f93a8069d02f118214bd8d42a82f7cf9daf8e84fbcbbb2016
-  languageName: node
-  linkType: hard
-
 "hoist-non-react-statics@npm:^3.3.0, hoist-non-react-statics@npm:^3.3.2":
   version: 3.3.2
   resolution: "hoist-non-react-statics@npm:3.3.2"
@@ -7748,30 +7738,6 @@ __metadata:
     redux:
       optional: true
   checksum: 10c0/64c8be2765568dc66a3c442a41dd0ed74fe048d5ceb7a4fe72e5bac3d3687996a7115f57b5156af7406521087065a0e60f9194318c8ca99c55e9ce48558980ce
-  languageName: node
-  linkType: hard
-
-"react-router-dom@npm:^6.3.0":
-  version: 6.3.0
-  resolution: "react-router-dom@npm:6.3.0"
-  dependencies:
-    history: "npm:^5.2.0"
-    react-router: "npm:6.3.0"
-  peerDependencies:
-    react: ">=16.8"
-    react-dom: ">=16.8"
-  checksum: 10c0/490b0c50d46c32ad1a3264f8bcaf6b423bef86dc3b62e9070d5e81d90ce086a73af55834133920fc4125e7c8661ede901a550d73429c969b303d4dd9ce7bbaf2
-  languageName: node
-  linkType: hard
-
-"react-router@npm:6.3.0":
-  version: 6.3.0
-  resolution: "react-router@npm:6.3.0"
-  dependencies:
-    history: "npm:^5.2.0"
-  peerDependencies:
-    react: ">=16.8"
-  checksum: 10c0/ac8785a0b28d363940763e49119e5160331099d4f0196235b143ba9cdc984048ca44a77497f393b12165c99baf8ae6c11386f1f6f20ef52d99c2e07b31920862
   languageName: node
   linkType: hard
 

@@ -40,5 +40,8 @@
     "pluralize": "^8.0.0",
     "typesafe-actions": "^4.4.2",
     "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "react-redux": "^8.0.5"
   }
 }
