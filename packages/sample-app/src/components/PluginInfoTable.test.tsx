@@ -7,9 +7,7 @@ import PluginInfoTable from './PluginInfoTable';
 
 function renderWithPluginStore(ui: ReactElement) {
   const pluginStore = new TestPluginStore();
-  const result = render(
-    <PluginStoreProvider store={pluginStore}>{ui}</PluginStoreProvider>,
-  );
+  const result = render(<PluginStoreProvider store={pluginStore}>{ui}</PluginStoreProvider>);
   return { ...result, pluginStore };
 }
 
