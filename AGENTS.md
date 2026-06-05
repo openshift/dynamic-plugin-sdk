@@ -13,8 +13,7 @@ proceed with caution when making any changes to this codebase.
 When making changes that may impact existing functionality, ensure that all changelogs
 are up-to-date, and that version bumps are done according to semantic versioning.
 
-When adding new functionality, write Jest unit tests, and Cypress end-to-end
-and component tests.
+When adding new functionality, write Jest unit tests, and Playwright end-to-end tests.
 
 ## Setup commands
 
