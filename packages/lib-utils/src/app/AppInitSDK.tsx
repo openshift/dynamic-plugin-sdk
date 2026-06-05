@@ -1,6 +1,6 @@
-import { consoleLogger, PluginStoreProvider } from '@openshift/dynamic-plugin-sdk';
 import type { PluginStore } from '@openshift/dynamic-plugin-sdk';
-import type { PropsWithChildren, FC } from 'react';
+import { consoleLogger, PluginStoreProvider } from '@openshift/dynamic-plugin-sdk';
+import type { FC, PropsWithChildren } from 'react';
 import { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import type { UtilsConfig } from '../config';

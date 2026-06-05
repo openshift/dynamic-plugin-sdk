@@ -1,8 +1,8 @@
 import type { LocalPluginManifest } from '@openshift/dynamic-plugin-sdk';
 import { applyCodeRefSymbol } from '@openshift/dynamic-plugin-sdk';
 import type {
-  SampleAppExtensionWithText,
   SampleAppExtensionWithComponent,
+  SampleAppExtensionWithText,
 } from './sample-extensions';
 
 const fooManifest: LocalPluginManifest = {

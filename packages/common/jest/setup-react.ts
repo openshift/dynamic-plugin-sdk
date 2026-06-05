@@ -1,7 +1,6 @@
 // This adds custom Jest matchers for working with the DOM
 // https://github.com/testing-library/jest-dom#custom-matchers
 import '@testing-library/jest-dom';
-
 import { toHaveNoViolations } from 'jest-axe';
 import { noop } from 'lodash';
 

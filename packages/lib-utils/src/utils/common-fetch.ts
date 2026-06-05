@@ -1,4 +1,4 @@
-import { CustomError, applyDefaults, applyOverrides } from '@openshift/dynamic-plugin-sdk';
+import { applyDefaults, applyOverrides, CustomError } from '@openshift/dynamic-plugin-sdk';
 import { getUtilsConfig } from '../config';
 import { K8sStatusError } from '../k8s/k8s-errors';
 import { isK8sStatus } from '../k8s/k8s-utils';

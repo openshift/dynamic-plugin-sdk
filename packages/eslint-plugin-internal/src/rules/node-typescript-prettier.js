@@ -3,8 +3,8 @@ module.exports = {
   'global-require': 'off',
 
   // Disallow require() expressions which import extraneous modules
-  'node/no-extraneous-require': 'off',
+  'n/no-extraneous-require': 'off',
 
   // Disallow require() expressions which import private modules
-  'node/no-unpublished-require': 'off',
+  'n/no-unpublished-require': 'off',
 };

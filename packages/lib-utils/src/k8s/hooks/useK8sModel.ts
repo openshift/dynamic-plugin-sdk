@@ -17,8 +17,8 @@ export const getK8sModel = (
 ): K8sModelCommon | undefined => {
   const kindReference = transformGroupVersionKindToReference(k8sGroupVersionKind);
   return kindReference
-    ? k8s?.getIn(['RESOURCES', 'models', kindReference]) ??
-        k8s?.getIn(['RESOURCES', 'models', getGroupVersionKindForReference(kindReference).kind])
+    ? (k8s?.getIn(['RESOURCES', 'models', kindReference]) ??
+        k8s?.getIn(['RESOURCES', 'models', getGroupVersionKindForReference(kindReference).kind]))
     : undefined;
 };
 

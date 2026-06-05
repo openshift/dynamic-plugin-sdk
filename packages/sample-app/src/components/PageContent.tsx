@@ -1,14 +1,14 @@
+import type { LoadedAndResolvedExtension, LoadedExtension } from '@openshift/dynamic-plugin-sdk';
 import { useExtensions, useResolvedExtensions } from '@openshift/dynamic-plugin-sdk';
-import type { LoadedExtension, LoadedAndResolvedExtension } from '@openshift/dynamic-plugin-sdk';
 import {
   Card,
-  CardTitle,
   CardBody,
   CardFooter,
-  Gallery,
-  GalleryItem,
+  CardTitle,
   EmptyState,
   EmptyStateBody,
+  Gallery,
+  GalleryItem,
   Stack,
   StackItem,
 } from '@patternfly/react-core';
@@ -17,12 +17,12 @@ import type { FC, PropsWithChildren } from 'react';
 import { useMemo } from 'react';
 import { useReplaceTextExtensions } from '../hooks/useReplaceTextExtensions';
 import type {
-  SampleAppExtensionWithText,
   SampleAppExtensionWithComponent,
+  SampleAppExtensionWithText,
 } from '../sample-extensions';
 import {
-  isSampleAppExtensionWithText,
   isSampleAppExtensionWithComponent,
+  isSampleAppExtensionWithText,
 } from '../sample-extensions';
 import LabelWithTooltipIcon from './LabelWithTooltipIcon';
 import PluginInfoTable from './PluginInfoTable';

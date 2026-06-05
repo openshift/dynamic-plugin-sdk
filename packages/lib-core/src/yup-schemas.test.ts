@@ -1,8 +1,8 @@
 import { ValidationError } from 'yup';
 import {
-  semverStringSchema,
-  recordStringStringSchema,
   recordStringSemverRangeSchema,
+  recordStringStringSchema,
+  semverStringSchema,
 } from './yup-schemas';
 
 describe('semverStringSchema', () => {

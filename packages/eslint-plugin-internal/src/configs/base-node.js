@@ -1,5 +1,5 @@
 module.exports = {
-  extends: ['airbnb-base', 'plugin:promise/recommended', 'plugin:node/recommended'],
+  extends: ['airbnb-base', 'plugin:promise/recommended', 'plugin:n/recommended'],
 
   parserOptions: {
     ecmaVersion: 2021,
@@ -15,7 +15,7 @@ module.exports = {
     ...require('./all-bases').settings,
   },
 
-  plugins: ['promise', 'node', 'lodash'],
+  plugins: ['promise', 'n', 'lodash'],
 
   rules: require('../rules/all-bases'),
 };

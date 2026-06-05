@@ -1,11 +1,11 @@
-import { DEFAULT_REMOTE_ENTRY_CALLBACK } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
 import type {
   EncodedExtension,
   RemotePluginManifest,
 } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
-import { identity, isEmpty, mapValues, intersection } from 'lodash';
+import { DEFAULT_REMOTE_ENTRY_CALLBACK } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
+import { identity, intersection, isEmpty, mapValues } from 'lodash';
+import type { Compiler, container, WebpackPluginInstance } from 'webpack';
 import type { ValidationError } from 'yup';
-import type { WebpackPluginInstance, Compiler, container } from 'webpack';
 import type { PluginBuildMetadata } from '../types/plugin';
 import type { WebpackSharedObject } from '../types/webpack';
 import { dynamicRemotePluginAdaptedOptionsSchema } from '../yup-schemas';
@@ -175,8 +175,7 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
       });
     } catch (e) {
       throw new Error(
-        `Invalid ${DynamicRemotePlugin.name} options:\n` +
-          (e as ValidationError).errors.join('\n'),
+        `Invalid ${DynamicRemotePlugin.name} options:\n` + (e as ValidationError).errors.join('\n'),
       );
     }
 

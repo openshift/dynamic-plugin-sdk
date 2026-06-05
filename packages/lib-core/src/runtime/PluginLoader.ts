@@ -3,16 +3,16 @@ import type { AnyObject } from '@monorepo/common';
 import { cloneDeepOnlyCloneableValues, consoleLogger, ErrorWithCause } from '@monorepo/common';
 import { identity, noop, pickBy } from 'lodash';
 import type { RangeOptions } from 'semver';
-import { valid, validRange, satisfies } from 'semver';
+import { satisfies, valid, validRange } from 'semver';
 import { DEFAULT_REMOTE_ENTRY_CALLBACK } from '../constants';
 import type { LoadedExtension } from '../types/extension';
 import type { ResourceFetch } from '../types/fetch';
-import type { PluginLoadResult, PluginLoaderInterface } from '../types/loader';
-import type { RemotePluginManifest, PluginManifest } from '../types/plugin';
-import type { PluginEntryModule, PluginEntryCallback } from '../types/runtime';
+import type { PluginLoaderInterface, PluginLoadResult } from '../types/loader';
+import type { PluginManifest, RemotePluginManifest } from '../types/plugin';
+import type { PluginEntryCallback, PluginEntryModule } from '../types/runtime';
 import { basicFetch } from '../utils/basic-fetch';
 import { settleAllPromises } from '../utils/promise';
-import { injectScriptElement, getScriptElement } from '../utils/scripts';
+import { getScriptElement, injectScriptElement } from '../utils/scripts';
 import { resolveURL } from '../utils/url';
 import { remotePluginManifestSchema } from '../yup-schemas';
 import { decodeCodeRefs } from './coderefs';
@@ -280,7 +280,7 @@ export class PluginLoader implements PluginLoaderInterface {
       };
     }
 
-    const pluginBuildHash = isRemoteManifest ? manifest.buildHash ?? uuidv4() : uuidv4();
+    const pluginBuildHash = isRemoteManifest ? (manifest.buildHash ?? uuidv4()) : uuidv4();
 
     let loadedExtensions = manifest.extensions.map<LoadedExtension>((e, index) => ({
       ...cloneDeepOnlyCloneableValues(e),

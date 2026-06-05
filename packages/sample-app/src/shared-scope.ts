@@ -30,5 +30,6 @@ export const getSharedScope = () => {
     throw new Error('Attempt to access share scope object before its initialization');
   }
 
+  // eslint-disable-next-line camelcase
   return __webpack_share_scopes__[SHARED_SCOPE_NAME];
 };

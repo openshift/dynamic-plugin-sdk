@@ -1,6 +1,6 @@
 import type {
-  SampleAppExtensionWithText,
   SampleAppExtensionWithComponent,
+  SampleAppExtensionWithText,
 } from '@monorepo/sample-app/src/sample-extensions';
 import type { EncodedExtension } from '@openshift/dynamic-plugin-sdk';
 

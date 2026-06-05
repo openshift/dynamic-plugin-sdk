@@ -1,5 +1,5 @@
 import type { LoadedExtension } from './extension';
-import type { RemotePluginManifest, PluginManifest } from './plugin';
+import type { PluginManifest, RemotePluginManifest } from './plugin';
 import type { PluginEntryModule } from './runtime';
 
 export type PluginLoadResult =

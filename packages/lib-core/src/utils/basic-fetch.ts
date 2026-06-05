@@ -1,8 +1,12 @@
-import { CustomError, applyDefaults } from '@monorepo/common';
+import { applyDefaults, CustomError } from '@monorepo/common';
 import type { ResourceFetch } from '../types/fetch';
 
 class FetchError extends CustomError {
-  constructor(message: string, readonly status: number, readonly response: Response) {
+  constructor(
+    message: string,
+    readonly status: number,
+    readonly response: Response,
+  ) {
     super(message);
   }
 }

@@ -1,6 +1,6 @@
 import { consoleLogger } from '@monorepo/common';
-import { useState, useEffect, useMemo } from 'react';
-import type { Extension, LoadedExtension, LoadedAndResolvedExtension } from '../types/extension';
+import { useEffect, useMemo, useState } from 'react';
+import type { Extension, LoadedAndResolvedExtension, LoadedExtension } from '../types/extension';
 import { settleAllPromises } from '../utils/promise';
 import { resolveCodeRefValues } from './coderefs';
 

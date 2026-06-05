@@ -5,7 +5,7 @@ import HTMLPlugin from 'html-webpack-plugin';
 import { escapeRegExp } from 'lodash';
 import MiniCSSExtractPlugin from 'mini-css-extract-plugin';
 import type { Configuration as WebpackConfiguration, WebpackPluginInstance } from 'webpack';
-import { EnvironmentPlugin, container } from 'webpack';
+import { container, EnvironmentPlugin } from 'webpack';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { appSharedModules } from './src/shared-modules';
 

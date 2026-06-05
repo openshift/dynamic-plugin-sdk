@@ -76,13 +76,14 @@ export type EncodedCodeRef = { $codeRef: string };
  */
 export type CodeRef<TValue = unknown> = () => Promise<TValue>;
 
-export type CodeRefsToValues<T> = T extends CodeRef<infer TValue>
-  ? TValue
-  : T extends (infer U)[]
-  ? CodeRefsToValues<U>[]
-  : T extends object
-  ? MapCodeRefsToValues<T>
-  : T;
+export type CodeRefsToValues<T> =
+  T extends CodeRef<infer TValue>
+    ? TValue
+    : T extends (infer U)[]
+      ? CodeRefsToValues<U>[]
+      : T extends object
+        ? MapCodeRefsToValues<T>
+        : T;
 
 export type MapCodeRefsToValues<T extends object> = {
   [K in keyof T]: CodeRefsToValues<T[K]>;
@@ -91,10 +92,10 @@ export type MapCodeRefsToValues<T extends object> = {
 export type CodeRefsToEncodedCodeRefs<T> = T extends CodeRef
   ? EncodedCodeRef
   : T extends (infer U)[]
-  ? CodeRefsToEncodedCodeRefs<U>[]
-  : T extends object
-  ? MapCodeRefsToEncodedCodeRefs<T>
-  : T;
+    ? CodeRefsToEncodedCodeRefs<U>[]
+    : T extends object
+      ? MapCodeRefsToEncodedCodeRefs<T>
+      : T;
 
 export type MapCodeRefsToEncodedCodeRefs<T extends object> = {
   [K in keyof T]: CodeRefsToEncodedCodeRefs<T[K]>;
@@ -103,10 +104,9 @@ export type MapCodeRefsToEncodedCodeRefs<T extends object> = {
 /**
  * Infer the properties type from extension type `T`.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ExtractExtensionProperties<T> = T extends Extension<any, infer TProperties>
-  ? TProperties
-  : never;
+export type ExtractExtensionProperties<T> =
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  T extends Extension<any, infer TProperties> ? TProperties : never;
 
 /**
  * Modify `TExtension` type by replacing `CodeRef<T>` property values with `T` values.

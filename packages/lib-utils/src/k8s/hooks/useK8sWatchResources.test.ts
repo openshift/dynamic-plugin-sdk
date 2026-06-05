@@ -1,9 +1,9 @@
 import { renderHook } from '@testing-library/react';
-import { Map as ImmutableMap, fromJS } from 'immutable';
+import { fromJS, Map as ImmutableMap } from 'immutable';
 import { useSelector } from 'react-redux';
 import type { K8sModelCommon, K8sResourceCommon } from '../../types/k8s';
 import type { WatchData } from './k8s-watch-types';
-import { getWatchData, getReduxData } from './k8s-watcher';
+import { getReduxData, getWatchData } from './k8s-watcher';
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 import { useK8sWatchResources } from './useK8sWatchResources';
 import { useModelsLoaded } from './useModelsLoaded';
@@ -45,8 +45,6 @@ const resourceDataMock: K8sResourceCommon = {
     resourceVersion: '414309692',
     uid: '602ad43f-1a71-4e71-9314-d93bffbc0762',
   },
-  spec: {},
-  status: {},
 };
 
 // Mock modules

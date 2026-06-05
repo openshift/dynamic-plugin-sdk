@@ -1,4 +1,4 @@
-import type { WebpackPluginInstance, Compiler } from 'webpack';
+import type { Compiler, WebpackPluginInstance } from 'webpack';
 import { findPluginChunks, getChunkFiles } from '../utils/plugin-chunks';
 
 type PatchEntryCallbackPluginOptions = {

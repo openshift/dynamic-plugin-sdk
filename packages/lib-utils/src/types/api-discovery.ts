@@ -1,6 +1,6 @@
-import type { Store, AnyAction } from 'redux';
+import type { AnyAction, Store } from 'redux';
 import type { ActionType as Action } from 'typesafe-actions';
-import type { K8sVerb, K8sModelCommon } from './k8s';
+import type { K8sModelCommon, K8sVerb } from './k8s';
 
 export type InitAPIDiscovery = (
   store: Store<unknown, Action<AnyAction>>,

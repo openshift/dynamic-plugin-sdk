@@ -33,41 +33,13 @@ export type K8sModelCommon = K8sResourceIdentifier & {
   namespaced?: boolean;
 };
 
-export type K8sResourceCommon = K8sResourceIdentifier &
-  Partial<{
-    metadata: Partial<{
-      annotations: Record<string, string>;
-      clusterName: string;
-      creationTimestamp: string;
-      deletionGracePeriodSeconds: number;
-      deletionTimestamp: string;
-      finalizers: string[];
-      generateName: string;
-      generation: number;
-      labels: Record<string, string>;
-      managedFields: unknown[];
-      name: string;
-      namespace: string;
-      ownerReferences: OwnerReference[];
-      resourceVersion: string;
-      uid: string;
-    }>;
-    spec: {
-      selector?: Selector | MatchLabels;
-      [key: string]: unknown;
-    };
-    status: { [key: string]: unknown };
-    data: { [key: string]: unknown };
-  }>;
-
-export type OwnerReference = {
-  apiVersion: string;
-  kind: string;
-  name: string;
-  uid: string;
-  controller?: boolean;
-  blockOwnerDeletion?: boolean;
-};
+export type {
+  FieldsV1,
+  K8sResourceCommon,
+  ManagedFieldsEntry,
+  ObjectMetadata,
+  OwnerReference,
+} from './k8s-common';
 
 export type QueryOptions = Partial<{
   ns: string;
