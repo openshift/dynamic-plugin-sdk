@@ -7,4 +7,4 @@
 /packages/lib-webpack/
 
 # Monorepo's TypeScript stack is too old to lint this hip new(er) TypeScript code
-/packages/lib-types/
+/packages/lib-api-types/

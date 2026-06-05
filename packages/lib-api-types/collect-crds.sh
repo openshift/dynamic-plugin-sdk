@@ -1,5 +1,4 @@
-#!/usr/bin/env sh
-
+#!/bin/bash
 set -euo pipefail
 
 OPENSHIFT_API_COMMIT=$(jq -r '.["openshift/api"]' sources.json)
