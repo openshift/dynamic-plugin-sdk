@@ -1,5 +1,10 @@
 # Changelog for `@openshift/dynamic-plugin-sdk-webpack`
 
+## 5.2.0 - 2026-06-11
+
+- Add rspack compatibility: `DynamicRemotePlugin` now works with both webpack and rspack bundlers. Both
+  `@rspack/core` and `webpack` are now optional peer dependencies. ([#285])
+
 ## 5.1.1 - 2026-04-16
 
 - Fix bug in `PatchEntryCallbackPlugin` where compilation fails when using webpack-dev-server ([#314])
@@ -77,6 +82,7 @@
 [#256]: https://github.com/openshift/dynamic-plugin-sdk/pull/256
 [#259]: https://github.com/openshift/dynamic-plugin-sdk/pull/259
 [#280]: https://github.com/openshift/dynamic-plugin-sdk/pull/280
+[#285]: https://github.com/openshift/dynamic-plugin-sdk/pull/285
 [#289]: https://github.com/openshift/dynamic-plugin-sdk/pull/289
 [#296]: https://github.com/openshift/dynamic-plugin-sdk/pull/296
 [#314]: https://github.com/openshift/dynamic-plugin-sdk/pull/314

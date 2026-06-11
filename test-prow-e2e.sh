@@ -15,7 +15,19 @@ trap copyArtifacts EXIT
 
 yarn install
 yarn build-libs
-yarn build-samples
 
-# Run Playwright E2E tests (webServer config starts http-server automatically)
-yarn test-e2e
+# Test cross compatibility of rspack/webpack
+SCENARIOS=(
+  "build-rspack build-rspack"
+  "build-prod   build-rspack"
+  "build-rspack build-prod"
+  "build-prod   build-prod"
+)
+
+for scenario in "${SCENARIOS[@]}"; do
+  read -r app_script plugin_script <<< "$scenario"
+  echo "Testing sample-app ($app_script) + sample-plugin ($plugin_script)"
+  yarn workspace @monorepo/sample-app run "$app_script"
+  yarn workspace @monorepo/sample-plugin run "$plugin_script"
+  yarn test-e2e
+done

@@ -8,6 +8,7 @@
     "build-libs": "yarn workspaces foreach -A --include 'packages/lib-*' run build",
     "build-samples": "yarn workspaces foreach -A --include 'packages/sample-*' run build",
     "build-samples-prod": "yarn workspaces foreach -A --include 'packages/sample-*' run build-prod",
+    "build-samples-rspack": "yarn workspaces foreach -A --include 'packages/sample-*' run build-rspack",
     "run-samples": "yarn workspaces foreach -Api --include 'packages/sample-*' run http-server",
     "lint": "yarn eslint packages",
     "test": "yarn jest",

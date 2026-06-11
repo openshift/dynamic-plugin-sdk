@@ -210,8 +210,14 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
     const moduleFederationLibraryType = moduleFederationSettings.libraryType ?? 'jsonp';
     const moduleFederationSharedScope = moduleFederationSettings.sharedScopeName ?? 'default';
 
+    // Rspack's renamed ModuleFederationPlugin to ModuleFederationPluginV1.
+    // Their ModuleFederationPlugin implements module federation 1.5+
+    const isRspack = 'rspack' in compiler;
+
     const {
-      ModuleFederationPlugin = compiler.webpack.container.ModuleFederationPlugin,
+      ModuleFederationPlugin = isRspack
+        ? (compiler as any).rspack.container.ModuleFederationPluginV1
+        : compiler.webpack.container.ModuleFederationPlugin,
       ContainerPlugin = compiler.webpack.container.ContainerPlugin,
     } = moduleFederationSettings.pluginOverride ?? {};
 
