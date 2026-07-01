@@ -1,5 +1,5 @@
 import type { AnyObject, EitherNotBoth } from '@monorepo/common';
-import { consoleLogger, ErrorWithCause } from '@monorepo/common';
+import { consoleLogger, freezeDeep, ErrorWithCause } from '@monorepo/common';
 import { compact, isEqual, noop, pickBy } from 'lodash';
 import { version as sdkVersion } from '../../package.json';
 import type { LoadedExtension } from '../types/extension';
@@ -301,7 +301,10 @@ export class PluginStore implements PluginStoreInterface {
 
   protected addPendingPlugin(manifest: PluginManifest) {
     const pluginName = manifest.name;
-    const pendingPlugin: PendingPlugin = { manifest };
+
+    const pendingPlugin: PendingPlugin = {
+      manifest: freezeDeep(manifest),
+    };
 
     this.pendingPlugins.set(pluginName, pendingPlugin);
     this.loadedPlugins.delete(pluginName);
@@ -324,9 +327,8 @@ export class PluginStore implements PluginStoreInterface {
     const pluginName = manifest.name;
 
     const loadedPlugin: LoadedPlugin = {
-      // TODO(vojtech): use deepFreeze on the manifest and type it as DeepReadonly
-      manifest: Object.freeze(manifest),
-      loadedExtensions: loadedExtensions.map((e) => Object.freeze(e)),
+      manifest: freezeDeep(manifest),
+      loadedExtensions: Object.freeze(loadedExtensions.map((e) => Object.freeze(e))),
       entryModule,
       enabled: false,
     };
@@ -341,7 +343,12 @@ export class PluginStore implements PluginStoreInterface {
 
   protected addFailedPlugin(manifest: PluginManifest, errorMessage: string, errorCause?: unknown) {
     const pluginName = manifest.name;
-    const failedPlugin: FailedPlugin = { manifest, errorMessage, errorCause };
+
+    const failedPlugin: FailedPlugin = {
+      manifest: freezeDeep(manifest),
+      errorMessage,
+      errorCause,
+    };
 
     this.pendingPlugins.delete(pluginName);
     this.loadedPlugins.delete(pluginName);

@@ -1,5 +1,6 @@
 import { cloneDeepWith, defaultsDeep, forOwn, isPlainObject } from 'lodash';
 import type { AnyObject } from '../types/common';
+import type { DeepReadonly } from '../types/objects';
 
 /**
  * Create new object by recursively assigning property defaults to `obj`.
@@ -49,3 +50,20 @@ export const cloneDeepOnlyCloneableValues = <TObject>(obj: TObject): TObject =>
       ? value
       : undefined;
   });
+
+/**
+ * Recursively freeze `obj` using `Object.freeze` and return the frozen object.
+ */
+export const freezeDeep = <T extends object>(obj: T): DeepReadonly<T> => {
+  Object.freeze(obj);
+
+  Object.getOwnPropertyNames(obj).forEach((key) => {
+    const value = (obj as AnyObject)[key];
+
+    if (value && typeof value === 'object' && !Object.isFrozen(value)) {
+      freezeDeep(value);
+    }
+  });
+
+  return obj as DeepReadonly<T>;
+};

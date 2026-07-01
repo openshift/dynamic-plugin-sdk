@@ -40,6 +40,18 @@ export class CustomError extends Error {
 }
 
 // @public
+export type DeepReadonly<T> = T extends Primitive ? T : T extends Array<infer U> ? DeepReadonlyArray<U> : DeepReadonlyObject<T>;
+
+// @public (undocumented)
+export interface DeepReadonlyArray<T> extends ReadonlyArray<DeepReadonly<T>> {
+}
+
+// @public (undocumented)
+export type DeepReadonlyObject<T> = {
+    readonly [K in keyof T]: DeepReadonly<T[K]>;
+};
+
+// @public
 export type EitherNotBoth<TypeA, TypeB> = (TypeA & Never<TypeB>) | (TypeB & Never<TypeA>);
 
 // @public
@@ -77,7 +89,7 @@ export type ExtractExtensionProperties<T> = T extends Extension<any, infer TProp
 
 // @public
 export type FailedPlugin = {
-    manifest: Readonly<PluginManifest>;
+    manifest: DeepReadonly<PluginManifest>;
     errorMessage: string;
     errorCause?: unknown;
 };
@@ -112,8 +124,8 @@ export type LoadedExtension<TExtension extends Extension = Extension> = TExtensi
 
 // @public
 export type LoadedPlugin = {
-    manifest: Readonly<PluginManifest>;
-    loadedExtensions: Readonly<LoadedExtension[]>;
+    manifest: DeepReadonly<PluginManifest>;
+    loadedExtensions: ReadonlyArray<Readonly<LoadedExtension>>;
     entryModule?: PluginEntryModule;
     enabled: boolean;
     disableReason?: string;
@@ -159,7 +171,7 @@ export const parseEncodedCodeRef: (ref: EncodedCodeRef) => {
 
 // @public
 export type PendingPlugin = {
-    manifest: Readonly<PluginManifest>;
+    manifest: DeepReadonly<PluginManifest>;
 };
 
 // @public
@@ -311,6 +323,9 @@ export const PluginStoreProvider: FC<PluginStoreProviderProps>;
 export type PluginStoreProviderProps = PropsWithChildren<{
     store: PluginStoreInterface;
 }>;
+
+// @public
+export type Primitive = string | number | bigint | boolean | symbol | null | undefined;
 
 // @public
 export type RemotePluginManifest = PluginRuntimeMetadata & {

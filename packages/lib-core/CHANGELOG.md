@@ -3,6 +3,7 @@
 ## 9.0.0 - TBD
 
 - BREAKING: Modify `useResolvedExtensions` hook to accept `extensions` array as a parameter ([#313])
+- Deep freeze plugin manifest object when adding plugins to the `PluginStore` ([#325])
 - Replace `yup` with `zod` for object validation ([#326])
 - Expose `visitDeep` utility function ([#313])
 
@@ -145,4 +146,5 @@
 [#309]: https://github.com/openshift/dynamic-plugin-sdk/pull/309
 [#310]: https://github.com/openshift/dynamic-plugin-sdk/pull/310
 [#313]: https://github.com/openshift/dynamic-plugin-sdk/pull/313
+[#325]: https://github.com/openshift/dynamic-plugin-sdk/pull/325
 [#326]: https://github.com/openshift/dynamic-plugin-sdk/pull/326

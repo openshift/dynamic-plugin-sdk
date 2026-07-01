@@ -1,3 +1,4 @@
+import type { DeepReadonly } from '@monorepo/common';
 import type { Extension, LoadedExtension } from './extension';
 import type { PluginEntryModule } from './runtime';
 
@@ -90,15 +91,15 @@ export type PluginManifest = RemotePluginManifest | LocalPluginManifest;
  * Internal entry on a plugin in `pending` state.
  */
 export type PendingPlugin = {
-  manifest: Readonly<PluginManifest>;
+  manifest: DeepReadonly<PluginManifest>;
 };
 
 /**
  * Internal entry on a plugin in `loaded` state.
  */
 export type LoadedPlugin = {
-  manifest: Readonly<PluginManifest>;
-  loadedExtensions: Readonly<LoadedExtension[]>;
+  manifest: DeepReadonly<PluginManifest>;
+  loadedExtensions: ReadonlyArray<Readonly<LoadedExtension>>;
   entryModule?: PluginEntryModule;
   enabled: boolean;
   disableReason?: string;
@@ -108,7 +109,7 @@ export type LoadedPlugin = {
  * Internal entry on a plugin in `failed` state.
  */
 export type FailedPlugin = {
-  manifest: Readonly<PluginManifest>;
+  manifest: DeepReadonly<PluginManifest>;
   errorMessage: string;
   errorCause?: unknown;
 };

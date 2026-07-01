@@ -6,8 +6,8 @@
 
 ## 5.2.0 - 2026-06-11
 
-- Add rspack compatibility: `DynamicRemotePlugin` now works with both webpack and rspack bundlers. Both
-  `@rspack/core` and `webpack` are now optional peer dependencies. ([#285])
+- Update `DynamicRemotePlugin` to work with both webpack and rspack module bundlers ([#285])
+- `@rspack/core` and `webpack` peer dependencies are now optional ([#285])
 
 ## 5.1.1 - 2026-04-16
 
