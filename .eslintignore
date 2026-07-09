@@ -1,5 +1,7 @@
 **/node_modules
 **/dist
+**/integration-tests/results
+**/test-results
 **/.eslintrc.js
 **/rollup.config.js
 

@@ -3,6 +3,7 @@
 ## 9.0.0 - TBD
 
 - BREAKING: Modify `useResolvedExtensions` hook to accept `extensions` array as a parameter ([#313])
+- Replace `yup` with `zod` for object validation ([#326])
 - Expose `visitDeep` utility function ([#313])
 
 ## 8.2.0 - 2026-03-19
@@ -144,3 +145,4 @@
 [#309]: https://github.com/openshift/dynamic-plugin-sdk/pull/309
 [#310]: https://github.com/openshift/dynamic-plugin-sdk/pull/310
 [#313]: https://github.com/openshift/dynamic-plugin-sdk/pull/313
+[#326]: https://github.com/openshift/dynamic-plugin-sdk/pull/326

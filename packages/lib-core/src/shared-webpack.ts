@@ -2,4 +2,4 @@
 export * from './constants';
 export * from './types/extension';
 export * from './types/plugin';
-export * from './yup-schemas';
+export * from './zod-schemas';

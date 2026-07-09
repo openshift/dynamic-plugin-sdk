@@ -40,7 +40,7 @@
   "dependencies": {
     "lodash": "^4.17.23",
     "semver": "^7.7.3",
-    "yup": "^1.7.1"
+    "zod": "^3.25.67"
   },
   "engines": {
     "node": ">=16"
