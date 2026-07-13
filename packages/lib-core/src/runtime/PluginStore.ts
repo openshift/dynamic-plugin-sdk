@@ -375,4 +375,35 @@ export class PluginStore implements PluginStoreInterface {
 
     return referencedModule;
   }
+
+  /**
+   * Create new `PluginStore` with state copied from the source `PluginStore`.
+   *
+   * @remarks
+   *
+   * Does not copy subscribed event {@link listeners} and {@link pendingPromises}.
+   */
+  static copyFrom(source: PluginStore): PluginStore {
+    const target = new PluginStore({
+      autoEnableLoadedPlugins: source.options.autoEnableLoadedPlugins,
+      loader: source.loader,
+    });
+
+    source.pendingPlugins.forEach((plugin, name) => {
+      target.pendingPlugins.set(name, { ...plugin });
+    });
+
+    source.loadedPlugins.forEach((plugin, name) => {
+      target.loadedPlugins.set(name, { ...plugin });
+    });
+
+    source.failedPlugins.forEach((plugin, name) => {
+      target.failedPlugins.set(name, { ...plugin });
+    });
+
+    target.extensions = [...source.extensions];
+    target.featureFlags = { ...source.featureFlags };
+
+    return target;
+  }
 }

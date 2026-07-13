@@ -254,6 +254,7 @@ export class PluginStore implements PluginStoreInterface {
     protected addLoadedPlugin(manifest: PluginManifest, loadedExtensions: LoadedExtension[], entryModule?: PluginEntryModule): void;
     // (undocumented)
     protected addPendingPlugin(manifest: PluginManifest): void;
+    static copyFrom(source: PluginStore): PluginStore;
     // (undocumented)
     disablePlugins(pluginNames: string[], disableReason?: string): void;
     // (undocumented)
