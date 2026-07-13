@@ -11,13 +11,14 @@ EXTRACT_DIR="$CACHE_DIR/openshift-api"
 mkdir -p "$CACHE_DIR"
 
 if [ ! -d "$EXTRACT_DIR" ]; then
-  curl --fail --silent --location -o "$ARCHIVE" "$OPENSHIFT_API_URL"
+  curl --fail --location -o "$ARCHIVE" "$OPENSHIFT_API_URL"
   mkdir -p "$EXTRACT_DIR"
   tar -xzf "$ARCHIVE" -C "$EXTRACT_DIR" --strip-components=1
   rm "$ARCHIVE"
 fi
 
-mkdir -p "$CACHE_DIR/openshift-crds"
-rm -rf "$CACHE_DIR/openshift-crds"/*
-cd "$CACHE_DIR/openshift-crds"
-find ../openshift-api -type f -name "*.crd.yaml" -exec ln -sf {} ./ \;
+if [ ! -d "$CACHE_DIR/openshift-crds" ]; then
+  mkdir -p "$CACHE_DIR/openshift-crds"
+  cd "$CACHE_DIR/openshift-crds"
+  find ../openshift-api -type f -name "*.crd.yaml" -exec ln -sf {} ./ \;
+fi
