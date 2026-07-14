@@ -12,8 +12,8 @@ Both host applications and plugins can be built, released and deployed independe
 other. This reduces the coupling between an application and its plugins and allows individual
 plugins to be updated and deployed more frequently.
 
-Tools provided by this SDK are [React](https://reactjs.org/) focused and support [webpack][webpack]
-and [rspack][rspack] module bundlers. Plugins use `DynamicRemotePlugin` to generate their assets.
+Tools provided by this SDK are [React](https://reactjs.org/) focused and support [webpack]
+and [rspack] module bundlers. Plugins use `DynamicRemotePlugin` to generate their assets.
 Both host applications and plugins use React APIs such as hooks, components, etc.
 
 ## Quick References
