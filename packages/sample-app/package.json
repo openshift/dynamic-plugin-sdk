@@ -10,11 +10,12 @@
     "build-rspack": "yarn clean && NODE_ENV=production yarn rspack",
     "analyze": "yarn clean && NODE_ENV=production ANALYZE_BUNDLES=true yarn webpack",
     "lint": "yarn run -T eslint $INIT_CWD",
+    "test": "yarn run -T test $INIT_CWD",
+    "test-e2e": "yarn run -T playwright test --headed",
+    "test-e2e-headless": "yarn run -T playwright test",
     "webpack": "WEBPACK=1 node -r ts-node/register ./node_modules/.bin/webpack",
     "rspack": "RSPACK=1 node -r ts-node/register ./node_modules/.bin/rspack -c webpack.config.ts",
-    "http-server": "http-server dist -p 9000 -c-1",
-    "test-e2e": "yarn run -T playwright test --headed",
-    "test-e2e-headless": "yarn run -T playwright test"
+    "http-server": "http-server dist -p 9000 -c-1"
   },
   "devDependencies": {
     "@openshift/dynamic-plugin-sdk": "portal:../lib-core",

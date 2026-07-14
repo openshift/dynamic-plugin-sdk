@@ -1,8 +1,9 @@
 {
   "extends": "@monorepo/common/tsconfig-bases/app-react-esm.json",
   "compilerOptions": {
-    "outDir": "dist"
+    "outDir": "dist",
+    "types": ["@testing-library/jest-dom", "jest"]
   },
   "include": ["src"],
-  "exclude": ["node_modules", "integration-tests", "**/*.test.ts", "**/*.test.tsx"]
+  "exclude": ["node_modules", "integration-tests"]
 }

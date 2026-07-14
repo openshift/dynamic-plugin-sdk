@@ -14,7 +14,7 @@ import { basicFetch } from '../utils/basic-fetch';
 import { settleAllPromises } from '../utils/promise';
 import { getScriptElement, injectScriptElement } from '../utils/scripts';
 import { resolveURL } from '../utils/url';
-import { remotePluginManifestSchema } from '../yup-schemas';
+import { remotePluginManifestSchema } from '../zod-schemas';
 import { decodeCodeRefs } from './coderefs';
 
 declare global {
@@ -186,7 +186,7 @@ export class PluginLoader implements PluginLoaderInterface {
     const response = await this.options.fetchImpl(manifestURL, { cache: 'no-cache' });
     const manifest = JSON.parse(await response.text());
 
-    remotePluginManifestSchema.validateSync(manifest, { strict: true, abortEarly: false });
+    remotePluginManifestSchema.strict().parse(manifest);
 
     return manifest as RemotePluginManifest;
   }

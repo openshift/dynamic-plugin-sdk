@@ -1,5 +1,9 @@
 # Changelog for `@openshift/dynamic-plugin-sdk-webpack`
 
+## 5.3.0 - TBD
+
+- Replace `yup` with `zod` for object validation ([#326])
+
 ## 5.2.0 - 2026-06-11
 
 - Add rspack compatibility: `DynamicRemotePlugin` now works with both webpack and rspack bundlers. Both
@@ -86,3 +90,4 @@
 [#289]: https://github.com/openshift/dynamic-plugin-sdk/pull/289
 [#296]: https://github.com/openshift/dynamic-plugin-sdk/pull/296
 [#314]: https://github.com/openshift/dynamic-plugin-sdk/pull/314
+[#326]: https://github.com/openshift/dynamic-plugin-sdk/pull/326

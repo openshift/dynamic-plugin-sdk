@@ -5,10 +5,10 @@ import type {
 import { DEFAULT_REMOTE_ENTRY_CALLBACK } from '@openshift/dynamic-plugin-sdk/src/shared-webpack';
 import { identity, intersection, isEmpty, mapValues } from 'lodash';
 import type { Compiler, container, WebpackPluginInstance } from 'webpack';
-import type { ValidationError } from 'yup';
+import type { ZodError } from 'zod';
 import type { PluginBuildMetadata } from '../types/plugin';
 import type { WebpackSharedObject } from '../types/webpack';
-import { dynamicRemotePluginAdaptedOptionsSchema } from '../yup-schemas';
+import { dynamicRemotePluginAdaptedOptionsSchema } from '../zod-schemas';
 import { GenerateManifestPlugin } from './GenerateManifestPlugin';
 import { PatchEntryCallbackPlugin } from './PatchEntryCallbackPlugin';
 import { ValidateCompilationPlugin } from './ValidateCompilationPlugin';
@@ -169,14 +169,11 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
     };
 
     try {
-      dynamicRemotePluginAdaptedOptionsSchema.validateSync(this.adaptedOptions, {
-        strict: true,
-        abortEarly: false,
-      });
+      dynamicRemotePluginAdaptedOptionsSchema.strict().parse(this.adaptedOptions);
     } catch (e) {
-      throw new Error(
-        `Invalid ${DynamicRemotePlugin.name} options:\n` + (e as ValidationError).errors.join('\n'),
-      );
+      const errors = (e as ZodError).issues.map((i) => `${i.path.join('.')}: ${i.message}`);
+
+      throw new Error(`Invalid ${DynamicRemotePlugin.name} options:\n${errors.join('\n')}`);
     }
 
     const overlapDependencyNames = intersection(
@@ -210,7 +207,7 @@ export class DynamicRemotePlugin implements WebpackPluginInstance {
     const moduleFederationLibraryType = moduleFederationSettings.libraryType ?? 'jsonp';
     const moduleFederationSharedScope = moduleFederationSettings.sharedScopeName ?? 'default';
 
-    // Rspack's renamed ModuleFederationPlugin to ModuleFederationPluginV1.
+    // Rspack has renamed ModuleFederationPlugin to ModuleFederationPluginV1.
     // Their ModuleFederationPlugin implements module federation 1.5+
     const isRspack = 'rspack' in compiler;
 

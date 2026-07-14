@@ -1,6 +1,7 @@
 /coverage
 /docs/generated
-/screenshots
+**/.DS_Store
 **/node_modules
 **/dist
-**/.DS_Store
+**/integration-tests/results
+**/test-results
