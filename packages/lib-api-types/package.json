@@ -5,7 +5,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openshift/dynamic-plugin-sdk.git",
+    "url": "git+https://github.com/openshift/dynamic-plugin-sdk.git",
     "directory": "packages/lib-api-types"
   },
   "types": "dist/index.d.ts",
