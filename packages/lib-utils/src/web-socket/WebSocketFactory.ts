@@ -75,7 +75,7 @@ export class WebSocketFactory {
       return;
     }
 
-    let duration = 0;
+    let delay = 1000;
 
     const attempt = async () => {
       if (!this.options.reconnect || this.state === WebSocketState.OPENED) {
@@ -83,7 +83,7 @@ export class WebSocketFactory {
         this.connectionAttempt = 0;
         return;
       }
-      if (this.options.timeout && duration > this.options.timeout) {
+      if (this.options.timeout && delay > this.options.timeout) {
         window.clearTimeout(this.connectionAttempt);
         this.connectionAttempt = 0;
         this.destroy();
@@ -91,17 +91,31 @@ export class WebSocketFactory {
       }
 
       await this.connect();
-      duration = Math.round(Math.min(1.5 * duration, 60000));
-      this.connectionAttempt = window.setTimeout(attempt, duration);
-      consoleLogger.info(`attempting reconnect in ${duration / 1000} seconds...`);
+      delay = Math.round(Math.min(1.5 * delay, 60000));
+      this.connectionAttempt = window.setTimeout(attempt, delay);
+      consoleLogger.info(`attempting reconnect in ${delay / 1000} seconds...`);
     };
 
-    this.connectionAttempt = window.setTimeout(attempt, 1000);
+    this.connectionAttempt = window.setTimeout(attempt, 0);
   }
 
   private async connect(): Promise<void> {
     this.state = WebSocketState.INIT;
     this.messageBuffer = [];
+
+    // Close and detach any previous socket so it cannot leak or re-trigger reconnect.
+    if (this.ws) {
+      this.ws.onopen = null;
+      this.ws.onclose = null;
+      this.ws.onerror = null;
+      this.ws.onmessage = null;
+      try {
+        this.ws.close();
+      } catch (e) {
+        consoleLogger.error('Error closing previous websocket:', e);
+      }
+      this.ws = null;
+    }
 
     const url = await createURL(this.options);
     const subProtocols = await applyConfigSubProtocols(this.options);
