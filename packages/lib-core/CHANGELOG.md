@@ -1,6 +1,9 @@
 # Changelog for `@openshift/dynamic-plugin-sdk`
 
-## 9.0.0 - TBD
+## 9.0.0 - 2026-07-22
+
+> This release modifies the `useResolvedExtensions` hook, requiring callers to pass the extensions
+> explicitly. Plugin manifests and `DynamicRemotePlugin` options are now validated using Zod library.
 
 - BREAKING: Modify `useResolvedExtensions` hook to accept `extensions` array as a parameter ([#313])
 - Deep freeze plugin manifest object when adding plugins to the `PluginStore` ([#325])

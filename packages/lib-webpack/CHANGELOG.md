@@ -1,6 +1,6 @@
 # Changelog for `@openshift/dynamic-plugin-sdk-webpack`
 
-## 5.3.0 - TBD
+## 5.3.0 - 2026-07-22
 
 - Replace `yup` with `zod` for object validation ([#326])
 
